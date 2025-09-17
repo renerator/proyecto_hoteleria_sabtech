@@ -1,0 +1,410 @@
+[
+  {
+    "ContainingType": "DemoBackend.Controllers.AutenticacionController",
+    "Method": "Login",
+    "RelativePath": "api/v1/Autenticacion/Login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "user",
+        "Type": "DemoBackend.Dto.LoginDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.HabitacionController",
+    "Method": "ConfirmarReserva",
+    "RelativePath": "api/v1/Habitacion/ConfirmarReserva",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "areasModels",
+        "Type": "DemoBackend.Dto.Mantenedores.AreasDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.HabitacionController",
+    "Method": "EliminaReserva",
+    "RelativePath": "api/v1/Habitacion/EliminaReserva",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idArea",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.HabitacionController",
+    "Method": "ModificaReserva",
+    "RelativePath": "api/v1/Habitacion/ModificaReserva",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "areasModels",
+        "Type": "DemoBackend.Dto.Mantenedores.AreasDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.HabitacionController",
+    "Method": "ReservasDisponibles",
+    "RelativePath": "api/v1/Habitacion/ReservasDisponibles",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "vigencia",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[DemoBackend.Dto.Mantenedores.AreasDto, DemoBackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.HabitacionController",
+    "Method": "SolicitaReserva",
+    "RelativePath": "api/v1/Habitacion/SolicitaReserva",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "areasModels",
+        "Type": "DemoBackend.Dto.Mantenedores.AreasDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.IntegracionesController",
+    "Method": "GetCasinoAlimentacion",
+    "RelativePath": "api/v1/Integraciones/GetCasinoAlimentacion",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "vigencia",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[DemoBackend.Dto.Mantenedores.AreasDto, DemoBackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.IntegracionesController",
+    "Method": "GetChapasElectronicas",
+    "RelativePath": "api/v1/Integraciones/GetChapasElectronicas",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "vigencia",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[DemoBackend.Dto.Mantenedores.AreasDto, DemoBackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.IntegracionesController",
+    "Method": "GetElipse",
+    "RelativePath": "api/v1/Integraciones/GetElipse",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "vigencia",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[DemoBackend.Dto.Mantenedores.AreasDto, DemoBackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.IntegracionesController",
+    "Method": "GetLavanderia",
+    "RelativePath": "api/v1/Integraciones/GetLavanderia",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "vigencia",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[DemoBackend.Dto.Mantenedores.AreasDto, DemoBackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.IntegracionesController",
+    "Method": "GetSAP",
+    "RelativePath": "api/v1/Integraciones/GetSAP",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "vigencia",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[DemoBackend.Dto.Mantenedores.AreasDto, DemoBackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.IntegracionesController",
+    "Method": "GetUsuariosSGCAS",
+    "RelativePath": "api/v1/Integraciones/GetUsuariosSGCAS",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "vigencia",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[DemoBackend.Dto.Mantenedores.AreasDto, DemoBackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.MantenedoresController",
+    "Method": "DelEliminaAreas",
+    "RelativePath": "api/v1/Mantenedores/DelEliminaAreas",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idArea",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.MantenedoresController",
+    "Method": "GetListaAreas",
+    "RelativePath": "api/v1/Mantenedores/GetListaAreas",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "vigencia",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[DemoBackend.Dto.Mantenedores.AreasDto, DemoBackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.MantenedoresController",
+    "Method": "PostCreaAreas",
+    "RelativePath": "api/v1/Mantenedores/PostCrearAreas",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "areasModels",
+        "Type": "DemoBackend.Dto.Mantenedores.AreasDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.MantenedoresController",
+    "Method": "PutModificaAreas",
+    "RelativePath": "api/v1/Mantenedores/PutModificaAreas",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "areasModels",
+        "Type": "DemoBackend.Dto.Mantenedores.AreasDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.ReservasController",
+    "Method": "ConfirmarReserva",
+    "RelativePath": "api/v1/Reservas/ConfirmarReserva",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "areasModels",
+        "Type": "DemoBackend.Dto.Mantenedores.AreasDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.ReservasController",
+    "Method": "EliminaReserva",
+    "RelativePath": "api/v1/Reservas/EliminaReserva",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idArea",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.ReservasController",
+    "Method": "ModificaReserva",
+    "RelativePath": "api/v1/Reservas/ModificaReserva",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "areasModels",
+        "Type": "DemoBackend.Dto.Mantenedores.AreasDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.ReservasController",
+    "Method": "ReservasDisponibles",
+    "RelativePath": "api/v1/Reservas/ReservasDisponibles",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "vigencia",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[DemoBackend.Dto.Mantenedores.AreasDto, DemoBackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "application/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "DemoBackend.Controllers.ReservasController",
+    "Method": "SolicitaReserva",
+    "RelativePath": "api/v1/Reservas/SolicitaReserva",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "areasModels",
+        "Type": "DemoBackend.Dto.Mantenedores.AreasDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

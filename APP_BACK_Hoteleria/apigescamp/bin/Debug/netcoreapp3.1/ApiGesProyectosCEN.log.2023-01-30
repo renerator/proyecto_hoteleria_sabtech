@@ -1,0 +1,294 @@
+2023-01-30 10:28:20,643  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-30 10:28:20,742  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-30 10:28:20,745  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-30 10:28:57,947  INFO DemoBackend.Controllers.AutenticacionController.MoveNext [66] - MESSAGE: Login: Usuario API_GESPRO_PRD válido
+ 2023-01-30 10:29:44,570  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 10:29:44,732 ERROR DemoBackend.Controllers.MantenedoresController.GetListaAreas [35] - MESSAGE: GetListaAreas : El proceso de lista de Areas se ejecuta con error --> Cannot create a DbSet for 'AreasModels' because this type is not included in the model for the context.
+ 2023-01-30 10:30:04,392  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 10:31:52,760 ERROR DemoBackend.Controllers.MantenedoresController.GetListaAreas [35] - MESSAGE: GetListaAreas : El proceso de lista de Areas se ejecuta con error --> Cannot create a DbSet for 'AreasModels' because this type is not included in the model for the context.
+ 2023-01-30 10:33:14,000  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-30 10:33:14,058  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-30 10:33:14,061  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-30 10:33:43,813  INFO DemoBackend.Controllers.AutenticacionController.MoveNext [66] - MESSAGE: Login: Usuario API_GESPRO_PRD válido
+ 2023-01-30 10:34:07,758  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 10:35:52,888  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-30 10:35:52,954  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-30 10:35:52,957  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-30 10:37:19,733  INFO DemoBackend.Controllers.AutenticacionController.MoveNext [66] - MESSAGE: Login: Usuario API_GESPRO_PRD válido
+ 2023-01-30 10:37:44,722  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 10:42:24,477 ERROR DemoBackend.Controllers.MantenedoresController.GetListaAreas [35] - MESSAGE: GetListaAreas : El proceso de lista de Areas se ejecuta con error --> Cannot create a DbSet for 'AreasModels' because this type is not included in the model for the context.
+ 2023-01-30 10:42:46,497  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 10:44:33,064 ERROR DemoBackend.Controllers.MantenedoresController.GetListaAreas [35] - MESSAGE: GetListaAreas : El proceso de lista de Areas se ejecuta con error --> Cannot create a DbSet for 'AreasModels' because this type is not included in the model for the context.
+ 2023-01-30 10:48:07,666  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-30 10:48:07,735  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-30 10:48:07,737  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-30 10:50:02,482  INFO DemoBackend.Controllers.AutenticacionController.MoveNext [66] - MESSAGE: Login: Usuario API_GESPRO_PRD válido
+ 2023-01-30 11:17:57,627  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-30 11:17:57,698  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-30 11:17:57,701  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-30 11:18:06,575  INFO DemoBackend.Controllers.AutenticacionController.MoveNext [66] - MESSAGE: Login: Usuario API_GESPRO_PRD válido
+ 2023-01-30 11:18:28,528  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 11:19:52,656 ERROR DemoBackend.Controllers.MantenedoresController.GetListaAreas [35] - MESSAGE: GetListaAreas : El proceso de lista de Areas se ejecuta con error --> Cannot create a DbSet for 'AreasModels' because this type is not included in the model for the context.
+ 2023-01-30 11:23:46,033  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-30 11:23:46,093  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-30 11:23:46,095  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-30 11:24:56,733  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-30 11:24:56,793  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-30 11:24:56,796  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-30 11:25:24,380  INFO DemoBackend.Controllers.AutenticacionController.MoveNext [66] - MESSAGE: Login: Usuario API_GESPRO_PRD válido
+ 2023-01-30 11:25:44,927  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 11:28:58,475  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-30 11:28:58,539  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-30 11:28:58,541  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-30 11:29:33,052  INFO DemoBackend.Controllers.AutenticacionController.MoveNext [66] - MESSAGE: Login: Usuario API_GESPRO_PRD válido
+ 2023-01-30 11:29:53,436  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 11:30:05,211  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [43] - MESSAGE: GetListaAreas : El proceso de lista de Areas retorna una lista de 11 encontrados.
+ 2023-01-30 11:30:22,660  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 11:30:24,799  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [43] - MESSAGE: GetListaAreas : El proceso de lista de Areas retorna una lista de 2 encontrados.
+ 2023-01-30 11:31:24,267  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-30 11:31:24,329  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-30 11:31:24,331  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-30 11:31:37,195  INFO DemoBackend.Controllers.AutenticacionController.MoveNext [66] - MESSAGE: Login: Usuario API_GESPRO_PRD válido
+ 2023-01-30 11:32:01,098  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 11:32:06,256  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [43] - MESSAGE: GetListaAreas : El proceso de lista de Areas retorna una lista de 11 encontrados.
+ 2023-01-30 11:32:15,784  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 11:32:20,377  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [43] - MESSAGE: GetListaAreas : El proceso de lista de Areas retorna una lista de 2 encontrados.
+ 2023-01-30 11:38:10,962  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-30 11:38:11,029  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-30 11:38:11,038  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-30 11:39:53,370  INFO DemoBackend.Controllers.AutenticacionController.MoveNext [66] - MESSAGE: Login: Usuario API_GESPRO_PRD válido
+ 2023-01-30 11:40:15,655  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 11:40:19,478  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [43] - MESSAGE: GetListaAreas : El proceso de lista de Areas retorna una lista de 11 encontrados.
+ 2023-01-30 11:40:28,731  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 11:40:31,469  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [43] - MESSAGE: GetListaAreas : El proceso de lista de Areas retorna una lista de 2 encontrados.
+ 2023-01-30 11:41:09,143  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 11:41:11,733  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [43] - MESSAGE: GetListaAreas : El proceso de lista de Areas retorna una lista de 12 encontrados.
+ 2023-01-30 11:41:47,512  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 11:41:50,385  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [43] - MESSAGE: GetListaAreas : El proceso de lista de Areas retorna una lista de 12 encontrados.
+ 2023-01-30 11:42:26,417  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [32] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-30 11:42:29,852  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [43] - MESSAGE: GetListaAreas : El proceso de lista de Areas retorna una lista de 3 encontrados.
+ 2023-01-30 17:31:39,303  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-30 17:31:39,419  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-30 17:31:39,422  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-30 17:32:20,440 ERROR Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.? [?] - MESSAGE: An unhandled exception has occurred while executing the request.
+ System.InvalidOperationException: Unable to find matching constructor while trying to create an instance of SecretClient.
+Expected one of the follow sets of configuration parameters:
+1. vaultUri
+
+Found the following configuration keys:
+   at Microsoft.Extensions.Azure.ClientFactory.CreateClient(Type clientType, Type optionsType, Object options, IConfiguration configuration, TokenCredential credential)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass4_0`2.<Azure.Core.Extensions.IAzureClientFactoryBuilderWithConfiguration<Microsoft.Extensions.Configuration.IConfiguration>.RegisterClientFactory>b__0(TOptions options, TokenCredential credentials)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass8_0`2.<Azure.Core.Extensions.IAzureClientFactoryBuilderWithCredential.RegisterClientFactory>b__0(TOptions options, TokenCredential credential, IServiceProvider _)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass15_0`2.<RegisterClientFactory>b__0(IServiceProvider provider, Object options, TokenCredential credential)
+   at Microsoft.Extensions.Azure.ClientRegistration`1.GetClient(IServiceProvider serviceProvider, Object options, TokenCredential tokenCredential)
+   at Microsoft.Extensions.Azure.AzureClientFactory`2.CreateClient(String name)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__15`2.<RegisterClientFactory>b__15_1(IServiceProvider provider)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitFactory(FactoryCallSite factoryCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite singletonCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite singletonCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass1_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngine.GetService(Type serviceType, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.GetService(IServiceProvider sp, Type type, Type requiredBy, Boolean isDefaultParameterRequired)
+   at lambda_method(Closure , IServiceProvider , Object[] )
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerActivatorProvider.<>c__DisplayClass4_0.<CreateActivator>b__0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass5_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|24_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+2023-01-30 17:32:42,812 ERROR Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.? [?] - MESSAGE: An unhandled exception has occurred while executing the request.
+ System.InvalidOperationException: Unable to find matching constructor while trying to create an instance of SecretClient.
+Expected one of the follow sets of configuration parameters:
+1. vaultUri
+
+Found the following configuration keys:
+   at Microsoft.Extensions.Azure.ClientFactory.CreateClient(Type clientType, Type optionsType, Object options, IConfiguration configuration, TokenCredential credential)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass4_0`2.<Azure.Core.Extensions.IAzureClientFactoryBuilderWithConfiguration<Microsoft.Extensions.Configuration.IConfiguration>.RegisterClientFactory>b__0(TOptions options, TokenCredential credentials)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass8_0`2.<Azure.Core.Extensions.IAzureClientFactoryBuilderWithCredential.RegisterClientFactory>b__0(TOptions options, TokenCredential credential, IServiceProvider _)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass15_0`2.<RegisterClientFactory>b__0(IServiceProvider provider, Object options, TokenCredential credential)
+   at Microsoft.Extensions.Azure.ClientRegistration`1.GetClient(IServiceProvider serviceProvider, Object options, TokenCredential tokenCredential)
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.Extensions.Azure.ClientRegistration`1.GetClient(IServiceProvider serviceProvider, Object options, TokenCredential tokenCredential)
+   at Microsoft.Extensions.Azure.AzureClientFactory`2.CreateClient(String name)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__15`2.<RegisterClientFactory>b__15_1(IServiceProvider provider)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitFactory(FactoryCallSite factoryCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite singletonCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite singletonCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass1_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngine.GetService(Type serviceType, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.GetService(IServiceProvider sp, Type type, Type requiredBy, Boolean isDefaultParameterRequired)
+   at lambda_method(Closure , IServiceProvider , Object[] )
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerActivatorProvider.<>c__DisplayClass4_0.<CreateActivator>b__0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass5_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|24_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+2023-01-30 17:32:43,975 ERROR Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.? [?] - MESSAGE: An unhandled exception has occurred while executing the request.
+ System.InvalidOperationException: Unable to find matching constructor while trying to create an instance of SecretClient.
+Expected one of the follow sets of configuration parameters:
+1. vaultUri
+
+Found the following configuration keys:
+   at Microsoft.Extensions.Azure.ClientFactory.CreateClient(Type clientType, Type optionsType, Object options, IConfiguration configuration, TokenCredential credential)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass4_0`2.<Azure.Core.Extensions.IAzureClientFactoryBuilderWithConfiguration<Microsoft.Extensions.Configuration.IConfiguration>.RegisterClientFactory>b__0(TOptions options, TokenCredential credentials)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass8_0`2.<Azure.Core.Extensions.IAzureClientFactoryBuilderWithCredential.RegisterClientFactory>b__0(TOptions options, TokenCredential credential, IServiceProvider _)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass15_0`2.<RegisterClientFactory>b__0(IServiceProvider provider, Object options, TokenCredential credential)
+   at Microsoft.Extensions.Azure.ClientRegistration`1.GetClient(IServiceProvider serviceProvider, Object options, TokenCredential tokenCredential)
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.Extensions.Azure.ClientRegistration`1.GetClient(IServiceProvider serviceProvider, Object options, TokenCredential tokenCredential)
+   at Microsoft.Extensions.Azure.AzureClientFactory`2.CreateClient(String name)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__15`2.<RegisterClientFactory>b__15_1(IServiceProvider provider)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitFactory(FactoryCallSite factoryCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite singletonCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite singletonCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass1_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngine.GetService(Type serviceType, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.GetService(IServiceProvider sp, Type type, Type requiredBy, Boolean isDefaultParameterRequired)
+   at lambda_method(Closure , IServiceProvider , Object[] )
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerActivatorProvider.<>c__DisplayClass4_0.<CreateActivator>b__0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass5_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|24_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+2023-01-30 17:33:07,663 ERROR Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.? [?] - MESSAGE: An unhandled exception has occurred while executing the request.
+ System.InvalidOperationException: Unable to find matching constructor while trying to create an instance of SecretClient.
+Expected one of the follow sets of configuration parameters:
+1. vaultUri
+
+Found the following configuration keys:
+   at Microsoft.Extensions.Azure.ClientFactory.CreateClient(Type clientType, Type optionsType, Object options, IConfiguration configuration, TokenCredential credential)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass4_0`2.<Azure.Core.Extensions.IAzureClientFactoryBuilderWithConfiguration<Microsoft.Extensions.Configuration.IConfiguration>.RegisterClientFactory>b__0(TOptions options, TokenCredential credentials)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass8_0`2.<Azure.Core.Extensions.IAzureClientFactoryBuilderWithCredential.RegisterClientFactory>b__0(TOptions options, TokenCredential credential, IServiceProvider _)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass15_0`2.<RegisterClientFactory>b__0(IServiceProvider provider, Object options, TokenCredential credential)
+   at Microsoft.Extensions.Azure.ClientRegistration`1.GetClient(IServiceProvider serviceProvider, Object options, TokenCredential tokenCredential)
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.Extensions.Azure.ClientRegistration`1.GetClient(IServiceProvider serviceProvider, Object options, TokenCredential tokenCredential)
+   at Microsoft.Extensions.Azure.AzureClientFactory`2.CreateClient(String name)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__15`2.<RegisterClientFactory>b__15_1(IServiceProvider provider)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitFactory(FactoryCallSite factoryCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite singletonCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite singletonCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass1_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.GetService(IServiceProvider sp, Type type, Type requiredBy, Boolean isDefaultParameterRequired)
+   at lambda_method(Closure , IServiceProvider , Object[] )
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerActivatorProvider.<>c__DisplayClass4_0.<CreateActivator>b__0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass5_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|24_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+2023-01-30 17:34:02,355  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-30 17:34:02,419  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-30 17:34:02,448  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-30 17:34:09,287 ERROR Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.? [?] - MESSAGE: An unhandled exception has occurred while executing the request.
+ System.InvalidOperationException: Unable to find matching constructor while trying to create an instance of SecretClient.
+Expected one of the follow sets of configuration parameters:
+1. vaultUri
+
+Found the following configuration keys: Username, Sigla, Password, Conexion
+   at Microsoft.Extensions.Azure.ClientFactory.CreateClient(Type clientType, Type optionsType, Object options, IConfiguration configuration, TokenCredential credential)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass4_0`2.<Azure.Core.Extensions.IAzureClientFactoryBuilderWithConfiguration<Microsoft.Extensions.Configuration.IConfiguration>.RegisterClientFactory>b__0(TOptions options, TokenCredential credentials)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass8_0`2.<Azure.Core.Extensions.IAzureClientFactoryBuilderWithCredential.RegisterClientFactory>b__0(TOptions options, TokenCredential credential, IServiceProvider _)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__DisplayClass15_0`2.<RegisterClientFactory>b__0(IServiceProvider provider, Object options, TokenCredential credential)
+   at Microsoft.Extensions.Azure.ClientRegistration`1.GetClient(IServiceProvider serviceProvider, Object options, TokenCredential tokenCredential)
+   at Microsoft.Extensions.Azure.AzureClientFactory`2.CreateClient(String name)
+   at Microsoft.Extensions.Azure.AzureClientFactoryBuilder.<>c__15`2.<RegisterClientFactory>b__15_1(IServiceProvider provider)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitFactory(FactoryCallSite factoryCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite singletonCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite singletonCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass1_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngine.GetService(Type serviceType, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.GetService(IServiceProvider sp, Type type, Type requiredBy, Boolean isDefaultParameterRequired)
+   at lambda_method(Closure , IServiceProvider , Object[] )
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerActivatorProvider.<>c__DisplayClass4_0.<CreateActivator>b__0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Controllers.ControllerFactoryProvider.<>c__DisplayClass5_0.<CreateControllerFactory>g__CreateController|0(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|24_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeFilterPipelineAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)

@@ -1,0 +1,103 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{0A415B3A-4DB4-4940-9E90-357D7DBBFFEF}|Front_Hoteleria\\Front_Hoteleria.csproj|C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\front_hoteleria\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0A415B3A-4DB4-4940-9E90-357D7DBBFFEF}|Front_Hoteleria\\Front_Hoteleria.csproj|solutionrelative:front_hoteleria\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0A415B3A-4DB4-4940-9E90-357D7DBBFFEF}|Front_Hoteleria\\Front_Hoteleria.csproj|C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\front_hoteleria\\helper\\menuhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0A415B3A-4DB4-4940-9E90-357D7DBBFFEF}|Front_Hoteleria\\Front_Hoteleria.csproj|solutionrelative:front_hoteleria\\helper\\menuhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0A415B3A-4DB4-4940-9E90-357D7DBBFFEF}|Front_Hoteleria\\Front_Hoteleria.csproj|c:\\desarrollo\\proyecto hoteleria\\front_hoteleria\\front_hoteleria\\app_start\\bundleconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0A415B3A-4DB4-4940-9E90-357D7DBBFFEF}|Front_Hoteleria\\Front_Hoteleria.csproj|solutionrelative:front_hoteleria\\app_start\\bundleconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0A415B3A-4DB4-4940-9E90-357D7DBBFFEF}|Front_Hoteleria\\Front_Hoteleria.csproj|C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\front_hoteleria\\content\\css\\custom.min.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{0A415B3A-4DB4-4940-9E90-357D7DBBFFEF}|Front_Hoteleria\\Front_Hoteleria.csproj|solutionrelative:front_hoteleria\\content\\css\\custom.min.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0A415B3A-4DB4-4940-9E90-357D7DBBFFEF}|Front_Hoteleria\\Front_Hoteleria.csproj|C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\front_hoteleria\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{0A415B3A-4DB4-4940-9E90-357D7DBBFFEF}|Front_Hoteleria\\Front_Hoteleria.csproj|solutionrelative:front_hoteleria\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "custom.min.css",
+              "DocumentMoniker": "C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\Front_Hoteleria\\Content\\css\\custom.min.css",
+              "RelativeDocumentMoniker": "Front_Hoteleria\\Content\\css\\custom.min.css",
+              "ToolTip": "C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\Front_Hoteleria\\Content\\css\\custom.min.css",
+              "RelativeToolTip": "Front_Hoteleria\\Content\\css\\custom.min.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAABPNwAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-09-15T01:12:23.265Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MenuHelper.cs",
+              "DocumentMoniker": "C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\Front_Hoteleria\\Helper\\MenuHelper.cs",
+              "RelativeDocumentMoniker": "Front_Hoteleria\\Helper\\MenuHelper.cs",
+              "ToolTip": "C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\Front_Hoteleria\\Helper\\MenuHelper.cs",
+              "RelativeToolTip": "Front_Hoteleria\\Helper\\MenuHelper.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAAADoAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-15T01:07:58.05Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\Front_Hoteleria\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "Front_Hoteleria\\Views\\Home\\Index.cshtml",
+              "ToolTip": "C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\Front_Hoteleria\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "Front_Hoteleria\\Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAAJABAAAAAAAAAAAYwMgBAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-15T00:57:25.867Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\Front_Hoteleria\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Front_Hoteleria\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\Front_Hoteleria\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Front_Hoteleria\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAABoAAAAAAAAAAAAAACwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-15T00:56:01.482Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "BundleConfig.cs",
+              "DocumentMoniker": "C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\Front_Hoteleria\\App_Start\\BundleConfig.cs",
+              "RelativeDocumentMoniker": "Front_Hoteleria\\App_Start\\BundleConfig.cs",
+              "ToolTip": "C:\\Desarrollo\\Proyecto Hoteleria\\Front_Hoteleria\\Front_Hoteleria\\App_Start\\BundleConfig.cs",
+              "RelativeToolTip": "Front_Hoteleria\\App_Start\\BundleConfig.cs",
+              "ViewState": "AgIAAC8AAAAAAAAAAAAuwD8AAABPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-15T00:52:01.895Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

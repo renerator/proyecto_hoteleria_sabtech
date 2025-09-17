@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Acreditación | Sabtech Group. </title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    
+
+	
+    <!-- bootstrap-progressbar -->
+    <link href="../vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <!-- JQVMap -->
+    <link href="../vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/>
+    <!-- bootstrap-daterangepicker -->
+    <link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+
+     <!-- Dropzone.js -->
+    <link href="../vendors/dropzone/dist/min/dropzone.min.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+
+        <!-- PNotify -->
+    <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    
+  </head>
+
+  <body class="nav-md">
+    <div class="container body">
+      <div class="main_container">
+        <div class="col-md-3 left_col">
+          <div class="left_col scroll-view">
+            <div class="navbar nav_title" style="border: 0;">
+              <a href="index.html" class="site_title"><span>Acreditación</span></a>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <!-- menu profile quick info -->
+            <div class="profile clearfix">
+              <div class="profile_pic">
+                <img src="images/img.jpg" alt="..." class="img-circle profile_img">
+              </div>
+              <div class="profile_info">
+                <span>Bienvenido,</span>
+                <h2>[Usuario en Sesión]</h2>
+              </div>
+            </div>
+            <!-- /menu profile quick info -->
+
+            <br />
+
+            <!-- sidebar menu -->
+            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+              <div class="menu_section">
+                <h3>Menú Usuario</h3>
+                <ul class="nav side-menu">
+                  <li><a><i class="fa fa-home"></i> Acreditación <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="index.html">Empresas</a></li>
+                      <li><a href="index2_2.html">Trabajadores</a></li>
+                      <li><a href="index3.html">Salud Seguridad Ocupacional SSO</a></li>
+                    </ul>
+                  </li>
+                  <li><a><i class="fa fa-edit"></i> Contratos <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="#">Home</a></li>
+                      <li><a href="#">Aprobaciones</a></li>
+                      <li><a href="#">Documentos</a></li>
+                      <li><a href="#">Vehiculos</a></li>
+                      <li><a href="#">Requisitos</a></li>
+                      <li><a href="#">Turnos</a></li>
+                    </ul>
+                  </li>
+                  <li><a><i class="fa fa-desktop"></i> Control de Acceso <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="#">Barreras</a></li>
+                      <li><a href="#">PDA's</a></li>
+                      <li><a href="#">Lector RFID</a></li>
+                      <li><a href="#">Camaras IP</a></li>
+                      <li><a href="#">Reconocimiento Facial</a></li>
+                      <li><a href="#">Torniquetes</a></li>
+                      <li><a href="#">Totem</a></li>
+                      <li><a href="#">PC</a></li>
+                    </ul>
+                  </li>
+                  <li><a><i class="fa fa-table"></i> Garita <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="#">Control Garita</a></li>
+                      <li><a href="#">Consulta Pases</a></li>
+                      <li><a href="#">Consulta Movimientos</a></li>
+                      <li><a href="#">Consulta Trabajador</a></li>
+                      <li><a href="#">Movimiento Vehiculo</a></li>
+                      <li><a href="#">Consulta Vehiculo</a></li>
+                    </ul>
+                  </li>
+                  <li><a><i class="fa fa-bar-chart-o"></i> Casino <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="#">Control Casino</a></li>
+                      <li><a href="#">Contratos</a></li>
+                      <li><a href="#">Servicios</a></li>
+                      <li><a href="#">Patrón de consumo</a></li>
+                      <li><a href="#">Consulta Consumo</a></li>
+                      <li><a href="#">Estados de Pago</a></li>
+                      <li><a href="#">Colaciones masivas</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+              
+
+            </div>
+            <!-- /sidebar menu -->
+
+            <!-- /menu footer buttons -->
+             <!--
+            <div class="sidebar-footer hidden-small">
+              <a data-toggle="tooltip" data-placement="top" title="Settings">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+                <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="Lock">
+                <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
+                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+              </a>
+            </div>-->
+            <!-- /menu footer buttons -->
+          </div>
+        </div>
+
+        <!-- top navigation -->
+        <div class="top_nav">
+          <div class="nav_menu">
+            <nav>
+              <div class="nav toggle">
+                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+              </div>
+
+              <ul class="nav navbar-nav navbar-right">
+                <li class="">
+                  <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <img src="images/img.jpg" alt="">[Usuario]
+                    <span class=" fa fa-angle-down"></span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-usermenu pull-right">
+                    <!--<li><a href="javascript:;">Perfil</a></li>
+                    <li>
+                      <a href="javascript:;">
+                        <span class="badge bg-red pull-right">50%</span>
+                        <span>Configuración</span>
+                      </a>
+                    </li>-->
+                    <li><a href="javascript:;">Ayuda</a></li>
+                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i>Cerrar Sesión</a></li>
+                  </ul>
+                </li>
+
+                <li role="presentation" class="dropdown">
+                  <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-envelope-o"></i>
+                    <span class="badge bg-green">3</span>
+                  </a>
+                  <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
+                    <li>
+                      <a>
+                        <span class="image"><i class="fa fa-home"></i></span>
+                        <span>
+                          <span>Empresa 1</span>
+                          <span class="time">70% Acreditado</span>
+                        </span>
+                        <span class="message">
+                          Pendiente de documentos legales para continuar con su acreditación...
+                        </span>
+                      </a>
+                    </li>
+                    <li>
+                      <a>
+                        <span class="image"><i class="fa fa-home"></i></span>
+                        <span>
+                          <span>Trabajadores</span>
+                          <span class="time">3 horas</span>
+                        </span>
+                        <span class="message">
+                          3 trabajadores nuevos para revisar...
+                        </span>
+                      </a>
+                    </li>
+                    <li>
+                      <a>
+                        <span class="image"><i class="fa fa-home"></i></span>
+                        <span>
+                          <span>SSO</span>
+                          <span class="time">3 horas</span>
+                        </span>
+                        <span class="message">
+                          Pendiente de realizar validaciones de salud para trab...
+                        </span>
+                      </a>
+                    </li>
+                    <li>
+                      <div class="text-center">
+                        <a>
+                          <strong>Ver más</strong>
+                          <i class="fa fa-angle-right"></i>
+                        </a>
+                      </div>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <!-- /top navigation -->
+
+        <!-- page content -->
+        <div class="right_col" role="main">
+          <!-- top tiles -->
+          <div class="row tile_count">
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-user"></i> Empresas Ingresadas</span>
+              <div class="count">175</div>
+              <!--<span class="count_bottom"><i class="green">4% </i> En la última semana</span>-->
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-clock-o"></i> Pendientes</span>
+              <div class="count">70</div>
+              <!--<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>3% </i> En la última semana</span>-->
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-user"></i> Empresas Aprobadas</span>
+              <div class="count green">105</div>
+              <!--<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> En la última semana</span>-->
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-user"></i> Trabajadores</span>
+              <div class="count">25630</div>
+              <!--<span class="count_bottom"><i class="red"><i class="fa fa-sort-desc"></i>12% </i> En la última semana</span>-->
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-user"></i> Trabajadores Aprobados</span>
+              <div class="count">24030</div>
+              <!--<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> En la última semana</span>-->
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-user"></i> Trabajadores Pendientes</span>
+              <div class="count">600</div>
+              <!--<span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i>34% </i> En la última semana</span>-->
+            </div>
+          </div>
+          <!-- /top tiles -->
+
+          
+          <br />
+
+          <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Listado Trabajadores<small>Todos los estados.</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                     
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <p class="text-muted font-13 m-b-30">
+                      Listado general de todos los trabajadores.
+                    </p>
+                    <table id="datatable" class="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Nombre</th>
+                          <th>Empresa contratista</th>
+                          <th>email</th>
+                          <th>Edad</th>
+                          <th>Inicio asignacion</th>
+                          <th>Fin asignacion</th>
+                          <th>Opciones</th>
+                        </tr>
+                      </thead>
+
+
+                      <tbody>
+                        <tr>
+                          <td>Trabajador 1</td>
+                          <td>4522300023</td>
+                          <td>trabajador@empresa.cl</td>
+                          <td>61</td>
+                          <td>2011/04/25</td>
+                          <td>2026/08/30</td>
+                          <td>
+                              <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg" title="Ver"><i class="fa fa-search"></i></button>
+                              <button type="button" class="btn btn-warning" data-toggle="modal" data-target=".bs-example-modal-lg" title="Editar"><i class="fa fa-edit"></i></button>
+                          
+                                <button class="btn btn-danger" onclick="new PNotify({
+                                  title: 'Eliminar',
+                                  text: 'Ha eliminado el trabajador seleccionado. NO puede deshacer esta acción, si por error lo realizo, debe pedir al equipo que se vuelva a habilitar.',
+                                  type: 'error',
+                                  hide: false,
+                                  styling: 'bootstrap3'
+                              });"><i class="fa fa-trash-o"></i></button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Trabajador 2</td>
+                          <td>4522300023</td>
+                          <td>trabajador2@empresa.cl</td>
+                          <td>43</td>
+                          <td>2011/04/25</td>
+                          <td>2026/08/15</td>
+                          <td>
+                              <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg" title="Ver"><i class="fa fa-search"></i></button>
+                              <button type="button" class="btn btn-warning" data-toggle="modal" data-target=".bs-example-modal-lg" title="Editar"><i class="fa fa-edit"></i></button>
+                          
+                                <button class="btn btn-danger" onclick="new PNotify({
+                                  title: 'Eliminar',
+                                  text: 'Ha eliminado el trabajador seleccionado. NO puede deshacer esta acción, si por error lo realizo, debe pedir al equipo que se vuelva a habilitar.',
+                                  type: 'error',
+                                  hide: false,
+                                  styling: 'bootstrap3'
+                              });"><i class="fa fa-trash-o"></i></button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Trabajador 3</td>
+                          <td>4522300017</td>
+                          <td>trabajador3@empresa.cl</td>
+                          <td>33</td>
+                          <td>2011/04/25</td>
+                          <td>2026/08/30</td>
+                          <td>
+                              <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg" title="Ver"><i class="fa fa-search"></i></button>
+                              <button type="button" class="btn btn-warning" data-toggle="modal" data-target=".bs-example-modal-lg" title="Editar"><i class="fa fa-edit"></i></button>
+                          
+                                <button class="btn btn-danger" onclick="new PNotify({
+                                  title: 'Eliminar',
+                                  text: 'Ha eliminado el trabajador seleccionado. NO puede deshacer esta acción, si por error lo realizo, debe pedir al equipo que se vuelva a habilitar.',
+                                  type: 'error',
+                                  hide: false,
+                                  styling: 'bootstrap3'
+                              });"><i class="fa fa-trash-o"></i></button>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Trabajador 4</td>
+                          <td>4522300023</td>
+                          <td>trabajador4@empresa.cl</td>
+                          <td>43</td>
+                          <td>2011/04/25</td>
+                          <td>2026/10/02</td>
+                          <td>
+                              <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg" title="Ver"><i class="fa fa-search"></i></button>
+                              <button type="button" class="btn btn-warning" data-toggle="modal" data-target=".bs-example-modal-lg" title="Editar"><i class="fa fa-edit"></i></button>
+                          
+                                <button class="btn btn-danger" onclick="new PNotify({
+                                  title: 'Eliminar',
+                                  text: 'Ha eliminado el trabajador seleccionado. NO puede deshacer esta acción, si por error lo realizo, debe pedir al equipo que se vuelva a habilitar.',
+                                  type: 'error',
+                                  hide: false,
+                                  styling: 'bootstrap3'
+                              });"><i class="fa fa-trash-o"></i></button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+                      <div class="modal-dialog modal-lg">
+                      <div class="modal-content">
+
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                          </button>
+                          <h4 class="modal-title" id="myModalLabel">Información Trabajador</h4>
+                        </div>
+                        <div class="modal-body">
+                          <h4>Informacion del Trabajador</h4>
+                          <p>[NOMBRE TRABAJADOR] - [Cargo: Soldador Mina].</p>
+                          <p>Administrador de contrato: Juan Perez / Contract Owner at Mineral mineria minera.</p>
+                          <div class="x_content">
+                          <br />
+                          <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+
+                            <div class="form-group">
+                              <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Nombre Trabajador <span class="required">*</span>
+                              </label>
+                              <div class="col-md-6 col-sm-6 col-xs-12">
+                                <input type="text" id="first-name" required="required" class="form-control col-md-7 col-xs-12">
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Contrato <span class="required">*</span>
+                              </label>
+                              <div class="col-md-6 col-sm-6 col-xs-12">
+                                <input type="text" id="last-name" name="last-name" required="required" class="form-control col-md-7 col-xs-12">
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label for="middle-name" class="control-label col-md-3 col-sm-3 col-xs-12">Email</label>
+                              <div class="col-md-6 col-sm-6 col-xs-12">
+                                <input id="middle-name" class="form-control col-md-7 col-xs-12" type="text" name="middle-name">
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="control-label col-md-3 col-sm-3 col-xs-12">Edad</label>
+                              <div class="col-md-6 col-sm-6 col-xs-12">
+                                <input id="dotacion" class="form-control col-md-7 col-xs-12" type="text" name="middle-name">
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="control-label col-md-3 col-sm-3 col-xs-12">Inicio de ASignación <span class="required">*</span>
+                              </label>
+                              <div class="col-md-6 col-sm-6 col-xs-12">
+                                <input id="birthday" class="date-picker form-control col-md-7 col-xs-12" required="required" type="text">
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label class="control-label col-md-3 col-sm-3 col-xs-12">Fin de Asignación<span class="required">*</span>
+                              </label>
+                              <div class="col-md-6 col-sm-6 col-xs-12">
+                                <input id="birthday" class="date-picker form-control col-md-7 col-xs-12" required="required" type="text">
+                              </div>
+                            </div>
+                            <div class="ln_solid"></div>
+                            <div class="form-group">
+                              <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                <button class="btn btn-primary" data-dismiss="modal" type="button">Cancelar</button>
+                                <button class="btn btn-warning" type="reset">Borrar datos</button>
+                                <button type="submit" class="btn btn-success">Guardar</button>
+                              </div>
+                            </div>
+
+                          </form>
+                        </div>
+
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                        </div>
+
+                      </div>
+                      </div>
+                    </div>
+
+
+                    <div class="modal fade bs-cargamasiva" tabindex="-1" role="dialog" aria-hidden="true">
+                      <div class="modal-dialog modal-lg">
+                      <div class="modal-content">
+
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                          </button>
+                          <h4 class="modal-title" id="myModalLabel">Carga Masiva Trabajador</h4>
+                        </div>
+                        <div class="modal-body">
+                          <h4>Carga Masiva de Trabajadores</h4>
+                          <p>Usar template <a href="#">link_template</a></p>
+                          <p>Verifique el que el template tenga los datos correctos antes de proceder. </p>
+                          <div class="x_content">
+                          <br />
+                          <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+
+                            <div class="row">
+                                  <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="x_panel">
+                                      <div class="x_title">
+                                        <h2>Cargar archivo</h2>
+                                        
+                                        <div class="clearfix"></div>
+                                      </div>
+                                      <div class="x_content">
+                                        <p>Busca el archivo y cargalo para realizar la carga masiva de trabajadores.</p>
+                                        <form action="index2_2.html" class="dropzone"></form>
+                                        <br />
+                                        <br />
+                                        <br />
+                                        <br />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                          
+                            
+                            <div class="ln_solid"></div>
+                            <div class="form-group">
+                              <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                <button class="btn btn-primary" data-dismiss="modal" type="button">Cancelar</button>
+                                <button type="submit" class="btn btn-success">Cargar</button>
+                              </div>
+                            </div>
+
+                          </form>
+                        </div>
+
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                        </div>
+
+                      </div>
+                      </div>
+                    </div>
+
+
+                  </div>
+                </div>
+              </div>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg">Nuevo</button>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-cargamasiva">Carga Masiva</button>
+          
+        </div>
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer>
+          <div class="pull-right">
+            Sabtech Group | Sistema de Acreditación para la Minería <a href="https://sabtechgroup.com/">conocer más</a>
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="../vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="../vendors/nprogress/nprogress.js"></script>
+    
+    <!-- iCheck -->
+    <script src="../vendors/iCheck/icheck.min.js"></script>
+
+    <!-- Dropzone.js -->
+    <script src="../vendors/dropzone/dist/min/dropzone.min.js"></script>
+
+    <!-- Datatables -->
+    <script src="../vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="../vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="../vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="../vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+    <script src="../vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+    <script src="../vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="../vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+    <script src="../vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+    <script src="../vendors/jszip/dist/jszip.min.js"></script>
+    <script src="../vendors/pdfmake/build/pdfmake.min.js"></script>
+    <script src="../vendors/pdfmake/build/vfs_fonts.js"></script>
+
+
+        <!-- PNotify -->
+    <script src="../vendors/pnotify/dist/pnotify.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+	
+  </body>
+</html>

@@ -1,0 +1,433 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BackGesProyectosCEN</name>
+    </assembly>
+    <members>
+        <member name="M:BackGesProyectosCEN.Controllers.AutenticacionController.Login(BackGesProyectosCEN.Dto.LoginDto)">
+            <summary>
+            Login de usuarios
+            </summary>
+            <param name="user">usuario y pass</param>
+            <returns>token</returns>
+            <response code="200">token</response>
+            <response code="204">No encuentra datos</response>
+            <response code="400">Datos entradas inválidos</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.AutenticacionController.GenerateJSONWebToken(BackGesProyectosCEN.Dto.LoginDto)">
+            <summary>
+            Generate Json Web Token Method
+            </summary>
+            <param name="userInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.GruposController.GetListadoGrupos">
+            <summary>
+            Obtener el listado de Grupos que existen en el sistema
+            </summary>
+            <returns>Lista de Grupos del sistema</returns>
+            /// <response code="200">retorna lista de grupos</response>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.GruposController.GetListadoProvisiones">
+            <summary>
+            Obtener el listado de Provisiones que existen en el sistema
+            </summary>
+            <returns>Lista de Provisiones del sistema</returns>
+            /// <response code="200">retorna lista de provisiones</response>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.GetListadoTipoFinanciamiento">
+            <summary>
+            Obtener el listado de Tipo de Financiamiento que existen en el sistema
+            </summary>
+            <returns>Lista de Tipo de Financiamiento del sistema</returns>
+            /// <response code="200">retorna lista de Tipo de Financiamiento</response>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.GetListadoTipoMoneda">
+            <summary>
+            Obtener el listado de Tipo de Moneda que existen en el sistema
+            </summary>
+            <returns>Lista de Tipo de Moneda del sistema</returns>
+            /// <response code="200">retorna lista de Tipo de Moneda</response>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.GetListadoValorTipoMoneda(System.Int32)">
+            <summary>
+            Valor tipo de moneda
+            </summary>
+            <param name="idTipoMoneda"> id del Tipo de moneda para la conversion</param>
+            <returns>valor del dia relacionado a la moneda.</returns>
+            <response code="200">retorna lista de Valor Tipo de Moneda</response>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.GetListadoTipoProvision">
+            <summary>
+            Obtener el listado de Tipo de Provision que existen en el sistema
+            </summary>
+            <returns>Lista de Tipo de Provision del sistema</returns>
+            /// <response code="200">retorna lista de Tipo de Provision</response>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.GetListadoProveedores">
+            <summary>
+            Obtener el listado de proveedores que existen en el sistema
+            </summary>
+            <returns>Lista de proveedores del sistema</returns>
+            /// <response code="200">retorna lista de Tipo de Proveedores</response>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.GetListadoClaseCosto">
+            <summary>
+            Obtener el listado de Clase Costo que existen en el sistema
+            </summary>
+            <returns>Lista de Clase Costo del sistema</returns>
+            /// <response code="200">retorna lista de Clase Costo</response>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.GetListadoCentroCosto">
+            <summary>
+            Listado centro de costo
+            </summary>
+            <returns></returns>
+            <response code="200">retorna lista de Centro de Costo</response>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.GetListaNumeroEstadoPago">
+            <summary>
+            Obtener el listado de numero estado pago que existen en el sistema
+            </summary>
+            <returns>Lista de numero estado pago del sistema</returns>
+            /// <response code="200">retorna lista de numero estado pago</response>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.GetListaNumeroContratoProveedor(System.Int32)">
+            <summary>
+            Obtener el listado de Numero contrato proveedor que existen en el sistema
+            </summary>
+            <param name="idProveedor">id de area seleccionada</param>
+            <returns>Lista de Numero contrato proveedor del sistema</returns>
+            /// <response code="200">retorna lista de Numero contrato proveedor</response>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.GetListadoConversionMoneda(System.Int32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="idTipoMoneda"></param>
+            <param name="fechaConversion"></param>
+            <returns></returns>
+            <response code="200">retorna lista de Conversion Moneda</response>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.PostMotivoProvision(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="NombreMotivoProvision"></param>
+            <param name="descripcion"></param>
+            <returns></returns>
+            <response code="200">retorna Ok grabado</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.PostSociedades(System.String,System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="nombreSociedad"></param>
+            <param name="acronimoSociedad"></param>
+            <param name="codigoSociedad"></param>
+            <param name="descripcionSociedad"></param>
+            <returns></returns>
+            <response code="200">retorna Ok grabado</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.GetListaAreas">
+            <summary>
+            Servicio que retorna el listado de las Areas 
+            </summary>
+            <returns>lista areas</returns>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.GetListaMotivoProvision">
+            <summary>
+            LIstado Motivo Provisiones
+            </summary>
+            <returns>Listado con los motivos de provision</returns>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.MantenedoresController.GetListaProcesos">
+            <summary>
+            Listado de Procesos
+            </summary>
+            <returns>Arreglo con los procesos</returns>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ProvisionesController.PostGrabaProvisiones(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Int32,System.Decimal,System.Decimal,System.Decimal,System.Decimal,System.Decimal,System.String,System.String,System.Int32,System.String,System.String,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="idTipoProvision"></param>
+            <param name="valorTipoProvision"></param>
+            <param name="idProveedor"></param>
+            <param name="idNumeroContratoOC"></param>
+            <param name="idnumeroEstadoPago"></param>
+            <param name="mesannio"></param>
+            <param name="idclaseCosto"></param>
+            <param name="nunmeroFacturaBoleta"></param>
+            <param name="idtipoMonedaOrigen"></param>
+            <param name="montoOrigen"></param>
+            <param name="valorConversionOrigenPesosdia"></param>
+            <param name="montoFinalPesosCalculado"></param>
+            <param name="valorConversionDolar"></param>
+            <param name="montoFinaldolarCliente"></param>
+            <param name="fechaProvision"></param>
+            <param name="observacion"></param>
+            <param name="idUsuario"></param>
+            <param name="UrlArchivo"></param>
+            <param name="numeroHes"></param>
+            <param name="idElemetoPep"></param>
+            <returns>true o false</returns>
+            <response code="200">Inserción existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ProvisionesController.PostActualizaProvisiones(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.Int32,System.Int32,System.Int32,System.Decimal,System.Decimal,System.Decimal,System.Decimal,System.Decimal,System.String,System.String,System.Int32,System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="idTipoProvision"></param>
+            <param name="valorTipoProvision"></param>
+            <param name="idProveedor"></param>
+            <param name="idNumeroContratoOC"></param>
+            <param name="idnumeroEstadoPago"></param>
+            <param name="mesannio"></param>
+            <param name="idclaseCosto"></param>
+            <param name="nunmeroFacturaBoleta"></param>
+            <param name="idtipoMonedaOrigen"></param>
+            <param name="montoOrigen"></param>
+            <param name="valorConversionOrigenPesosdia"></param>
+            <param name="montoFinalPesosCalculado"></param>
+            <param name="valorConversionDolar"></param>
+            <param name="montoFinaldolarCliente"></param>
+            <param name="fechaProvision"></param>
+            <param name="observacion"></param>
+            <param name="idUsuario"></param>
+            <param name="UrlArchivo"></param>
+            <param name="numeroHes"></param>
+            <param name="idElemetoPep"></param>
+            <param name="idProvisiones"></param>
+            <returns></returns>
+            <returns>true o false</returns>
+            <response code="200">Inserción existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ProvisionesController.PostInsertaConfirmaPagoProvision(System.Int32,System.Int32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="idProvision">Id correspondiente a la provision</param>
+            <param name="idUsuario">Is usuario que realiza la accion</param>
+            <param name="observacion">Observaciones en el formulario</param>
+            <returns>respuesta segun accion</returns>
+            <response code="200">Inserción existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ProvisionesController.PostDevolverPagoProvision(System.Int32,System.Int32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="idProvision">Id correspondiente a la provision</param>
+            <param name="idUsuario">Is usuario que realiza la accion</param>
+            <param name="observacion">Observaciones en el formulario</param>
+            <returns>respuesta segun accion</returns>
+            <response code="200">Inserción existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ProvisionesController.PostAsignaProvision(System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="idProvision">idProvision</param>
+            <param name="idUsuario">idUsuario</param>
+            <returns></returns>
+            <response code="200">Inserción existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ProvisionesController.PostEnviaProvision(System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="idProvision">idProvision</param>
+            <param name="idUsuario">idUsuario</param>
+            <returns></returns>
+            <response code="200">Inserción existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ProvisionesController.PostCreaAreas(System.String,System.String)">
+            <summary>
+            Servicio para Crear Areas.
+            </summary>
+            <param name="nombreArea">Nombre del Area</param>
+            <param name="acronimoArea">Acronimo del Area</param>
+            <returns>true o false</returns>
+            <response code="200">Inserción existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ProvisionesController.PostCreaProcesos(System.String,System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="nombreProceso"></param>
+            <param name="siglaProceso"></param>
+            <param name="codigoProceso"></param>
+            <param name="descripcionProceso"></param>
+            <returns>true o false</returns>
+            <response code="200">Inserción existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ProvisionesController.GetTipoProvisionbyTipoFinanciamiento(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="tipoFinanciamiento">Tipo Financiamiento</param>
+            <returns>respuesta segun accion</returns>
+            <response code="200">OK</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ProvisionesController.GetEstadoProvisiones">
+            <summary>
+            Estado de Provisiones
+            </summary>
+            <returns>Lista de los diferentes estados de provisiones</returns>
+            <response code="200">OK</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ProvisionesController.GetListadoProvisionesIngresadas(System.Int32)">
+            <summary>
+            Listado de las Provisiones Ingresadas
+            </summary>
+            <param name="idEstadoprovision">0 para todos los estados, si no ID Estado Provision segun tratamiento</param>
+            <returns>Listado de las provisiones ingresadas en sus diferentes estados segun ID estado provision</returns>
+            <response code="200">OK</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ProvisionesController.GetListadoElementoPEP">
+            <summary>
+            Servicio que devuelve la lista de elementos PEP
+            </summary>
+            <returns></returns>
+            <response code="200">OK</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ReclasificacionesController.GetListadoReclasificaciones(System.Int32)">
+            <summary>
+            Listado de las Provisiones Ingresadas
+            </summary>
+            <param name="idEstado">0 para todos los estados, si no ID Estado reclasificacion segun tratamiento</param>
+            <returns>Listado de las Reclasificaciones ingresadas en sus diferentes estados segun ID estado provision</returns>
+            <response code="200">OK</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ReclasificacionesController.PostInsertaReclasificacion(System.String,System.String,System.String,System.String,System.String,System.String,System.Decimal,System.DateTime,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Decimal,System.Int32,System.String)">
+            <summary>
+            Registra los datos ingresados en Listado
+            </summary>
+            <returns>registros insertados.</returns>
+            <response code="200">OK</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ReclasificacionesController.PostAprobarReclasificacion(System.Int32,System.Int32)">
+            <summary>
+            Cambia estado de Reclasificaciones a Aprobadas
+            </summary>
+            <param name="idUsuario"></param>
+            <param name="idreclasificacion"></param>
+            <returns></returns>
+            <response code="200">OK</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ReclasificacionesController.PostrechazarReclasificacion(System.Int32,System.Int32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="idUsuario"></param>
+            <param name="idreclasificacion"></param>
+            <param name="observacion"></param>
+            <returns></returns>
+            <response code="200">OK</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ReclasificacionesController.PostEnviarReclasificacion(System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="idUsuario"></param>
+            <param name="idreclasificacion"></param>
+            <returns></returns>
+            <response code="200">OK</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:BackGesProyectosCEN.Controllers.ReclasificacionesController.PostAsignarReclasificacion(System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="idUsuario"></param>
+            <param name="idreclasificacion"></param>
+            <returns></returns>
+            <response code="200">OK</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+    </members>
+</doc>

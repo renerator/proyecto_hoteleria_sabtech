@@ -1,0 +1,4 @@
+2025-09-17 17:38:25,588  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2025-09-17 17:38:25,681  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2025-09-17 17:38:25,685  INFO Microsoft.Hosting.Lifetime.Invoke [0] - MESSAGE: Content root path: C:\Desarrollo\Proyecto Hoteleria\APP_BACK_Hoteleria\apigescamp
+ 

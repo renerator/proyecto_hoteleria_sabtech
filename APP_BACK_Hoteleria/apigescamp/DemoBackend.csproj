@@ -1,0 +1,106 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+      <TargetFramework>net9.0</TargetFramework>
+	  <UserSecretsId>2c106cde-2f84-4331-9a22-73277fa7647a</UserSecretsId>
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	  <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="Dto\Grupos\**" />
+		<Compile Remove="Dto\Provisiones\**" />
+		<Compile Remove="Dto\Reclasificaciones\**" />
+		<Compile Remove="Models\Grupos\**" />
+		<Compile Remove="Models\Provisiones\**" />
+		<Compile Remove="Models\Reclasificaciones\**" />
+		<Compile Remove="obj\**" />
+		<Compile Remove="Services\Provisiones\**" />
+		<Compile Remove="Services\Reclasificaciones\**" />
+		<Content Remove="Dto\Grupos\**" />
+		<Content Remove="Dto\Provisiones\**" />
+		<Content Remove="Dto\Reclasificaciones\**" />
+		<Content Remove="Models\Grupos\**" />
+		<Content Remove="Models\Provisiones\**" />
+		<Content Remove="Models\Reclasificaciones\**" />
+		<Content Remove="obj\**" />
+		<Content Remove="Services\Provisiones\**" />
+		<Content Remove="Services\Reclasificaciones\**" />
+		<EmbeddedResource Remove="Dto\Grupos\**" />
+		<EmbeddedResource Remove="Dto\Provisiones\**" />
+		<EmbeddedResource Remove="Dto\Reclasificaciones\**" />
+		<EmbeddedResource Remove="Models\Grupos\**" />
+		<EmbeddedResource Remove="Models\Provisiones\**" />
+		<EmbeddedResource Remove="Models\Reclasificaciones\**" />
+		<EmbeddedResource Remove="obj\**" />
+		<EmbeddedResource Remove="Services\Provisiones\**" />
+		<EmbeddedResource Remove="Services\Reclasificaciones\**" />
+		<None Remove="Dto\Grupos\**" />
+		<None Remove="Dto\Provisiones\**" />
+		<None Remove="Dto\Reclasificaciones\**" />
+		<None Remove="Models\Grupos\**" />
+		<None Remove="Models\Provisiones\**" />
+		<None Remove="Models\Reclasificaciones\**" />
+		<None Remove="obj\**" />
+		<None Remove="Services\Provisiones\**" />
+		<None Remove="Services\Reclasificaciones\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Controllers\GruposController.cs" />
+	  <Compile Remove="Controllers\ProvisionesController.cs" />
+	  <Compile Remove="Controllers\ReclasificacionesController.cs" />
+	  <Compile Remove="Dto\Mantenedores\ConversionMonedaDto.cs" />
+	  <Compile Remove="Dto\Mantenedores\ListaCentroCosto.cs" />
+	  <Compile Remove="Dto\Mantenedores\ListaClaseCostoDto.cs" />
+	  <Compile Remove="Dto\Mantenedores\ListadoContratoProveedorDto.cs" />
+	  <Compile Remove="Dto\Mantenedores\ListaNumeroContratoProveedorDto.cs" />
+	  <Compile Remove="Dto\Mantenedores\ListaNumeroEstadoPagoDto.cs" />
+	  <Compile Remove="Dto\Mantenedores\ListaProveedoresDto.cs" />
+	  <Compile Remove="Dto\Mantenedores\MotivoProvisionDto.cs" />
+	  <Compile Remove="Dto\Mantenedores\ProcesosDto.cs" />
+	  <Compile Remove="Dto\Mantenedores\SociedadesDto.cs" />
+	  <Compile Remove="Dto\Mantenedores\TipoFinanciamientoDto.cs" />
+	  <Compile Remove="Dto\Mantenedores\TipoMonedaDto.cs" />
+	  <Compile Remove="Dto\Mantenedores\TipoProvisionDto.cs" />
+	  <Compile Remove="Dto\Mantenedores\ValorTipoMonedaDto.cs" />
+	  <Compile Remove="Models\Mantenedores\ConversionMonedaModels.cs" />
+	  <Compile Remove="Models\Mantenedores\ListaCentroCostoModels.cs" />
+	  <Compile Remove="Models\Mantenedores\ListaClaseCostoModels.cs" />
+	  <Compile Remove="Models\Mantenedores\ListaNumeroContratoProveedorModels.cs" />
+	  <Compile Remove="Models\Mantenedores\ListaNumeroEstadoPagoModels.cs" />
+	  <Compile Remove="Models\Mantenedores\ListaProveedorModels.cs" />
+	  <Compile Remove="Models\Mantenedores\MotivoProvisionModels.cs" />
+	  <Compile Remove="Models\Mantenedores\ProcesoModels.cs" />
+	  <Compile Remove="Models\Mantenedores\SociedadesModels.cs" />
+	  <Compile Remove="Models\Mantenedores\TipoFinanciamientoModels.cs" />
+	  <Compile Remove="Models\Mantenedores\TipoMonedaModels.cs" />
+	  <Compile Remove="Models\Mantenedores\TipoProvisionModels.cs" />
+	  <Compile Remove="Models\Mantenedores\ValorTipoMonedaModels.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include=".config\dotnet-tools.json" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\.editorconfig" Link=".editorconfig" />
+	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="15.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="Azure.Identity" Version="1.16.0" />
+    <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.8.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.12.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="8.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	<PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
+  </ItemGroup>
+	<ProjectExtensions>
+		<VisualStudio>
+			<UserProperties appsettings_1json__JsonSchema="https://docs.gradle.com/enterprise/admin/schema/gradle-enterprise-config-schema-2.json" />
+		</VisualStudio>
+	</ProjectExtensions>
+
+</Project>

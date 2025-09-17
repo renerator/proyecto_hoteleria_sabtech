@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DemoBackend</name>
+    </assembly>
+    <members>
+        <member name="M:DemoBackend.Controllers.AutenticacionController.Login(DemoBackend.Dto.LoginDto)">
+            <summary>
+            Login de usuarios
+            </summary>
+            <param name="user">usuario y pass</param>
+            <returns>token</returns>
+            <response code="200">token</response>
+            <response code="204">No encuentra datos</response>
+            <response code="400">Datos entradas inválidos</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.AutenticacionController.GenerateJSONWebToken(DemoBackend.Dto.LoginDto)">
+            <summary>
+            Generate Json Web Token Method
+            </summary>
+            <param name="userInfo"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DemoBackend.Controllers.IntegracionesController.GetUsuariosSGCAS(System.Int32)">
+            <summary>
+            Servicio que retorna el listado de usuarios SGCAS
+            </summary>
+            <returns>lista Usuarios</returns>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.IntegracionesController.GetCasinoAlimentacion(System.Int32)">
+            <summary>
+            Servicio que retorna el listado de las Areas 
+            </summary>
+            <returns>lista areas</returns>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.IntegracionesController.GetChapasElectronicas(System.Int32)">
+            <summary>
+            Servicio que retorna el listado de las Areas 
+            </summary>
+            <returns>lista areas</returns>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.IntegracionesController.GetElipse(System.Int32)">
+            <summary>
+            Servicio que retorna el listado de las Areas 
+            </summary>
+            <returns>lista areas</returns>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.IntegracionesController.GetSAP(System.Int32)">
+            <summary>
+            Servicio que retorna el listado de las Areas 
+            </summary>
+            <returns>lista areas</returns>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.IntegracionesController.GetLavanderia(System.Int32)">
+            <summary>
+            Servicio que retorna el listado de las Areas 
+            </summary>
+            <returns>lista areas</returns>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.MantenedoresController.GetListaAreas(System.Int32)">
+            <summary>
+            Servicio que retorna el listado de las Areas 
+            </summary>
+            <returns>lista areas</returns>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.MantenedoresController.PostCreaAreas(DemoBackend.Dto.Mantenedores.AreasDto)">
+            <summary>
+            Servicio para Crear Areas.
+            </summary>      
+            <returns>true o false</returns>
+            <response code="200">Inserción existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.MantenedoresController.PutModificaAreas(DemoBackend.Dto.Mantenedores.AreasDto)">
+            <summary>
+            Servicio para Modificar Areas.
+            </summary>     
+            <returns>true o false</returns>
+            <response code="200">Modificacioón existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.MantenedoresController.DelEliminaAreas(System.Int32)">
+            <summary>
+            Servicio para Eliminación Areas.
+            </summary>
+            <param name="idArea">Id del Area</param>
+            <returns>true o false</returns>
+            <response code="200">Modificacioón existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.ReservasController.ReservasDisponibles(System.Int32)">
+            <summary>
+            Servicio que retorna el listado de las Areas 
+            </summary>
+            <returns>lista areas</returns>
+            <response code="204">No encuentra datos</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.ReservasController.SolicitaReserva(DemoBackend.Dto.Mantenedores.AreasDto)">
+            <summary>
+            Servicio para Crear Areas.
+            </summary>      
+            <returns>true o false</returns>
+            <response code="200">Inserción existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.ReservasController.ConfirmarReserva(DemoBackend.Dto.Mantenedores.AreasDto)">
+            <summary>
+            Servicio para Crear Areas.
+            </summary>      
+            <returns>true o false</returns>
+            <response code="200">Inserción existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.ReservasController.ModificaReserva(DemoBackend.Dto.Mantenedores.AreasDto)">
+            <summary>
+            Servicio para Modificar Areas.
+            </summary>     
+            <returns>true o false</returns>
+            <response code="200">Modificacioón existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+        <member name="M:DemoBackend.Controllers.ReservasController.EliminaReserva(System.Int32)">
+            <summary>
+            Servicio para Eliminación Areas.
+            </summary>
+            <param name="idArea">Id del Area</param>
+            <returns>true o false</returns>
+            <response code="200">Modificacioón existosa</response>
+            <response code="401">No autorizado</response>
+            <response code="500">Error interno</response>
+        </member>
+    </members>
+</doc>

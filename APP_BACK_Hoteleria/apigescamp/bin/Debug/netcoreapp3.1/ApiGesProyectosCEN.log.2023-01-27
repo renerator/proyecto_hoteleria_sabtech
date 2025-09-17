@@ -1,0 +1,29 @@
+2023-01-27 09:38:48,827  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-27 09:38:48,930  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-27 09:38:48,932  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-27 09:43:26,202  INFO DemoBackend.Controllers.AutenticacionController.MoveNext [66] - MESSAGE: Login: Usuario API_GESPRO_PRD válido
+ 2023-01-27 09:43:57,003  WARN Microsoft.EntityFrameworkCore.Model.Validation.? [?] - MESSAGE: No type was specified for the decimal column 'Valor' on entity type 'ValorTipoMonedaModels'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'HasColumnType()'.
+ 2023-01-27 09:43:57,011  WARN Microsoft.EntityFrameworkCore.Model.Validation.? [?] - MESSAGE: No type was specified for the decimal column 'Monto' on entity type 'ListaProvisionesModels'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'HasColumnType()'.
+ 2023-01-27 09:43:57,014  WARN Microsoft.EntityFrameworkCore.Model.Validation.? [?] - MESSAGE: No type was specified for the decimal column 'MontoDolares' on entity type 'ListaProvisionesModels'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'HasColumnType()'.
+ 2023-01-27 09:43:57,017  WARN Microsoft.EntityFrameworkCore.Model.Validation.? [?] - MESSAGE: No type was specified for the decimal column 'MontoDesde' on entity type 'ListaReclasificacionesModels'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'HasColumnType()'.
+ 2023-01-27 09:43:57,020  WARN Microsoft.EntityFrameworkCore.Model.Validation.? [?] - MESSAGE: No type was specified for the decimal column 'MontoHasta' on entity type 'ListaReclasificacionesModels'. This will cause values to be silently truncated if they do not fit in the default precision and scale. Explicitly specify the SQL server column type that can accommodate all the values using 'HasColumnType()'.
+ 2023-01-27 09:44:08,266  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [468] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-27 09:44:08,297  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [479] - MESSAGE: GetListaAreas : El proceso de lista de Areas retorna una lista de 11 encontrados.
+ 2023-01-27 09:44:58,408  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [468] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-27 09:44:58,417  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [479] - MESSAGE: GetListaAreas : El proceso de lista de Areas retorna una lista de 11 encontrados.
+ 2023-01-27 09:45:25,342  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [468] - MESSAGE: GetListaAreas : Inicio proceso lista de Areas
+ 2023-01-27 09:45:25,352  INFO DemoBackend.Controllers.MantenedoresController.GetListaAreas [479] - MESSAGE: GetListaAreas : El proceso de lista de Areas retorna una lista de 10 encontrados.
+ 2023-01-27 10:35:47,097  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-27 10:35:47,175  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-27 10:35:47,178  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-27 10:36:07,459  INFO DemoBackend.Controllers.AutenticacionController.MoveNext [66] - MESSAGE: Login: Usuario API_GESPRO_PRD válido
+ 2023-01-27 10:47:58,728  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-27 10:47:58,789  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-27 10:47:58,792  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-27 12:13:31,535  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-27 12:13:31,632  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-27 12:13:31,634  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 2023-01-27 12:16:09,066  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Application started. Press Ctrl+C to shut down.
+ 2023-01-27 12:16:09,137  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Hosting environment: Development
+ 2023-01-27 12:16:09,144  INFO Microsoft.Hosting.Lifetime.OnApplicationStarted [0] - MESSAGE: Content root path: C:\DEVOPS\CENTINELA\BackGesProyectos - copia\BackGesProyectosCEN
+ 
