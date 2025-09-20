@@ -25,11 +25,13 @@ namespace DemoBackend.Services.Autenticacion
         public List<LoginDto> Login(string usuario, string contrasena)
         {
             string sigla = Configuration.GetSection("CredencialesConfig").GetSection("Sigla").Value;
-            string sql = "ctr_credenciales_msctr @username,@password,@Sigla";
-            var parametros = new SqlParameter[3];
+            string idEmpresa = Configuration.GetSection("CredencialesConfig").GetSection("idEmpresa").Value;
+            string sql = "ctr_credenciales_msctr @username,@password,@Sigla, @idEmpresa";
+            var parametros = new SqlParameter[4];
             parametros[0] = new SqlParameter("@username", usuario.Trim());
             parametros[1] = new SqlParameter("@password", contrasena);
             parametros[2] = new SqlParameter("@Sigla", sigla);
+            parametros[3] = new SqlParameter("@idEmpresa", idEmpresa);
             return _mapper.Map<List<LoginDto>>(_repository.GetStoreProcedure(sql, parametros));
         }
     }
