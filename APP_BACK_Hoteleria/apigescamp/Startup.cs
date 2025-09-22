@@ -44,7 +44,9 @@ namespace DemoBackend
                 services.AddCors();
                 services.AddControllers();
                 services.AddMvc();
-                services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+                // Escanea los perfiles de AutoMapper en tu ensamblado
+
+                services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
                 AddSwagger(services);
                 services.Configure<IISServerOptions>(options =>
                 {
