@@ -68,8 +68,9 @@ namespace DemoBackend.Controllers
         {
             var grupoOK = false;
 
-            if (string.IsNullOrEmpty(areasModels.NombreArea) || string.IsNullOrEmpty(areasModels.AcronimoArea))
-            {
+            //if (string.IsNullOrEmpty(areasModels.NombreArea) || string.IsNullOrEmpty(areasModels.AcronimoArea))
+                    if (string.IsNullOrEmpty(areasModels.NombreArea) )
+                    {
                 _logger.LogInformation($"PostCreaAreas: Vacio, no se graban datos, retorna OK.");
                 return Ok("Status 200: Error de campos vacios");
             }
@@ -119,7 +120,7 @@ namespace DemoBackend.Controllers
         {
             var grupoOK = false;
 
-            if (string.IsNullOrEmpty(areasModels.NombreArea) || string.IsNullOrEmpty(areasModels.AcronimoArea))
+            if (string.IsNullOrEmpty(areasModels.NombreArea))
             {
                 _logger.LogInformation($"PostCreaAreas: Vacio, no se graban datos, retorna OK.");
                 return Ok("Status 200: Error de campos vacios");
@@ -169,7 +170,7 @@ namespace DemoBackend.Controllers
         {
             var grupoOK = false;
 
-            if (string.IsNullOrEmpty(areasModels.NombreArea) || string.IsNullOrEmpty(areasModels.AcronimoArea) || areasModels.IdArea == 0)
+            if (string.IsNullOrEmpty(areasModels.NombreArea) ||  areasModels.IdArea == 0)
             {
                 _logger.LogInformation($"PutModificaAreas: Vacio, no se graban datos, retorna OK.");
                 return Ok("Status 200: Error de campos vacios");

@@ -9,7 +9,9 @@ namespace DemoBackend.Dto.Mantenedores
     {
         public int IdArea { get; set; }
         public string NombreArea { get; set; }
-        public string AcronimoArea { get; set; }
-       
+        //  public string AcronimoArea { get; set; }
+        public int idEmpresa { get; set; }
+
+        public bool Estado { get; set; }
     }
 }
