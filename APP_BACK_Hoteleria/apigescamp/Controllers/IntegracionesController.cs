@@ -1,5 +1,6 @@
 ﻿using DemoBackend.Dto.Mantenedores;
 using DemoBackend.Services.Mantenedores;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -7,6 +8,9 @@ using System.Collections.Generic;
 
 namespace DemoBackend.Controllers
 {
+    [ApiController]
+    [Route("api/[Controller]")]
+    [Authorize]
     public class IntegracionesController : BaseController
     {
         private readonly IMantenedoresService _grupoService;

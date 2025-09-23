@@ -1,5 +1,6 @@
 ﻿using DemoBackend.Dto.Mantenedores;
 using DemoBackend.Services.Mantenedores;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -7,6 +8,9 @@ using System.Collections.Generic;
 
 namespace DemoBackend.Controllers
 {
+    [ApiController]
+    [Route("api/[Controller]")]
+    [Authorize]
     public class MantenedoresController : BaseController
     {
         private readonly IMantenedoresService _grupoService;
@@ -18,14 +22,15 @@ namespace DemoBackend.Controllers
             _grupoService = manService;
         }
 
-    
-        /// <summary>
-        /// Servicio que retorna el listado de las Areas 
-        /// </summary>
-        /// <returns>lista areas</returns>
-        /// <response code="204">No encuentra datos</response>
-        /// <response code="401">No autorizado</response>
-        /// <response code="500">Error interno</response>
+
+    /// <summary>
+    /// Servicio que retorna el listado de las Areas 
+    /// </summary>
+    /// <returns>lista areas</returns>
+    /// <response code="204">No encuentra datos</response>
+    /// <response code="401">No autorizado</response>
+    /// <response code="403">Acceso denegado</response>
+    /// <response code="500">Error interno</response>
         [HttpGet("GetListaAreas")]
         public ActionResult<List<AreasDto>> GetListaAreas(int vigencia)
         {
@@ -53,13 +58,14 @@ namespace DemoBackend.Controllers
         }
 
 
-        /// <summary>
-        /// Servicio para Crear Areas.
-        /// </summary>      
-        /// <returns>true o false</returns>
-        /// <response code="200">Inserción existosa</response>
-        /// <response code="401">No autorizado</response>
-        /// <response code="500">Error interno</response>
+    /// <summary>
+    /// Servicio para Crear Areas.
+    /// </summary>      
+    /// <returns>true o false</returns>
+    /// <response code="200">Inserción existosa</response>
+    /// <response code="401">No autorizado</response>
+    /// <response code="403">Acceso denegado</response>
+    /// <response code="500">Error interno</response>
         [HttpPost("PostCrearAreas")]
         public ActionResult PostCreaAreas(AreasDto areasModels)
         {
@@ -104,13 +110,14 @@ namespace DemoBackend.Controllers
         }
 
 
-        /// <summary>
-        /// Servicio para Modificar Areas.
-        /// </summary>     
-        /// <returns>true o false</returns>
-        /// <response code="200">Modificacioón existosa</response>
-        /// <response code="401">No autorizado</response>
-        /// <response code="500">Error interno</response>
+    /// <summary>
+    /// Servicio para Modificar Areas.
+    /// </summary>     
+    /// <returns>true o false</returns>
+    /// <response code="200">Modificacioón existosa</response>
+    /// <response code="401">No autorizado</response>
+    /// <response code="403">Acceso denegado</response>
+    /// <response code="500">Error interno</response>
         [HttpPut("PutModificaAreas")]
         public ActionResult PutModificaAreas(AreasDto areasModels)
         {

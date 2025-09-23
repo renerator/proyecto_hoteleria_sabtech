@@ -1,5 +1,6 @@
-﻿using DemoBackend.Dto.Mantenedores;
-using DemoBackend.Services.Mantenedores;
+﻿using DemoBackend.Dto.Habitacion;
+using DemoBackend.Services.Habitacion;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -7,12 +8,16 @@ using System.Collections.Generic;
 
 namespace DemoBackend.Controllers
 {
+
+    [ApiController]
+    [Route("api/[Controller]")]
+    [Authorize] 
     public class HabitacionController : BaseController
     {
-        private readonly IMantenedoresService _grupoService;
+        private readonly IHabitacionService _grupoService;
     private readonly ILogger _logger;
 
-    public HabitacionController(IMantenedoresService manService, ILogger<ReservasController> logger)
+    public HabitacionController(IHabitacionService manService, ILogger<HabitacionController> logger)
     {
         _logger = logger;
         _grupoService = manService;
@@ -20,70 +25,72 @@ namespace DemoBackend.Controllers
 
 
     /// <summary>
-    /// Servicio que retorna el listado de las Areas 
+    /// Servicio que retorna el listado de las Habitacion 
     /// </summary>
-    /// <returns>lista areas</returns>
+    /// <returns>lista Habitacion</returns>
     /// <response code="204">No encuentra datos</response>
     /// <response code="401">No autorizado</response>
+    /// <response code="403">Acceso denegado</response>
     /// <response code="500">Error interno</response>
-    [HttpGet("ReservasDisponibles")]
-    public ActionResult<List<AreasDto>> ReservasDisponibles(int vigencia)
+        [HttpGet("HabitacionesDisponibles")]
+    public ActionResult<List<HabitacionDto>> HabitacionDisponibles(int vigencia)
     {
-        _logger.LogInformation($"GetListaAreas : Inicio proceso lista de Areas");
+        _logger.LogInformation($"GetListaHabitacion : Inicio proceso lista de Habitacion");
         try
         {
-            var grupos = _grupoService.GetListaAreasEstado(vigencia);
+            var grupos = _grupoService.GetListaHabitacionEstado(vigencia);
             if (grupos.Count == 0)
             {
-                _logger.LogInformation("GetListaAreas : El proceso de lista de Areas");
+                _logger.LogInformation("GetListaHabitacion : El proceso de lista de Habitacion");
                 return new NoContentResult();
             }
             else
             {
-                _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de { grupos.Count } encontrados.");
+                _logger.LogInformation($"GetListaHabitacion : El proceso de lista de Habitacion retorna una lista de { grupos.Count } encontrados.");
                 return Ok(grupos);
             }
         }
         catch (Exception e)
         {
-            _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> { e.Message }");
-            _logger.LogTrace($"GetListaAreas : Traza del error --> { e.StackTrace }");
+            _logger.LogError($"GetListaHabitacion : El proceso de lista de Habitacion se ejecuta con error --> { e.Message }");
+            _logger.LogTrace($"GetListaHabitacion : Traza del error --> { e.StackTrace }");
             return StatusCode(500, e.Message);
         }
     }
 
 
     /// <summary>
-    /// Servicio para Crear Areas.
+    /// Servicio para Crear Habitacion.
     /// </summary>      
     /// <returns>true o false</returns>
     /// <response code="200">Inserción existosa</response>
     /// <response code="401">No autorizado</response>
+    /// <response code="403">Acceso denegado</response>
     /// <response code="500">Error interno</response>
-    [HttpPost("SolicitaReserva")]
-    public ActionResult SolicitaReserva(AreasDto areasModels)
+        [HttpPost("SolicitaHabitacion")]
+    public ActionResult SolicitaHabitacion(HabitacionDto HabitacionDto)
     {
 
         try
         {
             var grupoOK = false;
 
-            //if (string.IsNullOrEmpty(areasModels.NombreArea) || string.IsNullOrEmpty(areasModels.AcronimoArea))
-                    if (string.IsNullOrEmpty(areasModels.NombreArea) )
+            //if (string.IsNullOrEmpty(HabitacionModels.NombreHabitacion) || string.IsNullOrEmpty(HabitacionModels.AcronimoArea))
+                    if (string.IsNullOrEmpty(HabitacionDto.NombreHabitacion) )
                     {
-                _logger.LogInformation($"PostCreaAreas: Vacio, no se graban datos, retorna OK.");
+                _logger.LogInformation($"PostCreaHabitacion: Vacio, no se graban datos, retorna OK.");
                 return Ok("Status 200: Error de campos vacios");
             }
             else
             {
-                var resu = _grupoService.VerificaArea(areasModels);
+                var resu = _grupoService.VerificaHabitacionPorNombre(HabitacionDto);
                 if (resu.Count > 0)
                 {
-                    return Ok("Status 200: No se puede crear el area, ya existe el area: " + areasModels.NombreArea);
+                    return Ok("Status 200: No se puede crear el area, ya existe el area: " + HabitacionDto.NombreHabitacion);
                 }
                 else
                 {
-                    grupoOK = _grupoService.CrearAreas(areasModels);
+                    grupoOK = _grupoService.CrearHabitacion(HabitacionDto);
                     if (grupoOK)
                     {
                         return Ok(grupoOK + " OK, Datos insertados");
@@ -98,7 +105,7 @@ namespace DemoBackend.Controllers
         }
         catch (Exception e)
         {
-            _logger.LogError($"PostCreaAreas: Error en grabacion de Areas --> { e.Message }");
+            _logger.LogError($"PostCreaHabitacion: Error en grabacion de Habitacion --> { e.Message }");
             _logger.LogTrace(e.StackTrace);
             return StatusCode(500, e.Message);
         }
@@ -106,35 +113,36 @@ namespace DemoBackend.Controllers
 
 
     /// <summary>
-    /// Servicio para Crear Areas.
+    /// Servicio para Crear Habitacion.
     /// </summary>      
     /// <returns>true o false</returns>
     /// <response code="200">Inserción existosa</response>
     /// <response code="401">No autorizado</response>
+    /// <response code="403">Acceso denegado</response> 
     /// <response code="500">Error interno</response>
-    [HttpPost("ConfirmarReserva")]
-    public ActionResult ConfirmarReserva(AreasDto areasModels)
+        [HttpPost("ConfirmarHabitacion")]
+    public ActionResult ConfirmarHabitacion(HabitacionDto HabitacionModels)
     {
 
         try
         {
             var grupoOK = false;
 
-            if (string.IsNullOrEmpty(areasModels.NombreArea))
+            if (string.IsNullOrEmpty(HabitacionModels.NombreHabitacion))
             {
-                _logger.LogInformation($"PostCreaAreas: Vacio, no se graban datos, retorna OK.");
+                _logger.LogInformation($"PostCreaHabitacion: Vacio, no se graban datos, retorna OK.");
                 return Ok("Status 200: Error de campos vacios");
             }
             else
             {
-                var resu = _grupoService.VerificaArea(areasModels);
+                var resu = _grupoService.VerificaHabitacionPorNombre(HabitacionModels);
                 if (resu.Count > 0)
                 {
-                    return Ok("Status 200: No se puede crear el area, ya existe el area: " + areasModels.NombreArea);
+                    return Ok("Status 200: No se puede crear el area, ya existe el area: " + HabitacionModels.NombreHabitacion);
                 }
                 else
                 {
-                    grupoOK = _grupoService.CrearAreas(areasModels);
+                    grupoOK = _grupoService.CrearHabitacion(HabitacionModels);
                     if (grupoOK)
                     {
                         return Ok(grupoOK + " OK, Datos insertados");
@@ -149,38 +157,39 @@ namespace DemoBackend.Controllers
         }
         catch (Exception e)
         {
-            _logger.LogError($"PostCreaAreas: Error en grabacion de Areas --> { e.Message }");
+            _logger.LogError($"PostCreaHabitacion: Error en grabacion de Habitacion --> { e.Message }");
             _logger.LogTrace(e.StackTrace);
             return StatusCode(500, e.Message);
         }
     }
 
     /// <summary>
-    /// Servicio para Modificar Areas.
+    /// Servicio para Modificar Habitacion.
     /// </summary>     
     /// <returns>true o false</returns>
     /// <response code="200">Modificacioón existosa</response>
     /// <response code="401">No autorizado</response>
+    /// <response code="403">Acceso denegado</response>
     /// <response code="500">Error interno</response>
-    [HttpPut("ModificaReserva")]
-    public ActionResult ModificaReserva(AreasDto areasModels)
+    [HttpPut("ModificaHabitacion")]
+    public ActionResult ModificaHabitacion(HabitacionDto HabitacionModels)
     {
 
         try
         {
             var grupoOK = false;
 
-            if (string.IsNullOrEmpty(areasModels.NombreArea) ||  areasModels.IdArea == 0)
+            if (string.IsNullOrEmpty(HabitacionModels.NombreHabitacion) ||  HabitacionModels.IdArea == 0)
             {
-                _logger.LogInformation($"PutModificaAreas: Vacio, no se graban datos, retorna OK.");
+                _logger.LogInformation($"PutModificaHabitacion: Vacio, no se graban datos, retorna OK.");
                 return Ok("Status 200: Error de campos vacios");
             }
             else
             {
-                var resu = _grupoService.VerificaAreaId(areasModels);
+                var resu = _grupoService.VerificaHabitacionPorId(HabitacionModels);
                 if (resu.Count > 0)
                 {
-                    grupoOK = _grupoService.ModificarAreas(areasModels);
+                    grupoOK = _grupoService.ModificarHabitacion(HabitacionModels);
                     if (grupoOK)
                     {
                         return Ok(grupoOK + " OK, Datos modificados");
@@ -194,48 +203,49 @@ namespace DemoBackend.Controllers
                 }
                 else
                 {
-                    return Ok("Status 200: No se puede modificar el area, ya que no existe el area: " + areasModels.IdArea);
+                    return Ok("Status 200: No se puede modificar el area, ya que no existe el area: " + HabitacionModels.IdArea);
                 }
             }
         }
         catch (Exception e)
         {
-            _logger.LogError($"PutModificaAreas: Error en modificación de Areas --> { e.Message }");
+            _logger.LogError($"PutModificaHabitacion: Error en modificación de Habitacion --> { e.Message }");
             _logger.LogTrace(e.StackTrace);
             return StatusCode(500, e.Message);
         }
     }
 
     /// <summary>
-    /// Servicio para Eliminación Areas.
+    /// Servicio para Eliminación Habitacion.
     /// </summary>
 
-    /// <param name="idArea">Id del Area</param>
+    /// <param name="idHabitacion">Id de la Habitación</param>
     /// <returns>true o false</returns>
     /// <response code="200">Modificacioón existosa</response>
     /// <response code="401">No autorizado</response>
+    /// <response code="403">Acceso denegado</response>
     /// <response code="500">Error interno</response>
-    [HttpDelete("EliminaReserva")]
-    public ActionResult EliminaReserva(int idArea)
+        [HttpDelete("EliminaHabitacion")]
+    public ActionResult EliminaHabitacion(int idHabitacion)
     {
-        AreasDto areasDto;
+        HabitacionDto HabitacionDto;
 
         try
         {
             var grupoOK = false;
 
-            if (idArea == 0)
+            if (idHabitacion == 0)
             {
-                _logger.LogInformation($"DelEliminaAreas: Vacio, no se graban datos, retorna OK.");
+                _logger.LogInformation($"DelEliminaHabitacion: Vacio, no se graban datos, retorna OK.");
                 return Ok("Status 200: Error de campos vacios");
             }
             else
             {
-                areasDto = new AreasDto() { IdArea = idArea };
-                var resu = _grupoService.VerificaAreaId(areasDto);
+                HabitacionDto = new HabitacionDto() { IdHabitacion = idHabitacion };
+                var resu = _grupoService.VerificaHabitacionPorId(HabitacionDto);
                 if (resu.Count > 0)
                 {
-                    grupoOK = _grupoService.EliminarAreas(areasDto);
+                    grupoOK = _grupoService.EliminarHabitacion(HabitacionDto);
                     if (grupoOK)
                     {
                         return Ok(grupoOK + " OK, Datos eliminados");
@@ -249,13 +259,13 @@ namespace DemoBackend.Controllers
                 }
                 else
                 {
-                    return Ok("Status 200: No se puede eliminar el area, ya que no existe el area: " + idArea);
+                    return Ok("Status 200: No se puede eliminar el area, ya que no existe el area: " + idHabitacion);
                 }
             }
         }
         catch (Exception e)
         {
-            _logger.LogError($"DelEliminaAreas: Error en eliminación de Areas --> { e.Message }");
+            _logger.LogError($"DelEliminaHabitacion: Error en eliminación de Habitacion --> { e.Message }");
             _logger.LogTrace(e.StackTrace);
             return StatusCode(500, e.Message);
         }

@@ -17,7 +17,7 @@ namespace DemoBackend.Services.Mantenedores
             IGenericRepositoryEntity<AreasModels> listaAreas,
             IMapper mapper)
         {
-            _listaAreas = listaAreas;
+            _listaAreas = listaAreas;           
             _mapper = mapper;
         }
 

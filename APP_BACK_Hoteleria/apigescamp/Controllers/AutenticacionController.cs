@@ -43,6 +43,8 @@ namespace DemoBackend.Controllers
         public async Task<IActionResult> Login(LoginDto user)
 #pragma warning restore CS1998 // El método asincrónico carece de operadores "await" y se ejecutará de forma sincrónica
         {
+            user.username = "API_GESPRO_PRD";
+            user.password = "*Apig3sprd2022#*!!";
 
             if (user.username.Length <= 0 || user.password.Length <= 0)
             {

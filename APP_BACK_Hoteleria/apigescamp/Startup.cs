@@ -7,6 +7,8 @@ using DemoBackend.RepositoryGes;
 using DemoBackend.Services;
 using DemoBackend.Services.Autenticacion;
 using DemoBackend.Services.Mantenedores;
+using DemoBackend.Services.Habitacion;
+using DemoBackend.Services.Reserva;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -63,7 +65,8 @@ namespace DemoBackend
 
                 services.AddTransient<IAutenticacionService, AutenticacionService>();
                 services.AddTransient<IMantenedoresService, MantenedoresService>();
-
+                services.AddTransient<IHabitacionService, HabitacionService>();
+                services.AddTransient<IReservaService, ReservaService>();
 
                 services.AddTransient<IValidaUsuarioService, ValidaUsuarioService>();
                 services.Configure<CredencialesConfig>(Configuration.GetSection("CredencialesConfig"));
