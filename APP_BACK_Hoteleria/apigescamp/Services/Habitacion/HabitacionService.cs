@@ -91,30 +91,17 @@ namespace DemoBackend.Services
             }
         }
 
+
         public List<HabitacionDto> GetListaHabitacion()
         {
             string sql = "LISTADO_Habitacion";
-
-            List<HabitacionDto> resultado = new List<HabitacionDto>();
             var listagrupos = _listaHabitacion.GetStoreProcedure(sql);
 
-            foreach (var item in listagrupos)
-            {
-                HabitacionDto resu = new HabitacionDto
-                {
-                    IdHabitacion = item.IdHabitacion,
-                    IdArea = item.IdArea,
-                    NombreHabitacion = item.NombreHabitacion,
-                    Capacidad = item.Capacidad,
-                    VIP = item.VIP,
-                    IdEstado = item.IdEstado,
-                    IdEmpresa = item.IdEmpresa,
-                    Motivo = item.Motivo   
-                };
-                resultado.Add(resu);
-            }
-            return resultado;
+
+            return _mapper.Map<List<HabitacionDto>>(listagrupos);
         }
+
+
 
         public List<HabitacionDto> GetListaHabitacionEstado(int Vigente)
         {
@@ -122,26 +109,13 @@ namespace DemoBackend.Services
             var parametros = new SqlParameter[1];
             parametros[0] = new SqlParameter("@Vigencia", Vigente);
 
-            List<HabitacionDto> resultado = new List<HabitacionDto>();
             var listagrupos = _listaHabitacion.GetStoreProcedure(sql, parametros);
 
-            foreach (var item in listagrupos)
-            {
-                HabitacionDto resu = new HabitacionDto
-                {
-                    IdHabitacion = item.IdHabitacion,
-                    IdArea = item.IdArea,
-                    NombreHabitacion = item.NombreHabitacion,
-                    Capacidad = item.Capacidad,
-                    VIP = item.VIP,
-                    IdEstado = item.IdEstado,
-                    IdEmpresa = item.IdEmpresa,
-                    Motivo = item.Motivo   
-                };
-                resultado.Add(resu);
-            }
-            return resultado;
+
+            return _mapper.Map<List<HabitacionDto>>(listagrupos);
         }
+
+
 
         public List<HabitacionDto> VerificaHabitacionPorNombre(HabitacionDto habitacion)
         {
@@ -149,26 +123,12 @@ namespace DemoBackend.Services
             var parametros = new SqlParameter[1];
             parametros[0] = new SqlParameter("@NombreHabitacion", habitacion.NombreHabitacion);
 
-            List<HabitacionDto> resultado = new List<HabitacionDto>();
             var listagrupos = _listaHabitacion.GetStoreProcedure(sql, parametros);
 
-            foreach (var item in listagrupos)
-            {
-                HabitacionDto resu = new HabitacionDto
-                {
-                    IdHabitacion = item.IdHabitacion,
-                    IdArea = item.IdArea,
-                    NombreHabitacion = item.NombreHabitacion,
-                    Capacidad = item.Capacidad,
-                    VIP = item.VIP,
-                    IdEstado = item.IdEstado,
-                    IdEmpresa = item.IdEmpresa,
-                    Motivo = item.Motivo   
-                };
-                resultado.Add(resu);
-            }
-            return resultado;
+
+            return _mapper.Map<List<HabitacionDto>>(listagrupos);
         }
+
 
         public List<HabitacionDto> VerificaHabitacionPorId(HabitacionDto habitacion)
         {
@@ -176,25 +136,10 @@ namespace DemoBackend.Services
             var parametros = new SqlParameter[1];
             parametros[0] = new SqlParameter("@ID", habitacion.IdHabitacion);
 
-            List<HabitacionDto> resultado = new List<HabitacionDto>();
             var listagrupos = _listaHabitacion.GetStoreProcedure(sql, parametros);
 
-            foreach (var item in listagrupos)
-            {
-                HabitacionDto resu = new HabitacionDto
-                {
-                    IdHabitacion = item.IdHabitacion,
-                    IdArea = item.IdArea,
-                    NombreHabitacion = item.NombreHabitacion,
-                    Capacidad = item.Capacidad,
-                    VIP = item.VIP,
-                    IdEstado = item.IdEstado,
-                    IdEmpresa = item.IdEmpresa,
-                    Motivo = item.Motivo   
-                };
-                resultado.Add(resu);
-            }
-            return resultado;
+
+            return _mapper.Map<List<HabitacionDto>>(listagrupos);
         }
         #endregion
     }

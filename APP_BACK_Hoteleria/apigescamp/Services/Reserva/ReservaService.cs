@@ -95,61 +95,27 @@ namespace DemoBackend.Services
             }
         }
 
+
         public List<ReservaDto> GetListaReserva()
         {
             string sql = "LISTADO_Reserva";
-
-            List<ReservaDto> resultado = new List<ReservaDto>();
             var lista = _listaReserva.GetStoreProcedure(sql);
 
-            foreach (var item in lista)
-            {
-                ReservaDto resu = new ReservaDto
-                {
-                    IdReserva = item.IdReserva,
-                    IdHabitacion = item.IdHabitacion,
-                    IdTrabajador = item.IdTrabajador,
-                    FechaDesde = item.FechaDesde,
-                    FechaHasta = item.FechaHasta,
-                    QuiereTransporte = item.QuiereTransporte,
-                    FechaCheckIN = item.FechaCheckIN,
-                    FechaCheckOut = item.FechaCheckOut,
-                    IdEstadoReserva = item.IdEstadoReserva,
-                    MotivoReserva = item.MotivoReserva   
-                };
-                resultado.Add(resu);
-            }
-            return resultado;
-        }
 
+            return _mapper.Map<List<ReservaDto>>(lista);
+        }
         public List<ReservaDto> GetListaReservaEstado(int idEstadoReserva)
         {
             string sql = "LISTADO_Reserva_Estado @idEstadoReserva";
             var parametros = new SqlParameter[1];
             parametros[0] = new SqlParameter("@idEstadoReserva", idEstadoReserva);
 
-            List<ReservaDto> resultado = new List<ReservaDto>();
             var lista = _listaReserva.GetStoreProcedure(sql, parametros);
 
-            foreach (var item in lista)
-            {
-                ReservaDto resu = new ReservaDto
-                {
-                    IdReserva = item.IdReserva,
-                    IdHabitacion = item.IdHabitacion,
-                    IdTrabajador = item.IdTrabajador,
-                    FechaDesde = item.FechaDesde,
-                    FechaHasta = item.FechaHasta,
-                    QuiereTransporte = item.QuiereTransporte,
-                    FechaCheckIN = item.FechaCheckIN,
-                    FechaCheckOut = item.FechaCheckOut,
-                    IdEstadoReserva = item.IdEstadoReserva,
-                    MotivoReserva = item.MotivoReserva   
-                };
-                resultado.Add(resu);
-            }
-            return resultado;
+
+            return _mapper.Map<List<ReservaDto>>(lista);
         }
+
 
         public List<ReservaDto> VerificaReservaPorId(ReservaDto reserva)
         {
@@ -157,28 +123,12 @@ namespace DemoBackend.Services
             var parametros = new SqlParameter[1];
             parametros[0] = new SqlParameter("@idReserva", reserva.IdReserva);
 
-            List<ReservaDto> resultado = new List<ReservaDto>();
             var lista = _listaReserva.GetStoreProcedure(sql, parametros);
 
-            foreach (var item in lista)
-            {
-                ReservaDto resu = new ReservaDto
-                {
-                    IdReserva = item.IdReserva,
-                    IdHabitacion = item.IdHabitacion,
-                    IdTrabajador = item.IdTrabajador,
-                    FechaDesde = item.FechaDesde,
-                    FechaHasta = item.FechaHasta,
-                    QuiereTransporte = item.QuiereTransporte,
-                    FechaCheckIN = item.FechaCheckIN,
-                    FechaCheckOut = item.FechaCheckOut,
-                    IdEstadoReserva = item.IdEstadoReserva,
-                    MotivoReserva = item.MotivoReserva  
-                };
-                resultado.Add(resu);
-            }
-            return resultado;
+
+            return _mapper.Map<List<ReservaDto>>(lista);
         }
+
         #endregion
     }
 }

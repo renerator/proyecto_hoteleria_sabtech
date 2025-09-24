@@ -21,7 +21,7 @@ namespace DemoBackend.Controllers
         private readonly IAutenticacionService _service;
         private readonly IConfiguration _config;
         private readonly ILogger _logger;
-        public AutenticacionController(IAutenticacionService service, IConfiguration config ,ILogger<AutenticacionController> logger)
+        public AutenticacionController(IAutenticacionService service, IConfiguration config, ILogger<AutenticacionController> logger)
         {
             _config = config;
             _service = service;
@@ -43,8 +43,7 @@ namespace DemoBackend.Controllers
         public async Task<IActionResult> Login(LoginDto user)
 #pragma warning restore CS1998 // El método asincrónico carece de operadores "await" y se ejecutará de forma sincrónica
         {
-            user.username = "API_GESPRO_PRD";
-            user.password = "*Apig3sprd2022#*!!";
+            
 
             if (user.username.Length <= 0 || user.password.Length <= 0)
             {
@@ -65,13 +64,13 @@ namespace DemoBackend.Controllers
                 else
                 {
                     var tokenString = GenerateJSONWebToken(login.FirstOrDefault());
-                    _logger.LogInformation($"Login: Usuario { user.username } válido");
+                    _logger.LogInformation($"Login: Usuario {user.username} válido");
                     return Ok(new { Token = tokenString, Message = "Success" });
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError($"Login: Ha ocurrido el siguiente error en la autenticación de usuarios --> { e.Message }");
+                _logger.LogError($"Login: Ha ocurrido el siguiente error en la autenticación de usuarios --> {e.Message}");
                 _logger.LogTrace(e.StackTrace);
                 return StatusCode(500, e.Message);
             }

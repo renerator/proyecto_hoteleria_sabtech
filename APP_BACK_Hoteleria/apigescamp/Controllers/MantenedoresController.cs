@@ -23,14 +23,14 @@ namespace DemoBackend.Controllers
         }
 
 
-    /// <summary>
-    /// Servicio que retorna el listado de las Areas 
-    /// </summary>
-    /// <returns>lista areas</returns>
-    /// <response code="204">No encuentra datos</response>
-    /// <response code="401">No autorizado</response>
-    /// <response code="403">Acceso denegado</response>
-    /// <response code="500">Error interno</response>
+        /// <summary>
+        /// Servicio que retorna el listado de las Areas 
+        /// </summary>
+        /// <returns>lista areas</returns>
+        /// <response code="204">No encuentra datos</response>
+        /// <response code="401">No autorizado</response>
+        /// <response code="403">Acceso denegado</response>
+        /// <response code="500">Error interno</response>
         [HttpGet("GetListaAreas")]
         public ActionResult<List<AreasDto>> GetListaAreas(int vigencia)
         {
@@ -45,27 +45,27 @@ namespace DemoBackend.Controllers
                 }
                 else
                 {
-                    _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de { grupos.Count } encontrados.");
+                    _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de {grupos.Count} encontrados.");
                     return Ok(grupos);
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> { e.Message }");
-                _logger.LogTrace($"GetListaAreas : Traza del error --> { e.StackTrace }");
+                _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> {e.Message}");
+                _logger.LogTrace($"GetListaAreas : Traza del error --> {e.StackTrace}");
                 return StatusCode(500, e.Message);
             }
         }
 
 
-    /// <summary>
-    /// Servicio para Crear Areas.
-    /// </summary>      
-    /// <returns>true o false</returns>
-    /// <response code="200">Inserción existosa</response>
-    /// <response code="401">No autorizado</response>
-    /// <response code="403">Acceso denegado</response>
-    /// <response code="500">Error interno</response>
+        /// <summary>
+        /// Servicio para Crear Areas.
+        /// </summary>      
+        /// <returns>true o false</returns>
+        /// <response code="200">Inserción existosa</response>
+        /// <response code="401">No autorizado</response>
+        /// <response code="403">Acceso denegado</response>
+        /// <response code="500">Error interno</response>
         [HttpPost("PostCrearAreas")]
         public ActionResult PostCreaAreas(AreasDto areasModels)
         {
@@ -74,7 +74,7 @@ namespace DemoBackend.Controllers
             {
                 var grupoOK = false;
 
-                if (string.IsNullOrEmpty(areasModels.NombreArea) )
+                if (string.IsNullOrEmpty(areasModels.NombreArea))
                 {
                     _logger.LogInformation($"PostCreaAreas: Vacio, no se graban datos, retorna OK.");
                     return Ok("Status 200: Error de campos vacios");
@@ -97,27 +97,27 @@ namespace DemoBackend.Controllers
                         {
                             return Ok(grupoOK + " Datos no insertados");
                         }
-                       
+
                     }
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError($"PostCreaAreas: Error en grabacion de Areas --> { e.Message }");
+                _logger.LogError($"PostCreaAreas: Error en grabacion de Areas --> {e.Message}");
                 _logger.LogTrace(e.StackTrace);
                 return StatusCode(500, e.Message);
             }
         }
 
 
-    /// <summary>
-    /// Servicio para Modificar Areas.
-    /// </summary>     
-    /// <returns>true o false</returns>
-    /// <response code="200">Modificacioón existosa</response>
-    /// <response code="401">No autorizado</response>
-    /// <response code="403">Acceso denegado</response>
-    /// <response code="500">Error interno</response>
+        /// <summary>
+        /// Servicio para Modificar Areas.
+        /// </summary>     
+        /// <returns>true o false</returns>
+        /// <response code="200">Modificacioón existosa</response>
+        /// <response code="401">No autorizado</response>
+        /// <response code="403">Acceso denegado</response>
+        /// <response code="500">Error interno</response>
         [HttpPut("PutModificaAreas")]
         public ActionResult PutModificaAreas(AreasDto areasModels)
         {
@@ -145,8 +145,8 @@ namespace DemoBackend.Controllers
                         {
                             return Ok(grupoOK + " Datos no modificados");
                         }
-                                             
-                       
+
+
                     }
                     else
                     {
@@ -156,7 +156,7 @@ namespace DemoBackend.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"PutModificaAreas: Error en modificación de Areas --> { e.Message }");
+                _logger.LogError($"PutModificaAreas: Error en modificación de Areas --> {e.Message}");
                 _logger.LogTrace(e.StackTrace);
                 return StatusCode(500, e.Message);
             }
@@ -165,14 +165,14 @@ namespace DemoBackend.Controllers
         /// <summary>
         /// Servicio para Eliminación Areas.
         /// </summary>
-      
+
         /// <param name="idArea">Id del Area</param>
         /// <returns>true o false</returns>
         /// <response code="200">Modificacioón existosa</response>
         /// <response code="401">No autorizado</response>
         /// <response code="500">Error interno</response>
         [HttpDelete("DelEliminaAreas")]
-        public ActionResult DelEliminaAreas (int idArea)
+        public ActionResult DelEliminaAreas(int idArea)
         {
             AreasDto areasDto;
 
@@ -180,7 +180,7 @@ namespace DemoBackend.Controllers
             {
                 var grupoOK = false;
 
-                if ( idArea == 0)
+                if (idArea == 0)
                 {
                     _logger.LogInformation($"DelEliminaAreas: Vacio, no se graban datos, retorna OK.");
                     return Ok("Status 200: Error de campos vacios");
@@ -200,7 +200,7 @@ namespace DemoBackend.Controllers
                         {
                             return Ok(grupoOK + " Datos no eliminados");
                         }
-                      
+
 
                     }
                     else
@@ -211,14 +211,14 @@ namespace DemoBackend.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError($"DelEliminaAreas: Error en eliminación de Areas --> { e.Message }");
+                _logger.LogError($"DelEliminaAreas: Error en eliminación de Areas --> {e.Message}");
                 _logger.LogTrace(e.StackTrace);
                 return StatusCode(500, e.Message);
             }
         }
 
 
-       
+
 
     }
 }

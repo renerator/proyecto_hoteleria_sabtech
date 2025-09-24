@@ -17,7 +17,7 @@ namespace DemoBackend.Services.Mantenedores
             IGenericRepositoryEntity<AreasModels> listaAreas,
             IMapper mapper)
         {
-            _listaAreas = listaAreas;           
+            _listaAreas = listaAreas;
             _mapper = mapper;
         }
 
@@ -80,20 +80,14 @@ namespace DemoBackend.Services.Mantenedores
             return gr;
         }
 
+
         public List<AreasDto> GetListaAreas()
         {
             string sql = "LISTADO_AREAS";
-
-            List<AreasDto> gr = new List<AreasDto>();
             var listagrupos = _listaAreas.GetStoreProcedure(sql);
-            foreach (var item in listagrupos)
-            {
-                AreasDto resu = new AreasDto();
-                resu.IdArea = item.idArea;
-                resu.NombreArea = item.NombreArea;
-                gr.Add(resu);
-            }
-            return gr;
+
+
+            return _mapper.Map<List<AreasDto>>(listagrupos);
         }
 
         public List<AreasDto> GetListaAreasEstado(int Vigente)
@@ -102,17 +96,12 @@ namespace DemoBackend.Services.Mantenedores
             var parametros = new SqlParameter[1];
             parametros[0] = new SqlParameter("@Vigencia", Vigente);
 
-            List<AreasDto> gr = new List<AreasDto>();
             var listagrupos = _listaAreas.GetStoreProcedure(sql, parametros);
-            foreach (var item in listagrupos)
-            {
-                AreasDto resu = new AreasDto();
-                resu.IdArea = item.idArea;
-                resu.NombreArea = item.NombreArea;
-                gr.Add(resu);
-            }
-            return gr;
+
+
+            return _mapper.Map<List<AreasDto>>(listagrupos);
         }
+
 
         public List<AreasDto> VerificaArea(AreasDto areasModels)
         {
@@ -120,17 +109,12 @@ namespace DemoBackend.Services.Mantenedores
             var parametros = new SqlParameter[1];
             parametros[0] = new SqlParameter("@NombreArea", areasModels.NombreArea);
 
-            List<AreasDto> gr = new List<AreasDto>();
             var listagrupos = _listaAreas.GetStoreProcedure(sql, parametros);
-            foreach (var item in listagrupos)
-            {
-                AreasDto resu = new AreasDto();
-                resu.IdArea = item.idArea;
-                resu.NombreArea = item.NombreArea;
-                gr.Add(resu);
-            }
-            return gr;
+
+
+            return _mapper.Map<List<AreasDto>>(listagrupos);
         }
+
 
         public List<AreasDto> VerificaAreaId(AreasDto areasModels)
         {
@@ -138,17 +122,12 @@ namespace DemoBackend.Services.Mantenedores
             var parametros = new SqlParameter[1];
             parametros[0] = new SqlParameter("@ID", areasModels.IdArea);
 
-            List<AreasDto> gr = new List<AreasDto>();
             var listagrupos = _listaAreas.GetStoreProcedure(sql, parametros);
-            foreach (var item in listagrupos)
-            {
-                AreasDto resu = new AreasDto();
-                resu.IdArea = item.idArea;
-                resu.NombreArea = item.NombreArea;
-                gr.Add(resu);
-            }
-            return gr;
+
+
+            return _mapper.Map<List<AreasDto>>(listagrupos);
         }
+
         #endregion
     }
 }

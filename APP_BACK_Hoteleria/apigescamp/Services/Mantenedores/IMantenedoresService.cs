@@ -5,7 +5,6 @@ namespace DemoBackend.Services.Mantenedores
 {
     public interface IMantenedoresService
     {
-      
 
         List<AreasDto> GetListaAreas();
         List<AreasDto> GetListaAreasEstado(int estado);
@@ -13,7 +12,6 @@ namespace DemoBackend.Services.Mantenedores
         public bool ModificarAreas(AreasDto areasModels);
         public bool EliminarAreas(AreasDto areasModels);
         List<AreasDto> VerificaArea(AreasDto areasModels);
-
         List<AreasDto> VerificaAreaId(AreasDto areasModels);
     }
 }

@@ -44,14 +44,14 @@ namespace DemoBackend.Controllers
                 }
                 else
                 {
-                    _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de { grupos.Count } encontrados.");
+                    _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de {grupos.Count} encontrados.");
                     return Ok(grupos);
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> { e.Message }");
-                _logger.LogTrace($"GetListaAreas : Traza del error --> { e.StackTrace }");
+                _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> {e.Message}");
+                _logger.LogTrace($"GetListaAreas : Traza del error --> {e.StackTrace}");
                 return StatusCode(500, e.Message);
             }
         }
@@ -77,14 +77,14 @@ namespace DemoBackend.Controllers
                 }
                 else
                 {
-                    _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de { grupos.Count } encontrados.");
+                    _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de {grupos.Count} encontrados.");
                     return Ok(grupos);
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> { e.Message }");
-                _logger.LogTrace($"GetListaAreas : Traza del error --> { e.StackTrace }");
+                _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> {e.Message}");
+                _logger.LogTrace($"GetListaAreas : Traza del error --> {e.StackTrace}");
                 return StatusCode(500, e.Message);
             }
         }
@@ -110,14 +110,14 @@ namespace DemoBackend.Controllers
                 }
                 else
                 {
-                    _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de { grupos.Count } encontrados.");
+                    _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de {grupos.Count} encontrados.");
                     return Ok(grupos);
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> { e.Message }");
-                _logger.LogTrace($"GetListaAreas : Traza del error --> { e.StackTrace }");
+                _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> {e.Message}");
+                _logger.LogTrace($"GetListaAreas : Traza del error --> {e.StackTrace}");
                 return StatusCode(500, e.Message);
             }
         }
@@ -142,14 +142,14 @@ namespace DemoBackend.Controllers
                 }
                 else
                 {
-                    _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de { grupos.Count } encontrados.");
+                    _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de {grupos.Count} encontrados.");
                     return Ok(grupos);
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> { e.Message }");
-                _logger.LogTrace($"GetListaAreas : Traza del error --> { e.StackTrace }");
+                _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> {e.Message}");
+                _logger.LogTrace($"GetListaAreas : Traza del error --> {e.StackTrace}");
                 return StatusCode(500, e.Message);
             }
         }
@@ -174,14 +174,14 @@ namespace DemoBackend.Controllers
                 }
                 else
                 {
-                    _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de { grupos.Count } encontrados.");
+                    _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de {grupos.Count} encontrados.");
                     return Ok(grupos);
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> { e.Message }");
-                _logger.LogTrace($"GetListaAreas : Traza del error --> { e.StackTrace }");
+                _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> {e.Message}");
+                _logger.LogTrace($"GetListaAreas : Traza del error --> {e.StackTrace}");
                 return StatusCode(500, e.Message);
             }
         }
@@ -206,14 +206,14 @@ namespace DemoBackend.Controllers
                 }
                 else
                 {
-                    _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de { grupos.Count } encontrados.");
+                    _logger.LogInformation($"GetListaAreas : El proceso de lista de Areas retorna una lista de {grupos.Count} encontrados.");
                     return Ok(grupos);
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> { e.Message }");
-                _logger.LogTrace($"GetListaAreas : Traza del error --> { e.StackTrace }");
+                _logger.LogError($"GetListaAreas : El proceso de lista de Areas se ejecuta con error --> {e.Message}");
+                _logger.LogTrace($"GetListaAreas : Traza del error --> {e.StackTrace}");
                 return StatusCode(500, e.Message);
             }
         }
