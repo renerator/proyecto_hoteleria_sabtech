@@ -1,0 +1,35 @@
+#########################
+# Visual Studio / .NET  #
+#########################
+
+# Carpetas de VS
+.vs/
+*.user
+*.suo
+
+# Salidas de compilación
+bin/
+obj/
+**/bin/
+**/obj/
+[Bb]uild/
+[Aa]rtifacts/
+
+# Paquetes NuGet locales
+packages/
+*.nupkg
+*.snupkg
+*.nuspec
+
+# Logs y temporales
+*.log
+*.tmp
+
+# VSCode / Rider (opcional)
+.vscode/
+.idea/
+
+# Archivos locales de GitHub Copilot / índices
+**/CopilotIndices*/
+**/SemanticSymbols.db
+**/CodeChunks.db
