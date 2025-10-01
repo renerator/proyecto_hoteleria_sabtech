@@ -13,15 +13,18 @@ namespace DemoBackend.Models.Menu
         [Key]
         [Column("idFuncionalidad")]
         public int IdFuncionalidad { get; set; }
+        [Column("idTipoFuncionalidad")]
+        public int IdTipoFuncionalidad { get; set; }
+       
 
-        [Column("descripcion")]
-        public string Controller { get; set; }
+        [Column("Descripcion")]
+        public string Descripcion { get; set; }
 
         [Column("Pagina")]
         public string Pagina { get; set; }
 
-        [Column("Menu")]
-        public string Menu { get; set; }
+        [Column("EsMenu")]
+        public int EsMenu { get; set; }
     }
 }
 
