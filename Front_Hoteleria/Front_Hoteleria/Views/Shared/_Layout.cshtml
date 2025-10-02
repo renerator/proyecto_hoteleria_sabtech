@@ -41,10 +41,11 @@
 
                     <!-- sidebar menu -->
                     @*@using NotificadorJudicial.Helper
-                        @Html.Menu()*@
+        @Html.Menu()*@
+                    @Html.Action("CargarMenu", "Menu")
 
 
-                    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                    @*<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                         <div class="menu_section">
                             <h3>Menú Usuario</h3>
                             <ul class="nav side-menu">
@@ -80,7 +81,7 @@
                         </div>
 
 
-                    </div>
+                    </div>*@
                     <!-- /sidebar menu -->
 
                 </div>

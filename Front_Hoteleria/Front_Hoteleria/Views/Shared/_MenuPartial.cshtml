@@ -1,0 +1,34 @@
+﻿@model List<Front_Hoteleria.Models.MenuItem>
+
+<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+    <div class="menu_section">
+        <h3>Menú Usuario</h3>
+        <ul class="nav side-menu">
+            @foreach (var item in Model)
+            {
+                <li>
+                    <a>
+                        <i class="@item.Icono"></i> @item.Titulo
+                        @if (item.TieneHijos)
+                        {<span class="fa fa-chevron-down"></span>}
+                    </a>
+
+                    @if (item.TieneHijos)
+                    {
+                        <ul class="nav child_menu">
+                            @foreach (var sub in item.SubMenu)
+                            {
+                                <li>
+                                    <a href="@sub.Url" title="@sub.Url">
+                                         @sub.Titulo
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
