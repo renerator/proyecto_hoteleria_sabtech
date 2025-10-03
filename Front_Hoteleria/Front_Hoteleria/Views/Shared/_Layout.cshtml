@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var token = Session["Token"] as string;
+    var isLogged = !string.IsNullOrEmpty(token);
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -9,141 +13,201 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
-<body class="nav-md">
-    <!-- jQuery (usar https en lugar de http para evitar bloqueos) -->
+<body class="nav-md @(isLogged ? "" : "auth-only")">
+    <!-- jQuery (si tu bundle ya lo trae, elimina esta línea) -->
     <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
 
-    <script src="https://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=AIzaSyDszu0zZXaPKl_66jV2EJN7UIX-OaL-VoM"></script>
+    <!-- Otros scripts globales -->
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/highcharts-3d.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
 
-    <div class="container body">
+    <!-- Contenedor principal: oculto si NO hay login -->
+    <div class="container body @(isLogged ? "" : "d-none")">
         <div class="main_container">
-            <div class="col-md-3 left_col">
-                <div class="left_col scroll-view">
-                    <!-- profile -->
-                    <div class="profile clearfix">
-                        <div class="profile_pic">
-                            <img src="~/images/img.jpg" alt="..." class="img-circle profile_img">
+            @if (isLogged)
+            {
+                <div class="col-md-3 left_col">
+                    <div class="left_col scroll-view">
+                        <!-- profile -->
+                        <div class="profile clearfix">
+                            <div class="profile_pic">
+                                <img src="~/images/img.jpg" alt="..." class="img-circle profile_img">
+                            </div>
+                            <div class="profile_info">
+                                <span>Bienvenido,</span>
+                                <h2>@(Session["Usuario"] ?? "Invitado")</h2>
+                            </div>
                         </div>
-                        <div class="profile_info">
-                            <span>Bienvenido,</span>
-                            <h2>@(Session["Usuario"] ?? "Invitado")</h2>
-                        </div>
+                        <br />
+                        <!-- sidebar menu -->
+                        @Html.Action("CargarMenu", "Menu")
+                        <!-- /sidebar menu -->
                     </div>
-                    <!-- /profile -->
-
-                    <br />
-
-                    <!-- sidebar menu -->
-                    @Html.Action("CargarMenu", "Menu")
-                    <!-- /sidebar menu -->
                 </div>
-            </div>
 
-            <!-- top navigation -->
-            <div class="top_nav">
-                <div class="nav_menu">
-                    <nav>
-                        <div class="nav toggle">
-                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
-                        </div>
-
-                        <ul class="nav navbar-nav navbar-right">
-                            <li class="">
-                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                    <img src="~/images/img.jpg" alt="">@(Session["Usuario"] ?? "Invitado")
-                                    <span class=" fa fa-angle-down"></span>
-                                </a>
-                                <ul class="dropdown-menu dropdown-usermenu pull-right">
-                                    <li>@Html.ActionLink("Perfil", "Index", "Home")</li>
-                                    <li><a href="#">Ayuda</a></li>
-                                    <li>
-                                        <a href="@Url.Action("Logout","Account")" class="fa fa-sign-out pull-right">Cerrar Sesión</a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </nav>
+                <!-- top navigation -->
+                <div class="top_nav">
+                    <div class="nav_menu">
+                        <nav>
+                            <div class="nav toggle">
+                                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                            </div>
+                            <ul class="nav navbar-nav navbar-right">
+                                <li class="">
+                                    <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                        <img src="~/images/img.jpg" alt="">@(Session["Usuario"] ?? "Invitado")
+                                        <span class=" fa fa-angle-down"></span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                        <li>@Html.ActionLink("Perfil", "Index", "Home")</li>
+                                        <li><a href="#">Ayuda</a></li>
+                                        <li>
+                                            <a href="@Url.Action("Logout","Account")" class="fa fa-sign-out pull-right">Cerrar Sesión</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
-            </div>
-            <!-- /top navigation -->
+                <!-- /top navigation -->
+            }
+
             <!-- page content -->
             @RenderBody()
             <!-- /page content -->
-            <!-- footer -->
-            <footer>
-                <div class="pull-right">
-                    Sabtech Group | Sistema Hotelero para la Minería <a href="https://sabtechgroup.com/">conocer más</a>
-                </div>
-                <div class="clearfix"></div>
-            </footer>
-            <!-- /footer -->
-        </div>
 
+            @if (isLogged)
+            {
+                <!-- footer -->
+                <footer>
+                    <div class="pull-right">
+                        Sabtech Group | Sistema Hotelero para la Minería <a href="https://sabtechgroup.com/">conocer más</a>
+                    </div>
+                    <div class="clearfix"></div>
+                </footer>
+                <!-- /footer -->
+            }
+        </div>
     </div>
 
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 
     @* Mostrar login si no hay token en sesión *@
-    @{
-        var token = Session["JWT"] as string;
-    }
-    @if (string.IsNullOrEmpty(token))
+    @if (!isLogged)
     {
+        <style>
+            body.auth-only {
+                background: #0f172a;
+                overflow: hidden;
+            }
+        </style>
         <script>
         (function () {
-            // Handler del botón ingresar
-            document.addEventListener('click', async function (e) {
-                if (e.target && e.target.id === 'btnLogin') {
-                    const usuario = document.getElementById('txtUsuario').value.trim();
-                    const password = document.getElementById('txtPassword').value;
-                    const msg = document.getElementById('loginMsg');
-                    msg.classList.add('d-none'); msg.textContent = '';
+          // 1) Carga del parcial del modal (sin layout)
+          fetch('@Url.Action("LoginModal","Account")', { headers: { "X-Requested-With": "XMLHttpRequest" } })
+            .then(function (r) { return r.text(); })
+            .then(function (html) {
+              var wrap = document.createElement('div');
+              wrap.innerHTML = html;
+              document.body.appendChild(wrap);
 
-                    if (!usuario || !password) {
-                        msg.textContent = 'Ingrese usuario y contraseña.';
-                        msg.classList.remove('d-none');
-                        return;
-                    }
+              var modalEl = document.getElementById('loginModal');
+              if (!modalEl) { console.error('No se encontró #loginModal'); return; }
 
-                    try {
-                        const resp = await fetch('@Url.Action("DoLogin","Account")', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: new URLSearchParams({ usuario, password })
-                        });
-                        const data = await resp.json();
-                        if (!data.ok) {
-                            msg.textContent = data.message || 'No se pudo iniciar sesión.';
-                            msg.classList.remove('d-none');
-                            return;
-                        }
-                        if (data.token) localStorage.setItem("JWT", data.token); // opcional
-                        window.location.reload();
-                    } catch (err) {
-                        msg.textContent = 'Error de red. Intente nuevamente.';
-                        msg.classList.remove('d-none');
-                    }
+              // 2) Mostrar modal (BS5 o BS3/4)
+              try {
+                if (window.bootstrap && bootstrap.Modal) {
+                  bootstrap.Modal.getOrCreateInstance(modalEl, { backdrop:'static', keyboard:false }).show();
+                } else if (window.jQuery && typeof jQuery.fn.modal === 'function') {
+                  jQuery(modalEl).modal({ backdrop:'static', keyboard:false }).modal('show');
+                } else { // fallback
+                  modalEl.style.display = 'block';
+                  modalEl.classList.add('in','show');
+                  document.body.classList.add('modal-open');
                 }
-            });
+              } catch (e) { console.error('Error mostrando modal:', e); }
 
-            // Cargar e insertar el modal dinámicamente
-            fetch('@Url.Action("LoginModal","Account")')
-                .then(r => r.text())
-                .then(html => {
-                    var wrap = document.createElement('div');
-                    wrap.innerHTML = html;
-                    document.body.appendChild(wrap);
-                    $('#loginModal').modal({ backdrop: 'static', keyboard: false });
-                    $('#loginModal').modal('show');
-                })
-                .catch(e => console.error('No se pudo cargar el modal de login', e));
+              // 3) Enlazar eventos del botón ahora que el HTML ya está en el DOM
+              wireLoginHandlers();
+            })
+            .catch(function (e) { console.error('No se pudo cargar el modal de login', e); });
+
+          function wireLoginHandlers() {
+            var btn = document.getElementById('btnLogin');
+            var u   = document.getElementById('txtUsuario');
+            var p   = document.getElementById('txtPassword');
+            var msg = document.getElementById('loginMsg');
+            var chk = document.getElementById('chkRecordar');
+
+            if (!btn || !u || !p || !msg) {
+              console.warn('[Login] DOM incompleto, no se engancharon handlers');
+              return;
+            }
+
+            function setBusy(b){ btn.disabled = b; btn.innerText = b ? 'Ingresando…' : 'Iniciar Sesión'; }
+            function showErr(t){ msg.textContent = t || 'No se pudo iniciar sesión.'; msg.classList.remove('d-none'); }
+            function hideErr(){ msg.textContent = ''; msg.classList.add('d-none'); }
+
+            // Prefill usuario recordado
+            try {
+              var saved = localStorage.getItem('app.u');
+              if (saved) { u.value = saved; if (chk) chk.checked = true; }
+            } catch(e){}
+
+            async function doLogin() {
+              hideErr(); setBusy(true);
+              try {
+                var usuario = (u.value || '').trim();
+                var password = p.value || '';
+                if (!usuario || !password) { showErr('Ingrese usuario y contraseña.'); return; }
+
+                // Recordar usuario (opcional)
+                try {
+                  if (chk && chk.checked) localStorage.setItem('app.u', usuario);
+                  else localStorage.removeItem('app.u');
+                } catch(e){}
+
+                var body = new URLSearchParams({ usuario: usuario, password: password }).toString();
+                var resp = await fetch('@Url.Action("DoLogin","Account")', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'X-Requested-With': 'XMLHttpRequest'
+                    // Si usas AntiForgery:
+                    // 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                  },
+                  body: body
+                });
+
+                var data = null;
+                try { data = await resp.json(); } catch {}
+
+                if (!resp.ok || !data || !data.ok) {
+                  showErr((data && data.message) || 'Credenciales inválidas o API no disponible.');
+                  return;
+                }
+
+                // éxito => Session["JWT"] ya está seteado
+                window.location.reload();
+              } catch (err) {
+                console.error('[Login] Error:', err);
+                showErr('Error de red. Intente nuevamente.');
+              } finally {
+                setBusy(false);
+              }
+            }
+
+            btn.addEventListener('click', doLogin);
+            [u, p].forEach(function (el) {
+              el.addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
+            });
+            console.log('[Login] Handlers conectados');
+          }
         })();
         </script>
     }
 </body>
 </html>
-

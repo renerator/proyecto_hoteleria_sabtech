@@ -84,7 +84,7 @@ namespace Front_Hoteleria.Controllers
                     return Json(new { ok = false, message = "La API no devolvió token." });
 
                 // Guardar en Session para usar en todas las páginas
-                Session["JWT"] = token;
+                Session["Token"] = token;
                 Session["Usuario"] = usuario;
 
                 return Json(new { ok = true, token });

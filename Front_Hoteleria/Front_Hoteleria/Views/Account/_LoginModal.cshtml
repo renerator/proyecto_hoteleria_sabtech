@@ -1,39 +1,230 @@
-﻿<style>
-    /* Modal más ancho y centrado */
-    .modal-content {
-        border-radius: 15px; /* esquinas bien redondeadas */
+﻿@@{ Layout = null; }
+@* _LoginModal.cshtml *@
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<style>
+    /* ====== Ajustes del modal ====== */
+    #loginModal .modal-dialog {
+        max-width: 420px;
+        margin: 1.75rem auto;
     }
+
+    .modal-content {
+        border: 0;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0,0,0,.15);
+        overflow: hidden;
+    }
+
+    .modal-body {
+        background: linear-gradient(180deg, #f7fafc 0%, #ffffff 60%);
+    }
+
+    .modal-backdrop,
+    .modal-backdrop.in,
+    .modal-backdrop.show {
+        opacity: .94 !important;
+        background-color: #0f172a;
+        backdrop-filter: blur(6px);
+    }
+
+    .modal {
+        z-index: 20000 !important;
+    }
+
+    .modal-backdrop {
+        z-index: 19900 !important;
+    }
+
+    body.modal-open {
+        overflow: hidden;
+    }
+
+    /* ====== Encabezado ====== */
+    .login-header {
+        padding: 28px 32px 12px;
+        text-align: center;
+    }
+
+    .login-title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin: 0;
+        font-weight: 800;
+        font-size: 26px;
+        color: #1f2937;
+    }
+
+    .login-badge {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg,#16a34a,#0ea5e9);
+        color: #fff;
+        font-size: 20px;
+    }
+
+    .login-subtitle {
+        color: #6b7280;
+        margin-top: 8px;
+        font-size: 15px;
+        text-align: center;
+    }
+
+    /* ====== Campos ====== */
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .input-group > .input-group-text {
+        background-color: #eef2f7;
+        border: 1px solid #e5e7eb;
+        border-right: 0;
+    }
+
+    .form-control {
+        padding: 0.9rem 1rem;
+        border: 1px solid #e5e7eb;
+        border-left: 0;
+        border-radius: 0 .75rem .75rem 0;
+        background-color: #f5f9ff;
+    }
+
+    .input-group {
+        border-radius: .75rem;
+        overflow: hidden;
+    }
+
+    .help-inline {
+        font-size: .85rem;
+    }
+
+    /* ====== Botón principal ====== */
+    .btn-gradient {
+        width: 100%;
+        border: 0;
+        border-radius: 999px;
+        padding: .95rem 1.25rem;
+        font-weight: 700;
+        background: linear-gradient(90deg,#0ea5e9,#10b981);
+        color: #fff;
+        transition: transform .08s ease, filter .2s ease;
+    }
+
+        .btn-gradient:hover {
+            filter: brightness(0.98);
+            transform: translateY(-1px);
+        }
+
+        .btn-gradient:active {
+            transform: translateY(0);
+        }
+
+    /* ====== Footer corporativo ====== */
+    .login-footer {
+        text-align: center;
+        padding: 18px 24px 26px;
+        border-top: 1px solid #eef2f7;
+        background: #fff;
+    }
+
+    .brand-line {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        color: #0f766e;
+        font-size: 20px;
+    }
+
+    .brand-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background: linear-gradient(135deg,#10b981,#0ea5e9);
+    }
+
+    .app-meta {
+        margin-top: 6px;
+        color: #9ca3af;
+        font-size: .85rem;
+    }
+
+    /* ====== Links ====== */
+    .link-muted {
+        color: #0ea5e9;
+        text-decoration: none;
+    }
+
+        .link-muted:hover {
+            text-decoration: underline;
+        }
 </style>
 
-<div class="modal fade" id="loginModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content shadow-lg">
-            <div class="modal-header bg-primary text-white">
-                <h4 class="modal-title">Hoteleria</h4>
+<div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Header -->
+            <div class="login-header">
+                <h1 class="login-title">
+                    <span class="login-badge"><i class="fa fa-user"></i></span>
+                    Inicio de Sesión
+                </h1>
+                <p class="login-subtitle">Accede a tu cuenta de Sabtech Group</p>
             </div>
-            <div class="modal-body p-5">
-                <div class="form-group mb-3">
-                    <input type="text"
-                           class="form-control form-control-lg"
-                           id="txtUsuario"
-                           placeholder="Usuario"
-                           maxlength="15" />
+
+            <!-- Body -->
+            <div class="modal-body px-4 pb-0">
+                <!-- Usuario -->
+                <label for="txtUsuario" class="form-label mt-2">Usuario</label>
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="fa fa-user"></i></span>
+                    <input type="text" class="form-control" id="txtUsuario" placeholder="Ingresa tu usuario" maxlength="30" autocomplete="username">
                 </div>
-                <div class="form-group mb-3">
-                    <input type="password"
-                           class="form-control form-control-lg"
-                           id="txtPassword"
-                           placeholder="Contraseña"
-                           maxlength="15" />
+
+                <!-- Contraseña -->
+                <label for="txtPassword" class="form-label">Contraseña</label>
+                <div class="input-group mb-2">
+                    <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                    <input type="password" class="form-control" id="txtPassword" placeholder="Ingresa tu contraseña" maxlength="64" autocomplete="current-password">
                 </div>
-                <div id="loginMsg" class="text-danger small d-none"></div>
-            </div>
-            <div class="modal-footer border-0">
-                <button id="btnLogin" type="button" class="btn btn-primary w-100 rounded-pill btn-lg">
-                    Ingresar
+
+                <!-- Utilidades -->
+                <div class="d-flex justify-content-between align-items-center mb-3 actions">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="chkRecordar">
+                        <label class="form-check-label" for="chkRecordar">Recordar usuario</label>
+                    </div>
+                    <a href="#" class="link-muted" id="lnkForgot">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <!-- Mensaje de error -->
+                <div id="loginMsg" class="help-inline text-danger mb-3 d-none" role="alert"></div>
+
+                <!-- Botón -->
+                <button id="btnLogin" type="button" class="btn btn-gradient mb-4">
+                    Iniciar Sesión
                 </button>
+            </div>
+
+            <!-- Footer corporativo -->
+            <div class="login-footer">
+                <div class="brand-line">
+                    <span class="brand-icon"><i class="fa fa-building"></i></span>
+                    Sabtech Group
+                </div>
+                <div class="app-meta">©2025 Sistema Hotelero [Empresa Mandante] · Versión 1.0.0</div>
             </div>
         </div>
     </div>
 </div>
+
 
