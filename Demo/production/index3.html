@@ -13,8 +13,8 @@
 
     <!-- Bootstrap -->
     <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <!-- NProgress -->
     <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
     <!-- iCheck -->
@@ -33,6 +33,276 @@
     <!-- PNotify -->
     <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
     <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    
+    <!-- CSS personalizado para estadísticas -->
+    <style>
+        .dashboard-stat {
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+        }
+        
+        /* Ocultar elementos del menú para usuario admin */
+        .admin-hidden {
+            display: none !important;
+        }
+        
+        /* Estilo para indicar que es usuario admin */
+        .admin-user .admin-title {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        /* Estilos específicos para la vista de admin */
+        .admin-only {
+            display: none;
+        }
+        
+        .admin-user .admin-only {
+            display: block;
+        }
+        
+        .non-admin-only {
+            display: block;
+        }
+        
+        .admin-user .non-admin-only {
+            display: none;
+        }
+        
+        .dashboard-stat .visual {
+            width: 80px;
+            height: 80px;
+            display: block;
+            float: left;
+            padding-top: 10px;
+            padding-left: 15px;
+            margin-bottom: 15px;
+            font-size: 35px;
+            line-height: 35px;
+            color: #FFFFFF;
+            opacity: 0.1;
+        }
+        
+        .dashboard-stat .details {
+            position: absolute;
+            right: 15px;
+            padding-right: 25px;
+        }
+        
+        .dashboard-stat .number {
+            padding-top: 13px;
+            text-align: right;
+            font-size: 34px;
+            font-weight: 700;
+            line-height: 36px;
+            letter-spacing: -1px;
+            margin-bottom: 0px;
+            font-weight: 300;
+        }
+        
+        .dashboard-stat .desc {
+            text-align: right;
+            font-size: 16px;
+            letter-spacing: 0px;
+            font-weight: 300;
+            text-transform: capitalize;
+            opacity: 0.9;
+        }
+        
+        .tile {
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        }
+        
+        .tile:hover {
+            box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+            transform: translateY(-2px);
+        }
+        
+        .fixed_height_120 {
+            height: 120px;
+        }
+        
+        .number {
+            animation: countUp 0.8s ease-out;
+        }
+        
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stat-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .stat-card:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Mejoras adicionales para el diseño */
+        .x_panel.tile {
+            margin-bottom: 15px;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .x_panel.tile:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .table th {
+            font-weight: 600;
+            color: #495057;
+            border-top: none;
+        }
+        
+        .label {
+            border-radius: 3px;
+            font-weight: 500;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+        }
+        
+        .alert-info {
+            border-left: 4px solid #3498db;
+            background-color: #f8f9fa;
+        }
+        
+        .x_title h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .x_title h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0;
+            color: #2c3e50;
+        }
+        
+        /* Estilos para la tabla de servicios */
+        #datatable {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        #datatable thead th {
+            background: #f8f9fa !important;
+            color: #2c3e50 !important;
+            border: 1px solid #dee2e6 !important;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+        
+        #datatable tbody tr {
+            background-color: #ffffff !important;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        #datatable tbody tr:nth-child(even) {
+            background-color: #f8f9fa !important;
+        }
+        
+        #datatable tbody tr:hover {
+            background-color: #e9ecef !important;
+            transition: all 0.3s ease;
+        }
+        
+        #datatable tbody td {
+            border: 1px solid #dee2e6;
+            vertical-align: middle;
+            background-color: inherit !important;
+        }
+        
+        /* Estilos para los botones estándar */
+        .btn-sm {
+            margin: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-sm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        /* Asegurar que los elementos default sean blancos/grises */
+        .label-default {
+            background-color: #f5f5f5 !important;
+            color: #333 !important;
+            border: 1px solid #ddd !important;
+        }
+        
+        .btn-default {
+            background-color: #f5f5f5 !important;
+            color: #333 !important;
+            border: 1px solid #ddd !important;
+        }
+        
+        .btn-default:hover {
+            background-color: #e8e8e8 !important;
+            color: #333 !important;
+            border: 1px solid #ccc !important;
+        }
+        
+        /* Estilos para los badges de habitación */
+        .room-badge {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 12px;
+            display: inline-block;
+        }
+        
+        /* Estilos para los labels de servicio */
+        .service-label {
+            font-size: 11px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        /* Animaciones suaves */
+        .table tbody tr {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Mejoras en el espaciado */
+        .x_content {
+            padding: 20px;
+        }
+        
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    </style>
     
   </head>
 
@@ -68,9 +338,16 @@
                 <ul class="nav side-menu">
                   <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="index.html">Habitaciones</a></li>
-                      <li><a href="index2.html">Reservas</a></li>
-                      <li><a href="index3.html">Servicios</a></li>
+                                               <li><a href="index2.html">Reservas</a></li>
+                                               <li class="current-page"><a href="index3.html">Servicios</a></li>
+                                               <li><a href="index.html">Habitaciones</a></li>
+                                               <li class="admin-hidden"><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
+                                               <li class="admin-hidden"><a href="inventario.html">Inventario</a></li>
+                                               <li class="admin-hidden"><a href="campamentos.html">Campamentos</a></li>
+                                        <li class="admin-hidden"><a href="contratos.html">Contratos</a></li>
+                                        <li class="admin-hidden"><a href="dotaciones.html">Dotaciones</a></li>
+                                        <li class="admin-hidden"><a href="roles.html">Roles</a></li>
+                                        <li class="admin-hidden"><a href="calendario.html">Calendario</a></li>
                     </ul>
                   </li>
                   <!--li><a><i class="fa fa-archive"></i> Mantenimiento <span class="fa fa-chevron-down"></span></a>
@@ -91,7 +368,7 @@
                      
                     </ul>
                   </li>-->
-                   <li><a><i class="fa fa-bars"></i> Mantenedores <span class="fa fa-chevron-down"></span></a>
+                   <li class="admin-hidden"><a><i class="fa fa-bars"></i> Mantenedores <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="#">Habitaciones</a></li>
                       <li><a href="#">Servicios</a></li>
@@ -101,7 +378,7 @@
                      
                     </ul>
                   </li>
-                  <li><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
+                  <li class="admin-hidden"><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="Home.html">Home</a></li>
                     </ul>
@@ -582,92 +859,669 @@
                     </ul>
                     <div class="clearfix"></div>
                   </div>
+                  <div class="x_content" style="margin-bottom: 15px;">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createServiceModal">
+                      <i class="fa fa-plus"></i> Crear Nuevo Servicio
+                    </button>
+                    <button type="button" class="btn btn-warning" id="showPendingServicesBtn">
+                      <i class="fa fa-clock-o"></i> Servicios Pendientes (<span id="pendingCount">0</span>)
+                    </button>
+                    <button type="button" class="btn btn-success" id="autoAssignBtnOriginal">
+                      <i class="fa fa-magic"></i> Asignación Automática
+                    </button>
+                  </div>
+                  
+                  <!-- Panel de Servicios Pendientes -->
+                  <div id="pendingServicesPanel" class="x_content" style="display: none; margin-bottom: 20px; padding: 15px; background-color: #fff3cd; border-radius: 5px; border-left: 4px solid #ffc107;">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <h4><i class="fa fa-exclamation-triangle"></i> Servicios Pendientes - Asignación Automática</h4>
+                        <p class="text-muted">Los siguientes servicios requieren asignación inmediata al personal de aseo:</p>
+                      </div>
+                    </div>
+                    
+                    <div class="row" id="pendingServicesList">
+                      <!-- Los servicios pendientes se cargarán aquí dinámicamente -->
+                    </div>
+                    
+                    <div class="row" style="margin-top: 15px;">
+                      <div class="col-md-12">
+                        <div class="alert alert-info" style="margin-bottom: 0;">
+                          <strong>Personal de Aseo Disponible:</strong>
+                          <span id="availableStaff">Cargando...</span>
+                          <button type="button" class="btn btn-xs btn-primary pull-right" id="refreshStaffBtn">
+                            <i class="fa fa-refresh"></i> Actualizar Personal
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Panel de Estadísticas de Servicios -->
+                  <div class="x_content" style="margin-bottom: 20px;">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="x_panel">
+                          <div class="x_title">
+                            <h2><i class="fa fa-bar-chart"></i> Estadísticas de Eficiencia de Servicios</h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                              <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                              <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
                   <div class="x_content">
-                    <table id="datatable" class="table table-striped table-bordered">
+                            <!-- Estadísticas Principales -->
+                            <div class="row">
+                              <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="x_panel tile stat-card fixed_height_120" style="background: linear-gradient(135deg, #ff9800, #ffc107); color: white;">
+                                  <div class="x_title">
+                                    <h2><i class="fa fa-clock-o"></i> Pendientes</h2>
+                                    <div class="clearfix"></div>
+                                  </div>
+                                  <div class="x_content">
+                                    <div class="dashboard-stat">
+                                      <div class="visual">
+                                        <i class="fa fa-clock-o"></i>
+                                      </div>
+                                      <div class="details">
+                                        <div class="number" id="statServiciosPendientes">0</div>
+                                        <div class="desc">Servicios Pendientes</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="x_panel tile stat-card fixed_height_120" style="background: linear-gradient(135deg, #4caf50, #8bc34a); color: white;">
+                                  <div class="x_title">
+                                    <h2><i class="fa fa-check-circle"></i> Completados</h2>
+                                    <div class="clearfix"></div>
+                                  </div>
+                                  <div class="x_content">
+                                    <div class="dashboard-stat">
+                                      <div class="visual">
+                                        <i class="fa fa-check-circle"></i>
+                                      </div>
+                                      <div class="details">
+                                        <div class="number" id="statServiciosCompletados">0</div>
+                                        <div class="desc">Servicios Completados</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="x_panel tile stat-card fixed_height_120" style="background: linear-gradient(135deg, #2196f3, #03a9f4); color: white;">
+                                  <div class="x_title">
+                                    <h2><i class="fa fa-tachometer"></i> Tiempo Promedio</h2>
+                                    <div class="clearfix"></div>
+                                  </div>
+                                  <div class="x_content">
+                                    <div class="dashboard-stat">
+                                      <div class="visual">
+                                        <i class="fa fa-tachometer"></i>
+                                      </div>
+                                      <div class="details">
+                                        <div class="number" id="statTiempoPromedio">0 min</div>
+                                        <div class="desc">Tiempo de Respuesta</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="x_panel tile stat-card fixed_height_120" style="background: linear-gradient(135deg, #9c27b0, #673ab7); color: white;">
+                                  <div class="x_title">
+                                    <h2><i class="fa fa-percent"></i> Eficiencia</h2>
+                                    <div class="clearfix"></div>
+                                  </div>
+                                  <div class="x_content">
+                                    <div class="dashboard-stat">
+                                      <div class="visual">
+                                        <i class="fa fa-percent"></i>
+                                      </div>
+                                      <div class="details">
+                                        <div class="number" id="statEficiencia">0%</div>
+                                        <div class="desc">Tasa de Eficiencia</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <!-- Estadísticas Detalladas -->
+                            <div class="row" style="margin-top: 15px;">
+                              <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="x_panel tile stat-card fixed_height_120" style="background: linear-gradient(135deg, #f44336, #e91e63); color: white;">
+                                  <div class="x_title">
+                                    <h2><i class="fa fa-exclamation-triangle"></i> Urgentes</h2>
+                                    <div class="clearfix"></div>
+                                  </div>
+                                  <div class="x_content">
+                                    <div class="dashboard-stat">
+                                      <div class="visual">
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                      </div>
+                                      <div class="details">
+                                        <div class="number" id="statServiciosUrgentes">0</div>
+                                        <div class="desc">Servicios Urgentes</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="x_panel tile stat-card fixed_height_120" style="background: linear-gradient(135deg, #00bcd4, #009688); color: white;">
+                                  <div class="x_title">
+                                    <h2><i class="fa fa-users"></i> Personal</h2>
+                                    <div class="clearfix"></div>
+                                  </div>
+                                  <div class="x_content">
+                                    <div class="dashboard-stat">
+                                      <div class="visual">
+                                        <i class="fa fa-users"></i>
+                                      </div>
+                                      <div class="details">
+                                        <div class="number" id="statPersonalActivo">0</div>
+                                        <div class="desc">Personal Activo</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="x_panel tile stat-card fixed_height_120" style="background: linear-gradient(135deg, #ff5722, #ff9800); color: white;">
+                                  <div class="x_title">
+                                    <h2><i class="fa fa-clock-o"></i> Más Lento</h2>
+                                    <div class="clearfix"></div>
+                                  </div>
+                                  <div class="x_content">
+                                    <div class="dashboard-stat">
+                                      <div class="visual">
+                                        <i class="fa fa-clock-o"></i>
+                                      </div>
+                                      <div class="details">
+                                        <div class="number" id="statTiempoMasLento">0 min</div>
+                                        <div class="desc">Tiempo Más Lento</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div class="col-md-3 col-sm-6 col-xs-12">
+                                <div class="x_panel tile stat-card fixed_height_120" style="background: linear-gradient(135deg, #795548, #607d8b); color: white;">
+                                  <div class="x_title">
+                                    <h2><i class="fa fa-list"></i> Total</h2>
+                                    <div class="clearfix"></div>
+                                  </div>
+                                  <div class="x_content">
+                                    <div class="dashboard-stat">
+                                      <div class="visual">
+                                        <i class="fa fa-list"></i>
+                                      </div>
+                                      <div class="details">
+                                        <div class="number" id="statTotalServicios">0</div>
+                                        <div class="desc">Total Servicios</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <!-- Panel de Servicios Pendientes y Asignación Automática - Solo para Admin -->
+                            <div class="row admin-only" style="margin-top: 20px;">
+                              <div class="col-md-12">
+                                <div class="x_panel">
+                                  <div class="x_title">
+                                    <h2><i class="fa fa-broom"></i> Gestión de Servicios Pendientes</h2>
+                                    <div class="clearfix"></div>
+                                  </div>
+                                  <div class="x_content">
+                                    <div class="row">
+                                      <!-- Servicios Pendientes -->
+                                      <div class="col-md-8">
+                                        <div class="panel panel-warning">
+                                          <div class="panel-heading">
+                                            <h3 class="panel-title"><i class="fa fa-clock-o"></i> Servicios Pendientes</h3>
+                                          </div>
+                                          <div class="panel-body">
+                                            <div class="table-responsive">
+                                              <table class="table table-striped" id="pendingServicesTable">
+                                                <thead>
+                                                  <tr>
+                                                    <th>Habitación</th>
+                                                    <th>Servicio</th>
+                                                    <th>Prioridad</th>
+                                                    <th>Tiempo</th>
+                                                    <th>Acciones</th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody id="pendingServicesBody">
+                                                  <!-- Se llena dinámicamente -->
+                                                </tbody>
+                                              </table>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      <!-- Asignación Automática -->
+                                      <div class="col-md-4">
+                                        <div class="panel panel-info">
+                                          <div class="panel-heading">
+                                            <h3 class="panel-title"><i class="fa fa-magic"></i> Asignación Automática</h3>
+                                          </div>
+                                          <div class="panel-body">
+                                            <div class="form-group">
+                                              <label>Personal de Aseo Disponible:</label>
+                                              <select class="form-control" id="cleaningStaffSelect" multiple>
+                                                <option value="maria_gonzalez">María González - Limpieza</option>
+                                                <option value="carlos_rodriguez">Carlos Rodríguez - Limpieza</option>
+                                                <option value="ana_martinez">Ana Martínez - Limpieza</option>
+                                                <option value="luis_fernandez">Luis Fernández - Limpieza</option>
+                                              </select>
+                                            </div>
+                                            <div class="form-group">
+                                              <label>Asignar por:</label>
+                                              <select class="form-control" id="assignmentMethod">
+                                                <option value="proximity">Proximidad</option>
+                                                <option value="workload">Carga de trabajo</option>
+                                                <option value="skill">Especialización</option>
+                                                <option value="manual">Manual</option>
+                                              </select>
+                                            </div>
+                                            <button type="button" class="btn btn-success btn-block" id="autoAssignBtn">
+                                              <i class="fa fa-magic"></i> Asignación Automática
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-block" id="assignAllBtn">
+                                              <i class="fa fa-users"></i> Asignar Todos
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <!-- Panel de Creación de Solicitudes de Servicios - Solo para Admin -->
+                            <div class="row admin-only" style="margin-top: 20px;">
+                              <div class="col-md-12">
+                                <div class="x_panel">
+                                  <div class="x_title">
+                                    <h2><i class="fa fa-plus-circle"></i> Crear Solicitudes de Servicios</h2>
+                                    <div class="clearfix"></div>
+                                  </div>
+                                  <div class="x_content">
+                                    <div class="row">
+                                      <div class="col-md-6">
+                                        <div class="panel panel-primary">
+                                          <div class="panel-heading">
+                                            <h3 class="panel-title"><i class="fa fa-bed"></i> Servicio de Habitación</h3>
+                                          </div>
+                                          <div class="panel-body">
+                                            <form id="roomServiceForm">
+                                              <div class="form-group">
+                                                <label>Habitación:</label>
+                                                <select class="form-control" id="roomSelect" required>
+                                                  <option value="">Seleccionar habitación...</option>
+                                                  <option value="101">Habitación 101</option>
+                                                  <option value="102">Habitación 102</option>
+                                                  <option value="103">Habitación 103</option>
+                                                  <option value="201">Habitación 201</option>
+                                                  <option value="202">Habitación 202</option>
+                                                </select>
+                                              </div>
+                                              <div class="form-group">
+                                                <label>Tipo de Servicio:</label>
+                                                <select class="form-control" id="roomServiceType" required>
+                                                  <option value="">Seleccionar servicio...</option>
+                                                  <option value="limpieza">Limpieza General</option>
+                                                  <option value="mantenimiento">Mantenimiento</option>
+                                                  <option value="reparacion">Reparación</option>
+                                                  <option value="suministros">Suministros</option>
+                                                </select>
+                                              </div>
+                                              <div class="form-group">
+                                                <label>Prioridad:</label>
+                                                <select class="form-control" id="roomPriority" required>
+                                                  <option value="baja">Baja</option>
+                                                  <option value="media" selected>Media</option>
+                                                  <option value="alta">Alta</option>
+                                                  <option value="urgente">Urgente</option>
+                                                </select>
+                                              </div>
+                                              <div class="form-group">
+                                                <label>Descripción:</label>
+                                                <textarea class="form-control" id="roomDescription" rows="3" placeholder="Descripción del servicio requerido..." required></textarea>
+                                              </div>
+                                              <button type="submit" class="btn btn-primary btn-block">
+                                                <i class="fa fa-plus"></i> Crear Solicitud
+                                              </button>
+                                            </form>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      <div class="col-md-6">
+                                        <div class="panel panel-success">
+                                          <div class="panel-heading">
+                                            <h3 class="panel-title"><i class="fa fa-building"></i> Servicio de Área Común</h3>
+                                          </div>
+                                          <div class="panel-body">
+                                            <form id="commonAreaServiceForm">
+                                              <div class="form-group">
+                                                <label>Área:</label>
+                                                <select class="form-control" id="areaSelect" required>
+                                                  <option value="">Seleccionar área...</option>
+                                                  <option value="cocina">Cocina</option>
+                                                  <option value="comedor">Comedor</option>
+                                                  <option value="baño_comun">Baño Común</option>
+                                                  <option value="sala_recreacion">Sala de Recreación</option>
+                                                  <option value="exterior">Área Exterior</option>
+                                                </select>
+                                              </div>
+                                              <div class="form-group">
+                                                <label>Tipo de Servicio:</label>
+                                                <select class="form-control" id="areaServiceType" required>
+                                                  <option value="">Seleccionar servicio...</option>
+                                                  <option value="limpieza">Limpieza General</option>
+                                                  <option value="mantenimiento">Mantenimiento</option>
+                                                  <option value="reparacion">Reparación</option>
+                                                  <option value="suministros">Suministros</option>
+                                                </select>
+                                              </div>
+                                              <div class="form-group">
+                                                <label>Prioridad:</label>
+                                                <select class="form-control" id="areaPriority" required>
+                                                  <option value="baja">Baja</option>
+                                                  <option value="media" selected>Media</option>
+                                                  <option value="alta">Alta</option>
+                                                  <option value="urgente">Urgente</option>
+                                                </select>
+                                              </div>
+                                              <div class="form-group">
+                                                <label>Descripción:</label>
+                                                <textarea class="form-control" id="areaDescription" rows="3" placeholder="Descripción del servicio requerido..." required></textarea>
+                                              </div>
+                                              <button type="submit" class="btn btn-success btn-block">
+                                                <i class="fa fa-plus"></i> Crear Solicitud
+                                              </button>
+                                            </form>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <!-- Panel de Requerimientos de Reparación - Solo para Admin -->
+                            <div class="row admin-only" style="margin-top: 20px;">
+                              <div class="col-md-12">
+                                <div class="x_panel">
+                                  <div class="x_title">
+                                    <h2><i class="fa fa-wrench"></i> Requerimientos de Reparación</h2>
+                                    <div class="clearfix"></div>
+                                  </div>
+                                  <div class="x_content">
+                                    <div class="row">
+                                      <div class="col-md-8">
+                                        <div class="table-responsive">
+                                          <table class="table table-striped" id="repairRequestsTable">
+                                            <thead>
+                                              <tr>
+                                                <th>ID</th>
+                                                <th>Ubicación</th>
+                                                <th>Tipo</th>
+                                                <th>Descripción</th>
+                                                <th>Prioridad</th>
+                                                <th>Estado</th>
+                                                <th>Fecha</th>
+                                                <th>Acciones</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody id="repairRequestsBody">
+                                              <!-- Se llena dinámicamente -->
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      </div>
+                                      
+                                      <div class="col-md-4">
+                                        <div class="panel panel-danger">
+                                          <div class="panel-heading">
+                                            <h3 class="panel-title"><i class="fa fa-plus"></i> Nuevo Requerimiento</h3>
+                                          </div>
+                                          <div class="panel-body">
+                                            <form id="repairRequestForm">
+                                              <div class="form-group">
+                                                <label>Ubicación:</label>
+                                                <select class="form-control" id="repairLocation" required>
+                                                  <option value="">Seleccionar ubicación...</option>
+                                                  <option value="habitacion">Habitación</option>
+                                                  <option value="pabellon">Pabellón</option>
+                                                  <option value="banio">Baño</option>
+                                                  <option value="area_comun">Área Común</option>
+                                                </select>
+                                              </div>
+                                              <div class="form-group">
+                                                <label>Habitación/Área específica:</label>
+                                                <input type="text" class="form-control" id="repairSpecificLocation" placeholder="Ej: Habitación 205" required>
+                                              </div>
+                                              <div class="form-group">
+                                                <label>Tipo de Reparación:</label>
+                                                <select class="form-control" id="repairType" required>
+                                                  <option value="">Seleccionar tipo...</option>
+                                                  <option value="plomeria">Plomería</option>
+                                                  <option value="electricidad">Electricidad</option>
+                                                  <option value="carpinteria">Carpintería</option>
+                                                  <option value="pintura">Pintura</option>
+                                                  <option value="otros">Otros</option>
+                                                </select>
+                                              </div>
+                                              <div class="form-group">
+                                                <label>Prioridad:</label>
+                                                <select class="form-control" id="repairPriority" required>
+                                                  <option value="baja">Baja</option>
+                                                  <option value="media" selected>Media</option>
+                                                  <option value="alta">Alta</option>
+                                                  <option value="critica">Crítica</option>
+                                                </select>
+                                              </div>
+                                              <div class="form-group">
+                                                <label>Descripción del Problema:</label>
+                                                <textarea class="form-control" id="repairDescription" rows="3" placeholder="Describa el problema en detalle..." required></textarea>
+                                              </div>
+                                              <button type="submit" class="btn btn-danger btn-block">
+                                                <i class="fa fa-wrench"></i> Crear Requerimiento
+                                              </button>
+                                            </form>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <!-- Tabla de Rendimiento por Personal -->
+                            <div class="row" style="margin-top: 25px;">
+                              <div class="col-md-12">
+                                <div class="x_panel">
+                                  <div class="x_title">
+                                    <h4><i class="fa fa-users"></i> Rendimiento del Personal</h4>
+                                    <div class="clearfix"></div>
+                                  </div>
+                                  <div class="x_content">
+                                    <table class="table table-striped table-hover" id="staffPerformanceTable" style="margin-bottom: 0;">
+                                      <thead style="background-color: #f8f9fa;">
+                                        <tr>
+                                          <th style="padding: 12px 8px; border-bottom: 2px solid #dee2e6;"><i class="fa fa-user"></i> Personal</th>
+                                          <th style="padding: 12px 8px; border-bottom: 2px solid #dee2e6;"><i class="fa fa-cog"></i> Especialidad</th>
+                                          <th style="padding: 12px 8px; border-bottom: 2px solid #dee2e6;"><i class="fa fa-check-circle"></i> Completados</th>
+                                          <th style="padding: 12px 8px; border-bottom: 2px solid #dee2e6;"><i class="fa fa-clock-o"></i> Tiempo Promedio</th>
+                                          <th style="padding: 12px 8px; border-bottom: 2px solid #dee2e6;"><i class="fa fa-percent"></i> Eficiencia</th>
+                                          <th style="padding: 12px 8px; border-bottom: 2px solid #dee2e6;"><i class="fa fa-circle"></i> Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                                        <!-- Se llenará dinámicamente -->
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <!-- Indicador de Actualización -->
+                            <div class="row">
+                              <div class="col-md-12">
+                                <div class="alert alert-info" style="margin-bottom: 0;">
+                                  <i class="fa fa-refresh fa-spin"></i> 
+                                  <strong>Estadísticas en tiempo real:</strong> 
+                                  Se actualizan automáticamente cada <span id="statsUpdateInterval">60</span> segundos. 
+                                  Última actualización: <span id="statsLastUpdate">--</span>
+                                  <button type="button" class="btn btn-xs btn-primary pull-right" id="refreshServiceStatsBtn">
+                                    <i class="fa fa-refresh"></i> Actualizar Ahora
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="x_content">
+                    <table id="datatable" class="table table-striped table-hover table-bordered" style="margin-bottom: 0;">
                       <thead>
                         <tr>
-                          <th>Habitacion</th>
-                          <th>Servicio</th>
-                          <th>Fecha</th>
-                          <th>Hora</th>
-                          <th>Prioridad</th>
-                          <th>Opciones</th>
+                          <th style="padding: 15px 10px; font-weight: 600;">
+                            <i class="fa fa-home"></i> Habitación
+                          </th>
+                          <th style="padding: 15px 10px; font-weight: 600;">
+                            <i class="fa fa-cog"></i> Servicio
+                          </th>
+                          <th style="padding: 15px 10px; font-weight: 600;">
+                            <i class="fa fa-calendar"></i> Fecha
+                          </th>
+                          <th style="padding: 15px 10px; font-weight: 600;">
+                            <i class="fa fa-clock-o"></i> Hora
+                          </th>
+                          <th style="padding: 15px 10px; font-weight: 600;">
+                            <i class="fa fa-exclamation-triangle"></i> Prioridad
+                          </th>
+                          <th style="padding: 15px 10px; font-weight: 600; text-align: center;">
+                            <i class="fa fa-cogs"></i> Opciones
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                          <td>0005</td>
-                          <td>Limpieza</td>
+                          <td>
+                            <span class="label label-default">0005</span>
+                          </td>
+                          <td>
+                            <span class="label label-default">
+                              <i class="fa fa-broom"></i> Limpieza
+                            </span>
+                          </td>
                           <td>2025/09/15</td>
                           <td>10:00</td>
-                          <td>Alta</td>
                           <td>
-                              <button class="btn btn-success" title="Aprobar" onclick="new PNotify({
-                                  title: 'Aprobar',
-                                  text: 'El servicio solicitado ha sido aceptado y enviado al panel de servicios',
-                                  type: 'success',
-                                  hide: false,
-                                  styling: 'bootstrap3'
-                              });"><i class="fa fa-check-square-o"></i></button>
-                              <button type="button" class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></button>
-                          
-                                <button class="btn btn-danger" title="Rechazar" onclick="new PNotify({
-                                  title: 'Rechazar',
-                                  text: 'El servicio ha sido rechazado. ',
-                                  type: 'error',
-                                  hide: false,
-                                  styling: 'bootstrap3'
-                              });"><i class="fa fa-trash-o"></i></button>
+                            <span class="label label-warning">
+                              <i class="fa fa-exclamation-triangle"></i> Alta
+                            </span>
+                          </td>
+                          <td>
+                            <button class="btn btn-default btn-sm view-service-btn" title="Ver" data-toggle="modal" data-target="#viewServiceModal" data-habitacion="0005" data-servicio="Limpieza" data-fecha="2025/09/15" data-hora="10:00" data-prioridad="Alta" data-estado="Pendiente">
+                              <i class="fa fa-eye"></i>
+                            </button>
+                            <button class="btn btn-success btn-sm approve-service-btn" title="Aprobar" data-habitacion="0005" data-servicio="Limpieza" data-fecha="2025/09/15" data-hora="10:00" data-prioridad="Alta">
+                              <i class="fa fa-check-square-o"></i>
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm edit-service-btn" title="Editar" data-toggle="modal" data-target="#viewServiceModal" data-habitacion="0005" data-servicio="Limpieza" data-fecha="2025/09/15" data-hora="10:00" data-prioridad="Alta" data-estado="Pendiente">
+                              <i class="fa fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm delete-service-btn" title="Eliminar" data-habitacion="0005" data-servicio="Limpieza">
+                              <i class="fa fa-trash-o"></i>
+                            </button>
                           </td>
                         </tr>
                          <tr>
-                          <td>0005</td>
-                          <td>Limpieza</td>
-                          <td>2025/09/15</td>
-                          <td>10:00</td>
-                          <td>Alta</td>
                           <td>
-                              <button class="btn btn-success" title="Aprobar" onclick="new PNotify({
-                                  title: 'Aprobar',
-                                  text: 'El servicio solicitado ha sido aceptado y enviado al panel de servicios',
-                                  type: 'success',
-                                  hide: false,
-                                  styling: 'bootstrap3'
-                              });"><i class="fa fa-check-square-o"></i></button>
-                              <button type="button" class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></button>
-                          
-                                <button class="btn btn-danger" title="Rechazar" onclick="new PNotify({
-                                  title: 'Rechazar',
-                                  text: 'El servicio ha sido rechazado. ',
-                                  type: 'error',
-                                  hide: false,
-                                  styling: 'bootstrap3'
-                              });"><i class="fa fa-trash-o"></i></button>
+                            <span class="label label-default">0008</span>
+                          </td>
+                          <td>
+                            <span class="label label-default">
+                              <i class="fa fa-wrench"></i> Mantenimiento
+                            </span>
+                          </td>
+                          <td>2025/09/15</td>
+                          <td>14:30</td>
+                          <td>
+                            <span class="label label-danger">
+                              <i class="fa fa-exclamation-triangle"></i> Urgente
+                            </span>
+                          </td>
+                          <td>
+                            <button class="btn btn-default btn-sm view-service-btn" title="Ver" data-toggle="modal" data-target="#viewServiceModal" data-habitacion="0008" data-servicio="Mantenimiento" data-fecha="2025/09/15" data-hora="14:30" data-prioridad="Urgente" data-estado="En Proceso">
+                              <i class="fa fa-eye"></i>
+                            </button>
+                            <button class="btn btn-success btn-sm approve-service-btn" title="Aprobar" data-habitacion="0008" data-servicio="Mantenimiento" data-fecha="2025/09/15" data-hora="14:30" data-prioridad="Urgente">
+                              <i class="fa fa-check-square-o"></i>
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm edit-service-btn" title="Editar" data-toggle="modal" data-target="#viewServiceModal" data-habitacion="0008" data-servicio="Mantenimiento" data-fecha="2025/09/15" data-hora="14:30" data-prioridad="Urgente" data-estado="En Proceso">
+                              <i class="fa fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm delete-service-btn" title="Eliminar" data-habitacion="0008" data-servicio="Mantenimiento">
+                              <i class="fa fa-trash-o"></i>
+                            </button>
                           </td>
                         </tr>
                          <tr>
-                          <td>0005</td>
-                          <td>Limpieza</td>
-                          <td>2025/09/15</td>
-                          <td>10:00</td>
-                          <td>Alta</td>
                           <td>
-                              <button class="btn btn-success" title="Aprobar" onclick="new PNotify({
-                                  title: 'Aprobar',
-                                  text: 'El servicio solicitado ha sido aceptado y enviado al panel de servicios',
-                                  type: 'success',
-                                  hide: false,
-                                  styling: 'bootstrap3'
-                              });"><i class="fa fa-check-square-o"></i></button>
-                              <button type="button" class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></button>
-                          
-                                <button class="btn btn-danger" title="Rechazar" onclick="new PNotify({
-                                  title: 'Rechazar',
-                                  text: 'El servicio ha sido rechazado. ',
-                                  type: 'error',
-                                  hide: false,
-                                  styling: 'bootstrap3'
-                              });"><i class="fa fa-trash-o"></i></button>
+                            <span class="label label-default">0012</span>
+                          </td>
+                          <td>
+                            <span class="label label-default">
+                              <i class="fa fa-wifi"></i> WiFi
+                            </span>
+                          </td>
+                          <td>2025/09/15</td>
+                          <td>16:45</td>
+                          <td>
+                            <span class="label label-default">
+                              <i class="fa fa-info-circle"></i> Normal
+                            </span>
+                          </td>
+                          <td>
+                            <button class="btn btn-default btn-sm view-service-btn" title="Ver" data-toggle="modal" data-target="#viewServiceModal" data-habitacion="0012" data-servicio="WiFi" data-fecha="2025/09/15" data-hora="16:45" data-prioridad="Normal" data-estado="Completado">
+                              <i class="fa fa-eye"></i>
+                            </button>
+                            <button class="btn btn-success btn-sm approve-service-btn" title="Aprobar" data-habitacion="0012" data-servicio="WiFi" data-fecha="2025/09/15" data-hora="16:45" data-prioridad="Normal">
+                              <i class="fa fa-check-square-o"></i>
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm edit-service-btn" title="Editar" data-toggle="modal" data-target="#viewServiceModal" data-habitacion="0012" data-servicio="WiFi" data-fecha="2025/09/15" data-hora="16:45" data-prioridad="Normal" data-estado="Completado">
+                              <i class="fa fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm delete-service-btn" title="Eliminar" data-habitacion="0012" data-servicio="WiFi">
+                              <i class="fa fa-trash-o"></i>
+                            </button>
                           </td>
                         </tr>
                         
@@ -682,6 +1536,118 @@
           </div>
         </div>
         <!-- /page content -->
+
+       <!-- Modal para Crear Servicio -->
+       <div class="modal fade" id="createServiceModal" tabindex="-1" role="dialog" aria-labelledby="createServiceModalLabel">
+           <div class="modal-dialog modal-lg" role="document">
+               <div class="modal-content">
+                   <div class="modal-header">
+                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                           <span aria-hidden="true">&times;</span>
+                       </button>
+                       <h4 class="modal-title" id="createServiceModalLabel">Crear Nuevo Servicio</h4>
+                   </div>
+                   <div class="modal-body">
+                       <form id="createServiceForm">
+                           <div class="row">
+                               <div class="col-md-6">
+                                   <div class="form-group">
+                                       <label for="habitacion">Habitación *</label>
+                                       <input type="text" class="form-control" id="habitacion" name="habitacion" required>
+                                   </div>
+                               </div>
+                               <div class="col-md-6">
+                                   <div class="form-group">
+                                       <label for="servicio">Tipo de Servicio *</label>
+                                       <select class="form-control" id="servicio" name="servicio" required>
+                                           <option value="">Seleccionar...</option>
+                                           <option value="Limpieza">Limpieza</option>
+                                           <option value="Lavanderia">Lavandería</option>
+                                           <option value="WiFi">Solicitud WiFi</option>
+                                           <option value="Comida">Comida</option>
+                                           <option value="Mantenimiento">Mantenimiento</option>
+                                           <option value="Transporte">Transporte</option>
+                                           <option value="Otros">Otros</option>
+                                       </select>
+                                   </div>
+                               </div>
+                           </div>
+                           <div class="row">
+                               <div class="col-md-6">
+                                   <div class="form-group">
+                                       <label for="fecha">Fecha *</label>
+                                       <input type="date" class="form-control" id="fecha" name="fecha" required>
+                                   </div>
+                               </div>
+                               <div class="col-md-6">
+                                   <div class="form-group">
+                                       <label for="hora">Hora *</label>
+                                       <input type="time" class="form-control" id="hora" name="hora" required>
+                                   </div>
+                               </div>
+                           </div>
+                           <div class="row">
+                               <div class="col-md-6">
+                                   <div class="form-group">
+                                       <label for="prioridad">Prioridad *</label>
+                                       <select class="form-control" id="prioridad" name="prioridad" required>
+                                           <option value="">Seleccionar...</option>
+                                           <option value="Baja">Baja</option>
+                                           <option value="Media">Media</option>
+                                           <option value="Alta">Alta</option>
+                                           <option value="Urgente">Urgente</option>
+                                       </select>
+                                   </div>
+                               </div>
+                               <div class="col-md-6">
+                                   <div class="form-group">
+                                       <label for="estado">Estado</label>
+                                       <select class="form-control" id="estado" name="estado">
+                                           <option value="Pendiente">Pendiente</option>
+                                           <option value="En Proceso">En Proceso</option>
+                                           <option value="Completado">Completado</option>
+                                           <option value="Cancelado">Cancelado</option>
+                                       </select>
+                                   </div>
+                               </div>
+                           </div>
+                           <div class="form-group">
+                               <label for="observaciones">Observaciones</label>
+                               <textarea class="form-control" id="observaciones" name="observaciones" rows="3" placeholder="Detalles adicionales del servicio..."></textarea>
+                           </div>
+                       </form>
+                   </div>
+                   <div class="modal-footer">
+                       <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                       <button type="button" class="btn btn-primary" id="saveServiceBtn">Guardar Servicio</button>
+                   </div>
+               </div>
+           </div>
+       </div>
+
+       <!-- Modal para Ver/Editar Servicio -->
+       <div class="modal fade" id="viewServiceModal" tabindex="-1" role="dialog" aria-labelledby="viewServiceModalLabel">
+           <div class="modal-dialog modal-lg" role="document">
+               <div class="modal-content">
+                   <div class="modal-header">
+                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                           <span aria-hidden="true">&times;</span>
+                       </button>
+                       <h4 class="modal-title" id="viewServiceModalLabel">Detalles del Servicio</h4>
+                   </div>
+                   <div class="modal-body">
+                       <div id="serviceDetails">
+                           <!-- Los detalles se cargarán aquí dinámicamente -->
+                       </div>
+                   </div>
+                   <div class="modal-footer">
+                       <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                       <button type="button" class="btn btn-success" id="approveServiceBtn">Aprobar Servicio</button>
+                       <button type="button" class="btn btn-warning" id="editServiceBtn">Editar</button>
+                   </div>
+               </div>
+           </div>
+       </div>
 
        <!-- footer content -->
         <footer>
@@ -734,6 +1700,27 @@
     <!-- Custom Theme Scripts -->
     <script src="../build/js/custom.min.js"></script>
     
+    <!-- Script simple para mantener texto Admin -->
+    <script>
+        $(document).ready(function() {
+            // Función simple para mantener Admin
+            function setAdminText() {
+                $('.profile_info h2').text('Admin');
+                $('.user-profile').contents().filter(function() {
+                    return this.nodeType === 3 && this.nodeValue.trim() !== '';
+                }).each(function() {
+                    this.nodeValue = 'Admin';
+                });
+            }
+            
+            // Ejecutar inmediatamente
+            setAdminText();
+            
+            // Ejecutar cada segundo para mantenerlo
+            setInterval(setAdminText, 1000);
+        });
+    </script>
+    
     <!-- Datatables -->
     <script src="../vendors/datatables.net/js/jquery.dataTables.min.js"></script>
     <script src="../vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
@@ -754,6 +1741,1563 @@
         <!-- PNotify -->
     <script src="../vendors/pnotify/dist/pnotify.js"></script>
     <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+
+    <!-- Scripts para funcionalidad de Servicios -->
+    <script>
+        $(document).ready(function() {
+            // Función para obtener la etiqueta de estado correcta
+            function getEstadoLabel(estado) {
+                switch(estado) {
+                    case 'Pendiente':
+                        return '<span class="label label-warning">Pendiente</span>';
+                    case 'En Proceso':
+                        return '<span class="label label-info">En Proceso</span>';
+                    case 'Completado':
+                        return '<span class="label label-success">Completado</span>';
+                    case 'Cancelado':
+                        return '<span class="label label-danger">Cancelado</span>';
+                    default:
+                        return '<span class="label label-warning">Pendiente</span>';
+                }
+            }
+            
+            // Función para obtener la etiqueta de prioridad correcta
+            function getPrioridadLabel(prioridad) {
+                switch(prioridad) {
+                    case 'Baja':
+                        return '<span class="label label-default">Baja</span>';
+                    case 'Media':
+                        return '<span class="label label-primary">Media</span>';
+                    case 'Alta':
+                        return '<span class="label label-warning">Alta</span>';
+                    case 'Urgente':
+                        return '<span class="label label-danger">Urgente</span>';
+                    default:
+                        return '<span class="label label-default">Baja</span>';
+                }
+            }
+            
+            // Función para cargar datos de servicio en el modal
+            function loadServiceData(button) {
+                var habitacion = $(button).data('habitacion');
+                var servicio = $(button).data('servicio');
+                var fecha = $(button).data('fecha');
+                var hora = $(button).data('hora');
+                var prioridad = $(button).data('prioridad');
+                var estado = $(button).data('estado') || 'Pendiente';
+                
+                console.log('Cargando datos:', {habitacion, servicio, fecha, hora, prioridad, estado});
+                
+                // Determinar si es modo edición o visualización
+                var isEditMode = $(button).hasClass('edit-service-btn');
+                
+                if (isEditMode) {
+                    // Modo edición - mostrar formulario editable
+                    var editableDetails = `
+                        <form id="editServiceForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5><strong>Información del Servicio</strong></h5>
+                                    <div class="form-group">
+                                        <label for="edit_habitacion">Habitación *</label>
+                                        <input type="text" class="form-control" id="edit_habitacion" value="${habitacion}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_servicio">Tipo de Servicio *</label>
+                                        <select class="form-control" id="edit_servicio" required>
+                                            <option value="Limpieza" ${servicio === 'Limpieza' ? 'selected' : ''}>Limpieza</option>
+                                            <option value="Lavanderia" ${servicio === 'Lavanderia' ? 'selected' : ''}>Lavandería</option>
+                                            <option value="WiFi" ${servicio === 'WiFi' ? 'selected' : ''}>Solicitud WiFi</option>
+                                            <option value="Comida" ${servicio === 'Comida' ? 'selected' : ''}>Comida</option>
+                                            <option value="Mantenimiento" ${servicio === 'Mantenimiento' ? 'selected' : ''}>Mantenimiento</option>
+                                            <option value="Transporte" ${servicio === 'Transporte' ? 'selected' : ''}>Transporte</option>
+                                            <option value="Otros" ${servicio === 'Otros' ? 'selected' : ''}>Otros</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_fecha">Fecha *</label>
+                                        <input type="date" class="form-control" id="edit_fecha" value="${fecha.replace(/\//g, '-')}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5><strong>Detalles del Servicio</strong></h5>
+                                    <div class="form-group">
+                                        <label for="edit_hora">Hora *</label>
+                                        <input type="time" class="form-control" id="edit_hora" value="${hora}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_prioridad">Prioridad *</label>
+                                        <select class="form-control" id="edit_prioridad" required>
+                                            <option value="Baja" ${prioridad === 'Baja' ? 'selected' : ''}>Baja</option>
+                                            <option value="Media" ${prioridad === 'Media' ? 'selected' : ''}>Media</option>
+                                            <option value="Alta" ${prioridad === 'Alta' ? 'selected' : ''}>Alta</option>
+                                            <option value="Urgente" ${prioridad === 'Urgente' ? 'selected' : ''}>Urgente</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_estado">Estado</label>
+                                        <select class="form-control" id="edit_estado">
+                                            <option value="Pendiente" ${estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                                            <option value="En Proceso" ${estado === 'En Proceso' ? 'selected' : ''}>En Proceso</option>
+                                            <option value="Completado" ${estado === 'Completado' ? 'selected' : ''}>Completado</option>
+                                            <option value="Cancelado" ${estado === 'Cancelado' ? 'selected' : ''}>Cancelado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="edit_observaciones">Observaciones</label>
+                                        <textarea class="form-control" id="edit_observaciones" rows="3">Servicio solicitado para la habitación. Requiere atención según prioridad asignada.</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    `;
+                    $('#serviceDetails').html(editableDetails);
+                } else {
+                    // Modo visualización - mostrar datos en solo lectura
+                    var details = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5><strong>Información del Servicio</strong></h5>
+                                <p><strong>Habitación:</strong> ${habitacion}</p>
+                                <p><strong>Tipo de Servicio:</strong> ${servicio}</p>
+                                <p><strong>Fecha:</strong> ${fecha}</p>
+                                <p><strong>Hora:</strong> ${hora}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5><strong>Detalles del Servicio</strong></h5>
+                                <p><strong>Prioridad:</strong> ${getPrioridadLabel(prioridad)}</p>
+                                <p><strong>Estado:</strong> ${getEstadoLabel(estado)}</p>
+                                <p><strong>Fecha de Solicitud:</strong> ${new Date().toLocaleDateString('es-CL')}</p>
+                                <p><strong>Responsable:</strong> Personal de Servicios</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5><strong>Observaciones</strong></h5>
+                                <p>Servicio solicitado para la habitación. Requiere atención según prioridad asignada.</p>
+                            </div>
+                        </div>
+                    `;
+                    $('#serviceDetails').html(details);
+                    // Restaurar botón de aprobar para modo visualización
+                    $('#approveServiceBtn').text('Aprobar Servicio').removeClass('btn-primary').addClass('btn-success');
+                }
+                
+                $('#viewServiceModalLabel').text('Detalles del Servicio - ' + habitacion + ' - ' + servicio);
+            }
+            
+            // Event listener para botones de ver servicio
+            $(document).on('click', '.view-service-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Botón Ver clickeado');
+                loadServiceData(this);
+                $('#viewServiceModalLabel').text('Ver Servicio - ' + $(this).data('habitacion') + ' - ' + $(this).data('servicio'));
+            });
+            
+            // Event listener para botones de editar servicio
+            $(document).on('click', '.edit-service-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Botón Editar clickeado');
+                loadServiceData(this);
+                $('#viewServiceModalLabel').text('Editar Servicio - ' + $(this).data('habitacion') + ' - ' + $(this).data('servicio'));
+                // Cambiar el botón de aprobar por guardar cuando es edición
+                $('#approveServiceBtn').text('Guardar Cambios').removeClass('btn-success').addClass('btn-primary');
+            });
+            
+            // Función para guardar nuevo servicio
+            $('#saveServiceBtn').on('click', function() {
+                var form = $('#createServiceForm');
+                var formData = {};
+                
+                // Recopilar datos del formulario
+                form.find('input, select, textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+                
+                // Validar campos requeridos
+                var requiredFields = ['habitacion', 'servicio', 'fecha', 'hora', 'prioridad'];
+                var isValid = true;
+                
+                requiredFields.forEach(function(field) {
+                    if (!formData[field]) {
+                        isValid = false;
+                        $('#' + field).addClass('is-invalid');
+                    } else {
+                        $('#' + field).removeClass('is-invalid');
+                    }
+                });
+                
+                if (!isValid) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos (*)',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+                
+                // Simular guardado de servicio
+                new PNotify({
+                    title: 'Éxito',
+                    text: 'Servicio creado correctamente para la habitación ' + formData.habitacion,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+                
+                // Agregar nuevo servicio a la tabla
+                addNewServiceToTable(formData);
+                
+                // Cerrar modal y limpiar formulario
+                $('#createServiceModal').modal('hide');
+                form[0].reset();
+            });
+            
+            // Función para agregar nuevo servicio a la tabla
+            function addNewServiceToTable(formData) {
+                // Generar un ID único para el nuevo servicio
+                var serviceId = 'SERV-' + Date.now();
+                
+                // Formatear fecha para la tabla
+                var fechaFormatted = formData.fecha.replace(/-/g, '/');
+                
+                // Verificar si DataTables está inicializado
+                var table = $('#datatable').DataTable();
+                var isDataTable = table && table.length > 0;
+                
+                if (isDataTable) {
+                    // Usar DataTables API para agregar la fila
+                    var newRowData = [
+                        formData.habitacion,
+                        formData.servicio,
+                        fechaFormatted,
+                        formData.hora,
+                        formData.prioridad,
+                        `<button class="btn btn-info view-service-btn" title="Ver" data-toggle="modal" data-target="#viewServiceModal" data-habitacion="${formData.habitacion}" data-servicio="${formData.servicio}" data-fecha="${fechaFormatted}" data-hora="${formData.hora}" data-prioridad="${formData.prioridad}" data-estado="${formData.estado}"><i class="fa fa-eye"></i></button>
+                         <button class="btn btn-success approve-service-btn" title="Aprobar" data-habitacion="${formData.habitacion}" data-servicio="${formData.servicio}" data-fecha="${fechaFormatted}" data-hora="${formData.hora}" data-prioridad="${formData.prioridad}"><i class="fa fa-check-square-o"></i></button>
+                         <button type="button" class="btn btn-warning edit-service-btn" title="Editar" data-toggle="modal" data-target="#viewServiceModal" data-habitacion="${formData.habitacion}" data-servicio="${formData.servicio}" data-fecha="${fechaFormatted}" data-hora="${formData.hora}" data-prioridad="${formData.prioridad}" data-estado="${formData.estado}"><i class="fa fa-edit"></i></button>
+                         <button class="btn btn-danger delete-service-btn" title="Eliminar" data-habitacion="${formData.habitacion}" data-servicio="${formData.servicio}"><i class="fa fa-trash-o"></i></button>`
+                    ];
+                    
+                    // Agregar fila usando DataTables API
+                    table.row.add(newRowData).draw(false);
+                    
+                    console.log('Nuevo servicio agregado usando DataTables API:', formData);
+                } else {
+                    // Fallback: agregar directamente al DOM
+                    var newRow = `
+                        <tr>
+                            <td>${formData.habitacion}</td>
+                            <td>${formData.servicio}</td>
+                            <td>${fechaFormatted}</td>
+                            <td>${formData.hora}</td>
+                            <td>${formData.prioridad}</td>
+                            <td>
+                                <button class="btn btn-info view-service-btn" title="Ver" data-toggle="modal" data-target="#viewServiceModal" data-habitacion="${formData.habitacion}" data-servicio="${formData.servicio}" data-fecha="${fechaFormatted}" data-hora="${formData.hora}" data-prioridad="${formData.prioridad}" data-estado="${formData.estado}"><i class="fa fa-eye"></i></button>
+                                <button class="btn btn-success approve-service-btn" title="Aprobar" data-habitacion="${formData.habitacion}" data-servicio="${formData.servicio}" data-fecha="${fechaFormatted}" data-hora="${formData.hora}" data-prioridad="${formData.prioridad}"><i class="fa fa-check-square-o"></i></button>
+                                <button type="button" class="btn btn-warning edit-service-btn" title="Editar" data-toggle="modal" data-target="#viewServiceModal" data-habitacion="${formData.habitacion}" data-servicio="${formData.servicio}" data-fecha="${fechaFormatted}" data-hora="${formData.hora}" data-prioridad="${formData.prioridad}" data-estado="${formData.estado}"><i class="fa fa-edit"></i></button>
+                                <button class="btn btn-danger delete-service-btn" title="Eliminar" data-habitacion="${formData.habitacion}" data-servicio="${formData.servicio}"><i class="fa fa-trash-o"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                    
+                    $('#datatable tbody').prepend(newRow);
+                    console.log('Nuevo servicio agregado directamente al DOM:', formData);
+                }
+                
+                // Mostrar notificación adicional
+                new PNotify({
+                    title: 'Servicio Agregado',
+                    text: 'El nuevo servicio ha sido agregado a la tabla de servicios',
+                    type: 'info',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+                
+                // Forzar actualización visual
+                setTimeout(function() {
+                    $('#datatable').trigger('draw');
+                }, 100);
+            }
+            
+            // Event listeners para aprobar servicios
+            $(document).on('click', '.approve-service-btn', function() {
+                var habitacion = $(this).data('habitacion');
+                var servicio = $(this).data('servicio');
+                
+                if (confirm(`¿Aprobar el servicio de ${servicio} para la habitación ${habitacion}?`)) {
+                    new PNotify({
+                        title: 'Servicio Aprobado',
+                        text: `El servicio de ${servicio} para la habitación ${habitacion} ha sido aprobado y enviado al panel de servicios.`,
+                        type: 'success',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    
+                    // Ocultar el botón de aprobar
+                    $(this).hide();
+                }
+            });
+            
+            // Event listeners para eliminar servicios
+            $(document).on('click', '.delete-service-btn', function() {
+                var habitacion = $(this).data('habitacion');
+                var servicio = $(this).data('servicio');
+                
+                if (confirm(`¿Eliminar el servicio de ${servicio} para la habitación ${habitacion}?`)) {
+                    // Eliminar la fila de la tabla
+                    $(this).closest('tr').fadeOut(300, function() {
+                        $(this).remove();
+                        
+                        // Actualizar DataTables si está inicializado
+                        if ($.fn.DataTable && $('#datatable').hasClass('dataTable')) {
+                            $('#datatable').DataTable().draw();
+                        }
+                    });
+                    
+                    new PNotify({
+                        title: 'Servicio Eliminado',
+                        text: `El servicio de ${servicio} para la habitación ${habitacion} ha sido eliminado.`,
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                }
+            });
+            
+            // Función para aprobar/guardar servicio desde el modal
+            $('#approveServiceBtn').on('click', function() {
+                var buttonText = $(this).text();
+                
+                if (buttonText === 'Guardar Cambios') {
+                    // Modo edición - guardar cambios
+                    var form = $('#editServiceForm');
+                    var formData = {};
+                    
+                    // Recopilar datos del formulario de edición
+                    form.find('input, select, textarea').each(function() {
+                        formData[$(this).attr('id').replace('edit_', '')] = $(this).val();
+                    });
+                    
+                    // Validar campos requeridos
+                    var requiredFields = ['habitacion', 'servicio', 'fecha', 'hora', 'prioridad'];
+                    var isValid = true;
+                    
+                    requiredFields.forEach(function(field) {
+                        var fieldValue = formData[field];
+                        if (!fieldValue) {
+                            isValid = false;
+                            $('#edit_' + field).addClass('is-invalid');
+                        } else {
+                            $('#edit_' + field).removeClass('is-invalid');
+                        }
+                    });
+                    
+                    if (!isValid) {
+                        new PNotify({
+                            title: 'Error',
+                            text: 'Por favor complete todos los campos requeridos (*)',
+                            type: 'error',
+                            hide: false,
+                            styling: 'bootstrap3'
+                        });
+                        return;
+                    }
+                    
+                    // Actualizar la tabla con los nuevos datos
+                    updateServiceInTable(formData);
+                    
+                    // Simular guardado de cambios
+                    new PNotify({
+                        title: 'Cambios Guardados',
+                        text: 'Los cambios en el servicio han sido guardados correctamente.',
+                        type: 'success',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    
+                } else {
+                    // Modo aprobación - aprobar servicio
+                    var habitacion = $('#serviceDetails').find('strong').eq(0).text();
+                    var servicio = $('#serviceDetails').find('strong').eq(1).text();
+                    
+                    new PNotify({
+                        title: 'Servicio Aprobado',
+                        text: `El servicio de ${servicio} para la habitación ${habitacion} ha sido aprobado exitosamente.`,
+                        type: 'success',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                }
+                
+                $('#viewServiceModal').modal('hide');
+            });
+            
+            // Función para actualizar servicio en la tabla
+            function updateServiceInTable(formData) {
+                var habitacion = formData.habitacion;
+                var servicio = formData.servicio;
+                
+                // Buscar la fila en la tabla
+                $('#datatable tbody tr').each(function() {
+                    var row = $(this);
+                    var habitacionCell = row.find('td:eq(0)').text().trim();
+                    var servicioCell = row.find('td:eq(1)').text().trim();
+                    
+                    if (habitacionCell === habitacion && servicioCell === servicio) {
+                        // Actualizar cada celda de la fila
+                        row.find('td:eq(0)').text(formData.habitacion);
+                        row.find('td:eq(1)').text(formData.servicio);
+                        row.find('td:eq(2)').text(formData.fecha.replace(/-/g, '/'));
+                        row.find('td:eq(3)').text(formData.hora);
+                        row.find('td:eq(4)').text(formData.prioridad);
+                        
+                        // Actualizar los data attributes de los botones
+                        row.find('button').each(function() {
+                            var button = $(this);
+                            button.attr('data-habitacion', formData.habitacion);
+                            button.attr('data-servicio', formData.servicio);
+                            button.attr('data-fecha', formData.fecha.replace(/-/g, '/'));
+                            button.attr('data-hora', formData.hora);
+                            button.attr('data-prioridad', formData.prioridad);
+                            button.attr('data-estado', formData.estado);
+                        });
+                        
+                        console.log('Servicio actualizado en la tabla:', formData);
+                        return false; // Salir del bucle
+                    }
+                });
+                
+                // Redibujar la tabla si es necesario
+                if ($.fn.DataTable && $('#datatable').hasClass('dataTable')) {
+                    $('#datatable').DataTable().draw();
+                }
+            }
+            
+            // Configurar DataTables en español
+            if (typeof $.fn.DataTable !== 'undefined') {
+                $.extend($.fn.dataTable.defaults, {
+                    "language": {
+                        "sProcessing": "Procesando...",
+                        "sLengthMenu": "Mostrar _MENU_ registros",
+                        "sZeroRecords": "No se encontraron resultados",
+                        "sEmptyTable": "Ningún dato disponible en esta tabla",
+                        "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                        "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                        "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                        "sInfoPostFix": "",
+                        "sSearch": "Buscar:",
+                        "sUrl": "",
+                        "sInfoThousands": ",",
+                        "sLoadingRecords": "Cargando...",
+                        "oPaginate": {
+                            "sFirst": "Primero",
+                            "sLast": "Último",
+                            "sNext": "Siguiente",
+                            "sPrevious": "Anterior"
+                        },
+                        "oAria": {
+                            "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                        }
+                    }
+                });
+                
+                // Inicializar DataTables si no está ya inicializado
+                setTimeout(function() {
+                    if (!$('#datatable').hasClass('dataTable')) {
+                        console.log('Inicializando DataTables...');
+                        $('#datatable').DataTable({
+                            "pageLength": 10,
+                            "responsive": true,
+                            "order": [[ 2, "desc" ]] // Ordenar por fecha (columna 2) descendente
+                        });
+                    }
+                }, 500);
+            }
+            
+            // === FUNCIONALIDAD DE SERVICIOS PENDIENTES Y ASIGNACIÓN ===
+            
+            // Base de datos simulada del personal de aseo
+            var personalAseo = [
+                { id: 'EMP001', nombre: 'María González', especialidad: 'Limpieza', disponible: true, ubicacion: 'Piso 1', experiencia: '5 años' },
+                { id: 'EMP002', nombre: 'Carlos Ruiz', especialidad: 'Limpieza', disponible: true, ubicacion: 'Piso 2', experiencia: '3 años' },
+                { id: 'EMP003', nombre: 'Ana Martínez', especialidad: 'Limpieza', disponible: true, ubicacion: 'Piso 3', experiencia: '7 años' },
+                { id: 'EMP004', nombre: 'Pedro López', especialidad: 'Mantenimiento', disponible: true, ubicacion: 'Mantenimiento', experiencia: '4 años' },
+                { id: 'EMP005', nombre: 'Laura Sánchez', especialidad: 'Limpieza', disponible: false, ubicacion: 'Descanso', experiencia: '2 años' },
+                { id: 'EMP006', nombre: 'Roberto Díaz', especialidad: 'Mantenimiento', disponible: true, ubicacion: 'Piso 4', experiencia: '6 años' }
+            ];
+            
+            // Función para obtener servicios pendientes
+            function getPendingServices() {
+                var pendingServices = [];
+                
+                $('#datatable tbody tr').each(function() {
+                    var row = $(this);
+                    var estadoText = row.find('td:eq(4)').text().trim(); // Columna de prioridad/estado
+                    var habitacion = row.find('td:eq(0)').text().trim();
+                    var servicio = row.find('td:eq(1)').text().trim();
+                    var fecha = row.find('td:eq(2)').text().trim();
+                    var hora = row.find('td:eq(3)').text().trim();
+                    var prioridad = row.find('td:eq(4)').text().trim();
+                    
+                    // Considerar pendientes los servicios con prioridad "Alta" o "Urgente"
+                    if (prioridad === 'Alta' || prioridad === 'Urgente') {
+                        pendingServices.push({
+                            habitacion: habitacion,
+                            servicio: servicio,
+                            fecha: fecha,
+                            hora: hora,
+                            prioridad: prioridad,
+                            asignado: false,
+                            personalAsignado: null,
+                            tiempoEstimado: getEstimatedTime(servicio),
+                            row: row
+                        });
+                    }
+                });
+                
+                return pendingServices;
+            }
+            
+            // Función para obtener tiempo estimado según tipo de servicio
+            function getEstimatedTime(servicio) {
+                var tiempos = {
+                    'Limpieza': '30-45 min',
+                    'Lavanderia': '15-20 min',
+                    'WiFi': '10-15 min',
+                    'Comida': '5-10 min',
+                    'Mantenimiento': '45-60 min',
+                    'Transporte': '20-30 min',
+                    'Otros': '20-30 min'
+                };
+                return tiempos[servicio] || '20-30 min';
+            }
+            
+            // Función para mostrar servicios pendientes
+            function displayPendingServices() {
+                var pendingServices = getPendingServices();
+                var container = $('#pendingServicesList');
+                var countElement = $('#pendingCount');
+                
+                // Actualizar contador
+                countElement.text(pendingServices.length);
+                
+                // Limpiar container
+                container.empty();
+                
+                if (pendingServices.length === 0) {
+                    container.html('<div class="col-md-12"><div class="alert alert-success"><i class="fa fa-check-circle"></i> ¡Excelente! No hay servicios pendientes que requieran atención inmediata.</div></div>');
+                    return;
+                }
+                
+                // Mostrar cada servicio pendiente
+                pendingServices.forEach(function(service, index) {
+                    var priorityClass = service.prioridad === 'Urgente' ? 'danger' : 'warning';
+                    var priorityIcon = service.prioridad === 'Urgente' ? 'fa-exclamation-triangle' : 'fa-clock-o';
+                    
+                    var serviceCard = `
+                        <div class="col-md-6 col-lg-4" style="margin-bottom: 15px;">
+                            <div class="panel panel-${priorityClass}" style="margin-bottom: 0;">
+                                <div class="panel-heading" style="padding: 8px 12px;">
+                                    <h5 style="margin: 0;"><i class="fa ${priorityIcon}"></i> Habitación ${service.habitacion} - ${service.servicio}</h5>
+                                </div>
+                                <div class="panel-body" style="padding: 12px;">
+                                    <p style="margin: 5px 0;"><strong>Fecha:</strong> ${service.fecha}</p>
+                                    <p style="margin: 5px 0;"><strong>Hora:</strong> ${service.hora}</p>
+                                    <p style="margin: 5px 0;"><strong>Prioridad:</strong> <span class="label label-${priorityClass}">${service.prioridad}</span></p>
+                                    <p style="margin: 5px 0;"><strong>Tiempo Estimado:</strong> ${service.tiempoEstimado}</p>
+                                    <div class="assigned-staff" style="margin-top: 10px;">
+                                        ${service.asignado ? 
+                                            `<div class="alert alert-success" style="margin: 0; padding: 5px;">
+                                                <i class="fa fa-user"></i> Asignado a: ${service.personalAsignado}
+                                            </div>` :
+                                            `<button class="btn btn-primary btn-sm assign-btn" data-service-index="${index}">
+                                                <i class="fa fa-user-plus"></i> Asignar Personal
+                                            </button>`
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.append(serviceCard);
+                });
+            }
+            
+            // Función para obtener personal disponible
+            function getAvailableStaff() {
+                return personalAseo.filter(empleado => empleado.disponible);
+            }
+            
+            // Función para actualizar información del personal
+            function updateStaffInfo() {
+                var availableStaff = getAvailableStaff();
+                var totalStaff = personalAseo.length;
+                var staffInfo = `Total: ${totalStaff} | Disponibles: ${availableStaff.length} | Ocupados: ${totalStaff - availableStaff.length}`;
+                $('#availableStaff').text(staffInfo);
+            }
+            
+            // Función para asignar personal automáticamente
+            function autoAssignServices() {
+                var pendingServices = getPendingServices();
+                var availableStaff = getAvailableStaff();
+                var assignedCount = 0;
+                
+                if (availableStaff.length === 0) {
+                    new PNotify({
+                        title: 'Sin Personal Disponible',
+                        text: 'No hay personal de aseo disponible en este momento.',
+                        type: 'warning',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+                
+                // Asignar servicios por prioridad (Urgente primero, luego Alta)
+                var urgentServices = pendingServices.filter(s => s.prioridad === 'Urgente' && !s.asignado);
+                var highPriorityServices = pendingServices.filter(s => s.prioridad === 'Alta' && !s.asignado);
+                
+                var servicesToAssign = [...urgentServices, ...highPriorityServices];
+                
+                servicesToAssign.forEach(function(service, index) {
+                    if (index < availableStaff.length) {
+                        var staff = availableStaff[index];
+                        service.asignado = true;
+                        service.personalAsignado = staff.nombre;
+                        
+                        // Actualizar la fila en la tabla
+                        service.row.find('td:eq(4)').html(`<span class="label label-success">Asignado a ${staff.nombre}</span>`);
+                        
+                        assignedCount++;
+                        
+                        // Simular que el personal ya no está disponible temporalmente
+                        staff.disponible = false;
+                        setTimeout(function() {
+                            staff.disponible = true;
+                            updateStaffInfo();
+                        }, 30000); // Disponible de nuevo en 30 segundos
+                    }
+                });
+                
+                // Actualizar información del personal
+                updateStaffInfo();
+                
+                // Mostrar resultado
+                if (assignedCount > 0) {
+                    new PNotify({
+                        title: 'Asignación Automática Completada',
+                        text: `Se asignaron ${assignedCount} servicios al personal de aseo.`,
+                        type: 'success',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    
+                    // Actualizar panel de servicios pendientes
+                    displayPendingServices();
+                } else {
+                    new PNotify({
+                        title: 'No se Pudo Asignar',
+                        text: 'No hay servicios pendientes o personal disponible.',
+                        type: 'info',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                }
+            }
+            
+            // Event listeners
+            $('#showPendingServicesBtn').on('click', function() {
+                var panel = $('#pendingServicesPanel');
+                if (panel.is(':visible')) {
+                    panel.slideUp(300);
+                    $(this).html('<i class="fa fa-clock-o"></i> Servicios Pendientes (<span id="pendingCount">0</span>)');
+                } else {
+                    panel.slideDown(300);
+                    displayPendingServices();
+                    updateStaffInfo();
+                    $(this).html('<i class="fa fa-clock-o"></i> Ocultar Pendientes (<span id="pendingCount">0</span>)');
+                }
+            });
+            
+            $('#autoAssignBtnOriginal').on('click', function() {
+                if (confirm('¿Desea realizar la asignación automática de servicios pendientes al personal de aseo?')) {
+                    autoAssignServices();
+                }
+            });
+            
+            $('#refreshStaffBtn').on('click', function() {
+                updateStaffInfo();
+                displayPendingServices();
+                new PNotify({
+                    title: 'Información Actualizada',
+                    text: 'Se ha actualizado la información del personal de aseo.',
+                    type: 'info',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+            
+            // Asignación manual de servicios
+            $(document).on('click', '.assign-btn', function() {
+                var serviceIndex = $(this).data('service-index');
+                var pendingServices = getPendingServices();
+                var service = pendingServices[serviceIndex];
+                var availableStaff = getAvailableStaff();
+                
+                if (availableStaff.length === 0) {
+                    new PNotify({
+                        title: 'Sin Personal Disponible',
+                        text: 'No hay personal de aseo disponible en este momento.',
+                        type: 'warning',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+                
+                // Crear modal de selección de personal
+                var staffOptions = availableStaff.map(staff => 
+                    `<option value="${staff.id}">${staff.nombre} - ${staff.especialidad} (${staff.ubicacion})</option>`
+                ).join('');
+                
+                var modalHtml = `
+                    <div class="modal fade" id="assignStaffModal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Asignar Personal - Habitación ${service.habitacion}</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p><strong>Servicio:</strong> ${service.servicio}</p>
+                                    <p><strong>Prioridad:</strong> <span class="label label-warning">${service.prioridad}</span></p>
+                                    <p><strong>Tiempo Estimado:</strong> ${service.tiempoEstimado}</p>
+                                    <hr>
+                                    <div class="form-group">
+                                        <label for="staffSelect">Seleccionar Personal:</label>
+                                        <select class="form-control" id="staffSelect">
+                                            <option value="">Seleccionar personal...</option>
+                                            ${staffOptions}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-primary" id="confirmAssignBtn">Asignar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Remover modal anterior si existe
+                $('#assignStaffModal').remove();
+                
+                // Agregar nuevo modal
+                $('body').append(modalHtml);
+                
+                // Mostrar modal
+                $('#assignStaffModal').modal('show');
+                
+                // Confirmar asignación
+                $('#confirmAssignBtn').on('click', function() {
+                    var selectedStaffId = $('#staffSelect').val();
+                    if (!selectedStaffId) {
+                        alert('Por favor seleccione un miembro del personal.');
+                        return;
+                    }
+                    
+                    var selectedStaff = personalAseo.find(staff => staff.id === selectedStaffId);
+                    if (selectedStaff) {
+                        // Asignar servicio
+                        service.asignado = true;
+                        service.personalAsignado = selectedStaff.nombre;
+                        
+                        // Actualizar tabla
+                        service.row.find('td:eq(4)').html(`<span class="label label-success">Asignado a ${selectedStaff.nombre}</span>`);
+                        
+                        // Marcar personal como no disponible temporalmente
+                        selectedStaff.disponible = false;
+                        setTimeout(function() {
+                            selectedStaff.disponible = true;
+                            updateStaffInfo();
+                        }, 30000);
+                        
+                        // Cerrar modal
+                        $('#assignStaffModal').modal('hide');
+                        
+                        // Actualizar panel
+                        displayPendingServices();
+                        updateStaffInfo();
+                        
+                        new PNotify({
+                            title: 'Servicio Asignado',
+                            text: `El servicio de la habitación ${service.habitacion} ha sido asignado a ${selectedStaff.nombre}.`,
+                            type: 'success',
+                            hide: false,
+                            styling: 'bootstrap3'
+                        });
+                    }
+                });
+            });
+            
+            // Inicializar información del personal
+            setTimeout(function() {
+                updateStaffInfo();
+                displayPendingServices();
+            }, 1000);
+            
+            // === ESTADÍSTICAS DE SERVICIOS ===
+            
+            // Variables para estadísticas de servicios
+            var serviceStatsInterval;
+            var serviceStatsUpdateInterval = 60; // 60 segundos
+            
+            // Base de datos simulada de servicios completados (para estadísticas)
+            var serviciosCompletados = [
+                { id: 'SRV001', habitacion: '101', servicio: 'Limpieza', fecha: '2025-01-15', horaInicio: '08:00', horaFin: '08:35', personal: 'María González', tiempo: 35 },
+                { id: 'SRV002', habitacion: '102', servicio: 'Lavanderia', fecha: '2025-01-15', horaInicio: '09:15', horaFin: '09:30', personal: 'Carlos Ruiz', tiempo: 15 },
+                { id: 'SRV003', habitacion: '103', servicio: 'WiFi', fecha: '2025-01-15', horaInicio: '10:00', horaFin: '10:12', personal: 'Ana Martínez', tiempo: 12 },
+                { id: 'SRV004', habitacion: '104', servicio: 'Mantenimiento', fecha: '2025-01-15', horaInicio: '11:00', horaFin: '11:50', personal: 'Pedro López', tiempo: 50 },
+                { id: 'SRV005', habitacion: '105', servicio: 'Comida', fecha: '2025-01-15', horaInicio: '12:00', horaFin: '12:08', personal: 'Roberto Díaz', tiempo: 8 }
+            ];
+            
+            // Función para calcular estadísticas de servicios
+            function calculateServiceStats() {
+                var stats = {
+                    pendientes: 0,
+                    completados: serviciosCompletados.length,
+                    urgentes: 0,
+                    totalServicios: 0,
+                    tiempoPromedio: 0,
+                    tiempoMasLento: 0,
+                    personalActivo: 0,
+                    eficiencia: 0
+                };
+                
+                // Contar servicios en la tabla actual
+                $('#datatable tbody tr').each(function() {
+                    var row = $(this);
+                    var prioridad = row.find('td:eq(4)').text().trim();
+                    var estado = row.find('td:eq(5)').text().trim();
+                    
+                    stats.totalServicios++;
+                    
+                    // Determinar estado
+                    if (prioridad === 'Urgente') {
+                        stats.urgentes++;
+                        stats.pendientes++;
+                    } else if (prioridad === 'Alta') {
+                        stats.pendientes++;
+                    }
+                });
+                
+                // Calcular tiempos
+                if (serviciosCompletados.length > 0) {
+                    var totalTiempo = serviciosCompletados.reduce((sum, servicio) => sum + servicio.tiempo, 0);
+                    stats.tiempoPromedio = Math.round(totalTiempo / serviciosCompletados.length);
+                    stats.tiempoMasLento = Math.max(...serviciosCompletados.map(s => s.tiempo));
+                }
+                
+                // Calcular personal activo
+                stats.personalActivo = personalAseo.filter(emp => emp.disponible).length;
+                
+                // Calcular eficiencia (porcentaje de servicios completados vs total)
+                if (stats.totalServicios > 0) {
+                    stats.eficiencia = Math.round((stats.completados / (stats.completados + stats.pendientes)) * 100);
+                }
+                
+                return stats;
+            }
+            
+            // Función para actualizar estadísticas en la UI
+            function updateServiceStatsDisplay(stats) {
+                // Animar números con efecto de conteo
+                animateServiceNumber('#statServiciosPendientes', stats.pendientes);
+                animateServiceNumber('#statServiciosCompletados', stats.completados);
+                animateServiceNumber('#statTiempoPromedio', stats.tiempoPromedio + ' min');
+                animateServiceNumber('#statEficiencia', stats.eficiencia + '%');
+                animateServiceNumber('#statServiciosUrgentes', stats.urgentes);
+                animateServiceNumber('#statPersonalActivo', stats.personalActivo);
+                animateServiceNumber('#statTiempoMasLento', stats.tiempoMasLento + ' min');
+                animateServiceNumber('#statTotalServicios', stats.totalServicios);
+                
+                // Actualizar tabla de rendimiento del personal
+                updateStaffPerformanceTable();
+                
+                // Actualizar timestamp
+                $('#statsLastUpdate').text(new Date().toLocaleTimeString('es-CL'));
+                
+                console.log('Estadísticas de servicios actualizadas:', stats);
+            }
+            
+            // Función para animar números de servicios
+            function animateServiceNumber(selector, targetValue) {
+                var element = $(selector);
+                var currentValue = parseInt(element.text()) || 0;
+                var isPercentage = targetValue.toString().includes('%');
+                var isMinutes = targetValue.toString().includes('min');
+                var numericValue = parseFloat(targetValue.toString().replace(/[^\d.]/g, ''));
+                
+                if (currentValue === numericValue && !isPercentage && !isMinutes) {
+                    return; // No animar si el valor es el mismo
+                }
+                
+                element.addClass('number');
+                
+                // Para valores con texto (porcentajes, minutos), actualizar directamente
+                if (isPercentage || isMinutes) {
+                    element.text(targetValue);
+                    return;
+                }
+                
+                // Animar números enteros
+                var increment = (numericValue - currentValue) / 20;
+                var step = 0;
+                
+                var timer = setInterval(function() {
+                    step++;
+                    currentValue += increment;
+                    
+                    if (step >= 20) {
+                        currentValue = numericValue;
+                        clearInterval(timer);
+                    }
+                    
+                    element.text(Math.round(currentValue));
+                }, 40);
+            }
+            
+            // Función para actualizar tabla de rendimiento del personal
+            function updateStaffPerformanceTable() {
+                var tableBody = $('#staffPerformanceTable tbody');
+                tableBody.empty();
+                
+                personalAseo.forEach(function(empleado) {
+                    // Simular estadísticas del empleado
+                    var serviciosCompletadosEmpleado = serviciosCompletados.filter(s => s.personal === empleado.nombre).length;
+                    var tiempoPromedioEmpleado = serviciosCompletadosEmpleado > 0 ? 
+                        Math.round(serviciosCompletados.filter(s => s.personal === empleado.nombre)
+                            .reduce((sum, s) => sum + s.tiempo, 0) / serviciosCompletadosEmpleado) : 0;
+                    var eficienciaEmpleado = serviciosCompletadosEmpleado > 0 ? 
+                        Math.min(Math.round((serviciosCompletadosEmpleado * 10) + Math.random() * 20), 100) : 0;
+                    
+                    var estadoClass = empleado.disponible ? 'success' : 'danger';
+                    var estadoText = empleado.disponible ? 'Disponible' : 'Ocupado';
+                    
+                    var row = `
+                        <tr style="transition: background-color 0.3s ease;">
+                            <td style="padding: 15px 8px; vertical-align: middle;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 35px; height: 35px; background: linear-gradient(135deg, #3498db, #2980b9); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                        <i class="fa fa-user" style="color: white; font-size: 14px;"></i>
+                                    </div>
+                                    <div>
+                                        <strong style="font-size: 14px; color: #2c3e50;">${empleado.nombre}</strong>
+                                        <br><small style="color: #7f8c8d;">${empleado.ubicacion}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: 15px 8px; vertical-align: middle;">
+                                <span class="label label-info" style="font-size: 11px; padding: 4px 8px;">
+                                    <i class="fa fa-${empleado.especialidad === 'Limpieza' ? 'broom' : 'wrench'}"></i> ${empleado.especialidad}
+                                </span>
+                            </td>
+                            <td style="padding: 15px 8px; vertical-align: middle; text-align: center;">
+                                <span style="font-size: 18px; font-weight: bold; color: #27ae60;">${serviciosCompletadosEmpleado}</span>
+                            </td>
+                            <td style="padding: 15px 8px; vertical-align: middle; text-align: center;">
+                                <span style="font-size: 14px; font-weight: 500; color: #34495e;">${tiempoPromedioEmpleado} min</span>
+                            </td>
+                            <td style="padding: 15px 8px; vertical-align: middle;">
+                                <div class="progress" style="margin-bottom: 0; height: 28px; background-color: #ecf0f1; border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
+                                    <div class="progress-bar progress-bar-success" style="width: ${eficienciaEmpleado}%; line-height: 28px; font-weight: bold; font-size: 12px; border-radius: 4px; transition: width 0.6s ease;">
+                                        ${eficienciaEmpleado}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: 15px 8px; vertical-align: middle; text-align: center;">
+                                <span class="label label-${estadoClass}" style="font-size: 11px; padding: 5px 10px;">
+                                    <i class="fa fa-${empleado.disponible ? 'check-circle' : 'clock-o'}"></i> ${estadoText}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                    
+                    tableBody.append(row);
+                });
+            }
+            
+            // Función para actualizar estadísticas de servicios
+            function updateServiceStats() {
+                var stats = calculateServiceStats();
+                updateServiceStatsDisplay(stats);
+                
+                // Mostrar alertas si es necesario
+                if (stats.pendientes > 10) {
+                    showServiceStatsAlert('warning', 'Atención: ' + stats.pendientes + ' servicios pendientes requieren atención');
+                }
+                
+                if (stats.eficiencia < 70) {
+                    showServiceStatsAlert('danger', 'Eficiencia baja: ' + stats.eficiencia + '% - Revisar procesos');
+                }
+                
+                if (stats.tiempoPromedio > 45) {
+                    showServiceStatsAlert('info', 'Tiempo promedio alto: ' + stats.tiempoPromedio + ' min - Optimizar procesos');
+                }
+            }
+            
+            // Función para mostrar alertas de estadísticas de servicios
+            function showServiceStatsAlert(type, message) {
+                // Solo mostrar una alerta cada 10 minutos para evitar spam
+                if (!window.lastServiceStatsAlert || Date.now() - window.lastServiceStatsAlert > 600000) {
+                    new PNotify({
+                        title: 'Estadísticas de Servicios',
+                        text: message,
+                        type: type,
+                        hide: false,
+                        styling: 'bootstrap3',
+                        delay: 8000
+                    });
+                    window.lastServiceStatsAlert = Date.now();
+                }
+            }
+            
+            // Función para simular completar un servicio
+            function completeService(habitacion, servicio, personal) {
+                var tiempoEstimado = getEstimatedTime(servicio);
+                var tiempoReal = Math.floor(Math.random() * 20) + parseInt(tiempoEstimado.split('-')[0]);
+                
+                var nuevoServicio = {
+                    id: 'SRV' + Date.now(),
+                    habitacion: habitacion,
+                    servicio: servicio,
+                    fecha: new Date().toISOString().split('T')[0],
+                    horaInicio: new Date().toLocaleTimeString('es-CL', {hour: '2-digit', minute: '2-digit'}),
+                    horaFin: new Date(Date.now() + tiempoReal * 60000).toLocaleTimeString('es-CL', {hour: '2-digit', minute: '2-digit'}),
+                    personal: personal,
+                    tiempo: tiempoReal
+                };
+                
+                serviciosCompletados.push(nuevoServicio);
+                
+                // Limitar a los últimos 100 servicios para rendimiento
+                if (serviciosCompletados.length > 100) {
+                    serviciosCompletados = serviciosCompletados.slice(-100);
+                }
+                
+                // Actualizar estadísticas
+                updateServiceStats();
+                
+                console.log('Servicio completado:', nuevoServicio);
+            }
+            
+            // Inicializar estadísticas de servicios
+            function initServiceStats() {
+                updateServiceStats();
+                
+                // Configurar actualización automática
+                serviceStatsInterval = setInterval(updateServiceStats, serviceStatsUpdateInterval * 1000);
+                
+                console.log('Estadísticas de servicios inicializadas');
+            }
+            
+            // Botón para actualizar estadísticas manualmente
+            $('#refreshServiceStatsBtn').on('click', function() {
+                updateServiceStats();
+                new PNotify({
+                    title: 'Estadísticas Actualizadas',
+                    text: 'Las estadísticas de servicios se han actualizado manualmente',
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+            
+            // Hacer clic en tarjetas de estadísticas para filtrar
+            $(document).on('click', '.stat-card', function() {
+                var title = $(this).find('h2').text();
+                
+                if (title.includes('Pendientes')) {
+                    // Filtrar por servicios pendientes
+                    $('#datatable tbody tr').each(function() {
+                        var row = $(this);
+                        var prioridad = row.find('td:eq(4)').text().trim();
+                        if (prioridad === 'Alta' || prioridad === 'Urgente') {
+                            row.show();
+                        } else {
+                            row.hide();
+                        }
+                    });
+                } else if (title.includes('Completados')) {
+                    // Mostrar todos los servicios
+                    $('#datatable tbody tr').show();
+                } else if (title.includes('Urgentes')) {
+                    // Filtrar solo servicios urgentes
+                    $('#datatable tbody tr').each(function() {
+                        var row = $(this);
+                        var prioridad = row.find('td:eq(4)').text().trim();
+                        if (prioridad === 'Urgente') {
+                            row.show();
+                        } else {
+                            row.hide();
+                        }
+                    });
+                }
+            });
+            
+            // Simular completar servicios periódicamente (para demo)
+            setInterval(function() {
+                if (Math.random() < 0.3) { // 30% de probabilidad cada minuto
+                    var serviciosPendientes = getPendingServices();
+                    if (serviciosPendientes.length > 0) {
+                        var servicio = serviciosPendientes[Math.floor(Math.random() * serviciosPendientes.length)];
+                        var personalDisponible = getAvailableStaff();
+                        if (personalDisponible.length > 0) {
+                            var personal = personalDisponible[Math.floor(Math.random() * personalDisponible.length)];
+                            completeService(servicio.habitacion, servicio.servicio, personal.nombre);
+                            
+                            // Actualizar la tabla para reflejar el servicio completado
+                            servicio.row.find('td:eq(4)').html('<span class="label label-success">Completado</span>');
+                            servicio.row.find('td:eq(5)').html('<span class="label label-success">Finalizado</span>');
+                        }
+                    }
+                }
+            }, 60000); // Cada minuto
+            
+            // Inicializar estadísticas de servicios cuando se carga la página
+            setTimeout(initServiceStats, 2000);
+            
+            // Limpiar intervalos cuando se cierra la página
+            $(window).on('beforeunload', function() {
+                if (serviceStatsInterval) {
+                    clearInterval(serviceStatsInterval);
+                }
+            });
+            
+            // VERIFICAR ROL DE USUARIO Y CONFIGURAR MENÚ
+            checkUserRole();
+        });
+        
+        // Función para verificar el rol del usuario y configurar el menú
+        function checkUserRole() {
+            var currentUser = getCurrentUser();
+            
+            if (currentUser === 'admin') {
+                // Ocultar opciones del menú que no debe ver el admin
+                $('.admin-hidden').hide();
+                
+                // Agregar indicador visual de que es usuario admin
+                $('.navbar-brand').append('<span class="admin-title">ADMIN</span>');
+                $('body').addClass('admin-user');
+                
+                // Mostrar mensaje informativo
+                new PNotify({
+                    title: 'Bienvenido Admin',
+                    text: 'Acceso limitado a: Reservas, Servicios y Habitaciones',
+                    type: 'info',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+                
+                // Configurar vista específica para admin
+                configureAdminServicesView();
+            }
+        }
+        
+        // Función para obtener el usuario actual
+        function getCurrentUser() {
+            var user = localStorage.getItem('currentUser');
+            return user || 'plataforma';
+        }
+        
+        // Función para configurar la vista específica del admin en servicios
+        function configureAdminServicesView() {
+            // Actualizar título de la página
+            $('.page-title').text('Gestión de Servicios - Admin');
+            
+            // Configurar eventos específicos para admin
+            setupAdminServicesHandlers();
+            
+            // Cargar datos iniciales
+            loadPendingServices();
+            loadRepairRequests();
+            
+            // Mostrar notificación sobre funcionalidades admin
+            setTimeout(function() {
+                new PNotify({
+                    title: 'Funcionalidades Admin Activas',
+                    text: 'Vista optimizada para gestión de servicios y reparaciones',
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            }, 2000);
+        }
+        
+        // Función para configurar manejadores de eventos específicos del admin
+        function setupAdminServicesHandlers() {
+            // Asignación automática
+            $('#autoAssignBtn').on('click', function() {
+                var method = $('#assignmentMethod').val();
+                var selectedStaff = $('#cleaningStaffSelect').val();
+                
+                if (!selectedStaff || selectedStaff.length === 0) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Debe seleccionar al menos un miembro del personal.',
+                        type: 'error',
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+                
+                performAutoAssignment(method, selectedStaff);
+            });
+            
+            $('#assignAllBtn').on('click', function() {
+                var selectedStaff = $('#cleaningStaffSelect').val();
+                
+                if (!selectedStaff || selectedStaff.length === 0) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Debe seleccionar al menos un miembro del personal.',
+                        type: 'error',
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+                
+                assignAllPendingServices(selectedStaff);
+            });
+            
+            // Formularios de servicios
+            $('#roomServiceForm').on('submit', function(e) {
+                e.preventDefault();
+                createRoomService();
+            });
+            
+            $('#commonAreaServiceForm').on('submit', function(e) {
+                e.preventDefault();
+                createCommonAreaService();
+            });
+            
+            $('#repairRequestForm').on('submit', function(e) {
+                e.preventDefault();
+                createRepairRequest();
+            });
+        }
+        
+        // Función para cargar servicios pendientes
+        function loadPendingServices() {
+            var tbody = $('#pendingServicesBody');
+            tbody.empty();
+            
+            var pendingServices = [
+                { id: 'P001', room: '101', service: 'Limpieza', priority: 'alta', time: '15 min', status: 'pending' },
+                { id: 'P002', room: '205', service: 'Mantenimiento', priority: 'urgente', time: '45 min', status: 'pending' },
+                { id: 'P003', room: '103', service: 'Suministros', priority: 'media', time: '10 min', status: 'pending' },
+                { id: 'P004', room: 'Cocina', service: 'Limpieza', priority: 'alta', time: '30 min', status: 'pending' },
+                { id: 'P005', room: '202', service: 'Reparación', priority: 'urgente', time: '60 min', status: 'pending' }
+            ];
+            
+            pendingServices.forEach(function(service) {
+                var priorityClass = getPriorityClass(service.priority);
+                var row = `
+                    <tr>
+                        <td>${service.room}</td>
+                        <td>${service.service}</td>
+                        <td><span class="label label-${priorityClass}">${service.priority.toUpperCase()}</span></td>
+                        <td>${service.time}</td>
+                        <td>
+                            <button class="btn btn-success btn-xs" onclick="assignService('${service.id}')">
+                                <i class="fa fa-user"></i> Asignar
+                            </button>
+                            <button class="btn btn-primary btn-xs" onclick="viewServiceDetails('${service.id}')">
+                                <i class="fa fa-eye"></i> Ver
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.append(row);
+            });
+        }
+        
+        // Función para cargar requerimientos de reparación
+        function loadRepairRequests() {
+            var tbody = $('#repairRequestsBody');
+            tbody.empty();
+            
+            var repairRequests = [
+                { id: 'RR001', location: 'Habitación 205', type: 'Plomería', description: 'Fuga en grifo', priority: 'alta', status: 'pendiente', date: '2025-01-15' },
+                { id: 'RR002', location: 'Baño Común', type: 'Electricidad', description: 'Luz parpadeante', priority: 'media', status: 'en_progreso', date: '2025-01-14' },
+                { id: 'RR003', location: 'Pabellón A', type: 'Carpintería', description: 'Puerta atascada', priority: 'baja', status: 'completado', date: '2025-01-13' }
+            ];
+            
+            repairRequests.forEach(function(request) {
+                var priorityClass = getPriorityClass(request.priority);
+                var statusClass = getStatusClass(request.status);
+                var row = `
+                    <tr>
+                        <td>${request.id}</td>
+                        <td>${request.location}</td>
+                        <td>${request.type}</td>
+                        <td>${request.description}</td>
+                        <td><span class="label label-${priorityClass}">${request.priority.toUpperCase()}</span></td>
+                        <td><span class="label label-${statusClass}">${request.status.toUpperCase()}</span></td>
+                        <td>${request.date}</td>
+                        <td>
+                            <button class="btn btn-info btn-xs" onclick="viewRepairDetails('${request.id}')">
+                                <i class="fa fa-eye"></i> Ver
+                            </button>
+                            <button class="btn btn-warning btn-xs" onclick="editRepairRequest('${request.id}')">
+                                <i class="fa fa-edit"></i> Editar
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.append(row);
+            });
+        }
+        
+        // Funciones auxiliares
+        function getPriorityClass(priority) {
+            switch(priority) {
+                case 'urgente': return 'danger';
+                case 'alta': return 'warning';
+                case 'media': return 'info';
+                case 'baja': return 'default';
+                default: return 'default';
+            }
+        }
+        
+        function getStatusClass(status) {
+            switch(status) {
+                case 'completado': return 'success';
+                case 'en_progreso': return 'warning';
+                case 'pendiente': return 'info';
+                default: return 'default';
+            }
+        }
+        
+        // Función para realizar asignación automática
+        function performAutoAssignment(method, selectedStaff) {
+            var pendingServices = $('#pendingServicesBody tr').length;
+            
+            if (pendingServices === 0) {
+                new PNotify({
+                    title: 'Sin Servicios',
+                    text: 'No hay servicios pendientes para asignar.',
+                    type: 'warning',
+                    styling: 'bootstrap3'
+                });
+                return;
+            }
+            
+            var assignedCount = 0;
+            var staffIndex = 0;
+            
+            $('#pendingServicesBody tr').each(function() {
+                if (staffIndex >= selectedStaff.length) staffIndex = 0;
+                
+                var serviceId = $(this).find('button').first().attr('onclick').match(/'([^']+)'/)[1];
+                var assignedStaff = selectedStaff[staffIndex];
+                
+                // Simular asignación
+                $(this).find('td:last').html('<span class="label label-success">Asignado a ' + assignedStaff + '</span>');
+                assignedCount++;
+                staffIndex++;
+            });
+            
+            new PNotify({
+                title: 'Asignación Completada',
+                text: `Se asignaron ${assignedCount} servicios usando el método: ${method}`,
+                type: 'success',
+                hide: false,
+                styling: 'bootstrap3'
+            });
+        }
+        
+        // Función para asignar todos los servicios pendientes
+        function assignAllPendingServices(selectedStaff) {
+            performAutoAssignment('manual', selectedStaff);
+        }
+        
+        // Función para crear servicio de habitación
+        function createRoomService() {
+            var room = $('#roomSelect').val();
+            var serviceType = $('#roomServiceType').val();
+            var priority = $('#roomPriority').val();
+            var description = $('#roomDescription').val();
+            
+            var serviceId = 'SRV' + Date.now();
+            
+            // Agregar a la tabla de servicios pendientes
+            var tbody = $('#pendingServicesBody');
+            var priorityClass = getPriorityClass(priority);
+            var row = `
+                <tr>
+                    <td>${room}</td>
+                    <td>${serviceType}</td>
+                    <td><span class="label label-${priorityClass}">${priority.toUpperCase()}</span></td>
+                    <td>Estimado</td>
+                    <td>
+                        <button class="btn btn-success btn-xs" onclick="assignService('${serviceId}')">
+                            <i class="fa fa-user"></i> Asignar
+                        </button>
+                        <button class="btn btn-primary btn-xs" onclick="viewServiceDetails('${serviceId}')">
+                            <i class="fa fa-eye"></i> Ver
+                        </button>
+                    </td>
+                </tr>
+            `;
+            tbody.append(row);
+            
+            // Limpiar formulario
+            $('#roomServiceForm')[0].reset();
+            
+            new PNotify({
+                title: 'Servicio Creado',
+                text: `Servicio de ${serviceType} creado para ${room}`,
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+        }
+        
+        // Función para crear servicio de área común
+        function createCommonAreaService() {
+            var area = $('#areaSelect').val();
+            var serviceType = $('#areaServiceType').val();
+            var priority = $('#areaPriority').val();
+            var description = $('#areaDescription').val();
+            
+            var serviceId = 'SRV' + Date.now();
+            
+            // Agregar a la tabla de servicios pendientes
+            var tbody = $('#pendingServicesBody');
+            var priorityClass = getPriorityClass(priority);
+            var row = `
+                <tr>
+                    <td>${area}</td>
+                    <td>${serviceType}</td>
+                    <td><span class="label label-${priorityClass}">${priority.toUpperCase()}</span></td>
+                    <td>Estimado</td>
+                    <td>
+                        <button class="btn btn-success btn-xs" onclick="assignService('${serviceId}')">
+                            <i class="fa fa-user"></i> Asignar
+                        </button>
+                        <button class="btn btn-primary btn-xs" onclick="viewServiceDetails('${serviceId}')">
+                            <i class="fa fa-eye"></i> Ver
+                        </button>
+                    </td>
+                </tr>
+            `;
+            tbody.append(row);
+            
+            // Limpiar formulario
+            $('#commonAreaServiceForm')[0].reset();
+            
+            new PNotify({
+                title: 'Servicio Creado',
+                text: `Servicio de ${serviceType} creado para ${area}`,
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+        }
+        
+        // Función para crear requerimiento de reparación
+        function createRepairRequest() {
+            var location = $('#repairLocation').val();
+            var specificLocation = $('#repairSpecificLocation').val();
+            var repairType = $('#repairType').val();
+            var priority = $('#repairPriority').val();
+            var description = $('#repairDescription').val();
+            
+            var requestId = 'RR' + String(Date.now()).slice(-6);
+            
+            // Agregar a la tabla de requerimientos de reparación
+            var tbody = $('#repairRequestsBody');
+            var priorityClass = getPriorityClass(priority);
+            var row = `
+                <tr>
+                    <td>${requestId}</td>
+                    <td>${specificLocation}</td>
+                    <td>${repairType}</td>
+                    <td>${description}</td>
+                    <td><span class="label label-${priorityClass}">${priority.toUpperCase()}</span></td>
+                    <td><span class="label label-warning">PENDIENTE</span></td>
+                    <td>${new Date().toISOString().split('T')[0]}</td>
+                    <td>
+                        <button class="btn btn-info btn-xs" onclick="viewRepairDetails('${requestId}')">
+                            <i class="fa fa-eye"></i> Ver
+                        </button>
+                        <button class="btn btn-warning btn-xs" onclick="editRepairRequest('${requestId}')">
+                            <i class="fa fa-edit"></i> Editar
+                        </button>
+                    </td>
+                </tr>
+            `;
+            tbody.append(row);
+            
+            // Limpiar formulario
+            $('#repairRequestForm')[0].reset();
+            
+            new PNotify({
+                title: 'Requerimiento Creado',
+                text: `Requerimiento de ${repairType} creado para ${specificLocation}`,
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+        }
+        
+        // Funciones globales para los botones
+        function assignService(serviceId) {
+            new PNotify({
+                title: 'Asignar Servicio',
+                text: `Asignando servicio ${serviceId}...`,
+                type: 'info',
+                styling: 'bootstrap3'
+            });
+        }
+        
+        function viewServiceDetails(serviceId) {
+            new PNotify({
+                title: 'Detalles del Servicio',
+                text: `Mostrando detalles del servicio ${serviceId}`,
+                type: 'info',
+                styling: 'bootstrap3'
+            });
+        }
+        
+        function viewRepairDetails(requestId) {
+            new PNotify({
+                title: 'Detalles de Reparación',
+                text: `Mostrando detalles del requerimiento ${requestId}`,
+                type: 'info',
+                styling: 'bootstrap3'
+            });
+        }
+        
+        function editRepairRequest(requestId) {
+            new PNotify({
+                title: 'Editar Requerimiento',
+                text: `Editando requerimiento ${requestId}`,
+                type: 'info',
+                styling: 'bootstrap3'
+            });
+        }
+    </script>
 
   </body>
 </html>
