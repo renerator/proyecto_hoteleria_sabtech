@@ -45,6 +45,16 @@
             display: none !important;
         }
         
+        /* Mostrar elementos para usuario plataforma */
+        .plataforma-user .admin-hidden {
+            display: block !important;
+        }
+        
+        /* Forzar visibilidad para usuarios no-admin */
+        body:not(.admin-user) .admin-hidden {
+            display: block !important;
+        }
+        
         /* Estilo para indicar que es usuario admin */
         .admin-user .admin-title {
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
@@ -53,6 +63,57 @@
             border-radius: 4px;
             font-size: 12px;
             margin-left: 10px;
+        }
+        
+        /* Estilo para indicar que es usuario plataforma */
+        .plataforma-user .admin-title {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        /* Estilo para indicar que es usuario huesped */
+        .huesped-user .admin-title {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        /* Ocultar todos los menús originales para huesped */
+        .huesped-user .nav.side-menu > li {
+            display: none !important;
+        }
+        
+        /* Mostrar solo los menús directos del huesped */
+        .huesped-user .huesped-direct-menu {
+            display: block !important;
+        }
+        
+        /* Estilo para los menús directos del huesped */
+        .huesped-direct-menu a {
+            color: #fff !important;
+            padding: 12px 15px !important;
+            display: block !important;
+            text-decoration: none !important;
+            border-left: 3px solid transparent !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .huesped-direct-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border-left-color: #2ecc71 !important;
+        }
+        
+        .huesped-direct-menu a i {
+            margin-right: 10px !important;
+            width: 20px !important;
+            text-align: center !important;
         }
         
         /* Estilos específicos para la vista de admin */
@@ -359,10 +420,10 @@
               <div class="menu_section">
                 <h3>Menú Usuario</h3>
                 <ul class="nav side-menu">
-                                       <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
-                                           <ul class="nav child_menu">
+                  <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
                                                <li class="current-page"><a href="index2.html">Reservas</a></li>
-                                               <li><a href="index3.html">Servicios</a></li>
+                      <li><a href="index3.html">Servicios</a></li>
                                                <li><a href="index.html">Habitaciones</a></li>
                                                <li class="admin-hidden"><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
                                                <li class="admin-hidden"><a href="inventario.html">Inventario</a></li>
@@ -371,8 +432,8 @@
                                         <li class="admin-hidden"><a href="dotaciones.html">Dotaciones</a></li>
                                         <li class="admin-hidden"><a href="roles.html">Roles</a></li>
                                         <li class="admin-hidden"><a href="calendario.html">Calendario</a></li>
-                                           </ul>
-                                       </li>
+                    </ul>
+                  </li>
                   <!--li><a><i class="fa fa-archive"></i> Mantenimiento <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="#">Tickets</a></li>
@@ -786,9 +847,9 @@
                             <ul class="nav navbar-right panel_toolbox">
                               <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                               <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-                            </ul>
-                            <div class="clearfix"></div>
-                          </div>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
                           <div class="x_content">
                             <div class="row">
                               <div class="col-md-3 col-sm-6 col-xs-12">
@@ -1290,7 +1351,7 @@
                       </div>
                   </div>
                   
-                  <div class="x_content">
+                   <div class="x_content">
                     <table id="datatable" class="table table-striped table-bordered">
                       <thead>
                         <tr>
@@ -1735,6 +1796,18 @@
     
     <!-- Custom Theme Scripts -->
     <script src="../build/js/custom.min.js"></script>
+    
+    <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
+    <script src="auth-simple.js"></script>
+    
+    <!-- FORZAR VISIBILIDAD DE MENÚS -->
+    <script src="force-menu.js"></script>
+    
+    <!-- FORZAR VISIBILIDAD AGRESIVA -->
+    <script src="force-menu-aggressive.js"></script>
+    
+    <!-- LIMPIAR NOTIFICACIONES DUPLICADAS -->
+    <script src="cleanup-notifications.js"></script>
     
     <!-- Sistema de Alertas Operativas -->
     <script>
@@ -2257,21 +2330,36 @@
     <!-- Script simple para mantener texto Admin -->
     <script>
         $(document).ready(function() {
-            // Función simple para mantener Admin
-            function setAdminText() {
-                $('.profile_info h2').text('Admin');
+            // Función para establecer el texto correcto según el usuario
+            function setUserText() {
+                var currentUser = localStorage.getItem('currentUser');
+                var displayText = '';
+                
+                if (currentUser === 'admin') {
+                    displayText = 'Admin';
+                } else if (currentUser === 'plataforma') {
+                    displayText = 'Plataforma';
+                } else if (currentUser === 'huesped') {
+                    displayText = 'Huésped';
+                } else if (currentUser === 'mantencion') {
+                    displayText = 'Mantención';
+                } else {
+                    displayText = 'Usuario'; // Por defecto
+                }
+                
+                $('.profile_info h2').text(displayText);
                 $('.user-profile').contents().filter(function() {
                     return this.nodeType === 3 && this.nodeValue.trim() !== '';
                 }).each(function() {
-                    this.nodeValue = 'Admin';
+                    this.nodeValue = displayText;
                 });
             }
             
             // Ejecutar inmediatamente
-            setAdminText();
+            setUserText();
             
             // Ejecutar cada segundo para mantenerlo
-            setInterval(setAdminText, 1000);
+            setInterval(setUserText, 1000);
         });
     </script>
 
@@ -3632,6 +3720,8 @@
         function checkUserRole() {
             var currentUser = getCurrentUser();
             
+            console.log('Usuario actual detectado:', currentUser);
+            
             if (currentUser === 'admin') {
                 // Ocultar opciones del menú que no debe ver el admin
                 $('.admin-hidden').hide();
@@ -3651,13 +3741,69 @@
                 
                 // Configurar vista específica para admin
                 configureAdminView();
+            } else if (currentUser === 'huesped') {
+                // Ocultar opciones del menú que no debe ver el huesped
+                $('.admin-hidden').hide();
+                
+                // OCULTAR MENÚS ESPECÍFICOS PARA HUÉSPED - Solo Reservas y Servicios
+                forceHuespedMenuVisibility();
+                
+                // Agregar indicador visual de que es usuario huesped
+                $('.navbar-brand').append('<span class="admin-title">HUÉSPED</span>');
+                $('body').addClass('huesped-user');
+                
+                // Mostrar mensaje informativo (solo una vez)
+                if (!window.huespedWelcomeShown) {
+                    window.huespedWelcomeShown = true;
+                    new PNotify({
+                        title: 'Bienvenido Huésped',
+                        text: 'Acceso directo a: Reservas y Servicios',
+                        type: 'info',
+                        hide: true,
+                        delay: 3000,
+                        styling: 'bootstrap3'
+                    });
+                }
+                
+                // Configurar vista específica para huesped
+                configureHuespedReservationsView();
+            } else {
+                // Para plataforma y otros usuarios - MOSTRAR TODOS LOS MENÚS
+                $('.admin-hidden').show();
+                
+                // Agregar indicador visual
+                if (currentUser === 'plataforma') {
+                    $('.navbar-brand').append('<span class="admin-title">PLATAFORMA</span>');
+                    $('body').addClass('plataforma-user');
+                    
+                    // Mostrar mensaje informativo (solo una vez)
+                    if (!window.plataformaWelcomeShown) {
+                        window.plataformaWelcomeShown = true;
+                        new PNotify({
+                            title: 'Bienvenido Plataforma',
+                            text: 'Acceso completo a todas las funcionalidades del sistema',
+                            type: 'success',
+                            hide: true,
+                            delay: 3000,
+                            styling: 'bootstrap3'
+                        });
+                    }
+                } else {
+                    $('.navbar-brand').append('<span class="admin-title">USUARIO</span>');
+                    $('body').addClass('user');
+                }
             }
         }
         
         // Función para obtener el usuario actual
         function getCurrentUser() {
             var user = localStorage.getItem('currentUser');
-            return user || 'plataforma';
+            
+            if (user && user !== 'null' && user !== 'undefined') {
+                return user;
+            }
+            
+            return 'plataforma';
         }
         
         // Función para configurar la vista específica del admin
@@ -3697,6 +3843,46 @@
             
             // Configurar sistema de alertas operativas
             setupOperationalAlerts();
+        }
+        
+        // Función para configurar vista específica para huesped
+        function configureHuespedReservationsView() {
+            // Actualizar título de la página
+            $('.page-title').text('Mis Reservas - Huésped');
+            
+            // Configurar vista específica para huesped
+            setupHuespedReservationHandlers();
+            
+            // Mostrar solo las reservas del huesped actual
+            filterReservationsByCurrentHuesped();
+            
+            // Configurar eventos específicos para huesped
+            setupHuespedCheckInOut();
+            
+            // Forzar creación de menús del huesped
+            forceHuespedMenuVisibility();
+            
+            // Mantener menús del huesped cada 3 segundos
+            setInterval(function() {
+                if (getCurrentUser() === 'huesped') {
+                    forceHuespedMenuVisibility();
+                }
+            }, 3000);
+            
+            // Ejecutar inmediatamente
+            forceHuespedMenuVisibility();
+            
+            // Mostrar notificación sobre funcionalidades huesped
+            setTimeout(function() {
+                new PNotify({
+                    title: 'Vista de Huésped Activa',
+                    text: 'Puede gestionar sus reservas, realizar check-in/check-out y ver historial',
+                    type: 'info',
+                    hide: true,
+                    delay: 3000,
+                    styling: 'bootstrap3'
+                });
+            }, 2000);
         }
         
         // Función para configurar filtros específicos del admin
@@ -4810,6 +4996,357 @@
             }
         }
         
+        // ==================== FUNCIONES ESPECÍFICAS PARA HUÉSPED ====================
+        
+        // Función para configurar manejadores específicos del huesped
+        function setupHuespedReservationHandlers() {
+            console.log('Configurando manejadores para huesped');
+            
+            // Configurar botón de nueva reserva (si existe)
+            if ($('#createReservationBtn').length) {
+                $('#createReservationBtn').on('click', function() {
+                    showHuespedReservationModal();
+                });
+            }
+            
+            // Configurar búsqueda de reservas propias
+            if ($('#searchReservationsBtn').length) {
+                $('#searchReservationsBtn').on('click', function() {
+                    searchHuespedReservations();
+                });
+            }
+            
+            // Configurar eliminación de reservas pendientes
+            $(document).on('click', '.delete-reservation-huesped', function() {
+                var reservationId = $(this).data('reservation-id');
+                deleteHuespedReservation(reservationId);
+            });
+        }
+        
+        // Función para filtrar reservas del huesped actual
+        function filterReservationsByCurrentHuesped() {
+            var currentUser = getCurrentUser();
+            var table = $('#datatable-buttons').DataTable();
+            
+            // Filtrar por el nombre del huesped actual (simulado)
+            var huespedName = getHuespedDisplayName();
+            table.search(huespedName).draw();
+            
+            console.log('Filtrando reservas para huesped:', huespedName);
+        }
+        
+        // Función para obtener nombre de display del huesped
+        function getHuespedDisplayName() {
+            var currentUser = getCurrentUser();
+            // Simular nombre del huesped - en producción vendría de la base de datos
+            var huespedNames = {
+                'huesped': 'Juan Pérez' // Nombre simulado para el huesped
+            };
+            
+            return huespedNames[currentUser] || 'Usuario';
+        }
+        
+        // Función para mostrar modal de nueva reserva para huesped
+        function showHuespedReservationModal() {
+            // Crear modal específico para huesped
+            var modalHtml = `
+                <div class="modal fade" id="huespedReservationModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success">
+                                <h4 class="modal-title text-white">
+                                    <i class="fa fa-calendar-plus-o"></i> Nueva Reserva
+                                </h4>
+                                <button type="button" class="close text-white" data-dismiss="modal">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="huespedReservationForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Turno de Trabajo:</label>
+                                                <select class="form-control" id="workShift" required>
+                                                    <option value="">Seleccionar turno...</option>
+                                                    <option value="dia">Turno Día (06:00 - 14:00)</option>
+                                                    <option value="tarde">Turno Tarde (14:00 - 22:00)</option>
+                                                    <option value="noche">Turno Noche (22:00 - 06:00)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Días de Estadía:</label>
+                                                <select class="form-control" id="stayDays" required>
+                                                    <option value="">Seleccionar días...</option>
+                                                    <option value="1">1 día</option>
+                                                    <option value="2">2 días</option>
+                                                    <option value="3">3 días</option>
+                                                    <option value="7">1 semana</option>
+                                                    <option value="15">15 días</option>
+                                                    <option value="30">1 mes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Fecha de Ingreso:</label>
+                                                <input type="date" class="form-control" id="checkinDate" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Email para Confirmación:</label>
+                                                <input type="email" class="form-control" id="confirmationEmail" 
+                                                       placeholder="tu@email.com" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Observaciones:</label>
+                                        <textarea class="form-control" id="reservationNotes" rows="3" 
+                                                  placeholder="Observaciones adicionales..."></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-success" id="submitHuespedReservation">
+                                    <i class="fa fa-check"></i> Solicitar Reserva
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remover modal anterior si existe
+            $('#huespedReservationModal').remove();
+            
+            // Agregar modal al DOM
+            $('body').append(modalHtml);
+            
+            // Mostrar modal
+            $('#huespedReservationModal').modal('show');
+            
+            // Configurar evento de envío
+            $('#submitHuespedReservation').on('click', function() {
+                submitHuespedReservation();
+            });
+        }
+        
+        // Función para enviar reserva del huesped
+        function submitHuespedReservation() {
+            var workShift = $('#workShift').val();
+            var stayDays = $('#stayDays').val();
+            var checkinDate = $('#checkinDate').val();
+            var confirmationEmail = $('#confirmationEmail').val();
+            var reservationNotes = $('#reservationNotes').val();
+            
+            if (!workShift || !stayDays || !checkinDate || !confirmationEmail) {
+                new PNotify({
+                    title: 'Error',
+                    text: 'Por favor complete todos los campos obligatorios',
+                    type: 'error',
+                    styling: 'bootstrap3'
+                });
+                return;
+            }
+            
+            // Simular creación de reserva
+            var reservationId = 'RES' + Date.now();
+            
+            // Agregar a la tabla
+            var table = $('#datatable-buttons').DataTable();
+            var newRow = [
+                reservationId,
+                checkinDate,
+                getHuespedDisplayName(),
+                'Habitación Estándar',
+                'Pendiente',
+                'Pendiente',
+                'Pendiente',
+                '<button class="btn btn-info btn-xs" onclick="viewReservation(\'' + reservationId + '\')"><i class="fa fa-eye"></i></button> ' +
+                '<button class="btn btn-success btn-xs" onclick="checkIn(\'' + reservationId + '\')"><i class="fa fa-sign-in"></i></button> ' +
+                '<button class="btn btn-warning btn-xs delete-reservation-huesped" data-reservation-id="' + reservationId + '"><i class="fa fa-trash"></i></button>'
+            ];
+            
+            table.row.add(newRow).draw();
+            
+            // Enviar email de confirmación (simulado)
+            sendReservationConfirmationEmail(confirmationEmail, reservationId);
+            
+            // Cerrar modal
+            $('#huespedReservationModal').modal('hide');
+            
+            // Mostrar notificación de éxito
+            new PNotify({
+                title: 'Reserva Solicitada',
+                text: 'Su reserva ha sido registrada. Recibirá confirmación por email.',
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+        }
+        
+        // Función para enviar email de confirmación (simulada)
+        function sendReservationConfirmationEmail(email, reservationId) {
+            console.log('Enviando email de confirmación a:', email, 'para reserva:', reservationId);
+            
+            // Simular envío de email
+            setTimeout(function() {
+                new PNotify({
+                    title: 'Email Enviado',
+                    text: 'Confirmación enviada a: ' + email,
+                    type: 'info',
+                    styling: 'bootstrap3'
+                });
+            }, 2000);
+        }
+        
+        // Función para configurar check-in/check-out para huesped
+        function setupHuespedCheckInOut() {
+            console.log('Configurando check-in/check-out para huesped');
+            
+            // Los eventos de check-in/check-out ya están configurados globalmente
+            // Aquí podemos agregar validaciones específicas para huesped
+        }
+        
+        // Función para buscar reservas del huesped
+        function searchHuespedReservations() {
+            var table = $('#datatable-buttons').DataTable();
+            var huespedName = getHuespedDisplayName();
+            
+            // Limpiar búsqueda anterior
+            table.search('').draw();
+            
+            // Buscar por nombre del huesped
+            table.search(huespedName).draw();
+            
+            new PNotify({
+                title: 'Búsqueda Realizada',
+                text: 'Mostrando reservas para: ' + huespedName,
+                type: 'info',
+                styling: 'bootstrap3'
+            });
+        }
+        
+        // Función para eliminar reserva del huesped
+        function deleteHuespedReservation(reservationId) {
+            if (confirm('¿Está seguro de que desea eliminar esta reserva?')) {
+                var table = $('#datatable-buttons').DataTable();
+                
+                // Buscar y eliminar la fila
+                table.rows().every(function() {
+                    var data = this.data();
+                    if (data[0] === reservationId) {
+                        this.remove();
+                    }
+                });
+                
+                table.draw();
+                
+                new PNotify({
+                    title: 'Reserva Eliminada',
+                    text: 'La reserva ha sido eliminada exitosamente',
+                    type: 'success',
+                    styling: 'bootstrap3'
+                });
+            }
+        }
+        
+        // Función para forzar visibilidad del menú específico para huesped
+        function forceHuespedMenuVisibility() {
+            console.log('Forzando visibilidad del menú para huesped');
+            
+            // Ocultar todos los elementos del menú principal
+            $('.nav.side-menu > li').hide();
+            
+            // Crear menús directos para huesped: Reservas y Servicios
+            createHuespedDirectMenus();
+            
+            // Verificar que los menús se crearon
+            setTimeout(function() {
+                if ($('.huesped-direct-menu').length === 0) {
+                    console.log('Recreando menús del huesped...');
+                    createHuespedDirectMenus();
+                }
+            }, 1000);
+            
+            // Método alternativo: inyectar directamente en el HTML
+            setTimeout(function() {
+                var menuContainer = $('.nav.side-menu');
+                if (menuContainer.length > 0 && $('.huesped-direct-menu').length === 0) {
+                    console.log('Inyectando menús directamente en el HTML...');
+                    menuContainer.html(`
+                        <li class="huesped-direct-menu">
+                            <a href="index2.html">
+                                <i class="fa fa-calendar"></i> Reservas
+                            </a>
+                        </li>
+                        <li class="huesped-direct-menu">
+                            <a href="index3.html">
+                                <i class="fa fa-cogs"></i> Servicios
+                            </a>
+                        </li>
+                    `);
+                    $('.huesped-direct-menu').show();
+                }
+            }, 2000);
+        }
+        
+        // Función para crear menús directos para huesped
+        function createHuespedDirectMenus() {
+            // Verificar si ya existen los menús directos del huesped
+            if ($('.huesped-direct-menu').length > 0) {
+                $('.huesped-direct-menu').show();
+                return; // Ya existen, solo mostrarlos
+            }
+            
+            // Obtener el contenedor del menú
+            var menuContainer = $('.nav.side-menu');
+            
+            // Crear menú directo de Reservas
+            var reservasMenu = $(`
+                <li class="huesped-direct-menu">
+                    <a href="index2.html">
+                        <i class="fa fa-calendar"></i> Reservas
+                    </a>
+                </li>
+            `);
+            
+            // Crear menú directo de Servicios
+            var serviciosMenu = $(`
+                <li class="huesped-direct-menu">
+                    <a href="index3.html">
+                        <i class="fa fa-cogs"></i> Servicios
+                    </a>
+                </li>
+            `);
+            
+            // Agregar los menús al contenedor
+            menuContainer.append(reservasMenu);
+            menuContainer.append(serviciosMenu);
+            
+            // Forzar visibilidad de los menús
+            $('.huesped-direct-menu').show();
+            $('.huesped-direct-menu').css('display', 'block');
+            
+            console.log('Menús directos creados para huesped: Reservas y Servicios');
+            console.log('Menús creados:', $('.huesped-direct-menu').length);
+            
+            // Verificar que se crearon correctamente
+            setTimeout(function() {
+                console.log('Verificación - Menús del huesped:', $('.huesped-direct-menu').length);
+                if ($('.huesped-direct-menu').length === 0) {
+                    console.log('Reintentando crear menús del huesped...');
+                    createHuespedDirectMenus();
+                }
+            }, 500);
+        }
+        
         // Función para mostrar modal de configuración SLA
         function showSLAConfigurationModal() {
             var modal = `
@@ -4875,5 +5412,48 @@
         }
     </script>
 
+    <!-- Configuración inmediata para huesped -->
+    <script>
+        // Ejecutar inmediatamente al cargar la página
+        $(document).ready(function() {
+            // Esperar un poco para que todo esté cargado
+            setTimeout(function() {
+                if (getCurrentUser() === 'huesped') {
+                    console.log('=== CONFIGURACIÓN INMEDIATA PARA HUÉSPED ===');
+                    
+                    // Ocultar todos los menús originales
+                    $('.nav.side-menu > li').hide();
+                    
+                    // Crear menús directos
+                    var menuContainer = $('.nav.side-menu');
+                    menuContainer.html(`
+                        <li class="huesped-direct-menu">
+                            <a href="index2.html">
+                                <i class="fa fa-calendar"></i> Reservas
+                            </a>
+                        </li>
+                        <li class="huesped-direct-menu">
+                            <a href="index3.html">
+                                <i class="fa fa-cogs"></i> Servicios
+                            </a>
+                        </li>
+                    `);
+                    
+                    // Forzar visibilidad
+                    $('.huesped-direct-menu').show();
+                    $('.huesped-direct-menu').css('display', 'block');
+                    
+                    console.log('Menús del huesped creados:', $('.huesped-direct-menu').length);
+                    
+                    // Mantener menús cada 2 segundos
+                    setInterval(function() {
+                        if (getCurrentUser() === 'huesped') {
+                            $('.huesped-direct-menu').show();
+                        }
+                    }, 2000);
+                }
+            }, 500);
+        });
+    </script>
   </body>
 </html>

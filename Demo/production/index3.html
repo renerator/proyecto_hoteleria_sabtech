@@ -47,9 +47,144 @@
             display: none !important;
         }
         
+        /* Mostrar elementos para usuario plataforma */
+        .plataforma-user .admin-hidden {
+            display: block !important;
+        }
+        
+        /* Forzar visibilidad para usuarios no-admin */
+        body:not(.admin-user) .admin-hidden {
+            display: block !important;
+        }
+        
+        /* Corregir superposición del formulario de reparaciones */
+        .panel-danger {
+            position: relative;
+            z-index: 10;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .table-responsive {
+            position: relative;
+            z-index: 1;
+            overflow: visible;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        #repairRequestsTable {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 0;
+        }
+        
+        /* Asegurar que el formulario no se superponga */
+        .col-md-4 .panel {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+        
+        /* Mejorar separación entre columnas */
+        .col-md-8 {
+            padding-right: 15px;
+        }
+        
+        .col-md-4 {
+            padding-left: 15px;
+        }
+        
+        /* Sticky header para la tabla */
+        #repairRequestsTable thead th {
+            background-color: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+            font-weight: bold;
+        }
+        
+        /* Estilos para los controles de colapso */
+        .panel_toolbox li {
+            float: left;
+            cursor: pointer;
+        }
+        
+        .panel_toolbox li a {
+            padding: 5px;
+            color: #C5C7CB;
+            font-size: 14px;
+        }
+        
+        .panel_toolbox li a:hover {
+            color: #A6A6A6;
+        }
+        
+        .collapse-link i {
+            transition: transform 0.3s ease;
+        }
+        
+        .x_panel.collapsed .collapse-link i {
+            transform: rotate(180deg);
+        }
+        
+        /* Estilos para scroll horizontal en tablas */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        #pendingServicesTable {
+            min-width: 600px;
+            white-space: nowrap;
+        }
+        
+        #pendingServicesTable th,
+        #pendingServicesTable td {
+            white-space: nowrap;
+            min-width: 80px;
+            padding: 8px 12px;
+        }
+        
+        #pendingServicesTable th:first-child,
+        #pendingServicesTable td:first-child {
+            min-width: 100px;
+        }
+        
+        #pendingServicesTable th:last-child,
+        #pendingServicesTable td:last-child {
+            min-width: 120px;
+        }
+        
+        /* Asegurar que el texto del título no se corte */
+        .panel-title {
+            white-space: nowrap;
+            overflow: visible;
+            text-overflow: ellipsis;
+            max-width: none;
+        }
+        
         /* Estilo para indicar que es usuario admin */
         .admin-user .admin-title {
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        /* Estilo para indicar que es usuario plataforma */
+        .plataforma-user .admin-title {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        /* Estilo para indicar que es usuario huesped */
+        .huesped-user .admin-title {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
             color: white;
             padding: 5px 10px;
             border-radius: 4px;
@@ -338,7 +473,7 @@
                 <ul class="nav side-menu">
                   <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                                               <li><a href="index2.html">Reservas</a></li>
+                      <li><a href="index2.html">Reservas</a></li>
                                                <li class="current-page"><a href="index3.html">Servicios</a></li>
                                                <li><a href="index.html">Habitaciones</a></li>
                                                <li class="admin-hidden"><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
@@ -1094,13 +1229,13 @@
                                             <h3 class="panel-title"><i class="fa fa-clock-o"></i> Servicios Pendientes</h3>
                                           </div>
                                           <div class="panel-body">
-                                            <div class="table-responsive">
-                                              <table class="table table-striped" id="pendingServicesTable">
-                                                <thead>
-                                                  <tr>
+                                            <div class="table-responsive" style="overflow-x: auto; max-width: 100%;">
+                                              <table class="table table-striped" id="pendingServicesTable" style="min-width: 600px;">
+                      <thead>
+                        <tr>
                                                     <th>Habitación</th>
-                                                    <th>Servicio</th>
-                                                    <th>Prioridad</th>
+                          <th>Servicio</th>
+                          <th>Prioridad</th>
                                                     <th>Tiempo</th>
                                                     <th>Acciones</th>
                                                   </tr>
@@ -1273,14 +1408,18 @@
                                 <div class="x_panel">
                                   <div class="x_title">
                                     <h2><i class="fa fa-wrench"></i> Requerimientos de Reparación</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                                      <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                                    </ul>
                                     <div class="clearfix"></div>
                                   </div>
                                   <div class="x_content">
-                                    <div class="row">
-                                      <div class="col-md-8">
-                                        <div class="table-responsive">
+                                    <div class="row" style="margin-bottom: 20px;">
+                                      <div class="col-md-8" style="position: relative; z-index: 1; padding-right: 20px;">
+                                        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
                                           <table class="table table-striped" id="repairRequestsTable">
-                                            <thead>
+                                            <thead style="position: sticky; top: 0; background: white; z-index: 10;">
                                               <tr>
                                                 <th>ID</th>
                                                 <th>Ubicación</th>
@@ -1299,8 +1438,8 @@
                                         </div>
                                       </div>
                                       
-                                      <div class="col-md-4">
-                                        <div class="panel panel-danger">
+                                      <div class="col-md-4" style="position: relative; z-index: 2; padding-left: 10px;">
+                                        <div class="panel panel-danger" style="max-height: 500px; overflow-y: auto;">
                                           <div class="panel-heading">
                                             <h3 class="panel-title"><i class="fa fa-plus"></i> Nuevo Requerimiento</h3>
                                           </div>
@@ -1700,24 +1839,51 @@
     <!-- Custom Theme Scripts -->
     <script src="../build/js/custom.min.js"></script>
     
+    <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
+    <script src="auth-simple.js"></script>
+    
+    <!-- FORZAR VISIBILIDAD DE MENÚS -->
+    <script src="force-menu.js"></script>
+    
+    <!-- FORZAR VISIBILIDAD AGRESIVA -->
+    <script src="force-menu-aggressive.js"></script>
+    
+    <!-- LIMPIAR NOTIFICACIONES DUPLICADAS -->
+    <script src="cleanup-notifications.js"></script>
+    
     <!-- Script simple para mantener texto Admin -->
     <script>
         $(document).ready(function() {
-            // Función simple para mantener Admin
-            function setAdminText() {
-                $('.profile_info h2').text('Admin');
+            // Función para establecer el texto correcto según el usuario
+            function setUserText() {
+                var currentUser = localStorage.getItem('currentUser');
+                var displayText = '';
+                
+                if (currentUser === 'admin') {
+                    displayText = 'Admin';
+                } else if (currentUser === 'plataforma') {
+                    displayText = 'Plataforma';
+                } else if (currentUser === 'huesped') {
+                    displayText = 'Huésped';
+                } else if (currentUser === 'mantencion') {
+                    displayText = 'Mantención';
+                } else {
+                    displayText = 'Usuario'; // Por defecto
+                }
+                
+                $('.profile_info h2').text(displayText);
                 $('.user-profile').contents().filter(function() {
                     return this.nodeType === 3 && this.nodeValue.trim() !== '';
                 }).each(function() {
-                    this.nodeValue = 'Admin';
+                    this.nodeValue = displayText;
                 });
             }
             
             // Ejecutar inmediatamente
-            setAdminText();
+            setUserText();
             
             // Ejecutar cada segundo para mantenerlo
-            setInterval(setAdminText, 1000);
+            setInterval(setUserText, 1000);
         });
     </script>
     
@@ -2894,6 +3060,8 @@
         function checkUserRole() {
             var currentUser = getCurrentUser();
             
+            console.log('Usuario actual detectado:', currentUser);
+            
             if (currentUser === 'admin') {
                 // Ocultar opciones del menú que no debe ver el admin
                 $('.admin-hidden').hide();
@@ -2913,13 +3081,66 @@
                 
                 // Configurar vista específica para admin
                 configureAdminServicesView();
+            } else if (currentUser === 'huesped') {
+                // Ocultar opciones del menú que no debe ver el huesped
+                $('.admin-hidden').hide();
+                
+                // Agregar indicador visual de que es usuario huesped
+                $('.navbar-brand').append('<span class="admin-title">HUÉSPED</span>');
+                $('body').addClass('huesped-user');
+                
+                // Mostrar mensaje informativo (solo una vez)
+                if (!window.huespedWelcomeShown) {
+                    window.huespedWelcomeShown = true;
+                    new PNotify({
+                        title: 'Bienvenido Huésped',
+                        text: 'Acceso limitado a servicios básicos',
+                        type: 'info',
+                        hide: true,
+                        delay: 3000,
+                        styling: 'bootstrap3'
+                    });
+                }
+                
+                // Configurar vista específica para huesped
+                configureHuespedServicesView();
+            } else {
+                // Para plataforma y otros usuarios - MOSTRAR TODOS LOS MENÚS
+                $('.admin-hidden').show();
+                
+                // Agregar indicador visual
+                if (currentUser === 'plataforma') {
+                    $('.navbar-brand').append('<span class="admin-title">PLATAFORMA</span>');
+                    $('body').addClass('plataforma-user');
+                    
+                    // Mostrar mensaje informativo (solo una vez)
+                    if (!window.plataformaWelcomeShown) {
+                        window.plataformaWelcomeShown = true;
+                        new PNotify({
+                            title: 'Bienvenido Plataforma',
+                            text: 'Acceso completo a todas las funcionalidades del sistema',
+                            type: 'success',
+                            hide: true,
+                            delay: 3000,
+                            styling: 'bootstrap3'
+                        });
+                    }
+                } else {
+                    $('.navbar-brand').append('<span class="admin-title">USUARIO</span>');
+                    $('body').addClass('user');
+                }
             }
         }
         
         // Función para obtener el usuario actual
         function getCurrentUser() {
             var user = localStorage.getItem('currentUser');
-            return user || 'plataforma';
+            
+            if (user && user !== 'null' && user !== 'undefined') {
+                return user;
+            }
+            
+            return 'plataforma';
         }
         
         // Función para configurar la vista específica del admin en servicios
@@ -2944,6 +3165,43 @@
                     styling: 'bootstrap3'
                 });
             }, 2000);
+        }
+        
+        // Función para configurar vista específica para huesped
+        function configureHuespedServicesView() {
+            // Actualizar título de la página
+            $('.page-title').text('Servicios Disponibles - Huésped');
+            
+            // Configurar eventos específicos para huesped
+            setupHuespedServicesHandlers();
+            
+            // Cargar datos básicos (solo estadísticas, no gestión)
+            loadBasicServiceStats();
+            
+            // Mostrar notificación sobre funcionalidades huesped
+            setTimeout(function() {
+                new PNotify({
+                    title: 'Vista de Huésped',
+                    text: 'Puede ver estadísticas de servicios pero no gestionar',
+                    type: 'info',
+                    hide: true,
+                    delay: 3000,
+                    styling: 'bootstrap3'
+                });
+            }, 2000);
+        }
+        
+        // Función para configurar manejadores de eventos específicos del huesped
+        function setupHuespedServicesHandlers() {
+            // El huesped solo puede ver estadísticas, no puede gestionar servicios
+            // Por ahora no hay eventos específicos para huesped
+            console.log('Configurando manejadores para huesped');
+        }
+        
+        // Función para cargar estadísticas básicas para huesped
+        function loadBasicServiceStats() {
+            // Cargar solo estadísticas generales, no datos de gestión
+            updateServiceStats();
         }
         
         // Función para configurar manejadores de eventos específicos del admin
@@ -3299,5 +3557,48 @@
         }
     </script>
 
+    <!-- Configuración inmediata para huesped -->
+    <script>
+        // Ejecutar inmediatamente al cargar la página
+        $(document).ready(function() {
+            // Esperar un poco para que todo esté cargado
+            setTimeout(function() {
+                if (getCurrentUser() === 'huesped') {
+                    console.log('=== CONFIGURACIÓN INMEDIATA PARA HUÉSPED EN SERVICIOS ===');
+                    
+                    // Ocultar todos los menús originales
+                    $('.nav.side-menu > li').hide();
+                    
+                    // Crear menús directos
+                    var menuContainer = $('.nav.side-menu');
+                    menuContainer.html(`
+                        <li class="huesped-direct-menu">
+                            <a href="index2.html">
+                                <i class="fa fa-calendar"></i> Reservas
+                            </a>
+                        </li>
+                        <li class="huesped-direct-menu">
+                            <a href="index3.html">
+                                <i class="fa fa-cogs"></i> Servicios
+                            </a>
+                        </li>
+                    `);
+                    
+                    // Forzar visibilidad
+                    $('.huesped-direct-menu').show();
+                    $('.huesped-direct-menu').css('display', 'block');
+                    
+                    console.log('Menús del huesped creados en servicios:', $('.huesped-direct-menu').length);
+                    
+                    // Mantener menús cada 2 segundos
+                    setInterval(function() {
+                        if (getCurrentUser() === 'huesped') {
+                            $('.huesped-direct-menu').show();
+                        }
+                    }, 2000);
+                }
+            }, 500);
+        });
+    </script>
   </body>
 </html>

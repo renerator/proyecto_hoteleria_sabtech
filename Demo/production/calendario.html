@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Calendario Maestro de Ocupación | Sabtech Group</title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- bootstrap-progressbar -->
+    <link href="../vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <!-- PNotify -->
+    <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    <!-- FullCalendar -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+    
+    <style>
+        .calendar-stats {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .calendar-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .legend-item {
+            display: inline-block;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .legend-color {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        
+        .status-occupied { background-color: #d9534f; }
+        .status-available { background-color: #5cb85c; }
+        .status-maintenance { background-color: #f0ad4e; }
+        .status-sanitization { background-color: #5bc0de; }
+        .status-blocked { background-color: #777; }
+        .status-reserved { background-color: #337ab7; }
+        
+        .quick-actions {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .room-selector {
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .fc-event {
+            cursor: pointer;
+        }
+        
+        .fc-event:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <!-- Sidebar -->
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title" style="border: 0;">
+                        <a href="index.html" class="site_title"><span>Hoteleria</span></a>
+                    </div>
+                    <div class="clearfix"></div>
+
+                    <!-- Profile -->
+                    <div class="profile clearfix">
+                        <div class="profile_pic">
+                            <img src="images/img.jpg" alt="..." class="img-circle profile_img">
+                        </div>
+                        <div class="profile_info">
+                            <span>Bienvenido,</span>
+                            <h2>Admin</h2>
+                        </div>
+                    </div>
+                    <br />
+
+                    <!-- Sidebar Menu -->
+                    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                        <div class="menu_section">
+                            <h3>Menú Usuario</h3>
+                            <ul class="nav side-menu">
+                                <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        <li><a href="index2.html">Reservas</a></li>
+                                        <li><a href="index3.html">Servicios</a></li>
+                                        <li><a href="index.html">Habitaciones</a></li>
+                                        <li><a href="campamentos.html">Campamentos</a></li>
+                                        <li><a href="contratos.html">Contratos</a></li>
+                                        <li><a href="dotaciones.html">Dotaciones</a></li>
+                                        <li><a href="roles.html">Roles</a></li>
+                                        <li class="current-page"><a href="calendario.html">Calendario</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <img src="images/img.jpg" alt="">Admin
+                                    <span class=" fa fa-angle-down"></span>
+                                </a>
+                            </li>
+                            <li role="presentation" class="dropdown">
+                                <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-envelope-o"></i>
+                                    <span class="badge bg-green" style="border-radius: 50%;">3</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>Calendario Maestro de Ocupación <small>Control de Sanitización y Mantenimiento</small></h3>
+                        </div>
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Buscar habitación o evento...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">Go!</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- Estadísticas Generales -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="calendar-stats">
+                                <div class="row">
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="totalRooms">20</h3>
+                                        <p>Habitaciones Totales</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="occupiedRooms">89</h3>
+                                        <p>Ocupadas Hoy</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="maintenanceRooms">12</h3>
+                                        <p>En Mantenimiento</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="sanitizationRooms">8</h3>
+                                        <p>En Sanitización</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selector de Habitaciones -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="room-selector">
+                                <h5><i class="fa fa-bed"></i> Filtro por Habitación:</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <select class="form-control" id="roomFilter">
+                                            <option value="">Todas las habitaciones</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <select class="form-control" id="statusFilter">
+                                            <option value="">Todos los estados</option>
+                                            <option value="available">Disponible</option>
+                                            <option value="occupied">Ocupada</option>
+                                            <option value="maintenance">Mantenimiento</option>
+                                            <option value="sanitization">Sanitización</option>
+                                            <option value="blocked">Bloqueada</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Acciones Rápidas -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="quick-actions">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createEventModal">
+                                            <i class="fa fa-plus"></i> Nuevo Evento
+                                        </button>
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#blockRoomModal">
+                                            <i class="fa fa-ban"></i> Bloquear Habitación
+                                        </button>
+                                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#maintenanceModal">
+                                            <i class="fa fa-wrench"></i> Programar Mantenimiento
+                                        </button>
+                                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#sanitizationModal">
+                                            <i class="fa fa-shower"></i> Programar Sanitización
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4 text-right">
+                                        <button type="button" class="btn btn-default" id="exportCalendarBtn">
+                                            <i class="fa fa-file-excel-o"></i> Exportar Calendario
+                                        </button>
+                                        <button type="button" class="btn btn-default" id="refreshCalendarBtn">
+                                            <i class="fa fa-refresh"></i> Actualizar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Leyenda -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5>Leyenda de Estados:</h5>
+                            <div class="legend-item">
+                                <span class="legend-color status-available"></span>
+                                <span>Disponible</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color status-occupied"></span>
+                                <span>Ocupada</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color status-maintenance"></span>
+                                <span>Mantenimiento</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color status-sanitization"></span>
+                                <span>Sanitización</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color status-blocked"></span>
+                                <span>Bloqueada</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color status-reserved"></span>
+                                <span>Reservada</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calendario -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="calendar-container">
+                                <div id="calendar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer>
+                <div class="pull-right">
+                    Sabtech Group | Sistemas Hotelero para la Minería <a href="https://sabtechgroup.com/">conocer más</a>
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modal para Crear Evento -->
+    <div class="modal fade" id="createEventModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Crear Nuevo Evento</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="createEventForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="eventTitle">Título del Evento *</label>
+                                    <input type="text" class="form-control" id="eventTitle" name="title" required placeholder="Ej: Limpieza profunda">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="eventRoom">Habitación *</label>
+                                    <select class="form-control" id="eventRoom" name="roomId" required>
+                                        <option value="">Seleccionar habitación...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="eventStartDate">Fecha de Inicio *</label>
+                                    <input type="date" class="form-control" id="eventStartDate" name="startDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="eventEndDate">Fecha de Fin *</label>
+                                    <input type="date" class="form-control" id="eventEndDate" name="endDate" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="eventType">Tipo de Evento *</label>
+                                    <select class="form-control" id="eventType" name="type" required>
+                                        <option value="">Seleccionar...</option>
+                                        <option value="maintenance">Mantenimiento</option>
+                                        <option value="sanitization">Sanitización</option>
+                                        <option value="blocked">Bloqueo</option>
+                                        <option value="inspection">Inspección</option>
+                                        <option value="other">Otro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="eventPriority">Prioridad</label>
+                                    <select class="form-control" id="eventPriority" name="priority">
+                                        <option value="low">Baja</option>
+                                        <option value="medium" selected>Media</option>
+                                        <option value="high">Alta</option>
+                                        <option value="urgent">Urgente</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventDescription">Descripción</label>
+                            <textarea class="form-control" id="eventDescription" name="description" rows="3" placeholder="Descripción del evento..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveEventBtn">Crear Evento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Bloquear Habitación -->
+    <div class="modal fade" id="blockRoomModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Bloquear Habitación</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="blockRoomForm">
+                        <div class="form-group">
+                            <label for="blockRoom">Habitación *</label>
+                            <select class="form-control" id="blockRoom" name="roomId" required>
+                                <option value="">Seleccionar habitación...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="blockStartDate">Fecha de Inicio *</label>
+                            <input type="date" class="form-control" id="blockStartDate" name="startDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="blockEndDate">Fecha de Fin *</label>
+                            <input type="date" class="form-control" id="blockEndDate" name="endDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="blockReason">Motivo del Bloqueo *</label>
+                            <textarea class="form-control" id="blockReason" name="reason" rows="3" required placeholder="Motivo del bloqueo..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="saveBlockBtn">Bloquear Habitación</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Programar Mantenimiento -->
+    <div class="modal fade" id="maintenanceModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Programar Mantenimiento</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="maintenanceForm">
+                        <div class="form-group">
+                            <label for="maintenanceRoom">Habitación *</label>
+                            <select class="form-control" id="maintenanceRoom" name="roomId" required>
+                                <option value="">Seleccionar habitación...</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="maintenanceStartDate">Fecha de Inicio *</label>
+                                    <input type="date" class="form-control" id="maintenanceStartDate" name="startDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="maintenanceDuration">Duración (días) *</label>
+                                    <input type="number" class="form-control" id="maintenanceDuration" name="duration" required min="1" max="30" value="1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="maintenanceType">Tipo de Mantenimiento *</label>
+                            <select class="form-control" id="maintenanceType" name="type" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="preventive">Preventivo</option>
+                                <option value="corrective">Correctivo</option>
+                                <option value="emergency">Emergencia</option>
+                                <option value="upgrade">Mejora</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="maintenanceDescription">Descripción del Trabajo</label>
+                            <textarea class="form-control" id="maintenanceDescription" name="description" rows="3" placeholder="Descripción del mantenimiento a realizar..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning" id="saveMaintenanceBtn">Programar Mantenimiento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Programar Sanitización -->
+    <div class="modal fade" id="sanitizationModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Programar Sanitización</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="sanitizationForm">
+                        <div class="form-group">
+                            <label for="sanitizationRoom">Habitación *</label>
+                            <select class="form-control" id="sanitizationRoom" name="roomId" required>
+                                <option value="">Seleccionar habitación...</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="sanitizationStartDate">Fecha de Inicio *</label>
+                                    <input type="date" class="form-control" id="sanitizationStartDate" name="startDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="sanitizationDuration">Duración (horas) *</label>
+                                    <input type="number" class="form-control" id="sanitizationDuration" name="duration" required min="1" max="24" value="4">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sanitizationType">Tipo de Sanitización *</label>
+                            <select class="form-control" id="sanitizationType" name="type" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="routine">Rutinaria</option>
+                                <option value="deep">Profunda</option>
+                                <option value="disinfection">Desinfección</option>
+                                <option value="post_checkout">Post Check-out</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sanitizationStaff">Personal Asignado</label>
+                            <input type="text" class="form-control" id="sanitizationStaff" name="staff" placeholder="Ej: Equipo de Limpieza A">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-info" id="saveSanitizationBtn">Programar Sanitización</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+    <script src="../build/js/custom.min.js"></script>
+    
+    <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
+    <script src="auth-simple.js"></script>
+    
+    <!-- FullCalendar -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/es.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var calendar;
+            var events = [
+                {
+                    id: 1,
+                    title: 'Habitación 001 - Ocupada',
+                    start: '2024-01-15',
+                    end: '2024-01-18',
+                    backgroundColor: '#d9534f',
+                    borderColor: '#d9534f',
+                    roomId: 1,
+                    type: 'occupied',
+                    description: 'Reserva confirmada'
+                },
+                {
+                    id: 2,
+                    title: 'Habitación 002 - Mantenimiento',
+                    start: '2024-01-16',
+                    end: '2024-01-17',
+                    backgroundColor: '#f0ad4e',
+                    borderColor: '#f0ad4e',
+                    roomId: 2,
+                    type: 'maintenance',
+                    description: 'Mantenimiento preventivo'
+                },
+                {
+                    id: 3,
+                    title: 'Habitación 003 - Sanitización',
+                    start: '2024-01-16T10:00:00',
+                    end: '2024-01-16T14:00:00',
+                    backgroundColor: '#5bc0de',
+                    borderColor: '#5bc0de',
+                    roomId: 3,
+                    type: 'sanitization',
+                    description: 'Limpieza profunda'
+                },
+                {
+                    id: 4,
+                    title: 'Habitación 005 - Bloqueada',
+                    start: '2024-01-17',
+                    end: '2024-01-19',
+                    backgroundColor: '#777',
+                    borderColor: '#777',
+                    roomId: 5,
+                    type: 'blocked',
+                    description: 'Reparación de plomería'
+                }
+            ];
+
+            var rooms = [
+                { id: 1, number: '0001', area: 'Zona A -1234', ala: 'Ala derecha', pasillo: 'Pasillo interior', status: 'available' },
+                { id: 2, number: '0002', area: 'Zona A -1234', ala: 'Ala derecha', pasillo: 'Pasillo interior', status: 'available' },
+                { id: 3, number: '0003', area: 'Zona A -1234', ala: 'Ala derecha', pasillo: 'Pasillo interior', status: 'available' },
+                { id: 4, number: '0004', area: 'Zona A -1234', ala: 'Ala derecha', pasillo: 'Pasillo interior', status: 'available' },
+                { id: 5, number: '0005', area: 'Zona A -1234', ala: 'Ala derecha', pasillo: 'Pasillo interior', status: 'available' },
+                { id: 6, number: '0006', area: 'Zona A -1234', ala: 'Ala derecha', pasillo: 'Pasillo interior', status: 'available' },
+                { id: 7, number: '0007', area: 'Zona A -1234', ala: 'Ala derecha', pasillo: 'Pasillo interior', status: 'available' },
+                { id: 8, number: '0008', area: 'Zona A -1234', ala: 'Ala derecha', pasillo: 'Pasillo interior', status: 'available' },
+                { id: 9, number: '0009', area: 'Zona A -1234', ala: 'Ala derecha', pasillo: 'Pasillo interior', status: 'available' },
+                { id: 10, number: '0010', area: 'Zona A -1234', ala: 'Ala derecha', pasillo: 'Pasillo interior', status: 'available' },
+                { id: 11, number: '0011', area: 'Zona B -5678', ala: 'Ala izquierda', pasillo: 'Pasillo exterior', status: 'available' },
+                { id: 12, number: '0012', area: 'Zona B -5678', ala: 'Ala izquierda', pasillo: 'Pasillo exterior', status: 'available' },
+                { id: 13, number: '0013', area: 'Zona B -5678', ala: 'Ala izquierda', pasillo: 'Pasillo exterior', status: 'available' },
+                { id: 14, number: '0014', area: 'Zona B -5678', ala: 'Ala izquierda', pasillo: 'Pasillo exterior', status: 'available' },
+                { id: 15, number: '0015', area: 'Zona B -5678', ala: 'Ala izquierda', pasillo: 'Pasillo exterior', status: 'available' },
+                { id: 16, number: '0016', area: 'Zona C -9012', ala: 'Ala central', pasillo: 'Pasillo principal', status: 'available' },
+                { id: 17, number: '0017', area: 'Zona C -9012', ala: 'Ala central', pasillo: 'Pasillo principal', status: 'available' },
+                { id: 18, number: '0018', area: 'Zona C -9012', ala: 'Ala central', pasillo: 'Pasillo principal', status: 'available' },
+                { id: 19, number: '0019', area: 'Zona C -9012', ala: 'Ala central', pasillo: 'Pasillo principal', status: 'available' },
+                { id: 20, number: '0020', area: 'Zona C -9012', ala: 'Ala central', pasillo: 'Pasillo principal', status: 'available' }
+            ];
+
+            // Inicializar calendario
+            function initializeCalendar() {
+                var calendarEl = document.getElementById('calendar');
+                
+                calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    locale: 'es',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    events: events,
+                    eventClick: function(info) {
+                        showEventDetails(info.event);
+                    },
+                    dateClick: function(info) {
+                        showDateClickModal(info.dateStr);
+                    },
+                    eventDrop: function(info) {
+                        updateEventDates(info.event);
+                    },
+                    eventResize: function(info) {
+                        updateEventDates(info.event);
+                    },
+                    selectable: true,
+                    selectMirror: true,
+                    select: function(arg) {
+                        showSelectModal(arg.startStr, arg.endStr);
+                    }
+                });
+                
+                calendar.render();
+            }
+
+            // Mostrar detalles del evento
+            function showEventDetails(event) {
+                var details = `
+Detalles del Evento:
+Título: ${event.title}
+Fecha: ${event.start.toLocaleDateString()} - ${event.end ? event.end.toLocaleDateString() : 'Sin fin'}
+Tipo: ${event.extendedProps.type || 'N/A'}
+Descripción: ${event.extendedProps.description || 'Sin descripción'}
+                `;
+                alert(details);
+            }
+
+            // Mostrar modal de selección de fecha
+            function showDateClickModal(dateStr) {
+                $('#eventStartDate').val(dateStr);
+                $('#eventEndDate').val(dateStr);
+                $('#createEventModal').modal('show');
+            }
+
+            // Mostrar modal de selección de rango
+            function showSelectModal(startStr, endStr) {
+                $('#eventStartDate').val(startStr);
+                $('#eventEndDate').val(endStr);
+                $('#createEventModal').modal('show');
+            }
+
+            // Actualizar fechas del evento
+            function updateEventDates(event) {
+                new PNotify({
+                    title: 'Evento Actualizado',
+                    text: `El evento "${event.title}" ha sido movido`,
+                    type: 'info',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            }
+
+            // Función para actualizar estadísticas
+            function updateStats() {
+                var totalRooms = rooms.length;
+                
+                // Contar habitaciones con eventos activos hoy
+                var today = new Date().toISOString().split('T')[0];
+                var occupiedRooms = events.filter(e => e.type === 'occupied' && e.start <= today && e.end >= today).length;
+                var maintenanceRooms = events.filter(e => e.type === 'maintenance' && e.start <= today && e.end >= today).length;
+                var sanitizationRooms = events.filter(e => e.type === 'sanitization' && e.start <= today && e.end >= today).length;
+
+                $('#totalRooms').text(totalRooms);
+                $('#occupiedRooms').text(occupiedRooms);
+                $('#maintenanceRooms').text(maintenanceRooms);
+                $('#sanitizationRooms').text(sanitizationRooms);
+            }
+
+            // Función para cargar habitaciones en selectores
+            function loadRoomsInSelectors() {
+                console.log('Cargando habitaciones en selectores...', rooms.length, 'habitaciones');
+                var roomOptions = '<option value="">Seleccionar habitación...</option>';
+                rooms.forEach(function(room) {
+                    roomOptions += `<option value="${room.id}">Habitación ${room.number} - ${room.area} (${room.ala})</option>`;
+                });
+                
+                // Actualizar cada selector individualmente
+                $('#eventRoom').html(roomOptions);
+                $('#blockRoom').html(roomOptions);
+                $('#maintenanceRoom').html(roomOptions);
+                $('#sanitizationRoom').html(roomOptions);
+                $('#roomFilter').html(roomOptions);
+                
+                console.log('Selectores actualizados:', $('#eventRoom option').length, 'opciones en eventRoom');
+            }
+
+            // ==================== FUNCIONALIDADES ====================
+
+            // 1. CREAR NUEVO EVENTO
+            $('#saveEventBtn').on('click', function() {
+                var form = $('#createEventForm');
+                var formData = {};
+                
+                form.find('input, select, textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+
+                // Validar campos requeridos
+                if (!formData.title || !formData.roomId || !formData.startDate || !formData.endDate || !formData.type) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos (*)',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Crear nuevo evento
+                var newEvent = {
+                    id: Math.max(...events.map(e => e.id)) + 1,
+                    title: formData.title,
+                    start: formData.startDate,
+                    end: formData.endDate,
+                    backgroundColor: getEventColor(formData.type),
+                    borderColor: getEventColor(formData.type),
+                    roomId: parseInt(formData.roomId),
+                    type: formData.type,
+                    description: formData.description,
+                    priority: formData.priority
+                };
+
+                events.push(newEvent);
+                calendar.addEvent(newEvent);
+                updateStats();
+
+                new PNotify({
+                    title: 'Éxito',
+                    text: `Evento "${formData.title}" creado exitosamente`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+
+                $('#createEventModal').modal('hide');
+                form[0].reset();
+            });
+
+            // 2. BLOQUEAR HABITACIÓN
+            $('#saveBlockBtn').on('click', function() {
+                var form = $('#blockRoomForm');
+                var formData = {};
+                
+                form.find('input, select, textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+
+                // Validar campos requeridos
+                if (!formData.roomId || !formData.startDate || !formData.endDate || !formData.reason) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos (*)',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Crear evento de bloqueo
+                var room = rooms.find(r => r.id == formData.roomId);
+                var newEvent = {
+                    id: Math.max(...events.map(e => e.id)) + 1,
+                    title: `Habitación ${room.number} - Bloqueada`,
+                    start: formData.startDate,
+                    end: formData.endDate,
+                    backgroundColor: '#777',
+                    borderColor: '#777',
+                    roomId: parseInt(formData.roomId),
+                    type: 'blocked',
+                    description: formData.reason
+                };
+
+                events.push(newEvent);
+                calendar.addEvent(newEvent);
+                updateStats();
+
+                new PNotify({
+                    title: 'Habitación Bloqueada',
+                    text: `La habitación ${room.number} ha sido bloqueada exitosamente`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+
+                $('#blockRoomModal').modal('hide');
+                form[0].reset();
+            });
+
+            // 3. PROGRAMAR MANTENIMIENTO
+            $('#saveMaintenanceBtn').on('click', function() {
+                var form = $('#maintenanceForm');
+                var formData = {};
+                
+                form.find('input, select, textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+
+                // Validar campos requeridos
+                if (!formData.roomId || !formData.startDate || !formData.duration || !formData.type) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos (*)',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Calcular fecha de fin
+                var startDate = new Date(formData.startDate);
+                var endDate = new Date(startDate);
+                endDate.setDate(startDate.getDate() + parseInt(formData.duration));
+
+                var room = rooms.find(r => r.id == formData.roomId);
+                var newEvent = {
+                    id: Math.max(...events.map(e => e.id)) + 1,
+                    title: `Habitación ${room.number} - Mantenimiento`,
+                    start: formData.startDate,
+                    end: endDate.toISOString().split('T')[0],
+                    backgroundColor: '#f0ad4e',
+                    borderColor: '#f0ad4e',
+                    roomId: parseInt(formData.roomId),
+                    type: 'maintenance',
+                    description: `Mantenimiento ${formData.type}: ${formData.description}`
+                };
+
+                events.push(newEvent);
+                calendar.addEvent(newEvent);
+                updateStats();
+
+                new PNotify({
+                    title: 'Mantenimiento Programado',
+                    text: `Mantenimiento programado para habitación ${room.number}`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+
+                $('#maintenanceModal').modal('hide');
+                form[0].reset();
+            });
+
+            // 4. PROGRAMAR SANITIZACIÓN
+            $('#saveSanitizationBtn').on('click', function() {
+                var form = $('#sanitizationForm');
+                var formData = {};
+                
+                form.find('input, select, textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+
+                // Validar campos requeridos
+                if (!formData.roomId || !formData.startDate || !formData.duration || !formData.type) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos (*)',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Calcular hora de fin
+                var startDateTime = new Date(formData.startDate + 'T09:00:00');
+                var endDateTime = new Date(startDateTime);
+                endDateTime.setHours(startDateTime.getHours() + parseInt(formData.duration));
+
+                var room = rooms.find(r => r.id == formData.roomId);
+                var newEvent = {
+                    id: Math.max(...events.map(e => e.id)) + 1,
+                    title: `Habitación ${room.number} - Sanitización`,
+                    start: startDateTime.toISOString(),
+                    end: endDateTime.toISOString(),
+                    backgroundColor: '#5bc0de',
+                    borderColor: '#5bc0de',
+                    roomId: parseInt(formData.roomId),
+                    type: 'sanitization',
+                    description: `Sanitización ${formData.type} - Personal: ${formData.staff}`
+                };
+
+                events.push(newEvent);
+                calendar.addEvent(newEvent);
+                updateStats();
+
+                new PNotify({
+                    title: 'Sanitización Programada',
+                    text: `Sanitización programada para habitación ${room.number}`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+
+                $('#sanitizationModal').modal('hide');
+                form[0].reset();
+            });
+
+            // Función para obtener color del evento
+            function getEventColor(type) {
+                switch(type) {
+                    case 'occupied': return '#d9534f';
+                    case 'maintenance': return '#f0ad4e';
+                    case 'sanitization': return '#5bc0de';
+                    case 'blocked': return '#777';
+                    case 'reserved': return '#337ab7';
+                    default: return '#5cb85c';
+                }
+            }
+
+            // Botón de actualizar
+            $('#refreshCalendarBtn').on('click', function() {
+                calendar.refetchEvents();
+                updateStats();
+                new PNotify({
+                    title: 'Calendario Actualizado',
+                    text: 'La información ha sido actualizada correctamente',
+                    type: 'info',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            // Botón de exportar calendario
+            $('#exportCalendarBtn').on('click', function() {
+                new PNotify({
+                    title: 'Calendario Exportado',
+                    text: 'El calendario ha sido exportado exitosamente',
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            // Filtros
+            $('#roomFilter, #statusFilter').on('change', function() {
+                var roomFilter = $('#roomFilter').val();
+                var statusFilter = $('#statusFilter').val();
+                
+                var filteredEvents = events.filter(function(event) {
+                    var roomMatch = !roomFilter || event.roomId == roomFilter;
+                    var statusMatch = !statusFilter || event.type === statusFilter;
+                    return roomMatch && statusMatch;
+                });
+                
+                calendar.removeAllEvents();
+                calendar.addEventSource(filteredEvents);
+            });
+
+            // Inicializar
+            initializeCalendar();
+            updateStats();
+            loadRoomsInSelectors();
+
+            // Recargar habitaciones cuando se abre el modal
+            $('#createEventModal').on('show.bs.modal', function() {
+                console.log('Modal de crear evento abierto, recargando habitaciones...');
+                loadRoomsInSelectors();
+            });
+
+            // Configurar PNotify
+            PNotify.prototype.options.styling = "bootstrap3";
+        });
+    </script>
+</body>
+</html>

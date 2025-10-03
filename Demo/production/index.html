@@ -261,9 +261,29 @@
             display: none !important;
         }
         
+        /* Mostrar elementos para usuario plataforma */
+        .plataforma-user .admin-hidden {
+            display: block !important;
+        }
+        
+        /* Forzar visibilidad para usuarios no-admin */
+        body:not(.admin-user) .admin-hidden {
+            display: block !important;
+        }
+        
         /* Estilo para indicar que es usuario admin */
         .admin-user .admin-title {
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        /* Estilo para indicar que es usuario plataforma */
+        .plataforma-user .admin-title {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             color: white;
             padding: 5px 10px;
             border-radius: 4px;
@@ -1568,6 +1588,18 @@
     <!-- Custom Theme Scripts -->
     <script src="../build/js/custom.min.js"></script>
     
+    <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
+    <script src="auth-simple.js"></script>
+    
+    <!-- FORZAR VISIBILIDAD DE MENÚS -->
+    <script src="force-menu.js"></script>
+    
+    <!-- FORZAR VISIBILIDAD AGRESIVA -->
+    <script src="force-menu-aggressive.js"></script>
+    
+    <!-- LIMPIAR NOTIFICACIONES DUPLICADAS -->
+    <script src="cleanup-notifications.js"></script>
+    
     <!-- CSS simple para mantener el orden del menú -->
     <style>
         /* Mantener el texto Admin visible */
@@ -1579,21 +1611,36 @@
     <!-- Script simple para mantener texto Admin -->
     <script>
         $(document).ready(function() {
-            // Función simple para mantener Admin
-            function setAdminText() {
-                $('.profile_info h2').text('Admin');
+            // Función para establecer el texto correcto según el usuario
+            function setUserText() {
+                var currentUser = localStorage.getItem('currentUser');
+                var displayText = '';
+                
+                if (currentUser === 'admin') {
+                    displayText = 'Admin';
+                } else if (currentUser === 'plataforma') {
+                    displayText = 'Plataforma';
+                } else if (currentUser === 'huesped') {
+                    displayText = 'Huésped';
+                } else if (currentUser === 'mantencion') {
+                    displayText = 'Mantención';
+                } else {
+                    displayText = 'Usuario'; // Por defecto
+                }
+                
+                $('.profile_info h2').text(displayText);
                 $('.user-profile').contents().filter(function() {
                     return this.nodeType === 3 && this.nodeValue.trim() !== '';
                 }).each(function() {
-                    this.nodeValue = 'Admin';
+                    this.nodeValue = displayText;
                 });
             }
             
             // Ejecutar inmediatamente
-            setAdminText();
+            setUserText();
             
             // Ejecutar cada segundo para mantenerlo
-            setInterval(setAdminText, 1000);
+            setInterval(setUserText, 1000);
         });
     </script>
     
@@ -3769,6 +3816,10 @@
             // En un sistema real, esto vendría del backend o localStorage
             var currentUser = getCurrentUser();
             
+            console.log('Usuario actual detectado:', currentUser);
+            console.log('localStorage currentUser:', localStorage.getItem('currentUser'));
+            console.log('localStorage sessionToken:', localStorage.getItem('sessionToken'));
+            
             if (currentUser === 'admin') {
                 // Ocultar opciones del menú que no debe ver el admin
                 $('.admin-hidden').hide();
@@ -3785,6 +3836,31 @@
                     hide: false,
                     styling: 'bootstrap3'
                 });
+            } else {
+                // Para plataforma y otros usuarios - MOSTRAR TODOS LOS MENÚS
+                $('.admin-hidden').show();
+                
+                // Agregar indicador visual
+                if (currentUser === 'plataforma') {
+                    $('.navbar-brand').append('<span class="admin-title">PLATAFORMA</span>');
+                    $('body').addClass('plataforma-user');
+                    
+                    // Mostrar mensaje informativo (solo una vez)
+                    if (!window.plataformaWelcomeShown) {
+                        window.plataformaWelcomeShown = true;
+                        new PNotify({
+                            title: 'Bienvenido Plataforma',
+                            text: 'Acceso completo a todas las funcionalidades del sistema',
+                            type: 'success',
+                            hide: true,
+                            delay: 3000,
+                            styling: 'bootstrap3'
+                        });
+                    }
+                } else {
+                    $('.navbar-brand').append('<span class="admin-title">USUARIO</span>');
+                    $('body').addClass('user');
+                }
             }
         }
         
@@ -3793,7 +3869,7 @@
             // Obtener usuario del localStorage
             var user = localStorage.getItem('currentUser');
             
-            if (user) {
+            if (user && user !== 'null' && user !== 'undefined') {
                 return user;
             }
             
