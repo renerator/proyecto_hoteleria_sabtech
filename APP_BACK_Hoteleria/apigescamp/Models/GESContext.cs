@@ -3,6 +3,7 @@ using DemoBackend.Models.Mantenedores;
 using DemoBackend.Models.Habitacion;
 using DemoBackend.Models.Reserva;
 using DemoBackend.Models.Trabajador;
+using DemoBackend.Models.Servicio;
 using DemoBackend.Models.Menu;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,7 @@ namespace DemoBackend.Models
         public virtual DbSet<MenuModels> ListaMenus { get; set; }
 
         public virtual DbSet<TrabajadorModels> ListaTrabajadores { get; set; }
+        public virtual DbSet<ServicioModels> ListaServicio { get; set; }
 
 
 

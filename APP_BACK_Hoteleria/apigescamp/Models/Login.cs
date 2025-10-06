@@ -14,5 +14,10 @@ namespace DemoBackend.Models
 
         [Column("password")]
         public string password { get; set; }
+
+        [Column("IdUsuario")]
+        public int idUsuario { get; set; }
+        [Column("idPerfil")]
+        public int idPerfil { get; set; }
     }
 }

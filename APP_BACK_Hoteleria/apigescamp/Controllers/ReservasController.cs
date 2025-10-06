@@ -221,5 +221,51 @@ namespace DemoBackend.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+
+
+        /// <summary>
+        /// Servicio que devuelve una lista de reservas según los filtros ingresados.
+        /// </summary>
+        /// <param name="reservaDto">Objeto con los filtros opcionales de búsqueda.</param>
+        /// <returns>Lista de reservas que cumplen los criterios.</returns>
+        /// <response code="200">OK - Retorna lista de reservas.</response>
+        /// <response code="204">Sin resultados.</response>
+        /// <response code="400">Solicitud inválida.</response>
+        /// <response code="401">No autorizado.</response>
+        /// <response code="403">Acceso denegado.</response>
+        /// <response code="500">Error interno.</response>
+        [HttpGet("BuscarReservas")]
+        public ActionResult<List<ReservaDto>> BuscarReservas(
+     [FromQuery] int? idReserva,
+     [FromQuery] int? idHabitacion,
+     [FromQuery] int? idTrabajador,
+     [FromQuery] int? idEstadoReserva)
+        {
+            try
+            {
+                var filtro = new ReservaDto
+                {
+                    IdReserva = idReserva ?? 0,
+                    IdHabitacion = idHabitacion ?? 0,
+                    IdTrabajador = idTrabajador ?? 0,
+                    IdEstadoReserva = idEstadoReserva ?? 0
+                };
+
+                var resultados = _reservaService.BuscaReservas(filtro);
+
+                if (resultados == null || resultados.Count == 0)
+                    return NoContent();
+
+                return Ok(resultados);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "GetBuscarReservas: error inesperado.");
+                return StatusCode(500, "Error interno del servidor.");
+            }
+        }
+
+
     }
 }
+
