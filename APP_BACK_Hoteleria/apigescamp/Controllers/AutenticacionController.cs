@@ -12,6 +12,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using DemoBackend.Dto;
+using Microsoft.AspNetCore.Identity;
 
 namespace DemoBackend.Controllers
 {
@@ -54,6 +55,8 @@ namespace DemoBackend.Controllers
             try
             {
                 var login = _service.Login(user.username, user.password);
+                int idUser = 0;
+                int idPerfil = 0;
 
                 if (login.Count == 0)
                 {
@@ -63,9 +66,26 @@ namespace DemoBackend.Controllers
 
                 else
                 {
+
+                    if (login != null)
+                    {
+                        var login1 = login.First(); // toma el primer objeto de la lista
+
+                        idUser = login1.idUsuario;
+                        idPerfil = login1.idPerfil;
+                       
+                    }
+                    else
+                    {
+                        // Manejar caso sin resultados
+                    }
+
+
+                   
+
                     var tokenString = GenerateJSONWebToken(login.FirstOrDefault());
                     _logger.LogInformation($"Login: Usuario {user.username} válido");
-                    return Ok(new { Token = tokenString, Message = "Success" });
+                    return Ok(new { Token = tokenString, Message = "Success" , IdUser= idUser, IdPerfil =idPerfil});
                 }
             }
             catch (Exception e)

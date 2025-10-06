@@ -12,6 +12,8 @@ namespace DemoBackend.Services.Reserva
         bool ModificarReserva(ReservaDto reserva);
         bool EliminarReserva(ReservaDto reserva);
         List<ReservaDto> VerificaReservaPorId(ReservaDto reserva);
+
+        List<ReservaDto> BuscaReservas(ReservaDto reserva);
     }
 }
 

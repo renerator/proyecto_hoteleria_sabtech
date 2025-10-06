@@ -130,5 +130,28 @@ namespace DemoBackend.Services
         }
 
         #endregion
+   
+    public List<ReservaDto> BuscaReservas(ReservaDto reserva)
+        {
+            // Stored procedure que permite filtrar por múltiples campos
+            string sql = "HOT_BUSCA_Reserva @idReserva, @idHabitacion, @idTrabajador, @FechaDesde, @FechaHasta, @QuiereTransporte, @FechaCheckIN, @FechaCheckOut, @idEstadoReserva, @MotivoReserva";
+
+            var parametros = new SqlParameter[10];
+            parametros[0] = new SqlParameter("@idReserva", reserva.IdReserva);
+            parametros[1] = new SqlParameter("@idHabitacion", reserva.IdHabitacion);
+            parametros[2] = new SqlParameter("@idTrabajador", reserva.IdTrabajador);
+            parametros[3] = new SqlParameter("@FechaDesde", (object?)reserva.FechaDesde ?? DBNull.Value);
+            parametros[4] = new SqlParameter("@FechaHasta", (object?)reserva.FechaHasta ?? DBNull.Value);
+            parametros[5] = new SqlParameter("@QuiereTransporte", reserva.QuiereTransporte);
+            parametros[6] = new SqlParameter("@FechaCheckIN", (object?)reserva.FechaCheckIN ?? DBNull.Value);
+            parametros[7] = new SqlParameter("@FechaCheckOut", (object?)reserva.FechaCheckOut ?? DBNull.Value);
+            parametros[8] = new SqlParameter("@idEstadoReserva", reserva.IdEstadoReserva);
+            parametros[9] = new SqlParameter("@MotivoReserva", (object?)reserva.MotivoReserva ?? DBNull.Value);
+
+            var lista = _listaReserva.GetStoreProcedure(sql, parametros);
+
+            return _mapper.Map<List<ReservaDto>>(lista);
+        }
+
     }
 }
