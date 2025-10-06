@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Gestión de Contratos | Sabtech Group</title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- bootstrap-progressbar -->
+    <link href="../vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <!-- PNotify -->
+    <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    
+    <style>
+        .contract-stats {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .contract-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .contract-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .contract-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-active { background-color: #5cb85c; color: white; }
+        .status-expired { background-color: #d9534f; color: white; }
+        .status-pending { background-color: #f0ad4e; color: white; }
+        .status-suspended { background-color: #5bc0de; color: white; }
+        
+        .worker-item {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        
+        .access-level {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        .level-admin { background-color: #d9534f; color: white; }
+        .level-manager { background-color: #f0ad4e; color: white; }
+        .level-worker { background-color: #5cb85c; color: white; }
+        .level-guest { background-color: #5bc0de; color: white; }
+    </style>
+</head>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <!-- Sidebar -->
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title" style="border: 0;">
+                        <a href="index.html" class="site_title"><span>Hoteleria</span></a>
+                    </div>
+                    <div class="clearfix"></div>
+
+                    <!-- Profile -->
+                    <div class="profile clearfix">
+                        <div class="profile_pic">
+                            <img src="images/img.jpg" alt="..." class="img-circle profile_img">
+                        </div>
+                        <div class="profile_info">
+                            <span>Bienvenido,</span>
+                            <h2>Admin</h2>
+                        </div>
+                    </div>
+                    <br />
+
+                    <!-- Sidebar Menu -->
+                    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                        <div class="menu_section">
+                            <h3>Menú Usuario</h3>
+                            <ul class="nav side-menu">
+                                <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        <li><a href="index2.html">Reservas</a></li>
+                                        <li><a href="index3.html">Servicios</a></li>
+                                        <li><a href="index.html">Habitaciones</a></li>
+                                        <li><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
+                                        <li><a href="inventario.html">Inventario</a></li>
+                                        <li><a href="campamentos.html">Campamentos</a></li>
+                                        <li class="current-page"><a href="contratos.html">Contratos</a></li>
+                                        <li><a href="dotaciones.html">Dotaciones</a></li>
+                                        <li><a href="roles.html">Roles</a></li>
+                                        <li><a href="calendario.html">Calendario</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <img src="images/img.jpg" alt="">Admin
+                                    <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                    <li><a href="profile.html"> Perfil</a></li>
+                                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Cerrar Sesión</a></li>
+                                </ul>
+                            </li>
+                            <li role="presentation" class="dropdown">
+                                <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-envelope-o"></i>
+                                    <span class="badge bg-green" style="border-radius: 50%;">3</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>Gestión de Contratos <small>Control de Accesos y Reservas</small></h3>
+                        </div>
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Buscar contrato o empresa...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">Go!</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- Estadísticas Generales -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="contract-stats">
+                                <div class="row">
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="totalContracts">8</h3>
+                                        <p>Contratos Activos</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="totalCompanies">12</h3>
+                                        <p>Empresas Registradas</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="totalWorkers">156</h3>
+                                        <p>Trabajadores Activos</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="expiringSoon">3</h3>
+                                        <p>Vencen Pronto</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="x_panel">
+                                <div class="x_content">
+                                    <div class="row" style="margin-bottom: 20px;">
+                                        <div class="col-md-6">
+                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createContractModal">
+                                                <i class="fa fa-plus"></i> Nuevo Contrato
+                                            </button>
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createCompanyModal">
+                                                <i class="fa fa-building"></i> Nueva Empresa
+                                            </button>
+                                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#addWorkerModal">
+                                                <i class="fa fa-user"></i> Agregar Trabajador
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button type="button" class="btn btn-warning" id="exportContractsBtn">
+                                                <i class="fa fa-file-excel-o"></i> Exportar Reporte
+                                            </button>
+                                            <button type="button" class="btn btn-default" id="refreshDataBtn">
+                                                <i class="fa fa-refresh"></i> Actualizar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Contratos -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Contratos de Empresas</h2>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div id="contractsList">
+                                        <!-- Los contratos se cargarán dinámicamente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer>
+                <div class="pull-right">
+                    Sabtech Group | Sistemas Hotelero para la Minería <a href="https://sabtechgroup.com/">conocer más</a>
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modales -->
+    <!-- Modal para Crear Contrato -->
+    <div class="modal fade" id="createContractModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Crear Nuevo Contrato</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="createContractForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="contractCompany">Empresa *</label>
+                                    <select class="form-control" id="contractCompany" name="companyId" required>
+                                        <option value="">Seleccionar empresa...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="contractNumber">Número de Contrato *</label>
+                                    <input type="text" class="form-control" id="contractNumber" name="contractNumber" required placeholder="Ej: CONT-2024-001">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="contractStartDate">Fecha de Inicio *</label>
+                                    <input type="date" class="form-control" id="contractStartDate" name="startDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="contractEndDate">Fecha de Vencimiento *</label>
+                                    <input type="date" class="form-control" id="contractEndDate" name="endDate" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="contractType">Tipo de Contrato *</label>
+                                    <select class="form-control" id="contractType" name="type" required>
+                                        <option value="">Seleccionar...</option>
+                                        <option value="temporal">Temporal</option>
+                                        <option value="indefinido">Indefinido</option>
+                                        <option value="proyecto">Por Proyecto</option>
+                                        <option value="servicio">Servicio</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="contractValue">Valor del Contrato</label>
+                                    <input type="number" class="form-control" id="contractValue" name="value" min="0" step="0.01" placeholder="Ej: 150000.00">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="contractCamp">Campamento Asignado</label>
+                                    <select class="form-control" id="contractCamp" name="campId">
+                                        <option value="">Seleccionar campamento...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="contractMaxWorkers">Máximo de Trabajadores</label>
+                                    <input type="number" class="form-control" id="contractMaxWorkers" name="maxWorkers" min="1" placeholder="Ej: 50">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contractDescription">Descripción del Contrato</label>
+                            <textarea class="form-control" id="contractDescription" name="description" rows="3" placeholder="Descripción del contrato..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveContractBtn">Crear Contrato</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Crear Empresa -->
+    <div class="modal fade" id="createCompanyModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Registrar Nueva Empresa</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="createCompanyForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="companyName">Nombre de la Empresa *</label>
+                                    <input type="text" class="form-control" id="companyName" name="name" required placeholder="Ej: Constructora ABC Ltda.">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="companyRut">RUT *</label>
+                                    <input type="text" class="form-control" id="companyRut" name="rut" required placeholder="Ej: 12.345.678-9">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="companyAddress">Dirección</label>
+                                    <input type="text" class="form-control" id="companyAddress" name="address" placeholder="Ej: Av. Principal 123, Santiago">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="companyPhone">Teléfono</label>
+                                    <input type="tel" class="form-control" id="companyPhone" name="phone" placeholder="Ej: +56 2 1234 5678">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="companyEmail">Email</label>
+                                    <input type="email" class="form-control" id="companyEmail" name="email" placeholder="Ej: contacto@empresa.com">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="companyContact">Contacto Principal</label>
+                                    <input type="text" class="form-control" id="companyContact" name="contact" placeholder="Ej: Juan Pérez">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="companyDescription">Descripción de la Empresa</label>
+                            <textarea class="form-control" id="companyDescription" name="description" rows="3" placeholder="Descripción de la empresa..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveCompanyBtn">Registrar Empresa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Trabajador -->
+    <div class="modal fade" id="addWorkerModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Agregar Trabajador</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="addWorkerForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="workerName">Nombre *</label>
+                                    <input type="text" class="form-control" id="workerName" name="name" required placeholder="Ej: Juan">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="workerLastName">Apellido *</label>
+                                    <input type="text" class="form-control" id="workerLastName" name="lastName" required placeholder="Ej: Pérez">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="workerRut">RUT *</label>
+                                    <input type="text" class="form-control" id="workerRut" name="rut" required placeholder="Ej: 12.345.678-9">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="workerCompany">Empresa *</label>
+                                    <select class="form-control" id="workerCompany" name="companyId" required>
+                                        <option value="">Seleccionar empresa...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="workerPosition">Cargo *</label>
+                                    <input type="text" class="form-control" id="workerPosition" name="position" required placeholder="Ej: Supervisor">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="workerAccessLevel">Nivel de Acceso *</label>
+                                    <select class="form-control" id="workerAccessLevel" name="accessLevel" required>
+                                        <option value="">Seleccionar...</option>
+                                        <option value="guest">Invitado</option>
+                                        <option value="worker">Trabajador</option>
+                                        <option value="manager">Supervisor</option>
+                                        <option value="admin">Administrador</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="workerPhone">Teléfono</label>
+                                    <input type="tel" class="form-control" id="workerPhone" name="phone" placeholder="Ej: +56 9 1234 5678">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="workerEmail">Email</label>
+                                    <input type="email" class="form-control" id="workerEmail" name="email" placeholder="Ej: juan.perez@empresa.com">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="workerNotes">Observaciones</label>
+                            <textarea class="form-control" id="workerNotes" name="notes" rows="2" placeholder="Observaciones sobre el trabajador..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveWorkerBtn">Agregar Trabajador</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+    <script src="../build/js/custom.min.js"></script>
+    
+    <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
+    <script src="auth-simple.js"></script>
+    
+    <!-- Script para mantener texto correcto del usuario -->
+    <script>
+        $(document).ready(function() {
+            // Función para establecer el texto correcto según el usuario
+            function setUserText() {
+                var currentUser = localStorage.getItem('currentUser');
+                console.log('Usuario actual en localStorage:', currentUser);
+                
+                var displayText = '';
+                
+                if (currentUser === 'admin') {
+                    displayText = 'Admin';
+                } else if (currentUser === 'plataforma') {
+                    displayText = 'Plataforma';
+                } else if (currentUser === 'huesped') {
+                    displayText = 'Huésped';
+                } else if (currentUser === 'mantencion') {
+                    displayText = 'Mantención';
+                } else {
+                    displayText = 'Usuario'; // Por defecto
+                }
+                
+                console.log('Texto a mostrar:', displayText);
+                
+                // Solo cambiar si es diferente al actual
+                var currentText = $('.profile_info h2').text();
+                if (currentText !== displayText) {
+                    $('.profile_info h2').text(displayText);
+                    console.log('Texto cambiado de "' + currentText + '" a "' + displayText + '"');
+                }
+                
+                $('.user-profile').contents().filter(function() {
+                    return this.nodeType === 3 && this.nodeValue.trim() !== '';
+                }).each(function() {
+                    if (this.nodeValue.trim() !== displayText) {
+                        this.nodeValue = displayText;
+                    }
+                });
+            }
+            
+            // Ejecutar inmediatamente
+            setUserText();
+            
+            // Ejecutar cada 5 segundos para mantenerlo (menos agresivo)
+            setInterval(setUserText, 5000);
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Datos de ejemplo
+            var companies = [
+                {
+                    id: 1,
+                    name: "Constructora ABC Ltda.",
+                    rut: "12.345.678-9",
+                    address: "Av. Principal 123, Santiago",
+                    phone: "+56 2 1234 5678",
+                    email: "contacto@constructora-abc.com",
+                    contact: "Juan Pérez",
+                    description: "Empresa constructora especializada en minería"
+                },
+                {
+                    id: 2,
+                    name: "Servicios Mineros XYZ S.A.",
+                    rut: "98.765.432-1",
+                    address: "Calle Minera 456, Antofagasta",
+                    phone: "+56 55 8765 4321",
+                    email: "info@servicios-xyz.cl",
+                    contact: "María González",
+                    description: "Servicios de mantenimiento y operación minera"
+                }
+            ];
+
+            var contracts = [
+                {
+                    id: 1,
+                    companyId: 1,
+                    contractNumber: "CONT-2024-001",
+                    startDate: "2024-01-01",
+                    endDate: "2024-12-31",
+                    type: "indefinido",
+                    value: 1500000,
+                    campId: 1,
+                    maxWorkers: 50,
+                    description: "Contrato principal de construcción",
+                    status: "active",
+                    workers: [
+                        { id: 1, name: "Juan", lastName: "Pérez", rut: "12.345.678-9", position: "Supervisor", accessLevel: "manager", phone: "+56 9 1234 5678", email: "juan.perez@constructora-abc.com" },
+                        { id: 2, name: "Carlos", lastName: "Méndez", rut: "11.222.333-4", position: "Operador", accessLevel: "worker", phone: "+56 9 9876 5432", email: "carlos.mendez@constructora-abc.com" }
+                    ]
+                },
+                {
+                    id: 2,
+                    companyId: 2,
+                    contractNumber: "CONT-2024-002",
+                    startDate: "2024-03-01",
+                    endDate: "2024-09-30",
+                    type: "proyecto",
+                    value: 800000,
+                    campId: 2,
+                    maxWorkers: 25,
+                    description: "Contrato de servicios de mantenimiento",
+                    status: "active",
+                    workers: [
+                        { id: 3, name: "María", lastName: "González", rut: "13.456.789-0", position: "Gerente", accessLevel: "admin", phone: "+56 9 5555 1234", email: "maria.gonzalez@servicios-xyz.cl" }
+                    ]
+                }
+            ];
+
+            var camps = [
+                { id: 1, name: "Campamento Norte", code: "CAMP-N-001" },
+                { id: 2, name: "Campamento Sur", code: "CAMP-S-002" }
+            ];
+
+            // Función para renderizar contratos
+            function renderContracts() {
+                var html = '';
+                contracts.forEach(function(contract) {
+                    var company = companies.find(c => c.id === contract.companyId);
+                    var camp = camps.find(c => c.id === contract.campId);
+                    var statusClass = contract.status === 'active' ? 'status-active' : 
+                                     contract.status === 'expired' ? 'status-expired' : 
+                                     contract.status === 'pending' ? 'status-pending' : 'status-suspended';
+                    var statusText = contract.status === 'active' ? 'Activo' : 
+                                    contract.status === 'expired' ? 'Vencido' : 
+                                    contract.status === 'pending' ? 'Pendiente' : 'Suspendido';
+
+                    var daysUntilExpiry = Math.ceil((new Date(contract.endDate) - new Date()) / (1000 * 60 * 60 * 24));
+                    var expiryWarning = daysUntilExpiry <= 30 ? ' <span class="label label-warning">Vence pronto</span>' : '';
+
+                    html += `
+                        <div class="contract-card">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h4>${contract.contractNumber} <small>${company ? company.name : 'Empresa no encontrada'}</small></h4>
+                                    <p><strong>Empresa:</strong> ${company ? company.name : 'N/A'} (${company ? company.rut : 'N/A'})</p>
+                                    <p><strong>Campamento:</strong> ${camp ? camp.name : 'No asignado'}</p>
+                                    <p><strong>Período:</strong> ${contract.startDate} al ${contract.endDate} ${expiryWarning}</p>
+                                    <p><strong>Tipo:</strong> ${contract.type} | <strong>Valor:</strong> $${contract.value ? contract.value.toLocaleString() : 'N/A'}</p>
+                                    <p><strong>Trabajadores:</strong> ${contract.workers ? contract.workers.length : 0}/${contract.maxWorkers || 'Sin límite'}</p>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <span class="contract-status ${statusClass}">${statusText}</span>
+                                    <br><br>
+                                    <button class="btn btn-sm btn-info" onclick="viewContractDetails(${contract.id})">
+                                        <i class="fa fa-eye"></i> Ver
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" onclick="editContract(${contract.id})">
+                                        <i class="fa fa-edit"></i> Editar
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h5>Trabajadores Asociados (${contract.workers ? contract.workers.length : 0}):</h5>
+                                    <div class="row">
+                                        ${contract.workers ? contract.workers.map(worker => `
+                                            <div class="col-md-4">
+                                                <div class="worker-item">
+                                                    <strong>${worker.name} ${worker.lastName}</strong><br>
+                                                    <small>
+                                                        ${worker.position} | 
+                                                        <span class="access-level level-${worker.accessLevel}">${worker.accessLevel}</span><br>
+                                                        RUT: ${worker.rut}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        `).join('') : '<div class="col-md-12"><p class="text-muted">No hay trabajadores asignados</p></div>'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                $('#contractsList').html(html);
+            }
+
+            // Función para actualizar estadísticas
+            function updateStats() {
+                var activeContracts = contracts.filter(c => c.status === 'active').length;
+                var totalCompanies = companies.length;
+                var totalWorkers = contracts.reduce((sum, contract) => sum + (contract.workers ? contract.workers.length : 0), 0);
+                var expiringSoon = contracts.filter(c => {
+                    var daysUntilExpiry = Math.ceil((new Date(c.endDate) - new Date()) / (1000 * 60 * 60 * 24));
+                    return daysUntilExpiry <= 30 && daysUntilExpiry > 0;
+                }).length;
+
+                $('#totalContracts').text(activeContracts);
+                $('#totalCompanies').text(totalCompanies);
+                $('#totalWorkers').text(totalWorkers);
+                $('#expiringSoon').text(expiringSoon);
+            }
+
+            // Función para cargar empresas en selectores
+            function loadCompaniesInSelectors() {
+                var companyOptions = '<option value="">Seleccionar empresa...</option>';
+                companies.forEach(function(company) {
+                    companyOptions += `<option value="${company.id}">${company.name} (${company.rut})</option>`;
+                });
+                $('#contractCompany, #workerCompany').html(companyOptions);
+            }
+
+            // Función para cargar campamentos en selector
+            function loadCampsInSelector() {
+                var campOptions = '<option value="">Seleccionar campamento...</option>';
+                camps.forEach(function(camp) {
+                    campOptions += `<option value="${camp.id}">${camp.name} (${camp.code})</option>`;
+                });
+                $('#contractCamp').html(campOptions);
+            }
+
+            // 1. CREAR NUEVO CONTRATO
+            $('#saveContractBtn').on('click', function() {
+                var form = $('#createContractForm');
+                var formData = {};
+                
+                form.find('input, select, textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+
+                // Validar campos requeridos
+                if (!formData.companyId || !formData.contractNumber || !formData.startDate || !formData.endDate || !formData.type) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos (*)',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Verificar que el número de contrato no exista
+                var contractExists = contracts.some(c => c.contractNumber === formData.contractNumber);
+                if (contractExists) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'El número de contrato ya existe. Por favor use otro número.',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Crear nuevo contrato
+                var newContract = {
+                    id: Math.max(...contracts.map(c => c.id)) + 1,
+                    companyId: parseInt(formData.companyId),
+                    contractNumber: formData.contractNumber,
+                    startDate: formData.startDate,
+                    endDate: formData.endDate,
+                    type: formData.type,
+                    value: formData.value ? parseFloat(formData.value) : null,
+                    campId: formData.campId ? parseInt(formData.campId) : null,
+                    maxWorkers: formData.maxWorkers ? parseInt(formData.maxWorkers) : null,
+                    description: formData.description,
+                    status: 'active',
+                    workers: []
+                };
+
+                contracts.push(newContract);
+                renderContracts();
+                updateStats();
+
+                new PNotify({
+                    title: 'Éxito',
+                    text: `Contrato "${formData.contractNumber}" creado exitosamente`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+
+                $('#createContractModal').modal('hide');
+                form[0].reset();
+            });
+
+            // 2. REGISTRAR NUEVA EMPRESA
+            $('#saveCompanyBtn').on('click', function() {
+                var form = $('#createCompanyForm');
+                var formData = {};
+                
+                form.find('input, select, textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+
+                // Validar campos requeridos
+                if (!formData.name || !formData.rut) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos (*)',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Verificar que el RUT no exista
+                var rutExists = companies.some(c => c.rut === formData.rut);
+                if (rutExists) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'El RUT ya está registrado. Por favor verifique los datos.',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Crear nueva empresa
+                var newCompany = {
+                    id: Math.max(...companies.map(c => c.id)) + 1,
+                    name: formData.name,
+                    rut: formData.rut,
+                    address: formData.address,
+                    phone: formData.phone,
+                    email: formData.email,
+                    contact: formData.contact,
+                    description: formData.description
+                };
+
+                companies.push(newCompany);
+                loadCompaniesInSelectors();
+                updateStats();
+
+                new PNotify({
+                    title: 'Éxito',
+                    text: `Empresa "${formData.name}" registrada exitosamente`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+
+                $('#createCompanyModal').modal('hide');
+                form[0].reset();
+            });
+
+            // 3. AGREGAR TRABAJADOR
+            $('#saveWorkerBtn').on('click', function() {
+                var form = $('#addWorkerForm');
+                var formData = {};
+                
+                form.find('input, select, textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+
+                // Validar campos requeridos
+                if (!formData.name || !formData.lastName || !formData.rut || !formData.companyId || !formData.position || !formData.accessLevel) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos (*)',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Verificar que el RUT no exista
+                var rutExists = contracts.some(contract => 
+                    contract.workers && contract.workers.some(worker => worker.rut === formData.rut)
+                );
+                if (rutExists) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'El RUT ya está registrado. Por favor verifique los datos.',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Encontrar el contrato de la empresa
+                var contract = contracts.find(c => c.companyId == formData.companyId);
+                if (!contract) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'No se encontró un contrato activo para esta empresa.',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Verificar límite de trabajadores
+                if (contract.maxWorkers && contract.workers && contract.workers.length >= contract.maxWorkers) {
+                    new PNotify({
+                        title: 'Error',
+                        text: `Se ha alcanzado el límite máximo de trabajadores (${contract.maxWorkers}) para este contrato.`,
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Crear nuevo trabajador
+                var newWorker = {
+                    id: Math.max(...contracts.flatMap(c => c.workers || []).map(w => w.id)) + 1,
+                    name: formData.name,
+                    lastName: formData.lastName,
+                    rut: formData.rut,
+                    position: formData.position,
+                    accessLevel: formData.accessLevel,
+                    phone: formData.phone,
+                    email: formData.email,
+                    notes: formData.notes
+                };
+
+                if (!contract.workers) {
+                    contract.workers = [];
+                }
+                contract.workers.push(newWorker);
+
+                renderContracts();
+                updateStats();
+
+                new PNotify({
+                    title: 'Éxito',
+                    text: `Trabajador "${formData.name} ${formData.lastName}" agregado exitosamente`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+
+                $('#addWorkerModal').modal('hide');
+                form[0].reset();
+            });
+
+            // Funciones globales
+            window.viewContractDetails = function(contractId) {
+                var contract = contracts.find(c => c.id === contractId);
+                var company = companies.find(c => c.id === contract.companyId);
+                var camp = camps.find(c => c.id === contract.campId);
+                
+                if (contract) {
+                    var details = `
+Detalles del Contrato:
+Número: ${contract.contractNumber}
+Empresa: ${company ? company.name : 'N/A'}
+Campamento: ${camp ? camp.name : 'No asignado'}
+Período: ${contract.startDate} al ${contract.endDate}
+Tipo: ${contract.type}
+Valor: $${contract.value ? contract.value.toLocaleString() : 'N/A'}
+Trabajadores: ${contract.workers ? contract.workers.length : 0}/${contract.maxWorkers || 'Sin límite'}
+
+Trabajadores:
+${contract.workers ? contract.workers.map(w => `- ${w.name} ${w.lastName} (${w.position}) - ${w.accessLevel}`).join('\n') : 'No hay trabajadores asignados'}
+                    `;
+                    alert(details);
+                }
+            };
+
+            window.editContract = function(contractId) {
+                var contract = contracts.find(c => c.id === contractId);
+                if (contract) {
+                    alert(`Editar contrato: ${contract.contractNumber}`);
+                    // Aquí se implementaría la funcionalidad de edición
+                }
+            };
+
+            // Botón de actualizar
+            $('#refreshDataBtn').on('click', function() {
+                renderContracts();
+                updateStats();
+                new PNotify({
+                    title: 'Datos Actualizados',
+                    text: 'La información ha sido actualizada correctamente',
+                    type: 'info',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            // Botón de exportar reporte
+            $('#exportContractsBtn').on('click', function() {
+                new PNotify({
+                    title: 'Reporte Exportado',
+                    text: 'El reporte de contratos ha sido exportado exitosamente',
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            // Inicializar
+            renderContracts();
+            updateStats();
+            loadCompaniesInSelectors();
+            loadCampsInSelector();
+
+            // Configurar PNotify
+            PNotify.prototype.options.styling = "bootstrap3";
+        });
+    </script>
+</body>
+</html>

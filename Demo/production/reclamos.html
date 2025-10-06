@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Sugerencias y Reclamos | Hoteleria</title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome - CDN como respaldo -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- Datatables -->
+    <link href="../vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="../vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <link href="../vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <link href="../vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+    <link href="../vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+    <!-- PNotify -->
+    <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    
+    <style>
+        /* Estilos específicos para la página de reclamos */
+        .panel-warning .panel-heading {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            border: none;
+        }
+        
+        .panel-info .panel-heading {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+        }
+        
+        .form-control:focus {
+            border-color: #f39c12;
+            box-shadow: 0 0 0 0.2rem rgba(243, 156, 18, 0.25);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            border: none;
+        }
+        
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            transform: translateY(-2px);
+        }
+        
+        .table th {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+        }
+        
+        .label-warning { background-color: #f39c12; }
+        .label-info { background-color: #3498db; }
+        .label-success { background-color: #27ae60; }
+        .label-default { background-color: #95a5a6; }
+        
+        /* Animaciones suaves */
+        .panel {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .panel:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .btn {
+            transition: all 0.3s ease;
+        }
+        
+        /* Asegurar que los íconos de Font Awesome se muestren correctamente */
+        .fa, .fa-comments, .fa-paper-plane, .fa-refresh, .fa-eye, .fa-reply, .fa-clock-o,
+        .fa-info-circle, .fa-times, .fa-calendar, .fa-cogs, .fa-building {
+            font-family: FontAwesome !important;
+            font-style: normal !important;
+            font-weight: normal !important;
+            font-variant: normal !important;
+            text-transform: none !important;
+            line-height: 1 !important;
+            -webkit-font-smoothing: antialiased !important;
+            -moz-osx-font-smoothing: grayscale !important;
+        }
+        
+        /* Fallback para íconos que no cargan */
+        .fa-comments:before { content: "\f086"; }
+        .fa-paper-plane:before { content: "\f1d8"; }
+        .fa-refresh:before { content: "\f021"; }
+        .fa-eye:before { content: "\f06e"; }
+        .fa-reply:before { content: "\f112"; }
+        .fa-clock-o:before { content: "\f017"; }
+        .fa-info-circle:before { content: "\f05a"; }
+        .fa-times:before { content: "\f00d"; }
+        .fa-calendar:before { content: "\f073"; }
+        .fa-cogs:before { content: "\f085"; }
+        .fa-building:before { content: "\f1ad"; }
+        
+        /* Asegurar que el dropdown de usuario funcione */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            z-index: 1000;
+            min-width: 160px;
+            padding: 5px 0;
+            margin: 2px 0 0;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        }
+        
+        .dropdown-menu.show {
+            display: block !important;
+        }
+        
+        .dropdown-menu li {
+            display: block;
+        }
+        
+        .dropdown-menu li a {
+            display: block;
+            padding: 3px 20px;
+            clear: both;
+            font-weight: normal;
+            line-height: 1.42857143;
+            color: #333;
+            white-space: nowrap;
+            text-decoration: none;
+        }
+        
+        .dropdown-menu li a:hover {
+            background-color: #f5f5f5;
+            color: #262626;
+        }
+        
+        /* Ícono de dropdown ahora es un símbolo simple */
+        
+        /* Ocultar completamente cualquier spinner o elemento de carga */
+        .fa-spinner,
+        .fa-circle-o-notch,
+        .fa-refresh,
+        .spinner,
+        .loading,
+        .fa-spin,
+        [class*="spin"],
+        [class*="loading"] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+        
+        /* Prevenir animaciones de rotación */
+        * {
+            animation: none !important;
+            -webkit-animation: none !important;
+            -moz-animation: none !important;
+            -o-animation: none !important;
+            transform: none !important;
+            -webkit-transform: none !important;
+            -moz-transform: none !important;
+            -o-transform: none !important;
+        }
+      </style>
+    </head>
+
+<body class="nav-md">
+    <!-- Script SIMPLE para huesped - SIN CONFLICTOS -->
+    <script>
+      console.log('=== SCRIPT SIMPLE PARA HUÉSPED EN RECLAMOS ===');
+      
+      // Función simple para mostrar menú del huesped
+      function mostrarMenuHuesped() {
+        console.log('=== MOSTRANDO MENÚ HUÉSPED EN RECLAMOS ===');
+        
+        // Agregar clase al body
+        if (document.body.className.indexOf('huesped-user') === -1) {
+          document.body.className += ' huesped-user';
+        }
+        
+        // Buscar elementos del menú del huesped
+        var reservasMenu = document.querySelector('.huesped-menu-reservas');
+        var serviciosMenu = document.querySelector('.huesped-menu-servicios');
+        var reclamosMenu = document.querySelector('.huesped-menu-reclamos');
+        
+        console.log('Menú Reservas encontrado en reclamos:', reservasMenu);
+        console.log('Menú Servicios encontrado en reclamos:', serviciosMenu);
+        console.log('Menú Reclamos encontrado en reclamos:', reclamosMenu);
+        
+        // Mostrar menús del huesped - FORZAR COMPLETAMENTE
+        if (reservasMenu) {
+          reservasMenu.removeAttribute('style');
+          reservasMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #2ecc71 !important;';
+          console.log('✅ Menú Reservas FORZADO a mostrar en reclamos');
+        }
+        
+        if (serviciosMenu) {
+          serviciosMenu.removeAttribute('style');
+          serviciosMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #2ecc71 !important;';
+          console.log('✅ Menú Servicios FORZADO a mostrar en reclamos');
+        }
+        
+        if (reclamosMenu) {
+          reclamosMenu.removeAttribute('style');
+          reclamosMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #f39c12 !important;';
+          console.log('✅ Menú Reclamos FORZADO a mostrar en reclamos');
+        }
+        
+        // Ocultar otros menús
+        var allMenus = document.querySelectorAll('.nav.side-menu > li');
+        allMenus.forEach(function(menu) {
+          if (!menu.classList.contains('huesped-menu-reservas') && 
+              !menu.classList.contains('huesped-menu-servicios') &&
+              !menu.classList.contains('huesped-menu-reclamos')) {
+            menu.style.cssText = 'display: none !important; visibility: hidden !important;';
+          }
+        });
+        
+        console.log('=== MENÚ HUÉSPED CONFIGURADO EN RECLAMOS ===');
+      }
+      
+      // Verificar si es huesped
+      if (typeof localStorage !== 'undefined') {
+        var currentUser = localStorage.getItem('currentUser');
+        console.log('Usuario actual en reclamos:', currentUser);
+        
+        if (currentUser === 'huesped') {
+          console.log('HUÉSPED DETECTADO EN RECLAMOS - CONFIGURANDO MENÚ');
+          
+          // Ejecutar cuando se cargue el DOM
+          document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM cargado en reclamos - Configurando menú del huesped');
+            mostrarMenuHuesped();
+          });
+          
+          // Ejecutar también inmediatamente
+          setTimeout(mostrarMenuHuesped, 100);
+          
+          // Script de mantenimiento del menú deshabilitado para evitar spinners
+          // setInterval deshabilitado temporalmente
+        }
+      }
+    </script>
+
+    <div class="container body">
+      <div class="main_container">
+        <div class="col-md-3 left_col">
+          <div class="left_col scroll-view">
+            <div class="navbar nav_title" style="border: 0;">
+              <a href="index.html" class="site_title"><i class="fa fa-building"></i> <span>Hoteleria</span></a>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <!-- menu profile quick info -->
+            <div class="profile clearfix">
+              <div class="profile_pic">
+                <img src="images/img.jpg" alt="..." class="img-circle profile_img">
+              </div>
+              <div class="profile_info">
+                <span>Bienvenido,</span>
+                <h2>Admin</h2>
+              </div>
+            </div>
+            <!-- /menu profile quick info -->
+
+            <br />
+
+            <!-- sidebar menu -->
+            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+              <div class="menu_section">
+                <h3>MENÚ USUARIO</h3>
+                <ul class="nav side-menu">
+                  <li class="huesped-menu-reservas" style="display: none !important;">
+                    <a href="index2.html" style="color: #fff !important; padding: 12px 15px !important; display: block !important; text-decoration: none !important;">
+                      <i class="fa fa-calendar" style="margin-right: 10px !important; color: #2ecc71 !important;"></i> Reservas
+                    </a>
+                  </li>
+                  <li class="huesped-menu-servicios" style="display: none !important;">
+                    <a href="index3.html" style="color: #fff !important; padding: 12px 15px !important; display: block !important; text-decoration: none !important;">
+                      <i class="fa fa-cogs" style="margin-right: 10px !important; color: #2ecc71 !important;"></i> Servicios
+                    </a>
+                  </li>
+                  <li class="huesped-menu-reclamos" style="display: none !important;">
+                    <a href="reclamos.html" style="color: #fff !important; padding: 12px 15px !important; display: block !important; text-decoration: none !important;">
+                      <i class="fa fa-comments" style="margin-right: 10px !important; color: #f39c12 !important;"></i> Reclamos
+                    </a>
+                  </li>
+                  <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="index2.html">Reservas</a></li>
+                      <li><a href="index3.html">Servicios</a></li>
+                      <li><a href="index.html">Habitaciones</a></li>
+                      <li class="admin-hidden"><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
+                      <li class="admin-hidden"><a href="inventario.html">Inventario</a></li>
+                      <li class="admin-hidden"><a href="campamentos.html">Campamentos</a></li>
+                      <li class="admin-hidden"><a href="contratos.html">Contratos</a></li>
+                      <li class="admin-hidden"><a href="dotaciones.html">Dotaciones</a></li>
+                      <li class="admin-hidden"><a href="roles.html">Roles</a></li>
+                      <li class="admin-hidden"><a href="calendario.html">Calendario</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <!-- /sidebar menu -->
+
+            <!-- /menu footer buttons -->
+            <div class="sidebar-footer hidden-small">
+              <a data-toggle="tooltip" data-placement="top" title="Settings">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+                <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="Lock">
+                <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
+                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+              </a>
+            </div>
+            <!-- /menu footer buttons -->
+          </div>
+        </div>
+
+        <!-- top navigation -->
+        <div class="top_nav">
+          <div class="nav_menu">
+            <nav>
+              <div class="nav toggle">
+                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+              </div>
+              <ul class="nav navbar-nav navbar-right">
+                <li class="">
+                  <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <img src="images/img.jpg" alt="">Admin
+                    <span style="color: #666; font-size: 12px; margin-left: 5px;">▼</span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-usermenu pull-right">
+                    <li><a href="javascript:;">Ayuda</a></li>
+                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Cerrar Sesion</a></li>
+                  </ul>
+                </li>
+                <li role="presentation" class="dropdown">
+                  <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-envelope-o"></i>
+                    <span class="badge bg-green" style="border-radius: 50%;">3</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <!-- /top navigation -->
+
+        <!-- page content -->
+        <div class="right_col" role="main">
+          <div class="">
+            <div class="page-title">
+              <div class="title_left">
+                <h3>Sugerencias y Reclamos</h3>
+              </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <!-- Contenido principal -->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2><i class="fa fa-comments"></i> Centro de Sugerencias y Reclamos</h2>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    
+                    <!-- Formulario de Sugerencias y Reclamos -->
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="panel panel-warning">
+                          <div class="panel-heading">
+                            <h4><i class="fa fa-comments"></i> Registrar Nueva Solicitud</h4>
+                          </div>
+                          <div class="panel-body">
+                            <p>Registre sus sugerencias o reclamos para mejorar su experiencia. Recibirá respuesta por correo electrónico.</p>
+                            
+                            <form id="suggestionForm">
+                              <div class="row">
+                                <div class="col-md-6">
+                                  <div class="form-group">
+                                    <label for="tipoSolicitud">Tipo de Solicitud:</label>
+                                    <select class="form-control" id="tipoSolicitud" name="tipoSolicitud" required>
+                                      <option value="">Seleccione una opción</option>
+                                      <option value="sugerencia">💡 Sugerencia</option>
+                                      <option value="reclamo">⚠️ Reclamo</option>
+                                      <option value="felicitacion">🎉 Felicitación</option>
+                                      <option value="queja">😞 Queja</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div class="col-md-6">
+                                  <div class="form-group">
+                                    <label for="categoriaSolicitud">Categoría:</label>
+                                    <select class="form-control" id="categoriaSolicitud" name="categoriaSolicitud" required>
+                                      <option value="">Seleccione una categoría</option>
+                                      <option value="habitacion">🏠 Habitación</option>
+                                      <option value="servicios">🔧 Servicios</option>
+                                      <option value="comida">🍽️ Comida</option>
+                                      <option value="limpieza">🧹 Limpieza</option>
+                                      <option value="personal">👥 Personal</option>
+                                      <option value="instalaciones">🏢 Instalaciones</option>
+                                      <option value="otros">📋 Otros</option>
+                                    </select>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div class="form-group">
+                                <label for="asuntoSolicitud">Asunto:</label>
+                                <input type="text" class="form-control" id="asuntoSolicitud" name="asuntoSolicitud" 
+                                       placeholder="Resumen breve de su solicitud" required>
+                              </div>
+                              
+                              <div class="form-group">
+                                <label for="descripcionSolicitud">Descripción Detallada:</label>
+                                <textarea class="form-control" id="descripcionSolicitud" name="descripcionSolicitud" 
+                                          rows="4" placeholder="Describa detalladamente su sugerencia o reclamo..." required></textarea>
+                              </div>
+                              
+                              <div class="row">
+                                <div class="col-md-6">
+                                  <div class="form-group">
+                                    <label for="emailHuesped">Email para respuesta:</label>
+                                    <input type="email" class="form-control" id="emailHuesped" name="emailHuesped" 
+                                           placeholder="su.email@ejemplo.com" required>
+                                  </div>
+                                </div>
+                                <div class="col-md-6">
+                                  <div class="form-group">
+                                    <label for="prioridadSolicitud">Prioridad:</label>
+                                    <select class="form-control" id="prioridadSolicitud" name="prioridadSolicitud">
+                                      <option value="normal">🟢 Normal</option>
+                                      <option value="alta">🟡 Alta</option>
+                                      <option value="urgente">🔴 Urgente</option>
+                                    </select>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div class="form-group">
+                                <button type="submit" class="btn btn-warning btn-lg">
+                                  <i class="fa fa-paper-plane"></i> Enviar Solicitud
+                                </button>
+                                <button type="button" class="btn btn-default btn-lg" id="btn-limpiar-formulario">
+                                  <span style="font-size: 14px;">↻</span> Limpiar
+                                </button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Historial de Solicitudes -->
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="panel panel-info">
+                          <div class="panel-heading">
+                            <h4><i class="fa fa-history"></i> Mis Solicitudes Anteriores</h4>
+                          </div>
+                          <div class="panel-body">
+                            <div class="table-responsive">
+                              <table class="table table-striped" id="solicitudesTable">
+                                <thead>
+                                  <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Categoría</th>
+                                    <th>Asunto</th>
+                                    <th>Estado</th>
+                                    <th>Respuesta</th>
+                                    <th>Acciones</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <!-- Las solicitudes se cargarán dinámicamente -->
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer>
+          <div class="pull-right">
+            Hoteleria - Sistema de Gestión
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+      </div>
+    </div>
+
+    <!-- Modal genérico -->
+    <div class="modal fade" id="genericModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <!-- El contenido se llena dinámicamente -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal alternativo simple (sin Bootstrap) -->
+    <div id="simpleModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+      <div style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 5px;">
+        <div id="simpleModalContent">
+          <!-- Contenido del modal -->
+        </div>
+        <div style="text-align: right; margin-top: 20px;">
+          <button onclick="cerrarSimpleModal()" style="background-color: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+            <i class="fa fa-times"></i> Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery - CDN como respaldo -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Bootstrap - CDN como respaldo -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="../vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="../vendors/nprogress/nprogress.js"></script>
+    <!-- iCheck -->
+    <script src="../vendors/iCheck/icheck.min.js"></script>
+    <!-- Datatables -->
+    <script src="../vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="../vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="../vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="../vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+    <script src="../vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+    <script src="../vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="../vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+    <script src="../vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+    <script src="../vendors/jszip/dist/jszip.min.js"></script>
+    <script src="../vendors/pdfmake/build/pdfmake.min.js"></script>
+    <script src="../vendors/pdfmake/build/vfs_fonts.js"></script>
+    <!-- PNotify -->
+    <script src="../vendors/pnotify/dist/pnotify.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.nonblock.js"></script>
+    
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    
+    <!-- Auth Simple -->
+    <script src="auth-simple.js"></script>
+    
+    <!-- Script para mantener texto correcto del usuario -->
+    <script>
+        $(document).ready(function() {
+            // Función para establecer el texto correcto según el usuario
+            function setUserText() {
+                var currentUser = localStorage.getItem('currentUser');
+                console.log('Usuario actual en localStorage:', currentUser);
+                
+                var displayText = '';
+                
+                if (currentUser === 'admin') {
+                    displayText = 'Admin';
+                } else if (currentUser === 'plataforma') {
+                    displayText = 'Plataforma';
+                } else if (currentUser === 'huesped') {
+                    displayText = 'Huésped';
+                } else if (currentUser === 'mantencion') {
+                    displayText = 'Mantención';
+                } else {
+                    displayText = 'Usuario'; // Por defecto
+                }
+                
+                console.log('Texto a mostrar:', displayText);
+                
+                // Solo cambiar si es diferente al actual
+                var currentText = $('.profile_info h2').text();
+                if (currentText !== displayText) {
+                    $('.profile_info h2').text(displayText);
+                    console.log('Texto cambiado de "' + currentText + '" a "' + displayText + '"');
+                }
+                
+                $('.user-profile').contents().filter(function() {
+                    return this.nodeType === 3 && this.nodeValue.trim() !== '';
+                }).each(function() {
+                    if (this.nodeValue.trim() !== displayText) {
+                        this.nodeValue = displayText;
+                    }
+                });
+            }
+            
+            // Ejecutar inmediatamente
+            setUserText();
+            
+            // Script de mantenimiento deshabilitado para evitar spinners
+            // setInterval deshabilitado temporalmente
+        });
+    </script>
+
+    <script>
+        // Función para obtener el usuario actual
+        function getCurrentUser() {
+            return localStorage.getItem('currentUser') || 'guest';
+        }
+        
+        // Función para cargar las sugerencias/reclamos del huesped
+        function loadHuespedSuggestions() {
+            // Obtener solicitudes del localStorage
+            var solicitudes = JSON.parse(localStorage.getItem('huespedSuggestions') || '[]');
+            
+            var tbody = $('#solicitudesTable tbody');
+            tbody.empty();
+            
+            if (solicitudes.length === 0) {
+                tbody.append(`
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            <i class="fa fa-info-circle"></i> No tiene solicitudes registradas
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+            
+            // Mostrar las solicitudes más recientes primero
+            solicitudes.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            
+            solicitudes.forEach(function(solicitud) {
+                var estadoBadge = getEstadoBadge(solicitud.estado);
+                var tipoIcon = getTipoIcon(solicitud.tipo);
+                var categoriaIcon = getCategoriaIcon(solicitud.categoria);
+                
+                tbody.append(`
+                    <tr>
+                        <td>${new Date(solicitud.fecha).toLocaleDateString()}</td>
+                        <td>${tipoIcon} ${solicitud.tipo}</td>
+                        <td>${categoriaIcon} ${solicitud.categoria}</td>
+                        <td>${solicitud.asunto}</td>
+                        <td>${estadoBadge}</td>
+                        <td>
+                            ${solicitud.respuesta ? 
+                                '<button class="btn btn-sm btn-info btn-ver-respuesta" data-solicitud-id="' + solicitud.id + '"><i class="fa fa-eye"></i> Ver</button>' : 
+                                '<span class="text-muted">Pendiente</span>'
+                            }
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-warning btn-ver-detalle" data-solicitud-id="${solicitud.id}">
+                                <i class="fa fa-eye"></i> Ver
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+        
+        // Función para obtener el badge del estado
+        function getEstadoBadge(estado) {
+            switch(estado) {
+                case 'pendiente': return '<span class="label label-warning">Pendiente</span>';
+                case 'en_revision': return '<span class="label label-info">En Revisión</span>';
+                case 'respondido': return '<span class="label label-success">Respondido</span>';
+                case 'cerrado': return '<span class="label label-default">Cerrado</span>';
+                default: return '<span class="label label-default">Desconocido</span>';
+            }
+        }
+        
+        // Función para obtener el ícono del tipo
+        function getTipoIcon(tipo) {
+            switch(tipo) {
+                case 'sugerencia': return '💡';
+                case 'reclamo': return '⚠️';
+                case 'felicitacion': return '🎉';
+                case 'queja': return '😞';
+                default: return '📝';
+            }
+        }
+        
+        // Función para obtener el ícono de la categoría
+        function getCategoriaIcon(categoria) {
+            switch(categoria) {
+                case 'habitacion': return '🏠';
+                case 'servicios': return '🔧';
+                case 'comida': return '🍽️';
+                case 'limpieza': return '🧹';
+                case 'personal': return '👥';
+                case 'instalaciones': return '🏢';
+                case 'otros': return '📋';
+                default: return '📝';
+            }
+        }
+        
+        // Función para limpiar el formulario de sugerencias (GLOBAL)
+        window.limpiarFormularioSolicitud = function() {
+            console.log('Limpiando formulario...');
+            document.getElementById('suggestionForm').reset();
+            console.log('Formulario limpiado');
+        }
+        
+        // Función de test manual (GLOBAL)
+        window.testBotones = function() {
+            console.log('🧪 INICIANDO TEST MANUAL DE BOTONES...');
+            
+            var solicitudes = JSON.parse(localStorage.getItem('huespedSuggestions') || '[]');
+            console.log('📊 Solicitudes disponibles:', solicitudes.length);
+            
+            if (solicitudes.length > 0) {
+                console.log('🎯 Probando primera solicitud...');
+                var primeraSolicitud = solicitudes[0];
+                console.log('📋 Datos de la primera solicitud:', primeraSolicitud);
+                
+                console.log('🖱️ Llamando directamente a verDetalleSolicitud...');
+                verDetalleSolicitud(primeraSolicitud.id);
+            } else {
+                console.log('❌ No hay solicitudes para probar');
+            }
+        }
+        
+        // Función para cerrar modal simple
+        window.cerrarSimpleModal = function() {
+            document.getElementById('simpleModal').style.display = 'none';
+        }
+
+        // Función para mostrar modal simple
+        function mostrarSimpleModal(contenido) {
+            document.getElementById('simpleModalContent').innerHTML = contenido;
+            document.getElementById('simpleModal').style.display = 'block';
+            
+            // Cerrar modal al hacer click fuera de él
+            document.getElementById('simpleModal').onclick = function(event) {
+                if (event.target === document.getElementById('simpleModal')) {
+                    cerrarSimpleModal();
+                }
+            };
+        }
+
+        // Función para ver el detalle de una solicitud (GLOBAL)
+        window.verDetalleSolicitud = function(id) {
+            console.log('🚨 verDetalleSolicitud llamada con ID:', id);
+            console.log('🚨 Stack trace:', new Error().stack);
+            var solicitudes = JSON.parse(localStorage.getItem('huespedSuggestions') || '[]');
+            var solicitud = solicitudes.find(s => s.id === id);
+            
+            if (!solicitud) {
+                alert('No se encontró la solicitud');
+                return;
+            }
+            
+            var modalContent = `
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <i class="fa fa-eye"></i> Detalle de Solicitud
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Tipo:</strong> ${getTipoIcon(solicitud.tipo)} ${solicitud.tipo}<br>
+                            <strong>Categoría:</strong> ${getCategoriaIcon(solicitud.categoria)} ${solicitud.categoria}<br>
+                            <strong>Prioridad:</strong> ${solicitud.prioridad}<br>
+                            <strong>Fecha:</strong> ${new Date(solicitud.fecha).toLocaleDateString()}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Estado:</strong> ${getEstadoBadge(solicitud.estado)}<br>
+                            <strong>Email:</strong> ${solicitud.email}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <strong>Asunto:</strong><br>
+                        ${solicitud.asunto}
+                    </div>
+                    <div class="form-group">
+                        <strong>Descripción:</strong><br>
+                        ${solicitud.descripcion}
+                    </div>
+                    ${solicitud.respuesta ? `
+                        <hr>
+                        <div class="alert alert-success">
+                            <strong><i class="fa fa-reply"></i> Respuesta del Administrador:</strong><br>
+                            ${solicitud.respuesta}
+                            <br><small class="text-muted">Respondido el: ${new Date(solicitud.fechaRespuesta).toLocaleDateString()}</small>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            // Intentar usar Bootstrap Modal primero
+            if (typeof $.fn.modal !== 'undefined') {
+                console.log('✅ Usando Bootstrap Modal para detalle');
+                // Agregar botón de cerrar para Bootstrap
+                modalContent += `
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            <i class="fa fa-times"></i> Cerrar
+                        </button>
+                    </div>
+                `;
+                $('#genericModal .modal-content').html(modalContent);
+                $('#genericModal').modal('show');
+            } else {
+                console.log('⚠️ Bootstrap Modal no disponible, usando modal simple para detalle');
+                mostrarSimpleModal(modalContent);
+            }
+        }
+        
+        // Función para ver solo la respuesta (GLOBAL)
+        window.verRespuesta = function(id) {
+            console.log('verRespuesta llamada con ID:', id);
+            var solicitudes = JSON.parse(localStorage.getItem('huespedSuggestions') || '[]');
+            var solicitud = solicitudes.find(s => s.id === id);
+            
+            if (!solicitud || !solicitud.respuesta) {
+                alert('No se encontró la solicitud o no tiene respuesta');
+                return;
+            }
+            
+            var modalContent = `
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <i class="fa fa-reply"></i> Respuesta a su Solicitud
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <strong>Asunto:</strong> ${solicitud.asunto}
+                    </div>
+                    <div class="form-group">
+                        <strong>Respuesta:</strong><br>
+                        ${solicitud.respuesta}
+                    </div>
+                    <small class="text-muted">
+                        <i class="fa fa-clock-o"></i> Respondido el: ${new Date(solicitud.fechaRespuesta).toLocaleDateString()}
+                    </small>
+                </div>
+            `;
+            
+            // Intentar usar Bootstrap Modal primero
+            if (typeof $.fn.modal !== 'undefined') {
+                console.log('✅ Usando Bootstrap Modal para respuesta');
+                // Agregar botón de cerrar para Bootstrap
+                modalContent += `
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                            <i class="fa fa-times"></i> Cerrar
+                        </button>
+                    </div>
+                `;
+                $('#genericModal .modal-content').html(modalContent);
+                $('#genericModal').modal('show');
+            } else {
+                console.log('⚠️ Bootstrap Modal no disponible, usando modal simple para respuesta');
+                mostrarSimpleModal(modalContent);
+            }
+        }
+        
+        // Event listeners para botones - SOLUCIÓN DIRECTA
+        $(document).ready(function() {
+            console.log('🔧 Configurando event listeners directos...');
+            
+            // Event listener para botón Ver Detalle - MÁS AGRESIVO
+            $(document).on('click', '.btn-ver-detalle', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var solicitudId = $(this).data('solicitud-id');
+                console.log('🖱️ CLICK DETECTADO en Ver Detalle para ID:', solicitudId);
+                
+                // Llamada directa a la función
+                if (typeof verDetalleSolicitud === 'function') {
+                    verDetalleSolicitud(solicitudId);
+                } else {
+                    console.error('❌ Función verDetalleSolicitud no encontrada');
+                    alert('Error: Función no disponible');
+                }
+            });
+            
+            // Event listener para botón Ver Respuesta - MÁS AGRESIVO
+            $(document).on('click', '.btn-ver-respuesta', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var solicitudId = $(this).data('solicitud-id');
+                console.log('🖱️ CLICK DETECTADO en Ver Respuesta para ID:', solicitudId);
+                
+                // Llamada directa a la función
+                if (typeof verRespuesta === 'function') {
+                    verRespuesta(solicitudId);
+                } else {
+                    console.error('❌ Función verRespuesta no encontrada');
+                    alert('Error: Función no disponible');
+                }
+            });
+            
+            // Event listener para botón Limpiar
+            $(document).on('click', '#btn-limpiar-formulario', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🖱️ CLICK DETECTADO en Limpiar formulario');
+                
+                if (typeof limpiarFormularioSolicitud === 'function') {
+                    limpiarFormularioSolicitud();
+                } else {
+                    console.error('❌ Función limpiarFormularioSolicitud no encontrada');
+                }
+            });
+            
+            console.log('✅ Event listeners configurados correctamente');
+            
+            // Test adicional después de 3 segundos
+            setTimeout(function() {
+                console.log('🧪 TESTING BOTONES...');
+                var botonesDetalle = $('.btn-ver-detalle');
+                var botonesRespuesta = $('.btn-ver-respuesta');
+                
+                console.log('Botones Ver Detalle encontrados:', botonesDetalle.length);
+                console.log('Botones Ver Respuesta encontrados:', botonesRespuesta.length);
+                
+                // Forzar click en el primer botón para test
+                if (botonesDetalle.length > 0) {
+                    console.log('🎯 Primer botón Ver Detalle:', botonesDetalle.first());
+                    console.log('🎯 Data ID del primer botón:', botonesDetalle.first().data('solicitud-id'));
+                }
+            }, 3000);
+        });
+        
+        // Manejo del formulario de sugerencias para huesped
+        $(document).on('submit', '#suggestionForm', function(e) {
+            e.preventDefault();
+            
+            var formData = {
+                id: 'sug_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                tipo: $('#tipoSolicitud').val(),
+                categoria: $('#categoriaSolicitud').val(),
+                asunto: $('#asuntoSolicitud').val(),
+                descripcion: $('#descripcionSolicitud').val(),
+                email: $('#emailHuesped').val(),
+                prioridad: $('#prioridadSolicitud').val(),
+                fecha: new Date().toISOString(),
+                estado: 'pendiente'
+            };
+            
+            // Validar formulario
+            if (!formData.tipo || !formData.categoria || !formData.asunto || !formData.descripcion || !formData.email) {
+                new PNotify({
+                    title: 'Error',
+                    text: 'Por favor complete todos los campos obligatorios',
+                    type: 'error',
+                    styling: 'bootstrap3'
+                });
+                return;
+            }
+            
+            // Guardar en localStorage
+            var solicitudes = JSON.parse(localStorage.getItem('huespedSuggestions') || '[]');
+            solicitudes.push(formData);
+            localStorage.setItem('huespedSuggestions', JSON.stringify(solicitudes));
+            
+            // Mostrar confirmación
+            new PNotify({
+                title: 'Solicitud Enviada',
+                text: `Su ${formData.tipo} ha sido registrada exitosamente. Recibirá respuesta en ${formData.email}`,
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+            
+            // Limpiar formulario
+            limpiarFormularioSolicitud();
+            
+            // Recargar tabla
+            loadHuespedSuggestions();
+            
+            // Simular envío de email al administrador
+            setTimeout(function() {
+                enviarNotificacionEmail(formData);
+            }, 1000);
+        });
+        
+        // Función para simular envío de notificación por email
+        function enviarNotificacionEmail(solicitud) {
+            // Simular envío de email al administrador
+            new PNotify({
+                title: 'Notificación Enviada',
+                text: `Se ha notificado al administrador sobre su ${solicitud.tipo}`,
+                type: 'info',
+                styling: 'bootstrap3'
+            });
+            
+            // Aquí se podría integrar con un servicio de email real
+            console.log('Email enviado al administrador:', {
+                to: 'admin@hotel.com',
+                subject: `Nueva ${solicitud.tipo}: ${solicitud.asunto}`,
+                body: `Tipo: ${solicitud.tipo}\nCategoría: ${solicitud.categoria}\nAsunto: ${solicitud.asunto}\nDescripción: ${solicitud.descripcion}\nEmail del huésped: ${solicitud.email}\nPrioridad: ${solicitud.prioridad}`
+            });
+        }
+        
+        // Verificar que Font Awesome esté cargado
+        function verificarFontAwesome() {
+            var testIcon = document.createElement('i');
+            testIcon.className = 'fa fa-comments';
+            testIcon.style.visibility = 'hidden';
+            testIcon.style.position = 'absolute';
+            document.body.appendChild(testIcon);
+            
+            var computedStyle = window.getComputedStyle(testIcon, ':before');
+            var content = computedStyle.getPropertyValue('content');
+            
+            document.body.removeChild(testIcon);
+            
+            if (!content || content === 'none' || content === '""') {
+                console.warn('Font Awesome no se cargó correctamente, cargando desde CDN...');
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
+                document.head.appendChild(link);
+            } else {
+                console.log('Font Awesome cargado correctamente');
+            }
+        }
+        
+        // Ejecutar verificación después de que se cargue la página
+        setTimeout(verificarFontAwesome, 1000);
+        
+        // Verificar que jQuery esté cargado
+        if (typeof jQuery === 'undefined') {
+            console.error('jQuery no se cargó correctamente');
+            // Intentar cargar jQuery desde CDN
+            var script = document.createElement('script');
+            script.src = 'https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js';
+            script.onload = function() {
+                console.log('jQuery cargado desde CDN');
+                // Recargar la página para aplicar jQuery
+                location.reload();
+            };
+            document.head.appendChild(script);
+        } else {
+            console.log('jQuery cargado correctamente');
+        }
+        
+        // Función para agregar datos de ejemplo (solo para testing)
+        function agregarDatosEjemplo() {
+            var solicitudesEjemplo = [
+                {
+                    id: 'sug_ejemplo_1',
+                    tipo: 'sugerencia',
+                    categoria: 'habitacion',
+                    asunto: 'Mejora en la limpieza',
+                    descripcion: 'Sugiero que mejoren la limpieza de las habitaciones, especialmente en los baños.',
+                    email: 'usuario@ejemplo.com',
+                    prioridad: 'normal',
+                    fecha: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 días atrás
+                    estado: 'respondido',
+                    respuesta: 'Gracias por su sugerencia. Hemos implementado nuevos protocolos de limpieza.',
+                    fechaRespuesta: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: 'sug_ejemplo_2',
+                    tipo: 'reclamo',
+                    categoria: 'servicios',
+                    asunto: 'WiFi lento',
+                    descripcion: 'El WiFi en mi habitación es muy lento y se corta frecuentemente.',
+                    email: 'usuario@ejemplo.com',
+                    prioridad: 'alta',
+                    fecha: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 día atrás
+                    estado: 'en_revision'
+                }
+            ];
+            
+            // Solo agregar si no hay datos existentes
+            var solicitudesActuales = JSON.parse(localStorage.getItem('huespedSuggestions') || '[]');
+            if (solicitudesActuales.length === 0) {
+                localStorage.setItem('huespedSuggestions', JSON.stringify(solicitudesEjemplo));
+                console.log('Datos de ejemplo agregados');
+            }
+        }
+        
+        // Función para actualizar el nombre del usuario en el header
+        function actualizarNombreUsuario() {
+            var currentUser = localStorage.getItem('currentUser');
+            var displayText = '';
+            
+            if (currentUser === 'admin') {
+                displayText = 'Admin';
+            } else if (currentUser === 'plataforma') {
+                displayText = 'Plataforma';
+            } else if (currentUser === 'huesped') {
+                displayText = 'Huésped';
+            } else if (currentUser === 'mantencion') {
+                displayText = 'Mantención';
+            } else {
+                displayText = 'Usuario';
+            }
+            
+            // Actualizar solo el texto del usuario, preservando imagen y símbolo
+            var userProfileLink = $('.user-profile');
+            var textNodes = userProfileLink.contents().filter(function() {
+                return this.nodeType === 3 && this.nodeValue.trim() !== '';
+            });
+            
+            // Solo actualizar si el texto es diferente
+            if (textNodes.length > 0 && textNodes[0].nodeValue.trim() !== displayText) {
+                textNodes[0].nodeValue = displayText;
+            }
+            
+            console.log('Nombre de usuario actualizado a:', displayText);
+        }
+
+        // Cargar datos al iniciar la página
+        $(document).ready(function() {
+            console.log('DOM listo, cargando sugerencias...');
+            
+            // Actualizar nombre de usuario
+            actualizarNombreUsuario();
+            
+            // Agregar datos de ejemplo (solo para testing)
+            agregarDatosEjemplo();
+            
+            loadHuespedSuggestions();
+            
+            // Verificar que todos los elementos estén presentes
+            console.log('Verificando elementos del formulario...');
+            console.log('Formulario encontrado:', $('#suggestionForm').length > 0);
+            console.log('Botón Enviar encontrado:', $('button[type="submit"]').length > 0);
+            console.log('Botón Limpiar encontrado:', $('button[onclick="limpiarFormularioSolicitud()"]').length > 0);
+            console.log('Tabla encontrada:', $('#solicitudesTable').length > 0);
+            
+            // Verificar PNotify
+            if (typeof PNotify !== 'undefined') {
+                console.log('PNotify disponible:', true);
+            } else {
+                console.log('PNotify disponible:', false);
+            }
+            
+            // Verificar Bootstrap Modal
+            if (typeof $.fn.modal !== 'undefined') {
+                console.log('✅ Bootstrap Modal disponible:', true);
+            } else {
+                console.log('❌ Bootstrap Modal disponible:', false);
+                console.log('⚠️ Se usará modal simple como respaldo');
+            }
+            
+            // Verificar que las funciones globales estén disponibles
+            console.log('verDetalleSolicitud disponible:', typeof window.verDetalleSolicitud);
+            console.log('verRespuesta disponible:', typeof window.verRespuesta);
+            console.log('limpiarFormularioSolicitud disponible:', typeof window.limpiarFormularioSolicitud);
+            
+            // Verificar dropdown de usuario
+            console.log('Dropdown de usuario encontrado:', $('.dropdown-usermenu').length > 0);
+            console.log('Enlaces de Perfil y Cerrar Sesión encontrados:', $('.dropdown-usermenu a').length);
+            
+            // Actualizar nombre de usuario deshabilitado para evitar spinners
+            // setInterval deshabilitado temporalmente
+            
+            // Ícono de dropdown ahora es un símbolo simple, no necesita mantenimiento
+            
+            // Forzar que el dropdown funcione
+            setTimeout(function() {
+                console.log('🔧 Forzando funcionalidad del dropdown...');
+                
+                // Verificar si Bootstrap está disponible
+                if (typeof $.fn.dropdown !== 'undefined') {
+                    console.log('✅ Bootstrap Dropdown disponible');
+                    
+                    // Forzar inicialización del dropdown
+                    $('.dropdown-toggle').dropdown();
+                    
+                    // Agregar event listener manual si es necesario
+                    $('.user-profile').on('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        var dropdown = $(this).next('.dropdown-menu');
+                        console.log('🖱️ Click en usuario, dropdown encontrado:', dropdown.length > 0);
+                        
+                        if (dropdown.length > 0) {
+                            dropdown.toggle();
+                            console.log('📋 Dropdown toggled, visible:', dropdown.is(':visible'));
+                        }
+                    });
+                    
+                    // Cerrar dropdown al hacer click fuera
+                    $(document).on('click', function(e) {
+                        if (!$(e.target).closest('.dropdown').length) {
+                            $('.dropdown-menu').hide();
+                        }
+                    });
+                    
+                } else {
+                    console.log('❌ Bootstrap Dropdown no disponible, usando método alternativo');
+                    
+                    // Método alternativo sin Bootstrap
+                    $('.user-profile').on('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        var dropdown = $(this).next('.dropdown-menu');
+                        if (dropdown.length > 0) {
+                            dropdown.toggle();
+                            console.log('📋 Dropdown alternativo toggled');
+                        }
+                    });
+                }
+            }, 1000);
+            
+            // Test básico después de 2 segundos
+            setTimeout(function() {
+                console.log('=== VERIFICACIÓN FINAL ===');
+                var solicitudes = JSON.parse(localStorage.getItem('huespedSuggestions') || '[]');
+                console.log('Solicitudes cargadas:', solicitudes.length);
+                
+                var botonesVer = $('.btn-ver-detalle');
+                console.log('Botones Ver encontrados:', botonesVer.length);
+                
+                var botonesRespuesta = $('.btn-ver-respuesta');
+                console.log('Botones Respuesta encontrados:', botonesRespuesta.length);
+                
+                // Verificar dropdown de usuario
+                var dropdownUsuario = $('.user-profile');
+                var menuUsuario = $('.dropdown-usermenu');
+                console.log('Usuario en header:', dropdownUsuario.text().trim());
+                console.log('Dropdown visible:', menuUsuario.is(':visible'));
+                console.log('Enlaces en dropdown:', menuUsuario.find('a').length);
+                
+                console.log('✅ Sistema listo para usar');
+                
+                // Test automático deshabilitado - solo para debugging manual
+                // Si necesitas probar manualmente, ejecuta: testBotones() en la consola
+            }, 2000);
+        });
+    </script>
+
+  </body>
+</html>

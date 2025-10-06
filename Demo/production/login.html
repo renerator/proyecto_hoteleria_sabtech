@@ -350,6 +350,9 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     
+    <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
+    <script src="auth-simple.js"></script>
+    
     <script>
         $(document).ready(function() {
             // Load saved username if remember me was checked
@@ -393,18 +396,27 @@
                         showAlert('success', '¡Bienvenido! Redirigiendo...');
                         
                         // Redirect based on user role
-                        setTimeout(function() {
-                            if (username.toLowerCase() === 'plataforma') {
-                                localStorage.setItem('currentUser', 'plataforma');
-                                window.location.href = 'index.html'; // Página principal del administrador
-                            } else if (username.toLowerCase() === 'admin') {
-                                localStorage.setItem('currentUser', 'admin');
-                                window.location.href = 'index.html'; // Página de habitaciones para admin
-                            } else {
-                                localStorage.setItem('currentUser', 'guest');
-                                window.location.href = 'Home.html'; // Página de selección de perfiles
-                            }
-                        }, 1500);
+        setTimeout(function() {
+            // Generar token de sesión único
+            var sessionToken = 'token_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            if (username.toLowerCase() === 'plataforma') {
+                setUserSession('plataforma', sessionToken);
+                window.location.href = 'index.html'; // Página principal del administrador
+            } else if (username.toLowerCase() === 'admin') {
+                setUserSession('admin', sessionToken);
+                window.location.href = 'index3.html'; // Página de servicios para admin
+            } else if (username.toLowerCase() === 'huesped') {
+                setUserSession('huesped', sessionToken);
+                window.location.href = 'index2.html'; // Página de reservas para huesped
+            } else if (username.toLowerCase() === 'personal') {
+                setUserSession('personal', sessionToken);
+                window.location.href = 'mantencion.html'; // Página específica para personal
+            } else {
+                setUserSession('guest', sessionToken);
+                window.location.href = 'Home.html'; // Página de selección de perfiles
+            }
+        }, 1500);
                     } else {
                         showLoading(false);
                         showAlert('danger', 'Usuario o contraseña incorrectos. Inténtalo de nuevo.');
@@ -462,7 +474,7 @@
                 'plataforma': 'admin123',
                 'admin': 'admin123',
                 'huesped': 'admin123',
-                'mantencion': 'admin123'
+                'personal': 'admin123'
             };
             
             return validUsers[username.toLowerCase()] === password;

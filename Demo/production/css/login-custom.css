@@ -1,0 +1,178 @@
+/* Login Custom Styles - Sabtech Group */
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+}
+
+body.login {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  min-height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+
+/* Login wrapper */
+.login_wrapper {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 15px !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+  padding: 40px !important;
+  max-width: 400px !important;
+  width: 90% !important;
+  margin: 20px !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* Title */
+.login_content h1 {
+  color: #333 !important;
+  font-size: 28px !important;
+  margin-bottom: 30px !important;
+  text-align: center !important;
+  font-weight: 600 !important;
+  margin-top: 0 !important;
+}
+
+/* Form controls */
+.form-control {
+  border: 2px solid #e1e5e9 !important;
+  border-radius: 10px !important;
+  padding: 12px 15px !important;
+  font-size: 16px !important;
+  transition: all 0.3s ease !important;
+  margin-bottom: 15px !important;
+  width: 100% !important;
+  background: #fff !important;
+}
+
+.form-control:focus {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+  outline: none !important;
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
+}
+
+/* Button */
+.btn-default {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  color: white !important;
+  padding: 12px 30px !important;
+  border-radius: 10px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  width: 100% !important;
+  margin-bottom: 15px !important;
+  cursor: pointer !important;
+}
+
+.btn-default:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3) !important;
+  color: white !important;
+}
+
+.btn-default:active {
+  transform: translateY(0) !important;
+}
+
+/* Links */
+.reset_pass {
+  color: #667eea !important;
+  text-decoration: none !important;
+  font-size: 14px !important;
+  display: block !important;
+  text-align: center !important;
+  margin-bottom: 20px !important;
+}
+
+.reset_pass:hover {
+  color: #764ba2 !important;
+  text-decoration: none !important;
+}
+
+/* Separator */
+.separator {
+  border-top: 1px solid #e1e5e9 !important;
+  padding-top: 20px !important;
+  text-align: center !important;
+  margin-top: 20px !important;
+}
+
+.separator h1 {
+  color: #667eea !important;
+  font-size: 24px !important;
+  margin-bottom: 10px !important;
+}
+
+.separator p {
+  color: #666 !important;
+  font-size: 12px !important;
+  margin: 0 !important;
+}
+
+/* Alerts */
+.alert {
+  border-radius: 10px !important;
+  margin-bottom: 20px !important;
+  border: none !important;
+}
+
+/* Form groups */
+.form-group {
+  position: relative !important;
+  margin-bottom: 15px !important;
+}
+
+.form-group .fa {
+  position: absolute !important;
+  right: 15px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: #999 !important;
+  pointer-events: none !important;
+}
+
+/* Loading state */
+.loading {
+  display: none !important;
+}
+
+.spinner {
+  border: 2px solid #f3f3f3 !important;
+  border-top: 2px solid #667eea !important;
+  border-radius: 50% !important;
+  width: 20px !important;
+  height: 20px !important;
+  animation: spin 1s linear infinite !important;
+  display: inline-block !important;
+  margin-right: 10px !important;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login_wrapper {
+    width: 95% !important;
+    padding: 30px 20px !important;
+  }
+  
+  .login_content h1 {
+    font-size: 24px !important;
+  }
+}

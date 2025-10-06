@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Gestión de Inventario | Sabtech Group</title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Font Awesome Local (fallback) -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- Datatables -->
+    <link href="../vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="../vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <link href="../vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <link href="../vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+    <link href="../vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+    <!-- PNotify -->
+    <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    
+    <style>
+        .inventory-card {
+            border-left: 4px solid #337ab7;
+            margin-bottom: 15px;
+        }
+        .category-badge {
+            font-size: 11px;
+            padding: 4px 8px;
+        }
+        .status-available { color: #5cb85c; }
+        .status-missing { color: #d9534f; }
+        .status-maintenance { color: #f0ad4e; }
+        .status-damaged { color: #777; }
+        .inventory-stats {
+            background: linear-gradient(135deg, #337ab7 0%, #2e6da4 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            display: block;
+        }
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        .quick-actions {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .action-btn {
+            margin: 5px;
+            min-width: 120px;
+            padding: 8px 15px;
+            font-size: 12px;
+            border-radius: 4px;
+            display: inline-block;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            border: 1px solid transparent;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .action-btn i {
+            margin-right: 5px;
+        }
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+        .btn-xs {
+            padding: 3px 6px;
+            font-size: 11px;
+            line-height: 1.2;
+            border-radius: 3px;
+            display: inline-block;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            border: 1px solid transparent;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .btn-xs i {
+            margin-right: 2px;
+        }
+        .btn-xs:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+            transition: all 0.2s ease;
+        }
+        .btn {
+            display: inline-block;
+            padding: 6px 12px;
+            margin-bottom: 0;
+            font-size: 12px;
+            font-weight: normal;
+            line-height: 1.42857143;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .btn:hover, .btn:focus {
+            text-decoration: none;
+            outline: 0;
+        }
+        .btn:active {
+            background-image: none;
+            outline: 0;
+            box-shadow: inset 0 3px 5px rgba(0,0,0,.125);
+        }
+        /* Forzar carga de iconos Font Awesome */
+        .fa {
+            font-family: FontAwesome !important;
+            font-style: normal;
+            font-weight: normal;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: inline-block;
+        }
+        .fa-plus:before { content: "\f067"; }
+        .fa-upload:before { content: "\f093"; }
+        .fa-exchange:before { content: "\f0ec"; }
+        .fa-file-pdf-o:before { content: "\f1c1"; }
+        .fa-refresh:before { content: "\f021"; }
+        .fa-eye:before { content: "\f06e"; }
+        .fa-edit:before { content: "\f044"; }
+        .fa-trash:before { content: "\f1f8"; }
+        .fa-filter:before { content: "\f0b0"; }
+        .fa-times:before { content: "\f00d"; }
+        .fa-check:before { content: "\f00c"; }
+        .fa-exclamation-triangle:before { content: "\f071"; }
+        .fa-wrench:before { content: "\f0ad"; }
+        .fa-info-circle:before { content: "\f05a"; }
+        
+        /* Ocultar elementos del menú para usuario admin */
+        .admin-hidden {
+            display: none !important;
+        }
+        
+        /* Mostrar elementos para usuario plataforma */
+        .plataforma-user .admin-hidden {
+            display: block !important;
+        }
+        
+        /* Forzar visibilidad para usuarios no-admin */
+        body:not(.admin-user) .admin-hidden {
+            display: block !important;
+        }
+        
+        /* Asegurar que el menú se muestre completo */
+        .nav.child_menu {
+            overflow: visible !important;
+            max-height: none !important;
+            height: auto !important;
+        }
+        
+        .nav.side-menu {
+            overflow: visible !important;
+        }
+        
+        #sidebar-menu {
+            overflow: visible !important;
+            max-height: none !important;
+        }
+        
+        .left_col {
+            overflow: visible !important;
+        }
+        
+        /* Forzar que el menú esté expandido */
+        .nav.child_menu {
+            display: block !important;
+        }
+        
+        li.active .nav.child_menu {
+            display: block !important;
+        }
+    </style>
+</head>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title" style="border: 0;">
+                        <a href="index.html" class="site_title"><i class="fa fa-building"></i> <span>Hoteleria</span></a>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- menu profile quick info -->
+                    <div class="profile clearfix">
+                        <div class="profile_pic">
+                            <img src="images/img.jpg" alt="..." class="img-circle profile_img">
+                        </div>
+                        <div class="profile_info">
+                            <span>Bienvenido,</span>
+                            <h2>Admin</h2>
+                        </div>
+                    </div>
+                    <!-- /menu profile quick info -->
+
+                    <br />
+
+                    <!-- sidebar menu -->
+                    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                        <div class="menu_section">
+                            <h3>Menú Usuario</h3>
+                            <ul class="nav side-menu">
+                                <li class="active"><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu" style="display: block;">
+                                        <li><a href="index2.html">Reservas</a></li>
+                                        <li><a href="index3.html">Servicios</a></li>
+                                        <li><a href="index.html">Habitaciones</a></li>
+                                        <li><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
+                                        <li class="current-page"><a href="inventario.html">Inventario</a></li>
+                                        <li><a href="campamentos.html">Campamentos</a></li>
+                                        <li><a href="contratos.html">Contratos</a></li>
+                                        <li><a href="dotaciones.html">Dotaciones</a></li>
+                                        <li><a href="roles.html">Roles</a></li>
+                                        <li><a href="calendario.html">Calendario</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- /sidebar menu -->
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <img src="images/img.jpg" alt="">Admin
+                                    <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                    <li><a href="profile.html"> Perfil</a></li>
+                                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Cerrar Sesión</a></li>
+                                </ul>
+                            </li>
+
+                            <li role="presentation" class="dropdown">
+                                <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-envelope-o"></i>
+                                    <span class="badge bg-green" style="border-radius: 50%;">3</span>
+                                </a>
+                                <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
+                                    <li>
+                                        <a>
+                                            <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
+                                            <span>
+                                                <span>Admin</span>
+                                                <span class="time">3 mins ago</span>
+                                            </span>
+                                            <span class="message">
+                                                Nuevo reporte de inventario disponible
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a>
+                                            <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
+                                            <span>
+                                                <span>Admin</span>
+                                                <span class="time">1 hour ago</span>
+                                            </span>
+                                            <span class="message">
+                                                Alerta: Artículo faltante en habitación 0015
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a>
+                                            <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
+                                            <span>
+                                                <span>Admin</span>
+                                                <span class="time">3 hours ago</span>
+                                            </span>
+                                            <span class="message">
+                                                Mantenimiento programado para TV habitación 0008
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>Gestión de Inventario</h3>
+                        </div>
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Buscar artículo...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">Go!</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- Estadísticas de Inventario -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="inventory-stats">
+                                <div class="row">
+                                    <div class="col-md-3 stat-item">
+                                        <span class="stat-number" id="totalItems">156</span>
+                                        <span class="stat-label">Artículos Totales</span>
+                                    </div>
+                                    <div class="col-md-3 stat-item">
+                                        <span class="stat-number" id="availableItems">142</span>
+                                        <span class="stat-label">Disponibles</span>
+                                    </div>
+                                    <div class="col-md-3 stat-item">
+                                        <span class="stat-number" id="missingItems">3</span>
+                                        <span class="stat-label">Faltantes</span>
+                                    </div>
+                                    <div class="col-md-3 stat-item">
+                                        <span class="stat-number" id="maintenanceItems">11</span>
+                                        <span class="stat-label">En Mantenimiento</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Acciones Rápidas -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="quick-actions">
+                                <h4><i class="fa fa-bolt"></i> Acciones Rápidas</h4>
+                                <button type="button" class="btn btn-success action-btn" data-toggle="modal" data-target="#addItemModal">
+                                    <i class="fa fa-plus"></i> Agregar Artículo
+                                </button>
+                                <button type="button" class="btn btn-info action-btn" data-toggle="modal" data-target="#bulkImportModal">
+                                    <i class="fa fa-upload"></i> Importar Masivo
+                                </button>
+                                <button type="button" class="btn btn-warning action-btn" data-toggle="modal" data-target="#movementModal">
+                                    <i class="fa fa-exchange"></i> Registrar Movimiento
+                                </button>
+                                <button type="button" class="btn btn-primary action-btn" id="generateReportBtn">
+                                    <i class="fa fa-file-pdf-o"></i> Generar Reporte
+                                </button>
+                                <button type="button" class="btn btn-default action-btn" id="refreshInventoryBtn">
+                                    <i class="fa fa-refresh"></i> Actualizar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filtros -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Filtros de Inventario</h2>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Categoría:</label>
+                                                <select class="form-control" id="categoryFilter">
+                                                    <option value="">Todas las categorías</option>
+                                                    <option value="ropa_cama">Ropa de Cama</option>
+                                                    <option value="electrodomesticos">Electrodomésticos</option>
+                                                    <option value="muebles">Muebles</option>
+                                                    <option value="decoracion">Decoración</option>
+                                                    <option value="tecnologia">Tecnología</option>
+                                                    <option value="limpieza">Limpieza</option>
+                                                    <option value="otros">Otros</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Estado:</label>
+                                                <select class="form-control" id="statusFilter">
+                                                    <option value="">Todos los estados</option>
+                                                    <option value="disponible">Disponible</option>
+                                                    <option value="faltante">Faltante</option>
+                                                    <option value="mantenimiento">Mantenimiento</option>
+                                                    <option value="dañado">Dañado</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Habitación:</label>
+                                                <select class="form-control" id="roomFilter">
+                                                    <option value="">Todas las habitaciones</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>&nbsp;</label><br>
+                                                <button type="button" class="btn btn-primary" id="applyFiltersBtn">
+                                                    <i class="fa fa-filter"></i> Aplicar Filtros
+                                                </button>
+                                                <button type="button" class="btn btn-default" id="clearFiltersBtn">
+                                                    <i class="fa fa-times"></i> Limpiar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Inventario -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Listado de Inventario</h2>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="row" style="margin-bottom: 20px;">
+                                        <div class="col-md-6">
+                                            <p class="text-muted font-13 m-b-30">
+                                                Control completo del inventario de mantenedores. Registra cambios, movimientos y evita pérdidas.
+                                            </p>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addItemModal">
+                                                <i class="fa fa-plus"></i> Agregar Artículo
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <table id="inventoryTable" class="table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Artículo</th>
+                                                <th>Categoría</th>
+                                                <th>Habitación</th>
+                                                <th>Estado</th>
+                                                <th>Valor</th>
+                                                <th>Último Movimiento</th>
+                                                <th>Opciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>INV-001</td>
+                                                <td>Sábanas Blancas King Size</td>
+                                                <td><span class="badge category-badge" style="background-color: #5cb85c;">Ropa de Cama</span></td>
+                                                <td>0001</td>
+                                                <td><span class="status-available"><i class="fa fa-check"></i> Disponible</span></td>
+                                                <td>$45.00</td>
+                                                <td>15/12/2024 - Ingreso</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-info btn-xs" title="Ver Detalles">
+                                                        <i class="fa fa-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-success btn-xs" title="Editar">
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-warning btn-xs" title="Registrar Movimiento">
+                                                        <i class="fa fa-exchange"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger btn-xs" title="Eliminar">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>INV-002</td>
+                                                <td>TV Samsung 55" Smart</td>
+                                                <td><span class="badge category-badge" style="background-color: #337ab7;">Tecnología</span></td>
+                                                <td>0002</td>
+                                                <td><span class="status-maintenance"><i class="fa fa-wrench"></i> Mantenimiento</span></td>
+                                                <td>$850.00</td>
+                                                <td>10/12/2024 - Reparación</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-info btn-xs" title="Ver Detalles">
+                                                        <i class="fa fa-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-success btn-xs" title="Editar">
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-warning btn-xs" title="Registrar Movimiento">
+                                                        <i class="fa fa-exchange"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger btn-xs" title="Eliminar">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>INV-003</td>
+                                                <td>Lámpara de Mesa LED</td>
+                                                <td><span class="badge category-badge" style="background-color: #f0ad4e;">Decoración</span></td>
+                                                <td>0003</td>
+                                                <td><span class="status-missing"><i class="fa fa-exclamation-triangle"></i> Faltante</span></td>
+                                                <td>$120.00</td>
+                                                <td>08/12/2024 - Reporte de pérdida</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-info btn-xs" title="Ver Detalles">
+                                                        <i class="fa fa-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-success btn-xs" title="Editar">
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-warning btn-xs" title="Registrar Movimiento">
+                                                        <i class="fa fa-exchange"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger btn-xs" title="Eliminar">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>INV-004</td>
+                                                <td>Microondas LG 25L</td>
+                                                <td><span class="badge category-badge" style="background-color: #d9534f;">Electrodomésticos</span></td>
+                                                <td>0004</td>
+                                                <td><span class="status-available"><i class="fa fa-check"></i> Disponible</span></td>
+                                                <td>$180.00</td>
+                                                <td>12/12/2024 - Verificación</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-info btn-xs" title="Ver Detalles">
+                                                        <i class="fa fa-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-success btn-xs" title="Editar">
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-warning btn-xs" title="Registrar Movimiento">
+                                                        <i class="fa fa-exchange"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger btn-xs" title="Eliminar">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>INV-005</td>
+                                                <td>Mesa de Centro Roble</td>
+                                                <td><span class="badge category-badge" style="background-color: #8e44ad;">Muebles</span></td>
+                                                <td>0005</td>
+                                                <td><span class="status-damaged"><i class="fa fa-times"></i> Dañado</span></td>
+                                                <td>$320.00</td>
+                                                <td>14/12/2024 - Daño reportado</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-info btn-xs" title="Ver Detalles">
+                                                        <i class="fa fa-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-success btn-xs" title="Editar">
+                                                        <i class="fa fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-warning btn-xs" title="Registrar Movimiento">
+                                                        <i class="fa fa-exchange"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger btn-xs" title="Eliminar">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /page content -->
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Artículo -->
+    <div class="modal fade" id="addItemModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Agregar Nuevo Artículo al Inventario</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="addItemForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="itemName">Nombre del Artículo *</label>
+                                    <input type="text" class="form-control" id="itemName" name="name" required placeholder="Ej: Sábanas Blancas King Size">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="itemCategory">Categoría *</label>
+                                    <select class="form-control" id="itemCategory" name="category" required>
+                                        <option value="">Seleccionar categoría...</option>
+                                        <option value="ropa_cama">Ropa de Cama</option>
+                                        <option value="electrodomesticos">Electrodomésticos</option>
+                                        <option value="muebles">Muebles</option>
+                                        <option value="decoracion">Decoración</option>
+                                        <option value="tecnologia">Tecnología</option>
+                                        <option value="limpieza">Limpieza</option>
+                                        <option value="otros">Otros</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="itemRoom">Habitación *</label>
+                                    <select class="form-control" id="itemRoom" name="room" required>
+                                        <option value="">Seleccionar habitación...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="itemValue">Valor ($) *</label>
+                                    <input type="number" class="form-control" id="itemValue" name="value" required min="0" step="0.01" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="itemBrand">Marca</label>
+                                    <input type="text" class="form-control" id="itemBrand" name="brand" placeholder="Ej: Samsung, LG, etc.">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="itemModel">Modelo</label>
+                                    <input type="text" class="form-control" id="itemModel" name="model" placeholder="Ej: 55UN7300, etc.">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="itemSerial">Número de Serie</label>
+                                    <input type="text" class="form-control" id="itemSerial" name="serial" placeholder="Número de serie del artículo">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="itemPurchaseDate">Fecha de Compra</label>
+                                    <input type="date" class="form-control" id="itemPurchaseDate" name="purchaseDate">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemDescription">Descripción Detallada</label>
+                            <textarea class="form-control" id="itemDescription" name="description" rows="3" placeholder="Descripción detallada del artículo, características, estado, etc."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning" id="clearAddFormBtn">Limpiar</button>
+                    <button type="button" class="btn btn-primary" id="saveItemBtn">Agregar Artículo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Registrar Movimiento -->
+    <div class="modal fade" id="movementModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Registrar Movimiento de Artículo</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="movementForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="movementItem">Artículo *</label>
+                                    <select class="form-control" id="movementItem" name="itemId" required>
+                                        <option value="">Seleccionar artículo...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="movementType">Tipo de Movimiento *</label>
+                                    <select class="form-control" id="movementType" name="type" required>
+                                        <option value="">Seleccionar tipo...</option>
+                                        <option value="traslado">Traslado</option>
+                                        <option value="reparacion">Enviado a Reparación</option>
+                                        <option value="mantenimiento">Mantenimiento</option>
+                                        <option value="reemplazo">Reemplazo</option>
+                                        <option value="baja">Dado de Baja</option>
+                                        <option value="encontrado">Encontrado</option>
+                                        <option value="perdido">Reportado como Perdido</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="movementFromRoom">Desde Habitación</label>
+                                    <select class="form-control" id="movementFromRoom" name="fromRoom">
+                                        <option value="">Seleccionar habitación origen...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="movementToRoom">Hacia Habitación</label>
+                                    <select class="form-control" id="movementToRoom" name="toRoom">
+                                        <option value="">Seleccionar habitación destino...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="movementDate">Fecha del Movimiento *</label>
+                                    <input type="datetime-local" class="form-control" id="movementDate" name="date" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="movementResponsible">Responsable *</label>
+                                    <input type="text" class="form-control" id="movementResponsible" name="responsible" required placeholder="Nombre del responsable">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="movementReason">Motivo del Movimiento *</label>
+                            <textarea class="form-control" id="movementReason" name="reason" rows="3" required placeholder="Descripción detallada del motivo del movimiento..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning" id="clearMovementFormBtn">Limpiar</button>
+                    <button type="button" class="btn btn-success" id="saveMovementBtn">Registrar Movimiento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Importación Masiva -->
+    <div class="modal fade" id="bulkImportModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Importación Masiva de Inventario</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle"></i>
+                        <strong>Instrucciones:</strong> Sube un archivo Excel (.xlsx) con las columnas: Nombre, Categoría, Habitación, Valor, Marca, Modelo, Descripción
+                    </div>
+                    <form id="bulkImportForm">
+                        <div class="form-group">
+                            <label for="importFile">Archivo Excel *</label>
+                            <input type="file" class="form-control" id="importFile" name="file" accept=".xlsx,.xls" required>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="importOverwrite" name="overwrite">
+                                Sobrescribir artículos existentes (mismo ID)
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="importValidate" name="validate" checked>
+                                Validar datos antes de importar
+                            </label>
+                        </div>
+                    </form>
+                    <div class="progress" style="display: none;" id="importProgress">
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0%">
+                            <span class="sr-only">Importando...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" id="downloadTemplateBtn">Descargar Plantilla</button>
+                    <button type="button" class="btn btn-primary" id="processImportBtn">Procesar Importación</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Ver Detalles del Artículo -->
+    <div class="modal fade" id="viewItemModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Detalles del Artículo</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="fa fa-info-circle"></i> Información Básica</h5>
+                            <table class="table table-bordered">
+                                <tr><td><strong>ID:</strong></td><td id="viewItemId">-</td></tr>
+                                <tr><td><strong>Nombre:</strong></td><td id="viewItemName">-</td></tr>
+                                <tr><td><strong>Categoría:</strong></td><td id="viewItemCategory">-</td></tr>
+                                <tr><td><strong>Habitación:</strong></td><td id="viewItemRoom">-</td></tr>
+                                <tr><td><strong>Estado:</strong></td><td id="viewItemStatus">-</td></tr>
+                                <tr><td><strong>Valor:</strong></td><td id="viewItemValue">-</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="fa fa-cog"></i> Información Técnica</h5>
+                            <table class="table table-bordered">
+                                <tr><td><strong>Marca:</strong></td><td id="viewItemBrand">-</td></tr>
+                                <tr><td><strong>Modelo:</strong></td><td id="viewItemModel">-</td></tr>
+                                <tr><td><strong>Serie:</strong></td><td id="viewItemSerial">-</td></tr>
+                                <tr><td><strong>Fecha Compra:</strong></td><td id="viewItemPurchaseDate">-</td></tr>
+                                <tr><td><strong>Último Movimiento:</strong></td><td id="viewItemLastMovement">-</td></tr>
+                                <tr><td><strong>Responsable:</strong></td><td id="viewItemResponsible">-</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5><i class="fa fa-file-text"></i> Descripción</h5>
+                            <div class="well" id="viewItemDescription">-</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5><i class="fa fa-history"></i> Historial de Movimientos</h5>
+                            <table class="table table-striped" id="movementHistoryTable">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Tipo</th>
+                                        <th>Desde</th>
+                                        <th>Hacia</th>
+                                        <th>Responsable</th>
+                                        <th>Motivo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Se llenará dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-success" id="editItemFromViewBtn">Editar Artículo</button>
+                    <button type="button" class="btn btn-warning" id="addMovementFromViewBtn">Agregar Movimiento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Artículo -->
+    <div class="modal fade" id="editItemModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Editar Artículo de Inventario</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="editItemForm">
+                        <input type="hidden" id="editItemId" name="id">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editItemName">Nombre del Artículo *</label>
+                                    <input type="text" class="form-control" id="editItemName" name="name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editItemCategory">Categoría *</label>
+                                    <select class="form-control" id="editItemCategory" name="category" required>
+                                        <option value="ropa_cama">Ropa de Cama</option>
+                                        <option value="electrodomesticos">Electrodomésticos</option>
+                                        <option value="muebles">Muebles</option>
+                                        <option value="decoracion">Decoración</option>
+                                        <option value="tecnologia">Tecnología</option>
+                                        <option value="limpieza">Limpieza</option>
+                                        <option value="otros">Otros</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editItemRoom">Habitación *</label>
+                                    <select class="form-control" id="editItemRoom" name="room" required>
+                                        <option value="">Seleccionar habitación...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editItemStatus">Estado *</label>
+                                    <select class="form-control" id="editItemStatus" name="status" required>
+                                        <option value="disponible">Disponible</option>
+                                        <option value="faltante">Faltante</option>
+                                        <option value="mantenimiento">Mantenimiento</option>
+                                        <option value="dañado">Dañado</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editItemValue">Valor ($) *</label>
+                                    <input type="number" class="form-control" id="editItemValue" name="value" required min="0" step="0.01">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editItemBrand">Marca</label>
+                                    <input type="text" class="form-control" id="editItemBrand" name="brand">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editItemModel">Modelo</label>
+                                    <input type="text" class="form-control" id="editItemModel" name="model">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editItemSerial">Número de Serie</label>
+                                    <input type="text" class="form-control" id="editItemSerial" name="serial">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editItemDescription">Descripción Detallada</label>
+                            <textarea class="form-control" id="editItemDescription" name="description" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning" id="clearEditFormBtn">Limpiar</button>
+                    <button type="button" class="btn btn-success" id="updateItemBtn">Actualizar Artículo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="../vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="../vendors/nprogress/nprogress.js"></script>
+    <!-- iCheck -->
+    <script src="../vendors/iCheck/icheck.min.js"></script>
+    <!-- Datatables -->
+    <script src="../vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="../vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="../vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="../vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+    <script src="../vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+    <script src="../vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="../vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+    <script src="../vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+    <script src="../vendors/jszip/dist/jszip.min.js"></script>
+    <script src="../vendors/pdfmake/build/pdfmake.min.js"></script>
+    <script src="../vendors/pdfmake/build/vfs_fonts.js"></script>
+    <!-- PNotify -->
+    <script src="../vendors/pnotify/dist/pnotify.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.nonblock.js"></script>
+    
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    
+    <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
+    <script src="auth-simple.js"></script>
+    
+    <!-- Script para mantener texto correcto del usuario -->
+    <script>
+        $(document).ready(function() {
+            // Función para establecer el texto correcto según el usuario
+            function setUserText() {
+                var currentUser = localStorage.getItem('currentUser');
+                console.log('Usuario actual en localStorage:', currentUser);
+                
+                var displayText = '';
+                
+                if (currentUser === 'admin') {
+                    displayText = 'Admin';
+                } else if (currentUser === 'plataforma') {
+                    displayText = 'Plataforma';
+                } else if (currentUser === 'huesped') {
+                    displayText = 'Huésped';
+                } else if (currentUser === 'mantencion') {
+                    displayText = 'Mantención';
+                } else {
+                    displayText = 'Usuario'; // Por defecto
+                }
+                
+                console.log('Texto a mostrar:', displayText);
+                
+                // Solo cambiar si es diferente al actual
+                var currentText = $('.profile_info h2').text();
+                if (currentText !== displayText) {
+                    $('.profile_info h2').text(displayText);
+                    console.log('Texto cambiado de "' + currentText + '" a "' + displayText + '"');
+                }
+                
+                $('.user-profile').contents().filter(function() {
+                    return this.nodeType === 3 && this.nodeValue.trim() !== '';
+                }).each(function() {
+                    if (this.nodeValue.trim() !== displayText) {
+                        this.nodeValue = displayText;
+                    }
+                });
+            }
+            
+            // Ejecutar inmediatamente
+            setUserText();
+            
+            // Ejecutar cada 5 segundos para mantenerlo (menos agresivo)
+            setInterval(setUserText, 5000);
+        });
+    </script>
+    
+    <!-- FORZAR VISIBILIDAD DE MENÚS - DESHABILITADO -->
+    <!-- <script src="force-menu.js"></script> -->
+    
+    <!-- FORZAR VISIBILIDAD AGRESIVA - DESHABILITADO -->
+    <!-- <script src="force-menu-aggressive.js"></script> -->
+    
+    <!-- LIMPIAR NOTIFICACIONES DUPLICADAS - DESHABILITADO -->
+    <!-- <script src="cleanup-notifications.js"></script> -->
+    
+    <!-- SCRIPT DE CORRECCIÓN DE MENÚ REMOVIDO - CAUSABA PROBLEMAS VISUALES -->
+    
+    <!-- CORREGIR MENÚS EN TODAS LAS PÁGINAS - DESHABILITADO -->
+    <!-- <script src="fix-menu-scripts.js"></script> -->
+
+    <!-- Script para gestión de inventario -->
+    <script>
+        // Verificar carga de Font Awesome
+        $(document).ready(function() {
+            // Verificar si Font Awesome está cargado
+            if (typeof $('.fa').css('font-family') === 'undefined' || 
+                $('.fa').css('font-family').indexOf('FontAwesome') === -1) {
+                console.log('Font Awesome no detectado, cargando desde CDN...');
+                $('head').append('<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">');
+            }
+            
+            // Forzar recarga de iconos después de un breve delay
+            setTimeout(function() {
+                $('.fa').each(function() {
+                    $(this).css('font-family', 'FontAwesome');
+                });
+            }, 500);
+        });
+        
+        $(document).ready(function() {
+            // Configurar DataTables en español
+            $.extend($.fn.dataTable.defaults, {
+                "language": {
+                    "sProcessing": "Procesando...",
+                    "sLengthMenu": "Mostrar _MENU_ registros",
+                    "sZeroRecords": "No se encontraron resultados",
+                    "sEmptyTable": "Ningún dato disponible en esta tabla",
+                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Buscar:",
+                    "sUrl": "",
+                    "sInfoThousands": ",",
+                    "sLoadingRecords": "Cargando...",
+                    "oPaginate": {
+                        "sFirst": "Primero",
+                        "sLast": "Último",
+                        "sNext": "Siguiente",
+                        "sPrevious": "Anterior"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                    }
+                }
+            });
+
+            // Inicializar DataTable
+            $('#inventoryTable').DataTable({
+                responsive: true,
+                pageLength: 25,
+                order: [[0, 'desc']],
+                columnDefs: [
+                    { orderable: false, targets: 7 }
+                ]
+            });
+
+            // Cargar habitaciones en todos los selectores
+            loadRoomsInSelectors();
+            loadItemsInSelectors();
+
+            // Configurar PNotify
+            PNotify.prototype.options.styling = "bootstrap3";
+
+            // ==================== FUNCIONALIDADES DE BOTONES ====================
+
+            // 1. ACTUALIZAR INVENTARIO
+            $('#refreshInventoryBtn').on('click', function() {
+                updateInventoryStats();
+                $('#inventoryTable').DataTable().ajax.reload();
+                new PNotify({
+                    title: 'Inventario Actualizado',
+                    text: 'La información del inventario ha sido actualizada correctamente',
+                    type: 'info',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            // 2. GENERAR REPORTE
+            $('#generateReportBtn').on('click', function() {
+                new PNotify({
+                    title: 'Reporte Generado',
+                    text: 'El reporte de inventario ha sido generado exitosamente y enviado a gsanchez@sabtechgroup.com',
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            // 3. AGREGAR ARTÍCULO
+            $('#saveItemBtn').on('click', function() {
+                var form = $('#addItemForm');
+                var formData = {};
+                
+                form.find('input, select, textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+
+                // Validar campos requeridos
+                if (!formData.name || !formData.category || !formData.room || !formData.value) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos (*)',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Generar ID único
+                var newId = 'INV-' + String(Date.now()).slice(-3);
+                
+                // Agregar a la tabla
+                addItemToTable({
+                    id: newId,
+                    name: formData.name,
+                    category: formData.category,
+                    room: formData.room,
+                    status: 'disponible',
+                    value: formData.value,
+                    brand: formData.brand || '',
+                    model: formData.model || '',
+                    serial: formData.serial || '',
+                    purchaseDate: formData.purchaseDate || '',
+                    description: formData.description || '',
+                    lastMovement: new Date().toLocaleDateString() + ' - Ingreso'
+                });
+
+                new PNotify({
+                    title: 'Artículo Agregado',
+                    text: `El artículo "${formData.name}" ha sido agregado exitosamente al inventario`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+
+                $('#addItemModal').modal('hide');
+                form[0].reset();
+                updateInventoryStats();
+            });
+
+            // 4. REGISTRAR MOVIMIENTO
+            $('#saveMovementBtn').on('click', function() {
+                var form = $('#movementForm');
+                var formData = {};
+                
+                form.find('input, select, textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+
+                // Validar campos requeridos
+                if (!formData.itemId || !formData.type || !formData.date || !formData.responsible || !formData.reason) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos (*)',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                new PNotify({
+                    title: 'Movimiento Registrado',
+                    text: `El movimiento "${formData.type}" ha sido registrado exitosamente`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+
+                $('#movementModal').modal('hide');
+                form[0].reset();
+            });
+
+            // 5. IMPORTACIÓN MASIVA
+            $('#processImportBtn').on('click', function() {
+                var file = $('#importFile')[0].files[0];
+                if (!file) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor seleccione un archivo para importar',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Simular progreso de importación
+                $('#importProgress').show();
+                var progress = 0;
+                var interval = setInterval(function() {
+                    progress += 10;
+                    $('#importProgress .progress-bar').css('width', progress + '%');
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        $('#importProgress').hide();
+                        new PNotify({
+                            title: 'Importación Completada',
+                            text: 'Los artículos han sido importados exitosamente desde el archivo Excel',
+                            type: 'success',
+                            hide: false,
+                            styling: 'bootstrap3'
+                        });
+                        $('#bulkImportModal').modal('hide');
+                        updateInventoryStats();
+                    }
+                }, 200);
+            });
+
+            // 6. DESCARGAR PLANTILLA
+            $('#downloadTemplateBtn').on('click', function() {
+                new PNotify({
+                    title: 'Plantilla Descargada',
+                    text: 'La plantilla Excel ha sido descargada exitosamente',
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            // 7. LIMPIAR FORMULARIOS
+            $('#clearAddFormBtn').on('click', function() {
+                $('#addItemForm')[0].reset();
+                new PNotify({
+                    title: 'Formulario Limpiado',
+                    text: 'Todos los campos han sido borrados correctamente',
+                    type: 'info',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            $('#clearMovementFormBtn').on('click', function() {
+                $('#movementForm')[0].reset();
+                new PNotify({
+                    title: 'Formulario Limpiado',
+                    text: 'Todos los campos han sido borrados correctamente',
+                    type: 'info',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            $('#clearEditFormBtn').on('click', function() {
+                $('#editItemForm')[0].reset();
+                new PNotify({
+                    title: 'Formulario Limpiado',
+                    text: 'Todos los campos han sido borrados correctamente',
+                    type: 'info',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            // 8. BOTONES DE ACCIÓN EN TABLA
+            $(document).on('click', '.btn-info', function() {
+                var row = $(this).closest('tr');
+                var itemId = row.find('td:eq(0)').text();
+                var itemName = row.find('td:eq(1)').text();
+                var itemCategory = row.find('td:eq(2)').text();
+                var itemRoom = row.find('td:eq(3)').text();
+                var itemStatus = row.find('td:eq(4)').text();
+                var itemValue = row.find('td:eq(5)').text();
+                
+                // Llenar modal de detalles
+                $('#viewItemId').text(itemId);
+                $('#viewItemName').text(itemName);
+                $('#viewItemCategory').text(itemCategory);
+                $('#viewItemRoom').text(itemRoom);
+                $('#viewItemStatus').text(itemStatus);
+                $('#viewItemValue').text(itemValue);
+                $('#viewItemBrand').text('Samsung'); // Datos de ejemplo
+                $('#viewItemModel').text('55UN7300');
+                $('#viewItemSerial').text('SN123456789');
+                $('#viewItemPurchaseDate').text('15/10/2024');
+                $('#viewItemLastMovement').text('15/12/2024 - Verificación');
+                $('#viewItemResponsible').text('Admin');
+                $('#viewItemDescription').text('Artículo en buen estado, funcionando correctamente');
+                
+                $('#viewItemModal').modal('show');
+            });
+
+            $(document).on('click', '.btn-success', function() {
+                var row = $(this).closest('tr');
+                var itemId = row.find('td:eq(0)').text();
+                var itemName = row.find('td:eq(1)').text();
+                var itemCategory = row.find('td:eq(2)').text();
+                var itemRoom = row.find('td:eq(3)').text();
+                var itemStatus = row.find('td:eq(4)').text();
+                var itemValue = row.find('td:eq(5)').text();
+                
+                // Llenar modal de edición
+                $('#editItemId').val(itemId);
+                $('#editItemName').val(itemName);
+                $('#editItemCategory').val(itemCategory.toLowerCase().replace(' ', '_'));
+                $('#editItemRoom').val(itemRoom);
+                $('#editItemStatus').val(itemStatus.toLowerCase());
+                $('#editItemValue').val(itemValue.replace('$', ''));
+                $('#editItemBrand').val('Samsung');
+                $('#editItemModel').val('55UN7300');
+                $('#editItemSerial').val('SN123456789');
+                $('#editItemDescription').val('Artículo en buen estado, funcionando correctamente');
+                
+                $('#editItemModal').modal('show');
+            });
+
+            $(document).on('click', '.btn-warning', function() {
+                $('#movementModal').modal('show');
+            });
+
+            $(document).on('click', '.btn-danger', function() {
+                var row = $(this).closest('tr');
+                var itemId = row.find('td:eq(0)').text();
+                var itemName = row.find('td:eq(1)').text();
+                
+                if (confirm(`¿Está seguro de eliminar el artículo "${itemName}" (${itemId})?\n\nEsta acción no se puede deshacer.`)) {
+                    row.fadeOut(500, function() {
+                        $(this).remove();
+                        updateInventoryStats();
+                        new PNotify({
+                            title: 'Artículo Eliminado',
+                            text: `El artículo "${itemName}" ha sido eliminado del inventario`,
+                            type: 'warning',
+                            hide: false,
+                            styling: 'bootstrap3'
+                        });
+                    });
+                }
+            });
+
+            // 9. ACTUALIZAR ARTÍCULO
+            $('#updateItemBtn').on('click', function() {
+                var form = $('#editItemForm');
+                var formData = {};
+                
+                form.find('input, select, textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+
+                // Validar campos requeridos
+                if (!formData.name || !formData.category || !formData.room || !formData.value) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos (*)',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                new PNotify({
+                    title: 'Artículo Actualizado',
+                    text: `El artículo "${formData.name}" ha sido actualizado exitosamente`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+
+                $('#editItemModal').modal('hide');
+                updateInventoryStats();
+            });
+
+            // 10. FILTROS
+            $('#applyFiltersBtn').on('click', function() {
+                applyFilters();
+            });
+
+            $('#clearFiltersBtn').on('click', function() {
+                clearFilters();
+            });
+
+            // 11. RECARGAR HABITACIONES AL ABRIR MODALES
+            $('#addItemModal').on('show.bs.modal', function() {
+                loadRoomsInSelectors();
+            });
+
+            $('#movementModal').on('show.bs.modal', function() {
+                loadRoomsInSelectors();
+                loadItemsInSelectors();
+            });
+
+            $('#editItemModal').on('show.bs.modal', function() {
+                loadRoomsInSelectors();
+            });
+        });
+
+        // ==================== FUNCIONES AUXILIARES ====================
+
+        function loadRoomsInSelectors() {
+            var roomOptions = '<option value="">Seleccionar habitación...</option>';
+            for (var i = 1; i <= 20; i++) {
+                var roomNumber = String(i).padStart(4, '0');
+                roomOptions += '<option value="' + roomNumber + '">Habitación ' + roomNumber + '</option>';
+            }
+            $('#itemRoom, #editItemRoom, #movementFromRoom, #movementToRoom').html(roomOptions);
+            
+            // Para filtros
+            var filterOptions = '<option value="">Todas las habitaciones</option>';
+            for (var i = 1; i <= 20; i++) {
+                var roomNumber = String(i).padStart(4, '0');
+                filterOptions += '<option value="' + roomNumber + '">Habitación ' + roomNumber + '</option>';
+            }
+            $('#roomFilter').html(filterOptions);
+        }
+
+        function loadItemsInSelectors() {
+            var itemOptions = '<option value="">Seleccionar artículo...</option>';
+            $('#inventoryTable tbody tr').each(function() {
+                var itemId = $(this).find('td:eq(0)').text();
+                var itemName = $(this).find('td:eq(1)').text();
+                itemOptions += '<option value="' + itemId + '">' + itemName + ' (' + itemId + ')</option>';
+            });
+            $('#movementItem').html(itemOptions);
+        }
+
+        function addItemToTable(item) {
+            var categoryColor = getCategoryColor(item.category);
+            var statusIcon = getStatusIcon(item.status);
+            var statusText = getStatusText(item.status);
+            
+            var newRow = `
+                <tr>
+                    <td>${item.id}</td>
+                    <td>${item.name}</td>
+                    <td><span class="badge category-badge" style="background-color: ${categoryColor};">${getCategoryText(item.category)}</span></td>
+                    <td>${item.room}</td>
+                    <td><span class="${getStatusClass(item.status)}">${statusIcon} ${statusText}</span></td>
+                    <td>$${parseFloat(item.value).toFixed(2)}</td>
+                    <td>${item.lastMovement}</td>
+                    <td>
+                        <button type="button" class="btn btn-info btn-xs" title="Ver Detalles">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                        <button type="button" class="btn btn-success btn-xs" title="Editar">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-warning btn-xs" title="Registrar Movimiento">
+                            <i class="fa fa-exchange"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-xs" title="Eliminar">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            
+            $('#inventoryTable tbody').prepend(newRow);
+        }
+
+        function getCategoryColor(category) {
+            var colors = {
+                'ropa_cama': '#5cb85c',
+                'electrodomesticos': '#d9534f',
+                'muebles': '#8e44ad',
+                'decoracion': '#f0ad4e',
+                'tecnologia': '#337ab7',
+                'limpieza': '#777',
+                'otros': '#000'
+            };
+            return colors[category] || '#777';
+        }
+
+        function getCategoryText(category) {
+            var texts = {
+                'ropa_cama': 'Ropa de Cama',
+                'electrodomesticos': 'Electrodomésticos',
+                'muebles': 'Muebles',
+                'decoracion': 'Decoración',
+                'tecnologia': 'Tecnología',
+                'limpieza': 'Limpieza',
+                'otros': 'Otros'
+            };
+            return texts[category] || category;
+        }
+
+        function getStatusIcon(status) {
+            var icons = {
+                'disponible': '<i class="fa fa-check"></i>',
+                'faltante': '<i class="fa fa-exclamation-triangle"></i>',
+                'mantenimiento': '<i class="fa fa-wrench"></i>',
+                'dañado': '<i class="fa fa-times"></i>'
+            };
+            return icons[status] || '<i class="fa fa-question"></i>';
+        }
+
+        function getStatusText(status) {
+            var texts = {
+                'disponible': 'Disponible',
+                'faltante': 'Faltante',
+                'mantenimiento': 'Mantenimiento',
+                'dañado': 'Dañado'
+            };
+            return texts[status] || status;
+        }
+
+        function getStatusClass(status) {
+            var classes = {
+                'disponible': 'status-available',
+                'faltante': 'status-missing',
+                'mantenimiento': 'status-maintenance',
+                'dañado': 'status-damaged'
+            };
+            return classes[status] || 'status-available';
+        }
+
+        function updateInventoryStats() {
+            // Contar artículos por estado
+            var total = $('#inventoryTable tbody tr').length;
+            var available = $('#inventoryTable tbody tr').filter(function() {
+                return $(this).find('td:eq(4)').text().includes('Disponible');
+            }).length;
+            var missing = $('#inventoryTable tbody tr').filter(function() {
+                return $(this).find('td:eq(4)').text().includes('Faltante');
+            }).length;
+            var maintenance = $('#inventoryTable tbody tr').filter(function() {
+                return $(this).find('td:eq(4)').text().includes('Mantenimiento');
+            }).length;
+            
+            $('#totalItems').text(total);
+            $('#availableItems').text(available);
+            $('#missingItems').text(missing);
+            $('#maintenanceItems').text(maintenance);
+        }
+
+        function applyFilters() {
+            var category = $('#categoryFilter').val();
+            var status = $('#statusFilter').val();
+            var room = $('#roomFilter').val();
+            
+            var table = $('#inventoryTable').DataTable();
+            table.search('').draw();
+            
+            new PNotify({
+                title: 'Filtros Aplicados',
+                text: 'Los filtros han sido aplicados correctamente',
+                type: 'info',
+                hide: false,
+                styling: 'bootstrap3'
+            });
+        }
+
+        function clearFilters() {
+            $('#categoryFilter, #statusFilter, #roomFilter').val('');
+            var table = $('#inventoryTable').DataTable();
+            table.search('').draw();
+            
+            new PNotify({
+                title: 'Filtros Limpiados',
+                text: 'Todos los filtros han sido removidos',
+                type: 'info',
+                hide: false,
+                styling: 'bootstrap3'
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Gestión de Dotaciones y Turnos | Sabtech Group</title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- bootstrap-progressbar -->
+    <link href="../vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <!-- PNotify -->
+    <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    
+    <style>
+        .staff-stats {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .staff-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .staff-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .shift-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .shift-day { background-color: #5cb85c; color: white; }
+        .shift-night { background-color: #2c3e50; color: white; }
+        .shift-off { background-color: #d9534f; color: white; }
+        .shift-maintenance { background-color: #f0ad4e; color: white; }
+        
+        .upload-area {
+            border: 2px dashed #007bff;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            border-color: #0056b3;
+            background: #e3f2fd;
+        }
+        
+        .upload-area.dragover {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        
+        .template-download {
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <!-- Sidebar -->
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title" style="border: 0;">
+                        <a href="index.html" class="site_title"><span>Hoteleria</span></a>
+                    </div>
+                    <div class="clearfix"></div>
+
+                    <!-- Profile -->
+                    <div class="profile clearfix">
+                        <div class="profile_pic">
+                            <img src="images/img.jpg" alt="..." class="img-circle profile_img">
+                        </div>
+                        <div class="profile_info">
+                            <span>Bienvenido,</span>
+                            <h2>Admin</h2>
+                        </div>
+                    </div>
+                    <br />
+
+                    <!-- Sidebar Menu -->
+                    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                        <div class="menu_section">
+                            <h3>Menú Usuario</h3>
+                            <ul class="nav side-menu">
+                                <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        <li><a href="index2.html">Reservas</a></li>
+                                        <li><a href="index3.html">Servicios</a></li>
+                                        <li><a href="index.html">Habitaciones</a></li>
+                                        <li><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
+                                        <li><a href="inventario.html">Inventario</a></li>
+                                        <li><a href="campamentos.html">Campamentos</a></li>
+                                        <li><a href="contratos.html">Contratos</a></li>
+                                        <li class="current-page"><a href="dotaciones.html">Dotaciones</a></li>
+                                        <li><a href="roles.html">Roles</a></li>
+                                        <li><a href="calendario.html">Calendario</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <img src="images/img.jpg" alt="">Admin
+                                    <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                    <li><a href="profile.html"> Perfil</a></li>
+                                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Cerrar Sesión</a></li>
+                                </ul>
+                            </li>
+                            <li role="presentation" class="dropdown">
+                                <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-envelope-o"></i>
+                                    <span class="badge bg-green" style="border-radius: 50%;">3</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>Gestión de Dotaciones y Turnos <small>Control de Personal y Horarios</small></h3>
+                        </div>
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Buscar trabajador o turno...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">Go!</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- Estadísticas Generales -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="staff-stats">
+                                <div class="row">
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="totalStaff">156</h3>
+                                        <p>Trabajadores Activos</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="dayShift">78</h3>
+                                        <p>Turno Día</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="nightShift">52</h3>
+                                        <p>Turno Noche</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="offDuty">26</h3>
+                                        <p>Fuera de Servicio</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="x_panel">
+                                <div class="x_content">
+                                    <div class="row" style="margin-bottom: 20px;">
+                                        <div class="col-md-6">
+                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#bulkUploadModal">
+                                                <i class="fa fa-upload"></i> Carga Masiva Excel
+                                            </button>
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addStaffModal">
+                                                <i class="fa fa-user-plus"></i> Agregar Trabajador
+                                            </button>
+                                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#scheduleModal">
+                                                <i class="fa fa-calendar"></i> Gestionar Turnos
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button type="button" class="btn btn-warning" id="exportStaffBtn">
+                                                <i class="fa fa-file-excel-o"></i> Exportar Dotación
+                                            </button>
+                                            <button type="button" class="btn btn-default" id="refreshDataBtn">
+                                                <i class="fa fa-refresh"></i> Actualizar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Dotaciones -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Dotaciones por Empresa</h2>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div id="staffList">
+                                        <!-- Las dotaciones se cargarán dinámicamente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer>
+                <div class="pull-right">
+                    Sabtech Group | Sistemas Hotelero para la Minería <a href="https://sabtechgroup.com/">conocer más</a>
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modal para Carga Masiva -->
+    <div class="modal fade" id="bulkUploadModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Carga Masiva de Dotaciones</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- Plantillas para Descarga -->
+                    <div class="template-download">
+                        <h5><i class="fa fa-download"></i> Plantillas Excel Disponibles:</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-success btn-sm" id="downloadStaffTemplate">
+                                    <i class="fa fa-file-excel-o"></i> Plantilla Trabajadores
+                                </button>
+                                <small class="text-muted">Formato: Nombre, Apellido, RUT, Empresa, Cargo, Turno</small>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-info btn-sm" id="downloadShiftTemplate">
+                                    <i class="fa fa-file-excel-o"></i> Plantilla Turnos
+                                </button>
+                                <small class="text-muted">Formato: RUT, Fecha, Turno, Horario</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Área de Carga -->
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fa fa-cloud-upload fa-3x text-muted"></i>
+                        <h4>Arrastra tu archivo Excel aquí</h4>
+                        <p>o haz clic para seleccionar</p>
+                        <input type="file" id="excelFile" accept=".xlsx,.xls" style="display: none;">
+                        <button type="button" class="btn btn-primary" onclick="$('#excelFile').click()">
+                            <i class="fa fa-folder-open"></i> Seleccionar Archivo
+                        </button>
+                    </div>
+                    
+                    <!-- Información del archivo seleccionado -->
+                    <div id="fileInfo" style="display: none; margin-top: 20px;">
+                        <div class="alert alert-info">
+                            <h5><i class="fa fa-file-excel-o"></i> Archivo Seleccionado:</h5>
+                            <p id="fileName"></p>
+                            <p id="fileSize"></p>
+                            <button type="button" class="btn btn-success" id="processFileBtn">
+                                <i class="fa fa-play"></i> Procesar Archivo
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Resultados del procesamiento -->
+                    <div id="processResults" style="display: none; margin-top: 20px;">
+                        <div class="alert alert-success">
+                            <h5><i class="fa fa-check-circle"></i> Procesamiento Completado:</h5>
+                            <p id="processSummary"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="saveBulkDataBtn" style="display: none;">
+                        <i class="fa fa-save"></i> Guardar Datos
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Trabajador -->
+    <div class="modal fade" id="addStaffModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Agregar Trabajador</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="addStaffForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="staffName">Nombre *</label>
+                                    <input type="text" class="form-control" id="staffName" name="name" required placeholder="Ej: Juan">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="staffLastName">Apellido *</label>
+                                    <input type="text" class="form-control" id="staffLastName" name="lastName" required placeholder="Ej: Pérez">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="staffRut">RUT *</label>
+                                    <input type="text" class="form-control" id="staffRut" name="rut" required placeholder="Ej: 12.345.678-9">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="staffCompany">Empresa *</label>
+                                    <select class="form-control" id="staffCompany" name="companyId" required>
+                                        <option value="">Seleccionar empresa...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="staffPosition">Cargo *</label>
+                                    <input type="text" class="form-control" id="staffPosition" name="position" required placeholder="Ej: Supervisor">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="staffShift">Turno *</label>
+                                    <select class="form-control" id="staffShift" name="shift" required>
+                                        <option value="">Seleccionar...</option>
+                                        <option value="day">Día (06:00 - 18:00)</option>
+                                        <option value="night">Noche (18:00 - 06:00)</option>
+                                        <option value="maintenance">Mantenimiento (Flexible)</option>
+                                        <option value="off">Fuera de Servicio</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="staffPhone">Teléfono</label>
+                                    <input type="tel" class="form-control" id="staffPhone" name="phone" placeholder="Ej: +56 9 1234 5678">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="staffEmail">Email</label>
+                                    <input type="email" class="form-control" id="staffEmail" name="email" placeholder="Ej: juan.perez@empresa.com">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="staffNotes">Observaciones</label>
+                            <textarea class="form-control" id="staffNotes" name="notes" rows="2" placeholder="Observaciones sobre el trabajador..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveStaffBtn">Agregar Trabajador</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Gestionar Turnos -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Gestión de Turnos</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5>Horarios de Turnos:</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Turno</th>
+                                            <th>Horario</th>
+                                            <th>Duración</th>
+                                            <th>Trabajadores Asignados</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="shift-status shift-day">Día</span></td>
+                                            <td>06:00 - 18:00</td>
+                                            <td>12 horas</td>
+                                            <td id="dayShiftCount">78</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info" onclick="viewShiftDetails('day')">
+                                                    <i class="fa fa-eye"></i> Ver
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="shift-status shift-night">Noche</span></td>
+                                            <td>18:00 - 06:00</td>
+                                            <td>12 horas</td>
+                                            <td id="nightShiftCount">52</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info" onclick="viewShiftDetails('night')">
+                                                    <i class="fa fa-eye"></i> Ver
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="shift-status shift-maintenance">Mantenimiento</span></td>
+                                            <td>Flexible</td>
+                                            <td>Variable</td>
+                                            <td id="maintenanceShiftCount">15</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info" onclick="viewShiftDetails('maintenance')">
+                                                    <i class="fa fa-eye"></i> Ver
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="exportShiftReportBtn">
+                        <i class="fa fa-file-excel-o"></i> Exportar Reporte de Turnos
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+    <script src="../build/js/custom.min.js"></script>
+    
+    <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
+    <script src="auth-simple.js"></script>
+    
+    <!-- Script para mantener texto correcto del usuario -->
+    <script>
+        $(document).ready(function() {
+            // Función para establecer el texto correcto según el usuario
+            function setUserText() {
+                var currentUser = localStorage.getItem('currentUser');
+                console.log('Usuario actual en localStorage:', currentUser);
+                
+                var displayText = '';
+                
+                if (currentUser === 'admin') {
+                    displayText = 'Admin';
+                } else if (currentUser === 'plataforma') {
+                    displayText = 'Plataforma';
+                } else if (currentUser === 'huesped') {
+                    displayText = 'Huésped';
+                } else if (currentUser === 'mantencion') {
+                    displayText = 'Mantención';
+                } else {
+                    displayText = 'Usuario'; // Por defecto
+                }
+                
+                console.log('Texto a mostrar:', displayText);
+                
+                // Solo cambiar si es diferente al actual
+                var currentText = $('.profile_info h2').text();
+                if (currentText !== displayText) {
+                    $('.profile_info h2').text(displayText);
+                    console.log('Texto cambiado de "' + currentText + '" a "' + displayText + '"');
+                }
+                
+                $('.user-profile').contents().filter(function() {
+                    return this.nodeType === 3 && this.nodeValue.trim() !== '';
+                }).each(function() {
+                    if (this.nodeValue.trim() !== displayText) {
+                        this.nodeValue = displayText;
+                    }
+                });
+            }
+            
+            // Ejecutar inmediatamente
+            setUserText();
+            
+            // Ejecutar cada 5 segundos para mantenerlo (menos agresivo)
+            setInterval(setUserText, 5000);
+        });
+    </script>
+    
+    <!-- SheetJS para manejo de Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Datos de ejemplo
+            var companies = [
+                { id: 1, name: "Constructora ABC Ltda.", rut: "12.345.678-9" },
+                { id: 2, name: "Servicios Mineros XYZ S.A.", rut: "98.765.432-1" }
+            ];
+
+            var staff = [
+                {
+                    id: 1,
+                    name: "Juan",
+                    lastName: "Pérez",
+                    rut: "12.345.678-9",
+                    companyId: 1,
+                    position: "Supervisor",
+                    shift: "day",
+                    phone: "+56 9 1234 5678",
+                    email: "juan.perez@constructora-abc.com",
+                    notes: "Supervisor de turno día",
+                    status: "active"
+                },
+                {
+                    id: 2,
+                    name: "Carlos",
+                    lastName: "Méndez",
+                    rut: "11.222.333-4",
+                    companyId: 1,
+                    position: "Operador",
+                    shift: "night",
+                    phone: "+56 9 9876 5432",
+                    email: "carlos.mendez@constructora-abc.com",
+                    notes: "Operador de maquinaria pesada",
+                    status: "active"
+                },
+                {
+                    id: 3,
+                    name: "María",
+                    lastName: "González",
+                    rut: "13.456.789-0",
+                    companyId: 2,
+                    position: "Gerente",
+                    shift: "maintenance",
+                    phone: "+56 9 5555 1234",
+                    email: "maria.gonzalez@servicios-xyz.cl",
+                    notes: "Gerente de operaciones",
+                    status: "active"
+                }
+            ];
+
+            // Función para renderizar dotaciones
+            function renderStaff() {
+                var html = '';
+                companies.forEach(function(company) {
+                    var companyStaff = staff.filter(s => s.companyId === company.id);
+                    
+                    html += `
+                        <div class="staff-card">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h4>${company.name} <small>${company.rut}</small></h4>
+                                    <p><strong>Total de Trabajadores:</strong> ${companyStaff.length}</p>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <small><strong>Turno Día:</strong> ${companyStaff.filter(s => s.shift === 'day').length}</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <small><strong>Turno Noche:</strong> ${companyStaff.filter(s => s.shift === 'night').length}</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <small><strong>Mantenimiento:</strong> ${companyStaff.filter(s => s.shift === 'maintenance').length}</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <small><strong>Fuera de Servicio:</strong> ${companyStaff.filter(s => s.shift === 'off').length}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <button class="btn btn-sm btn-info" onclick="viewCompanyStaff(${company.id})">
+                                        <i class="fa fa-eye"></i> Ver Dotación
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" onclick="editCompanyStaff(${company.id})">
+                                        <i class="fa fa-edit"></i> Editar
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h5>Trabajadores:</h5>
+                                    <div class="row">
+                                        ${companyStaff.map(worker => `
+                                            <div class="col-md-4">
+                                                <div class="worker-item">
+                                                    <strong>${worker.name} ${worker.lastName}</strong><br>
+                                                    <small>
+                                                        ${worker.position} | 
+                                                        <span class="shift-status shift-${worker.shift}">${getShiftText(worker.shift)}</span><br>
+                                                        RUT: ${worker.rut}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                $('#staffList').html(html);
+            }
+
+            // Función para obtener texto del turno
+            function getShiftText(shift) {
+                switch(shift) {
+                    case 'day': return 'Día';
+                    case 'night': return 'Noche';
+                    case 'maintenance': return 'Mantenimiento';
+                    case 'off': return 'Fuera';
+                    default: return 'No asignado';
+                }
+            }
+
+            // Función para actualizar estadísticas
+            function updateStats() {
+                var totalStaff = staff.length;
+                var dayShift = staff.filter(s => s.shift === 'day').length;
+                var nightShift = staff.filter(s => s.shift === 'night').length;
+                var offDuty = staff.filter(s => s.shift === 'off').length;
+
+                $('#totalStaff').text(totalStaff);
+                $('#dayShift').text(dayShift);
+                $('#nightShift').text(nightShift);
+                $('#offDuty').text(offDuty);
+                
+                // Actualizar contadores en el modal de turnos
+                $('#dayShiftCount').text(dayShift);
+                $('#nightShiftCount').text(nightShift);
+                $('#maintenanceShiftCount').text(staff.filter(s => s.shift === 'maintenance').length);
+            }
+
+            // Función para cargar empresas en selector
+            function loadCompaniesInSelector() {
+                var companyOptions = '<option value="">Seleccionar empresa...</option>';
+                companies.forEach(function(company) {
+                    companyOptions += `<option value="${company.id}">${company.name} (${company.rut})</option>`;
+                });
+                $('#staffCompany').html(companyOptions);
+            }
+
+            // ==================== FUNCIONALIDADES DE CARGA MASIVA ====================
+
+            // 1. Descargar plantillas Excel
+            $('#downloadStaffTemplate').on('click', function() {
+                var templateData = [
+                    ['Nombre', 'Apellido', 'RUT', 'Empresa', 'Cargo', 'Turno', 'Teléfono', 'Email', 'Observaciones'],
+                    ['Juan', 'Pérez', '12.345.678-9', 'Constructora ABC Ltda.', 'Supervisor', 'day', '+56 9 1234 5678', 'juan.perez@empresa.com', 'Supervisor de turno día'],
+                    ['María', 'González', '13.456.789-0', 'Servicios Mineros XYZ S.A.', 'Operador', 'night', '+56 9 9876 5432', 'maria.gonzalez@empresa.com', 'Operador de maquinaria']
+                ];
+                
+                downloadExcelTemplate(templateData, 'Plantilla_Trabajadores.xlsx');
+            });
+
+            $('#downloadShiftTemplate').on('click', function() {
+                var templateData = [
+                    ['RUT', 'Fecha', 'Turno', 'Hora_Inicio', 'Hora_Fin', 'Observaciones'],
+                    ['12.345.678-9', '2024-01-15', 'day', '06:00', '18:00', 'Turno normal'],
+                    ['13.456.789-0', '2024-01-15', 'night', '18:00', '06:00', 'Turno nocturno']
+                ];
+                
+                downloadExcelTemplate(templateData, 'Plantilla_Turnos.xlsx');
+            });
+
+            // Función para descargar plantillas Excel
+            function downloadExcelTemplate(data, filename) {
+                var ws = XLSX.utils.aoa_to_sheet(data);
+                var wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Plantilla');
+                XLSX.writeFile(wb, filename);
+                
+                new PNotify({
+                    title: 'Plantilla Descargada',
+                    text: `La plantilla ${filename} ha sido descargada exitosamente`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            }
+
+            // 2. Manejo de archivos Excel
+            $('#excelFile').on('change', function(e) {
+                var file = e.target.files[0];
+                if (file) {
+                    $('#fileName').text('Nombre: ' + file.name);
+                    $('#fileSize').text('Tamaño: ' + (file.size / 1024).toFixed(2) + ' KB');
+                    $('#fileInfo').show();
+                }
+            });
+
+            // 3. Procesar archivo Excel
+            $('#processFileBtn').on('click', function() {
+                var file = document.getElementById('excelFile').files[0];
+                if (!file) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor seleccione un archivo Excel',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        var data = new Uint8Array(e.target.result);
+                        var workbook = XLSX.read(data, {type: 'array'});
+                        var firstSheetName = workbook.SheetNames[0];
+                        var worksheet = workbook.Sheets[firstSheetName];
+                        var jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+
+                        processExcelData(jsonData);
+                    } catch (error) {
+                        new PNotify({
+                            title: 'Error',
+                            text: 'Error al procesar el archivo Excel: ' + error.message,
+                            type: 'error',
+                            hide: false,
+                            styling: 'bootstrap3'
+                        });
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            });
+
+            // Función para procesar datos Excel
+            function processExcelData(data) {
+                if (data.length < 2) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'El archivo Excel no contiene suficientes datos',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                var headers = data[0];
+                var rows = data.slice(1);
+                var processedCount = 0;
+                var errorCount = 0;
+                var errors = [];
+
+                // Validar estructura básica
+                var requiredHeaders = ['Nombre', 'Apellido', 'RUT', 'Empresa', 'Cargo', 'Turno'];
+                var missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+                
+                if (missingHeaders.length > 0) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Faltan columnas requeridas: ' + missingHeaders.join(', '),
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Procesar cada fila
+                rows.forEach(function(row, index) {
+                    if (row.length >= 6) {
+                        try {
+                            var workerData = {
+                                name: row[0] || '',
+                                lastName: row[1] || '',
+                                rut: row[2] || '',
+                                company: row[3] || '',
+                                position: row[4] || '',
+                                shift: row[5] || '',
+                                phone: row[6] || '',
+                                email: row[7] || '',
+                                notes: row[8] || ''
+                            };
+
+                            // Validar datos básicos
+                            if (workerData.name && workerData.lastName && workerData.rut) {
+                                processedCount++;
+                            } else {
+                                errorCount++;
+                                errors.push(`Fila ${index + 2}: Datos incompletos`);
+                            }
+                        } catch (error) {
+                            errorCount++;
+                            errors.push(`Fila ${index + 2}: ${error.message}`);
+                        }
+                    }
+                });
+
+                // Mostrar resultados
+                var summary = `Procesados: ${processedCount} registros`;
+                if (errorCount > 0) {
+                    summary += ` | Errores: ${errorCount} registros`;
+                }
+
+                $('#processSummary').html(summary);
+                $('#processResults').show();
+                $('#saveBulkDataBtn').show();
+
+                if (errorCount > 0) {
+                    console.log('Errores encontrados:', errors);
+                }
+
+                new PNotify({
+                    title: 'Procesamiento Completado',
+                    text: `Se procesaron ${processedCount} registros exitosamente`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            }
+
+            // 4. Guardar datos masivos
+            $('#saveBulkDataBtn').on('click', function() {
+                new PNotify({
+                    title: 'Datos Guardados',
+                    text: 'La dotación ha sido actualizada exitosamente con los datos del Excel',
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+                
+                // Aquí se implementaría la lógica para guardar los datos procesados
+                $('#bulkUploadModal').modal('hide');
+                renderStaff();
+                updateStats();
+            });
+
+            // ==================== FUNCIONALIDADES INDIVIDUALES ====================
+
+            // 1. AGREGAR TRABAJADOR INDIVIDUAL
+            $('#saveStaffBtn').on('click', function() {
+                var form = $('#addStaffForm');
+                var formData = {};
+                
+                form.find('input, select, textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+
+                // Validar campos requeridos
+                if (!formData.name || !formData.lastName || !formData.rut || !formData.companyId || !formData.position || !formData.shift) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos (*)',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Verificar que el RUT no exista
+                var rutExists = staff.some(s => s.rut === formData.rut);
+                if (rutExists) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'El RUT ya está registrado. Por favor verifique los datos.',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Crear nuevo trabajador
+                var newWorker = {
+                    id: Math.max(...staff.map(s => s.id)) + 1,
+                    name: formData.name,
+                    lastName: formData.lastName,
+                    rut: formData.rut,
+                    companyId: parseInt(formData.companyId),
+                    position: formData.position,
+                    shift: formData.shift,
+                    phone: formData.phone,
+                    email: formData.email,
+                    notes: formData.notes,
+                    status: 'active'
+                };
+
+                staff.push(newWorker);
+                renderStaff();
+                updateStats();
+
+                new PNotify({
+                    title: 'Éxito',
+                    text: `Trabajador "${formData.name} ${formData.lastName}" agregado exitosamente`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+
+                $('#addStaffModal').modal('hide');
+                form[0].reset();
+            });
+
+            // Funciones globales
+            window.viewCompanyStaff = function(companyId) {
+                var company = companies.find(c => c.id === companyId);
+                var companyStaff = staff.filter(s => s.companyId === companyId);
+                
+                if (company) {
+                    var details = `
+Dotación de ${company.name}:
+Total: ${companyStaff.length} trabajadores
+
+Detalles:
+${companyStaff.map(w => `- ${w.name} ${w.lastName} (${w.position}) - Turno: ${getShiftText(w.shift)}`).join('\n')}
+                    `;
+                    alert(details);
+                }
+            };
+
+            window.editCompanyStaff = function(companyId) {
+                var company = companies.find(c => c.id === companyId);
+                if (company) {
+                    alert(`Editar dotación de: ${company.name}`);
+                    // Aquí se implementaría la funcionalidad de edición
+                }
+            };
+
+            window.viewShiftDetails = function(shift) {
+                var shiftStaff = staff.filter(s => s.shift === shift);
+                var shiftText = getShiftText(shift);
+                
+                alert(`Trabajadores en turno ${shiftText}:\n\n${shiftStaff.map(w => `- ${w.name} ${w.lastName} (${w.position})`).join('\n')}`);
+            };
+
+            // Botón de actualizar
+            $('#refreshDataBtn').on('click', function() {
+                renderStaff();
+                updateStats();
+                new PNotify({
+                    title: 'Datos Actualizados',
+                    text: 'La información ha sido actualizada correctamente',
+                    type: 'info',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            // Botón de exportar dotación
+            $('#exportStaffBtn').on('click', function() {
+                var exportData = [
+                    ['Nombre', 'Apellido', 'RUT', 'Empresa', 'Cargo', 'Turno', 'Teléfono', 'Email', 'Estado']
+                ];
+                
+                staff.forEach(function(worker) {
+                    var company = companies.find(c => c.id === worker.companyId);
+                    exportData.push([
+                        worker.name,
+                        worker.lastName,
+                        worker.rut,
+                        company ? company.name : 'N/A',
+                        worker.position,
+                        getShiftText(worker.shift),
+                        worker.phone,
+                        worker.email,
+                        worker.status
+                    ]);
+                });
+                
+                downloadExcelTemplate(exportData, 'Dotacion_Completa.xlsx');
+            });
+
+            // Botón de exportar reporte de turnos
+            $('#exportShiftReportBtn').on('click', function() {
+                var shiftData = [
+                    ['Turno', 'Horario', 'Total Trabajadores', 'Empresas']
+                ];
+                
+                var shifts = ['day', 'night', 'maintenance'];
+                shifts.forEach(function(shift) {
+                    var shiftStaff = staff.filter(s => s.shift === shift);
+                    var companiesInShift = [...new Set(shiftStaff.map(s => s.companyId))];
+                    var companyNames = companiesInShift.map(cId => {
+                        var company = companies.find(c => c.id === cId);
+                        return company ? company.name : 'N/A';
+                    });
+                    
+                    var schedule = shift === 'day' ? '06:00 - 18:00' : 
+                                  shift === 'night' ? '18:00 - 06:00' : 'Flexible';
+                    
+                    shiftData.push([
+                        getShiftText(shift),
+                        schedule,
+                        shiftStaff.length,
+                        companyNames.join(', ')
+                    ]);
+                });
+                
+                downloadExcelTemplate(shiftData, 'Reporte_Turnos.xlsx');
+            });
+
+            // Inicializar
+            renderStaff();
+            updateStats();
+            loadCompaniesInSelector();
+
+            // Configurar PNotify
+            PNotify.prototype.options.styling = "bootstrap3";
+        });
+    </script>
+</body>
+</html>

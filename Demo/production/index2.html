@@ -27,6 +27,254 @@
 
     <!-- Custom Theme Style -->
     <link href="../build/css/custom.min.css" rel="stylesheet">
+    
+    <!-- CSS para centrar solo la tabla de huésped -->
+    <style>
+        /* Centrar solo la tabla para huésped */
+        body.huesped-user .right_col {
+            margin-left: 200px !important;
+            width: calc(100% - 200px) !important;
+            display: flex !important;
+            justify-content: flex-start !important;
+            align-items: flex-start !important;
+            padding: 0 -10px 0 0px !important; /* Padding negativo para mover más a la izquierda */
+            box-sizing: border-box !important;
+        }
+        
+        body.huesped-user .right_col > div {
+            max-width: 100%;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* Centrar el título solo sobre la columna principal (tabla) */
+        body.huesped-user .page-title {
+            text-align: left;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            width: 100%;
+            max-width: 100%;
+            margin: 0 0 30px 0;
+            box-sizing: border-box;
+            padding-right: 0px;
+            padding-left: 0px; /* Asegurar que no haya padding izquierdo */
+        }
+        
+        body.huesped-user .page-title h3 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        /* Evitar que el subtítulo se divida en dos líneas */
+        body.huesped-user .page-title h3 small {
+            white-space: nowrap;
+            display: block;
+            margin-top: 5px;
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+        
+        /* Mejorar el layout para aprovechar el espacio */
+        body.huesped-user .right_col > div {
+            max-width: 100%; /* Usar todo el espacio disponible sin exceder */
+        }
+        
+        /* Layout de dos columnas para huésped */
+        body.huesped-user .huesped-layout {
+            display: flex;
+            gap: 0px;
+            justify-content: flex-start;
+            align-items: flex-start;
+            margin-top: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            padding-left: 0px; /* Asegurar que no haya padding izquierdo */
+        }
+        
+        body.huesped-user .huesped-main {
+            flex: 0 0 820px;
+            min-width: 820px;
+            max-width: 820px;
+            padding: 0;
+            padding-left: 0px;
+            box-sizing: border-box;
+        }
+        
+        body.huesped-user .huesped-sidebar {
+            flex: 0 0 200px;
+            max-width: 200px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        
+        /* Asegurar que los widgets del sidebar no se sobresalgan */
+        body.huesped-user .huesped-sidebar .widget {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+            margin-right: 0;
+        }
+        
+        /* Mejorar el tamaño y espaciado de las tablas */
+        body.huesped-user .table-responsive {
+            font-size: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        body.huesped-user .table {
+            margin-bottom: 0;
+            font-size: 16px;
+            min-width: 100%;
+        }
+        
+        body.huesped-user .table th,
+        body.huesped-user .table td {
+            padding: 15px 12px;
+            vertical-align: middle;
+            border-top: 1px solid #ddd;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+        
+        body.huesped-user .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            padding: 18px 12px;
+        }
+        
+        body.huesped-user .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* Mejorar los botones de acción */
+        body.huesped-user .table .btn {
+            margin: 2px;
+            padding: 6px 10px;
+            font-size: 13px;
+            border-radius: 4px;
+            min-width: 35px;
+            width: 35px;
+            height: 35px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Mejorar los badges de estado */
+        body.huesped-user .table .badge {
+            font-size: 13px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        /* Anchos mínimos para columnas específicas */
+        body.huesped-user .table th:nth-child(1),
+        body.huesped-user .table td:nth-child(1) {
+            min-width: 100px; /* ID */
+        }
+        
+        body.huesped-user .table th:nth-child(2),
+        body.huesped-user .table td:nth-child(2) {
+            min-width: 120px; /* Nombre */
+        }
+        
+        body.huesped-user .table th:nth-child(3),
+        body.huesped-user .table td:nth-child(3) {
+            min-width: 120px; /* Apellido */
+        }
+        
+        body.huesped-user .table th:nth-child(4),
+        body.huesped-user .table td:nth-child(4) {
+            min-width: 130px; /* Fecha Desde */
+        }
+        
+        body.huesped-user .table th:nth-child(5),
+        body.huesped-user .table td:nth-child(5) {
+            min-width: 130px; /* Fecha Hasta */
+        }
+        
+        body.huesped-user .table th:nth-child(6),
+        body.huesped-user .table td:nth-child(6) {
+            min-width: 120px; /* Estado */
+        }
+        
+        body.huesped-user .table th:nth-child(7),
+        body.huesped-user .table td:nth-child(7) {
+            min-width: 120px; /* Acción */
+        }
+        
+        /* Centrar y dar espacio al contenido principal */
+        body.huesped-user .huesped-main .x_panel {
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        body.huesped-user .huesped-main .x_content {
+            padding: 25px;
+            text-align: center;
+        }
+        
+        body.huesped-user .huesped-main .x_content p {
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+        
+        /* Asegurar que el botón no se corte */
+        body.huesped-user .huesped-main #createNewReservationBtn {
+            display: inline-block;
+            margin: 0 auto;
+            padding: 12px 30px;
+            font-size: 16px;
+            white-space: nowrap;
+            max-width: 100%;
+        }
+        
+        /* Estilo para los widgets laterales */
+        body.huesped-user .widget {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        body.huesped-user .widget h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        body.huesped-user .quick-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        body.huesped-user .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        body.huesped-user .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        body.huesped-user .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+    </style>
 
     <!-- PNotify -->
     <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
@@ -45,6 +293,16 @@
             display: none !important;
         }
         
+        /* Mostrar elementos para usuario plataforma */
+        .plataforma-user .admin-hidden {
+            display: block !important;
+        }
+        
+        /* Forzar visibilidad para usuarios no-admin */
+        body:not(.admin-user) .admin-hidden {
+            display: block !important;
+        }
+        
         /* Estilo para indicar que es usuario admin */
         .admin-user .admin-title {
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
@@ -53,6 +311,143 @@
             border-radius: 4px;
             font-size: 12px;
             margin-left: 10px;
+        }
+        
+        /* Estilo para indicar que es usuario plataforma */
+        .plataforma-user .admin-title {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        /* Estilo para indicar que es usuario huesped */
+        .huesped-user .admin-title {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        /* Ocultar contenido administrativo para huesped */
+        .huesped-user .dashboard-stats,
+        .huesped-user .chart-container,
+        .huesped-user .admin-controls,
+        .huesped-user .operational-alerts,
+        .huesped-user .top-service-requests,
+        .huesped-user .x_panel:has(.dashboard-stats),
+        .huesped-user .x_panel:has(.chart-container) {
+            display: none !important;
+        }
+        
+        /* Ocultar filas que contienen estadísticas */
+        .huesped-user .row:has(.dashboard-stats),
+        .huesped-user .row:has(.chart-container) {
+            display: none !important;
+        }
+        
+        /* OCULTAR MENÚS ORIGINALES PARA HUÉSPED */
+        body.huesped-user .nav.side-menu > li:not(.huesped-direct-menu) {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        /* OCULTAR SUBMENÚS PARA HUÉSPED */
+        body.huesped-user .nav.child_menu {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        body.huesped-user .huesped-direct-menu {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        /* Asegurar que el menú del huesped se mantenga visible SOLO para huesped */
+        body.huesped-user .huesped-direct-menu {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        body.huesped-user .huesped-direct-menu a {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* CSS adicional para estabilizar el menú */
+        body.huesped-user .nav.side-menu {
+            position: relative !important;
+        }
+        
+        body.huesped-user .huesped-direct-menu {
+            position: relative !important;
+            z-index: 9999 !important;
+        }
+        
+        /* MOSTRAR MENÚ DEL HUÉSPED SOLO PARA USUARIO HUÉSPED */
+        body.huesped-user .huesped-menu-reservas,
+        body.huesped-user .huesped-menu-servicios {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        /* OCULTAR MENÚS ORIGINALES PARA HUÉSPED */
+        body.huesped-user .nav.side-menu > li:not(.huesped-menu-reservas):not(.huesped-menu-servicios) {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        /* Ocultar solo contenido administrativo específico */
+        body.huesped-user .dashboard-stats,
+        body.huesped-user .chart-container,
+        body.huesped-user .admin-controls,
+        body.huesped-user .operational-alerts,
+        body.huesped-user .top-service-requests {
+            display: none !important;
+        }
+        
+        /* Ocultar filas que contienen estadísticas administrativas */
+        body.huesped-user .row:has(.dashboard-stats),
+        body.huesped-user .row:has(.chart-container),
+        body.huesped-user .row:has(.admin-controls) {
+            display: none !important;
+        }
+        
+        /* Ocultar todos los menús originales para huesped */
+        .huesped-user .nav.side-menu > li {
+            display: none !important;
+        }
+        
+        /* Mostrar solo los menús directos del huesped */
+        .huesped-user .huesped-direct-menu {
+            display: block !important;
+        }
+        
+        /* Estilo para los menús directos del huesped */
+        .huesped-direct-menu a {
+            color: #fff !important;
+            padding: 12px 15px !important;
+            display: block !important;
+            text-decoration: none !important;
+            border-left: 3px solid transparent !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .huesped-direct-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border-left-color: #2ecc71 !important;
+        }
+        
+        .huesped-direct-menu a i {
+            margin-right: 10px !important;
+            width: 20px !important;
+            text-align: center !important;
         }
         
         /* Estilos específicos para la vista de admin */
@@ -330,6 +725,110 @@
   </head>
 
   <body class="nav-md">
+    <!-- Script SIMPLE para huesped - SIN CONFLICTOS -->
+    <script>
+      console.log('=== SCRIPT SIMPLE PARA HUÉSPED ===');
+      
+      // Función simple para mostrar menú del huesped
+      function mostrarMenuHuesped() {
+        console.log('=== MOSTRANDO MENÚ HUÉSPED ===');
+        
+        // Agregar clase al body
+        if (document.body.className.indexOf('huesped-user') === -1) {
+          document.body.className += ' huesped-user';
+        }
+        
+        // Buscar elementos del menú del huesped
+        var reservasMenu = document.querySelector('.huesped-menu-reservas');
+        var serviciosMenu = document.querySelector('.huesped-menu-servicios');
+        var reclamosMenu = document.querySelector('.huesped-menu-reclamos');
+        
+        console.log('Menú Reservas encontrado:', reservasMenu);
+        console.log('Menú Servicios encontrado:', serviciosMenu);
+        console.log('Menú Reclamos encontrado:', reclamosMenu);
+        
+        // Mostrar menús del huesped - FORZAR COMPLETAMENTE
+        if (reservasMenu) {
+          // Remover todos los estilos inline existentes
+          reservasMenu.removeAttribute('style');
+          // Aplicar estilos completamente nuevos
+          reservasMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #2ecc71 !important;';
+          console.log('✅ Menú Reservas FORZADO a mostrar');
+        }
+        
+        if (serviciosMenu) {
+          // Remover todos los estilos inline existentes
+          serviciosMenu.removeAttribute('style');
+          // Aplicar estilos completamente nuevos
+          serviciosMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #2ecc71 !important;';
+          console.log('✅ Menú Servicios FORZADO a mostrar');
+        }
+        
+        if (reclamosMenu) {
+          // Remover todos los estilos inline existentes
+          reclamosMenu.removeAttribute('style');
+          // Aplicar estilos completamente nuevos
+          reclamosMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #f39c12 !important;';
+          console.log('✅ Menú Reclamos FORZADO a mostrar');
+        }
+        
+        // Ocultar otros menús
+        var allMenus = document.querySelectorAll('.nav.side-menu > li');
+        allMenus.forEach(function(menu) {
+          if (!menu.classList.contains('huesped-menu-reservas') && 
+              !menu.classList.contains('huesped-menu-servicios') &&
+              !menu.classList.contains('huesped-menu-reclamos')) {
+            menu.style.cssText = 'display: none !important; visibility: hidden !important;';
+          }
+        });
+        
+        console.log('=== MENÚ HUÉSPED CONFIGURADO ===');
+      }
+      
+      // Verificar si es huesped
+      if (typeof localStorage !== 'undefined') {
+        var currentUser = localStorage.getItem('currentUser');
+        console.log('Usuario actual:', currentUser);
+        
+        if (currentUser === 'huesped') {
+          console.log('HUÉSPED DETECTADO - CONFIGURANDO MENÚ');
+          
+          // Ejecutar cuando se cargue el DOM
+          document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM cargado - Configurando menú del huesped');
+            mostrarMenuHuesped();
+          });
+          
+          // Ejecutar también inmediatamente
+          setTimeout(mostrarMenuHuesped, 100);
+          
+          // Ejecutar continuamente para mantener visibilidad
+          setInterval(function() {
+            var reservasMenu = document.querySelector('.huesped-menu-reservas');
+            var serviciosMenu = document.querySelector('.huesped-menu-servicios');
+            var reclamosMenu = document.querySelector('.huesped-menu-reclamos');
+            
+            if (reservasMenu && reservasMenu.style.display === 'none') {
+              console.log('⚠️ Menú Reservas oculto - FORZANDO visibilidad');
+              reservasMenu.removeAttribute('style');
+              reservasMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #2ecc71 !important;';
+            }
+            
+            if (serviciosMenu && serviciosMenu.style.display === 'none') {
+              console.log('⚠️ Menú Servicios oculto - FORZANDO visibilidad');
+              serviciosMenu.removeAttribute('style');
+              serviciosMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #2ecc71 !important;';
+            }
+            
+            if (reclamosMenu && reclamosMenu.style.display === 'none') {
+              console.log('⚠️ Menú Reclamos oculto - FORZANDO visibilidad');
+              reclamosMenu.removeAttribute('style');
+              reclamosMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #f39c12 !important;';
+            }
+          }, 5000); // Cada 5 segundos
+        }
+      }
+    </script>
     <div class="container body">
       <div class="main_container">
         <div class="col-md-3 left_col">
@@ -359,10 +858,26 @@
               <div class="menu_section">
                 <h3>Menú Usuario</h3>
                 <ul class="nav side-menu">
-                                       <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
-                                           <ul class="nav child_menu">
+                  <!-- Menú específico para huesped - OCULTO POR DEFECTO -->
+                  <li class="huesped-menu-reservas" style="display: none !important;">
+                    <a href="index2.html" style="color: #fff !important; padding: 12px 15px !important; display: block !important; text-decoration: none !important;">
+                      <i class="fa fa-calendar" style="margin-right: 10px !important; color: #2ecc71 !important;"></i> Reservas
+                    </a>
+                  </li>
+                  <li class="huesped-menu-servicios" style="display: none !important;">
+                    <a href="index3.html" style="color: #fff !important; padding: 12px 15px !important; display: block !important; text-decoration: none !important;">
+                      <i class="fa fa-cogs" style="margin-right: 10px !important; color: #2ecc71 !important;"></i> Servicios
+                    </a>
+                  </li>
+                  <li class="huesped-menu-reclamos" style="display: none !important;">
+                    <a href="reclamos.html" style="color: #fff !important; padding: 12px 15px !important; display: block !important; text-decoration: none !important;">
+                      <i class="fa fa-comments" style="margin-right: 10px !important; color: #f39c12 !important;"></i> Reclamos
+                    </a>
+                  </li>
+                  <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
                                                <li class="current-page"><a href="index2.html">Reservas</a></li>
-                                               <li><a href="index3.html">Servicios</a></li>
+                      <li><a href="index3.html">Servicios</a></li>
                                                <li><a href="index.html">Habitaciones</a></li>
                                                <li class="admin-hidden"><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
                                                <li class="admin-hidden"><a href="inventario.html">Inventario</a></li>
@@ -371,8 +886,8 @@
                                         <li class="admin-hidden"><a href="dotaciones.html">Dotaciones</a></li>
                                         <li class="admin-hidden"><a href="roles.html">Roles</a></li>
                                         <li class="admin-hidden"><a href="calendario.html">Calendario</a></li>
-                                           </ul>
-                                       </li>
+                    </ul>
+                  </li>
                   <!--li><a><i class="fa fa-archive"></i> Mantenimiento <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="#">Tickets</a></li>
@@ -391,21 +906,6 @@
                      
                     </ul>
                   </li>-->
-                   <li class="admin-hidden"><a><i class="fa fa-bars"></i> Mantenedores <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="#">Habitaciones</a></li>
-                      <li><a href="#">Servicios</a></li>
-                      <li><a href="#">Mantenciones</a></li>
-                      <li><a href="#">Ordenes de trabajo</a></li>
-                      <li><a href="#">Bodega</a></li>
-                     
-                    </ul>
-                  </li>
-                 <li class="admin-hidden"><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="Home.html">Home</a></li>
-                    </ul>
-                  </li>
                 </ul>
               </div>
               
@@ -786,9 +1286,9 @@
                             <ul class="nav navbar-right panel_toolbox">
                               <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                               <li><a class="close-link"><i class="fa fa-close"></i></a></li>
-                            </ul>
-                            <div class="clearfix"></div>
-                          </div>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
                           <div class="x_content">
                             <div class="row">
                               <div class="col-md-3 col-sm-6 col-xs-12">
@@ -1290,7 +1790,7 @@
                       </div>
                   </div>
                   
-                  <div class="x_content">
+                   <div class="x_content">
                     <table id="datatable" class="table table-striped table-bordered">
                       <thead>
                         <tr>
@@ -1735,6 +2235,18 @@
     
     <!-- Custom Theme Scripts -->
     <script src="../build/js/custom.min.js"></script>
+    
+    <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
+    <script src="auth-simple.js"></script>
+    
+    <!-- FORZAR VISIBILIDAD DE MENÚS - TEMPORALMENTE DESHABILITADO -->
+    <!-- <script src="force-menu.js"></script> -->
+    
+    <!-- FORZAR VISIBILIDAD AGRESIVA - TEMPORALMENTE DESHABILITADO -->
+    <!-- <script src="force-menu-aggressive.js"></script> -->
+    
+    <!-- LIMPIAR NOTIFICACIONES DUPLICADAS - TEMPORALMENTE DESHABILITADO -->
+    <!-- <script src="cleanup-notifications.js"></script> -->
     
     <!-- Sistema de Alertas Operativas -->
     <script>
@@ -2257,21 +2769,48 @@
     <!-- Script simple para mantener texto Admin -->
     <script>
         $(document).ready(function() {
-            // Función simple para mantener Admin
-            function setAdminText() {
-                $('.profile_info h2').text('Admin');
+            // Función para establecer el texto correcto según el usuario
+            function setUserText() {
+                var currentUser = localStorage.getItem('currentUser');
+                console.log('Usuario actual en localStorage:', currentUser);
+                
+                var displayText = '';
+                
+                if (currentUser === 'admin') {
+                    displayText = 'Admin';
+                } else if (currentUser === 'plataforma') {
+                    displayText = 'Plataforma';
+                } else if (currentUser === 'huesped') {
+                    displayText = 'Huésped';
+                } else if (currentUser === 'mantencion') {
+                    displayText = 'Mantención';
+                } else {
+                    displayText = 'Usuario'; // Por defecto
+                }
+                
+                console.log('Texto a mostrar:', displayText);
+                
+                // Solo cambiar si es diferente al actual
+                var currentText = $('.profile_info h2').text();
+                if (currentText !== displayText) {
+                    $('.profile_info h2').text(displayText);
+                    console.log('Texto cambiado de "' + currentText + '" a "' + displayText + '"');
+                }
+                
                 $('.user-profile').contents().filter(function() {
                     return this.nodeType === 3 && this.nodeValue.trim() !== '';
                 }).each(function() {
-                    this.nodeValue = 'Admin';
+                    if (this.nodeValue.trim() !== displayText) {
+                        this.nodeValue = displayText;
+                    }
                 });
             }
             
             // Ejecutar inmediatamente
-            setAdminText();
+            setUserText();
             
-            // Ejecutar cada segundo para mantenerlo
-            setInterval(setAdminText, 1000);
+            // Ejecutar cada 5 segundos para mantenerlo (menos agresivo)
+            setInterval(setUserText, 5000);
         });
     </script>
 
@@ -3632,6 +4171,8 @@
         function checkUserRole() {
             var currentUser = getCurrentUser();
             
+            console.log('Usuario actual detectado:', currentUser);
+            
             if (currentUser === 'admin') {
                 // Ocultar opciones del menú que no debe ver el admin
                 $('.admin-hidden').hide();
@@ -3651,13 +4192,69 @@
                 
                 // Configurar vista específica para admin
                 configureAdminView();
+            } else if (currentUser === 'huesped') {
+                // Ocultar opciones del menú que no debe ver el huesped
+                $('.admin-hidden').hide();
+                
+                // OCULTAR MENÚS ESPECÍFICOS PARA HUÉSPED - Solo Reservas y Servicios - DESHABILITADO
+                // forceHuespedMenuVisibility();
+                
+                // Agregar indicador visual de que es usuario huesped
+                $('.navbar-brand').append('<span class="admin-title">HUÉSPED</span>');
+                $('body').addClass('huesped-user');
+                
+                // Mostrar mensaje informativo (solo una vez)
+                if (!window.huespedWelcomeShown) {
+                    window.huespedWelcomeShown = true;
+                    new PNotify({
+                        title: 'Bienvenido Huésped',
+                        text: 'Acceso directo a: Reservas y Servicios',
+                        type: 'info',
+                        hide: true,
+                        delay: 3000,
+                        styling: 'bootstrap3'
+                    });
+                }
+                
+                // Configurar vista específica para huesped
+                configureHuespedReservationsView();
+            } else {
+                // Para plataforma y otros usuarios - MOSTRAR TODOS LOS MENÚS
+                $('.admin-hidden').show();
+                
+                // Agregar indicador visual
+                if (currentUser === 'plataforma') {
+                    $('.navbar-brand').append('<span class="admin-title">PLATAFORMA</span>');
+                    $('body').addClass('plataforma-user');
+                    
+                    // Mostrar mensaje informativo (solo una vez)
+                    if (!window.plataformaWelcomeShown) {
+                        window.plataformaWelcomeShown = true;
+                        new PNotify({
+                            title: 'Bienvenido Plataforma',
+                            text: 'Acceso completo a todas las funcionalidades del sistema',
+                            type: 'success',
+                            hide: true,
+                            delay: 3000,
+                            styling: 'bootstrap3'
+                        });
+                    }
+                } else {
+                    $('.navbar-brand').append('<span class="admin-title">USUARIO</span>');
+                    $('body').addClass('user');
+                }
             }
         }
         
         // Función para obtener el usuario actual
         function getCurrentUser() {
             var user = localStorage.getItem('currentUser');
-            return user || 'plataforma';
+            
+            if (user && user !== 'null' && user !== 'undefined') {
+                return user;
+            }
+            
+            return 'plataforma';
         }
         
         // Función para configurar la vista específica del admin
@@ -3697,6 +4294,1047 @@
             
             // Configurar sistema de alertas operativas
             setupOperationalAlerts();
+        }
+        
+        // Función para configurar vista específica para huesped
+        function configureHuespedReservationsView() {
+            // REEMPLAZAR COMPLETAMENTE EL CONTENIDO DE LA PÁGINA
+            replaceContentForHuesped();
+            
+            // Configurar vista específica para huesped
+            setupHuespedReservationHandlers();
+            
+            // Configurar eventos específicos para huesped
+            setupHuespedCheckInOut();
+            
+            // Mostrar notificación sobre funcionalidades huesped
+            setTimeout(function() {
+                new PNotify({
+                    title: 'Vista de Huésped Activa',
+                    text: 'Puede crear nuevas reservas y ver el estado de sus solicitudes',
+                    type: 'info',
+                    hide: true,
+                    delay: 3000,
+                    styling: 'bootstrap3'
+                });
+            }, 2000);
+        }
+
+        // Función para reemplazar todo el contenido de la página para huésped
+        function replaceContentForHuesped() {
+            // Reemplazar todo el contenido del right_col
+            $('.right_col').html(`
+                <div class="right_col" role="main">
+                    <div class="">
+                        <div class="page-title">
+                            <div class="title_left">
+                                <h3>Mis Reservas <small>Gestiona tus solicitudes de reserva</small></h3>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        
+                        <!-- Mensaje de confirmación (se muestra después de crear reserva) -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="alert alert-success" id="confirmationMessage" style="display: none;">
+                                    <h4><i class="fa fa-check-circle"></i> ¡Gracias!</h4>
+                                    <p>Se solicitó su reserva. Su solicitud está siendo procesada.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Layout de dos columnas -->
+                        <div class="huesped-layout">
+                            <!-- Columna principal -->
+                            <div class="huesped-main">
+                                <!-- Botón para crear nueva reserva -->
+                                <div class="x_panel">
+                                    <div class="x_title">
+                                        <h2><i class="fa fa-plus"></i> Nueva Reserva</h2>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="x_content">
+                                        <p>¿Necesita hacer una nueva reserva? Haga clic en el botón para iniciar el proceso.</p>
+                                        <button type="button" class="btn btn-success btn-lg" id="createNewReservationBtn">
+                                            <i class="fa fa-plus"></i> Crear Nueva Reserva
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Búsqueda de reservas -->
+                                <div class="x_panel">
+                                    <div class="x_title">
+                                        <h2><i class="fa fa-search"></i> Buscar Mis Reservas</h2>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="x_content">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="searchReservationId">ID de Reserva:</label>
+                                                    <input type="text" class="form-control" id="searchReservationId" placeholder="Ej: RES001">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="searchReservationState">Estado:</label>
+                                                    <select class="form-control" id="searchReservationState">
+                                                        <option value="">Todos los estados</option>
+                                                        <option value="Pendiente">Pendiente</option>
+                                                        <option value="Aprobada">Aprobada</option>
+                                                        <option value="Rechazada">Rechazada</option>
+                                                        <option value="Completada">Completada</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="searchReservationDate">Fecha Desde:</label>
+                                                    <input type="date" class="form-control" id="searchReservationDate">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 text-center">
+                                                <button type="button" class="btn btn-primary" id="searchReservationsBtn">
+                                                    <i class="fa fa-search"></i> Buscar Reservas
+                                                </button>
+                                                <button type="button" class="btn btn-default" id="clearSearchBtn">
+                                                    <i class="fa fa-refresh"></i> Limpiar
+                                                </button>
+                                                <button type="button" class="btn btn-info" id="showAllReservationsBtn">
+                                                    <i class="fa fa-list"></i> Ver Todas
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Tabla de reservas del huésped -->
+                                <div class="x_panel">
+                                    <div class="x_title">
+                                        <h2><i class="fa fa-list"></i> Mis Solicitudes de Reserva</h2>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="x_content">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped" id="huespedReservationsTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Nombre</th>
+                                                        <th>Apellido</th>
+                                                        <th>Fecha Desde</th>
+                                                        <th>Fecha Hasta</th>
+                                                        <th>Estado</th>
+                                                        <th>Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Las reservas se cargarán dinámicamente -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Sidebar con widgets útiles -->
+                            <div class="huesped-sidebar">
+                                <!-- Widget de estadísticas rápidas -->
+                                <div class="widget">
+                                    <h4><i class="fa fa-bar-chart"></i> Mis Estadísticas</h4>
+                                    <div class="quick-stats">
+                                        <div class="stat-item">
+                                            <div class="stat-number">2</div>
+                                            <div class="stat-label">Reservas</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-number">1</div>
+                                            <div class="stat-label">Pendientes</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-number">1</div>
+                                            <div class="stat-label">Aprobadas</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Widget de próximas fechas -->
+                                <div class="widget">
+                                    <h4><i class="fa fa-calendar"></i> Próximas Fechas</h4>
+                                    <div style="font-size: 14px; line-height: 1.6;">
+                                        <div style="margin-bottom: 10px;">
+                                            <strong>15 Ene 2024</strong><br>
+                                            <span style="color: #7f8c8d;">Check-in RES001</span>
+                                        </div>
+                                        <div style="margin-bottom: 10px;">
+                                            <strong>20 Ene 2024</strong><br>
+                                            <span style="color: #7f8c8d;">Check-out RES001</span>
+                                        </div>
+                                        <div>
+                                            <strong>25 Ene 2024</strong><br>
+                                            <span style="color: #7f8c8d;">Check-in RES002</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
+                                 <!-- Widget de información del hotel -->
+                                 <div class="widget">
+                                     <h4><i class="fa fa-info-circle"></i> Información</h4>
+                                     <div style="font-size: 13px; line-height: 1.5;">
+                                         <div style="margin-bottom: 8px;">
+                                             <strong>Check-in:</strong> 15:00<br>
+                                             <strong>Check-out:</strong> 12:00
+                                         </div>
+                                         <div style="margin-bottom: 8px;">
+                                             <strong>WiFi:</strong> Gratuito<br>
+                                             <strong>Recepción:</strong> 24/7
+                                         </div>
+                                         <div style="margin-bottom: 15px;">
+                                             <strong>Emergencias:</strong><br>
+                                             <span style="color: #e74c3c;">+56 9 1234 5678</span>
+                                         </div>
+                                         
+                                         <!-- Botones de Check-in/Check-out -->
+                                         <div style="border-top: 1px solid #e9ecef; padding-top: 15px;">
+                                             <h5 style="margin-bottom: 10px; color: #2c3e50;"><i class="fa fa-sign-in"></i> Check-in/Check-out</h5>
+                                             <button class="btn btn-success btn-sm btn-block" id="huespedCheckinBtn" style="margin-bottom: 8px;">
+                                                 <i class="fa fa-check-circle"></i> Realizar Check-in
+                                             </button>
+                                             <button class="btn btn-warning btn-sm btn-block" id="huespedCheckoutBtn">
+                                                 <i class="fa fa-times-circle"></i> Realizar Check-out
+                                             </button>
+                                         </div>
+                                     </div>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `);
+            
+            // Configurar eventos para el botón de crear reserva
+            $('#createNewReservationBtn').on('click', function() {
+                showHuespedReservationModal();
+            });
+            
+        // Cargar reservas del huésped
+        loadHuespedReservations();
+        
+        // Configurar eventos para botones de la tabla
+        setupHuespedTableEvents();
+        
+        // Configurar eventos para check-in/check-out del huésped
+        setupHuespedCheckinCheckoutEvents();
+        }
+
+        // Configurar eventos para los botones de la tabla
+        function setupHuespedTableEvents() {
+            // Evento para botón Ver
+            $(document).on('click', '.btn-ver-reserva', function() {
+                var reservaId = $(this).data('reserva-id');
+                verDetalleReservaHuesped(reservaId);
+            });
+            
+            // Evento para botón Editar
+            $(document).on('click', '.btn-editar-reserva', function() {
+                var reservaId = $(this).data('reserva-id');
+                editarReservaHuesped(reservaId);
+            });
+            
+            // Evento para botón Eliminar
+            $(document).on('click', '.btn-eliminar-reserva', function() {
+                var reservaId = $(this).data('reserva-id');
+                eliminarReservaHuesped(reservaId);
+            });
+        }
+        
+        // Configurar eventos para check-in/check-out del huésped
+        function setupHuespedCheckinCheckoutEvents() {
+            // Evento para botón Check-in
+            $(document).on('click', '#huespedCheckinBtn', function() {
+                processHuespedCheckin();
+            });
+            
+            // Evento para botón Check-out
+            $(document).on('click', '#huespedCheckoutBtn', function() {
+                processHuespedCheckout();
+            });
+        }
+        
+        // Función para procesar check-in del huésped
+        function processHuespedCheckin() {
+            new PNotify({
+                title: 'Check-in Realizado',
+                text: 'Su check-in ha sido registrado exitosamente.',
+                type: 'success',
+                hide: true,
+                delay: 3000
+            });
+            
+            // Mostrar encuesta de satisfacción después de 2 segundos
+            setTimeout(function() {
+                showSatisfactionSurvey('checkin');
+            }, 2000);
+        }
+        
+        // Función para procesar check-out del huésped
+        function processHuespedCheckout() {
+            new PNotify({
+                title: 'Check-out Realizado',
+                text: 'Su check-out ha sido registrado exitosamente.',
+                type: 'success',
+                hide: true,
+                delay: 3000
+            });
+            
+            // Mostrar encuesta de satisfacción después de 2 segundos
+            setTimeout(function() {
+                showSatisfactionSurvey('checkout');
+            }, 2000);
+        }
+        
+        // Función para mostrar encuesta de satisfacción
+        function showSatisfactionSurvey(action) {
+            var modalHtml = `
+                <div class="modal fade" id="satisfactionSurveyModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">
+                                    <i class="fa fa-star"></i> 
+                                    Encuesta de Satisfacción - ${action === 'checkin' ? 'Check-in' : 'Check-out'}
+                                </h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="text-center mb-4">
+                                    <h5>¿Cómo calificaría su experiencia?</h5>
+                                    <p class="text-muted">Su opinión es muy importante para nosotros</p>
+                                </div>
+                                
+                                <form id="satisfactionForm">
+                                    <input type="hidden" id="satisfactionAction" value="${action}">
+                                    
+                                    <!-- Rating General -->
+                                    <div class="form-group">
+                                        <label><strong>Calificación General:</strong></label>
+                                        <div class="star-rating" id="generalRating">
+                                            <i class="fa fa-star star" data-rating="1"></i>
+                                            <i class="fa fa-star star" data-rating="2"></i>
+                                            <i class="fa fa-star star" data-rating="3"></i>
+                                            <i class="fa fa-star star" data-rating="4"></i>
+                                            <i class="fa fa-star star" data-rating="5"></i>
+                                        </div>
+                                        <input type="hidden" id="generalRatingValue" name="generalRating" required>
+                                    </div>
+                                    
+                                    <!-- Rating por Categorías -->
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label><strong>Atención del Personal:</strong></label>
+                                                <div class="star-rating" id="staffRating">
+                                                    <i class="fa fa-star star" data-rating="1"></i>
+                                                    <i class="fa fa-star star" data-rating="2"></i>
+                                                    <i class="fa fa-star star" data-rating="3"></i>
+                                                    <i class="fa fa-star star" data-rating="4"></i>
+                                                    <i class="fa fa-star star" data-rating="5"></i>
+                                                </div>
+                                                <input type="hidden" id="staffRatingValue" name="staffRating">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label><strong>Limpieza de la Habitación:</strong></label>
+                                                <div class="star-rating" id="cleanlinessRating">
+                                                    <i class="fa fa-star star" data-rating="1"></i>
+                                                    <i class="fa fa-star star" data-rating="2"></i>
+                                                    <i class="fa fa-star star" data-rating="3"></i>
+                                                    <i class="fa fa-star star" data-rating="4"></i>
+                                                    <i class="fa fa-star star" data-rating="5"></i>
+                                                </div>
+                                                <input type="hidden" id="cleanlinessRatingValue" name="cleanlinessRating">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label><strong>Facilidades del Hotel:</strong></label>
+                                                <div class="star-rating" id="facilitiesRating">
+                                                    <i class="fa fa-star star" data-rating="1"></i>
+                                                    <i class="fa fa-star star" data-rating="2"></i>
+                                                    <i class="fa fa-star star" data-rating="3"></i>
+                                                    <i class="fa fa-star star" data-rating="4"></i>
+                                                    <i class="fa fa-star star" data-rating="5"></i>
+                                                </div>
+                                                <input type="hidden" id="facilitiesRatingValue" name="facilitiesRating">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label><strong>Relación Calidad-Precio:</strong></label>
+                                                <div class="star-rating" id="valueRating">
+                                                    <i class="fa fa-star star" data-rating="1"></i>
+                                                    <i class="fa fa-star star" data-rating="2"></i>
+                                                    <i class="fa fa-star star" data-rating="3"></i>
+                                                    <i class="fa fa-star star" data-rating="4"></i>
+                                                    <i class="fa fa-star star" data-rating="5"></i>
+                                                </div>
+                                                <input type="hidden" id="valueRatingValue" name="valueRating">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Comentarios -->
+                                    <div class="form-group">
+                                        <label><strong>Comentarios Adicionales:</strong></label>
+                                        <textarea class="form-control" id="satisfactionComments" name="comments" rows="4" 
+                                                  placeholder="Comparta sus comentarios sobre su experiencia..."></textarea>
+                                    </div>
+                                    
+                                    <!-- Recomendación -->
+                                    <div class="form-group">
+                                        <label><strong>¿Recomendaría nuestro hotel a otros?</strong></label>
+                                        <div class="radio-group">
+                                            <label class="radio-inline">
+                                                <input type="radio" name="recommend" value="si" required> Sí, definitivamente
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="recommend" value="probablemente" required> Probablemente
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input type="radio" name="recommend" value="no" required> No
+                                            </label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Omitir</button>
+                                <button type="button" class="btn btn-primary" id="submitSatisfactionBtn">
+                                    <i class="fa fa-paper-plane"></i> Enviar Encuesta
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <style>
+                .star-rating {
+                    font-size: 24px;
+                    color: #ddd;
+                    cursor: pointer;
+                    display: inline-block;
+                }
+                .star-rating .star {
+                    transition: color 0.2s;
+                    margin-right: 5px;
+                }
+                .star-rating .star:hover,
+                .star-rating .star.active {
+                    color: #ffc107;
+                }
+                .radio-group {
+                    margin-top: 10px;
+                }
+                .radio-inline {
+                    margin-right: 20px;
+                }
+                </style>
+            `;
+            
+            // Remover modal anterior si existe
+            $('#satisfactionSurveyModal').remove();
+            
+            // Agregar nuevo modal al body
+            $('body').append(modalHtml);
+            
+            // Mostrar modal
+            $('#satisfactionSurveyModal').modal('show');
+            
+            // Configurar eventos para estrellas
+            setupStarRating();
+            
+            // Configurar evento de envío
+            $('#submitSatisfactionBtn').on('click', function() {
+                submitSatisfactionSurvey();
+            });
+        }
+        
+        // Función para configurar el rating con estrellas
+        function setupStarRating() {
+            $('.star-rating .star').on('click', function() {
+                var rating = parseInt($(this).data('rating'));
+                var ratingContainer = $(this).parent();
+                var hiddenInput = ratingContainer.siblings('input[type="hidden"]');
+                
+                // Actualizar estrellas visuales
+                ratingContainer.find('.star').removeClass('active');
+                for (var i = 1; i <= rating; i++) {
+                    ratingContainer.find('.star[data-rating="' + i + '"]').addClass('active');
+                }
+                
+                // Actualizar valor oculto
+                hiddenInput.val(rating);
+            });
+            
+            // Efecto hover
+            $('.star-rating .star').on('mouseenter', function() {
+                var rating = parseInt($(this).data('rating'));
+                var ratingContainer = $(this).parent();
+                
+                ratingContainer.find('.star').removeClass('hover');
+                for (var i = 1; i <= rating; i++) {
+                    ratingContainer.find('.star[data-rating="' + i + '"]').addClass('hover');
+                }
+            });
+            
+            $('.star-rating').on('mouseleave', function() {
+                $(this).find('.star').removeClass('hover');
+            });
+        }
+        
+        // Función para enviar encuesta de satisfacción
+        function submitSatisfactionSurvey() {
+            var generalRating = $('#generalRatingValue').val();
+            var action = $('#satisfactionAction').val();
+            
+            // Validar que se haya seleccionado rating general
+            if (!generalRating) {
+                new PNotify({
+                    title: 'Error',
+                    text: 'Por favor califique su experiencia general.',
+                    type: 'error',
+                    hide: true,
+                    delay: 3000
+                });
+                return;
+            }
+            
+            // Validar recomendación
+            if (!$('input[name="recommend"]:checked').length) {
+                new PNotify({
+                    title: 'Error',
+                    text: 'Por favor indique si recomendaría nuestro hotel.',
+                    type: 'error',
+                    hide: true,
+                    delay: 3000
+                });
+                return;
+            }
+            
+            // Recopilar datos
+            var surveyData = {
+                action: action,
+                generalRating: generalRating,
+                staffRating: $('#staffRatingValue').val() || 0,
+                cleanlinessRating: $('#cleanlinessRatingValue').val() || 0,
+                facilitiesRating: $('#facilitiesRatingValue').val() || 0,
+                valueRating: $('#valueRatingValue').val() || 0,
+                comments: $('#satisfactionComments').val(),
+                recommend: $('input[name="recommend"]:checked').val(),
+                timestamp: new Date().toISOString(),
+                huespedName: getHuespedDisplayName()
+            };
+            
+            // Cerrar modal
+            $('#satisfactionSurveyModal').modal('hide');
+            
+            // Mostrar confirmación
+            new PNotify({
+                title: '¡Gracias!',
+                text: 'Su encuesta ha sido enviada exitosamente. Valoramos mucho su opinión.',
+                type: 'success',
+                hide: true,
+                delay: 4000
+            });
+            
+            // Enviar email de confirmación
+            sendSatisfactionConfirmationEmail(surveyData);
+            
+            // Log para desarrollo
+            console.log('Encuesta de satisfacción enviada:', surveyData);
+        }
+        
+        // Función para enviar email de confirmación de encuesta
+        function sendSatisfactionConfirmationEmail(surveyData) {
+            var actionText = surveyData.action === 'checkin' ? 'Check-in' : 'Check-out';
+            var emailData = {
+                to: 'huesped@email.com', // En producción sería el email del huésped
+                subject: `Confirmación de Encuesta - ${actionText} Hotel SabTech`,
+                message: `
+                    <h3>¡Gracias por completar nuestra encuesta!</h3>
+                    <p>Estimado/a ${surveyData.huespedName},</p>
+                    <p>Hemos recibido su encuesta de satisfacción tras su ${actionText.toLowerCase()}. Sus comentarios son muy valiosos para nosotros.</p>
+                    
+                    <h4>Resumen de su evaluación:</h4>
+                    <ul>
+                        <li><strong>Calificación General:</strong> ${surveyData.generalRating}/5 estrellas</li>
+                        <li><strong>Atención del Personal:</strong> ${surveyData.staffRating}/5 estrellas</li>
+                        <li><strong>Limpieza:</strong> ${surveyData.cleanlinessRating}/5 estrellas</li>
+                        <li><strong>Facilidades:</strong> ${surveyData.facilitiesRating}/5 estrellas</li>
+                        <li><strong>Calidad-Precio:</strong> ${surveyData.valueRating}/5 estrellas</li>
+                        <li><strong>Recomendación:</strong> ${surveyData.recommend === 'si' ? 'Sí' : surveyData.recommend === 'probablemente' ? 'Probablemente' : 'No'}</li>
+                    </ul>
+                    
+                    ${surveyData.comments ? `
+                    <h4>Sus comentarios:</h4>
+                    <p><em>"${surveyData.comments}"</em></p>
+                    ` : ''}
+                    
+                    <p>Esperamos poder brindarle una experiencia aún mejor en su próxima visita.</p>
+                    <p>Saludos cordiales,<br>Equipo Hotel SabTech</p>
+                `
+            };
+            
+            // Simular envío de email
+            console.log('Email de confirmación de encuesta enviado:', emailData);
+        }
+
+        // Función para ver detalle de reserva
+        function verDetalleReservaHuesped(reservaId) {
+            // Buscar la reserva en los datos
+            var reserva = huespedReservations.find(r => r.id === reservaId);
+            if (!reserva) {
+                new PNotify({
+                    title: 'Error',
+                    text: 'No se encontró la reserva.',
+                    type: 'error',
+                    hide: true,
+                    delay: 3000
+                });
+                return;
+            }
+            
+            // Crear modal de detalle
+            var modalHtml = `
+                <div class="modal fade" id="detalleReservaModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title"><i class="fa fa-eye"></i> Detalle de Reserva</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5><strong>Información de la Reserva</strong></h5>
+                                        <p><strong>ID:</strong> ${reserva.id}</p>
+                                        <p><strong>Estado:</strong> <span class="badge badge-warning">${reserva.estado}</span></p>
+                                        <p><strong>Fecha de Solicitud:</strong> ${new Date(reserva.fechaSolicitud).toLocaleDateString()}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h5><strong>Fechas de Estadía</strong></h5>
+                                        <p><strong>Fecha Desde:</strong> ${reserva.fechaDesde}</p>
+                                        <p><strong>Fecha Hasta:</strong> ${reserva.fechaHasta}</p>
+                                        <p><strong>Días de Estadía:</strong> ${reserva.dias}</p>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <h5><strong>Información Personal</strong></h5>
+                                        <p><strong>Nombre:</strong> ${reserva.nombre} ${reserva.apellido}</p>
+                                        <p><strong>Email:</strong> ${reserva.email}</p>
+                                        <p><strong>Teléfono:</strong> ${reserva.telefono}</p>
+                                    </div>
+                                </div>
+                                ${reserva.comentarios ? `
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <h5><strong>Comentarios</strong></h5>
+                                        <p>${reserva.comentarios}</p>
+                                    </div>
+                                </div>
+                                ` : ''}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                ${reserva.estado === 'Pendiente' ? 
+                                    `<button type="button" class="btn btn-warning btn-editar-reserva" data-reserva-id="${reserva.id}" title="Editar reserva">
+                                        <i class="fa fa-edit"></i>
+                                    </button>` : ''
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remover modal anterior si existe
+            $('#detalleReservaModal').remove();
+            
+            // Agregar nuevo modal al body
+            $('body').append(modalHtml);
+            
+            // Mostrar modal
+            $('#detalleReservaModal').modal('show');
+        }
+        
+        // Función para editar reserva
+        function editarReservaHuesped(reservaId) {
+            // Buscar la reserva en los datos
+            var reserva = huespedReservations.find(r => r.id === reservaId);
+            if (!reserva) {
+                new PNotify({
+                    title: 'Error',
+                    text: 'No se encontró la reserva.',
+                    type: 'error',
+                    hide: true,
+                    delay: 3000
+                });
+                return;
+            }
+            
+            // Solo permitir editar reservas pendientes
+            if (reserva.estado !== 'Pendiente') {
+                new PNotify({
+                    title: 'No se puede editar',
+                    text: 'Solo se pueden editar reservas con estado Pendiente.',
+                    type: 'warning',
+                    hide: true,
+                    delay: 3000
+                });
+                return;
+            }
+            
+            // Crear modal de edición
+            var modalHtml = `
+                <div class="modal fade" id="editarReservaModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title"><i class="fa fa-edit"></i> Editar Reserva</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editarReservaForm">
+                                    <input type="hidden" id="editarReservaId" value="${reserva.id}">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="editarNombre">Nombre *</label>
+                                                <input type="text" class="form-control" id="editarNombre" value="${reserva.nombre}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="editarApellido">Apellido *</label>
+                                                <input type="text" class="form-control" id="editarApellido" value="${reserva.apellido}" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="editarFechaDesde">Fecha Desde *</label>
+                                                <input type="date" class="form-control" id="editarFechaDesde" value="${reserva.fechaDesde}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="editarFechaHasta">Fecha Hasta *</label>
+                                                <input type="date" class="form-control" id="editarFechaHasta" value="${reserva.fechaHasta}" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="editarEmail">Email *</label>
+                                                <input type="email" class="form-control" id="editarEmail" value="${reserva.email}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="editarTelefono">Teléfono</label>
+                                                <input type="tel" class="form-control" id="editarTelefono" value="${reserva.telefono}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editarComentarios">Comentarios</label>
+                                        <textarea class="form-control" id="editarComentarios" rows="3">${reserva.comentarios || ''}</textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" id="guardarCambiosBtn">
+                                    <i class="fa fa-save"></i> Guardar Cambios
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remover modal anterior si existe
+            $('#editarReservaModal').remove();
+            
+            // Agregar nuevo modal al body
+            $('body').append(modalHtml);
+            
+            // Mostrar modal
+            $('#editarReservaModal').modal('show');
+            
+            // Configurar evento para guardar cambios
+            $('#guardarCambiosBtn').on('click', function() {
+                guardarCambiosReserva(reservaId);
+            });
+        }
+        
+        // Función para guardar cambios de la reserva
+        function guardarCambiosReserva(reservaId) {
+            var nombre = $('#editarNombre').val().trim();
+            var apellido = $('#editarApellido').val().trim();
+            var fechaDesde = $('#editarFechaDesde').val();
+            var fechaHasta = $('#editarFechaHasta').val();
+            var email = $('#editarEmail').val().trim();
+            var telefono = $('#editarTelefono').val().trim();
+            var comentarios = $('#editarComentarios').val().trim();
+            
+            // Validaciones básicas
+            if (!nombre || !apellido || !fechaDesde || !fechaHasta || !email) {
+                new PNotify({
+                    title: 'Error',
+                    text: 'Por favor complete todos los campos obligatorios.',
+                    type: 'error',
+                    hide: true,
+                    delay: 3000
+                });
+                return;
+            }
+            
+            // Validar fechas
+            if (new Date(fechaDesde) >= new Date(fechaHasta)) {
+                new PNotify({
+                    title: 'Error',
+                    text: 'La fecha hasta debe ser posterior a la fecha desde.',
+                    type: 'error',
+                    hide: true,
+                    delay: 3000
+                });
+                return;
+            }
+            
+            // Actualizar la reserva en los datos
+            console.log('Buscando reserva ID:', reservaId);
+            console.log('Reservas disponibles:', huespedReservations);
+            
+            var reservaIndex = huespedReservations.findIndex(r => r.id === reservaId);
+            console.log('Índice encontrado:', reservaIndex);
+            
+            if (reservaIndex !== -1) {
+                console.log('Actualizando reserva en índice:', reservaIndex);
+                huespedReservations[reservaIndex].nombre = nombre;
+                huespedReservations[reservaIndex].apellido = apellido;
+                huespedReservations[reservaIndex].fechaDesde = fechaDesde;
+                huespedReservations[reservaIndex].fechaHasta = fechaHasta;
+                huespedReservations[reservaIndex].email = email;
+                huespedReservations[reservaIndex].telefono = telefono;
+                huespedReservations[reservaIndex].comentarios = comentarios;
+                huespedReservations[reservaIndex].fechaModificacion = new Date().toISOString();
+                
+                console.log('Reserva actualizada:', huespedReservations[reservaIndex]);
+                
+                // Recargar la tabla
+                console.log('Recargando tabla...');
+                loadHuespedReservations();
+                
+                // Cerrar modal
+                $('#editarReservaModal').modal('hide');
+                
+                new PNotify({
+                    title: 'Éxito',
+                    text: 'La reserva ha sido actualizada correctamente.',
+                    type: 'success',
+                    hide: true,
+                    delay: 3000
+                });
+                
+                // Enviar notificación por email
+                enviarNotificacionReservaActualizada(huespedReservations[reservaIndex]);
+            }
+        }
+        
+        // Función para enviar notificación de reserva actualizada
+        function enviarNotificacionReservaActualizada(reserva) {
+            var emailData = {
+                to: reserva.email,
+                subject: 'Reserva Actualizada - Hotel SabTech',
+                message: `
+                    <h3>Su reserva ha sido actualizada</h3>
+                    <p>Estimado/a ${reserva.nombre} ${reserva.apellido},</p>
+                    <p>Le informamos que su reserva ha sido actualizada con la siguiente información:</p>
+                    <ul>
+                        <li><strong>ID de Reserva:</strong> ${reserva.id}</li>
+                        <li><strong>Fecha Desde:</strong> ${reserva.fechaDesde}</li>
+                        <li><strong>Fecha Hasta:</strong> ${reserva.fechaHasta}</li>
+                        <li><strong>Estado:</strong> ${reserva.estado}</li>
+                    </ul>
+                    <p>Si tiene alguna pregunta, no dude en contactarnos.</p>
+                    <p>Saludos cordiales,<br>Equipo Hotel SabTech</p>
+                `
+            };
+            
+            // Simular envío de email
+            console.log('Email enviado:', emailData);
+        }
+
+        // Variable global para las reservas del huésped
+        var huespedReservations = [];
+        
+        // Función para cargar reservas del huésped
+        function loadHuespedReservations() {
+            console.log('=== loadHuespedReservations ejecutándose ===');
+            var table = $('#huespedReservationsTable');
+            var huespedName = getHuespedDisplayName();
+            
+            console.log('Tabla encontrada:', table.length);
+            console.log('Datos actuales:', huespedReservations);
+            
+            // Simular datos de reservas del huésped (en producción vendría de la base de datos)
+            if (huespedReservations.length === 0) {
+                console.log('Inicializando datos por primera vez...');
+                huespedReservations = [
+                    {
+                        id: 'RES001',
+                        nombre: 'Juan',
+                        apellido: 'Pérez',
+                        fechaDesde: '2024-01-15',
+                        fechaHasta: '2024-01-20',
+                        estado: 'Pendiente',
+                        email: 'juan.perez@email.com',
+                        telefono: '+56 9 1234 5678',
+                        comentarios: 'Necesito habitación cerca del ascensor',
+                        fechaSolicitud: new Date('2024-01-10').toISOString(),
+                        dias: 5
+                    },
+                    {
+                        id: 'RES002',
+                        nombre: 'Juan',
+                        apellido: 'Pérez',
+                        fechaDesde: '2024-01-25',
+                        fechaHasta: '2024-01-30',
+                        estado: 'Pendiente',
+                        email: 'juan.perez@email.com',
+                        telefono: '+56 9 1234 5678',
+                        comentarios: 'Habitación con vista al mar preferiblemente',
+                        fechaSolicitud: new Date('2024-01-12').toISOString(),
+                        dias: 5
+                    },
+                    {
+                        id: 'RES003',
+                        nombre: 'Juan',
+                        apellido: 'Pérez',
+                        fechaDesde: '2023-12-01',
+                        fechaHasta: '2023-12-05',
+                        estado: 'Aprobada',
+                        email: 'juan.perez@email.com',
+                        telefono: '+56 9 1234 5678',
+                        comentarios: 'Reserva para conferencia de trabajo',
+                        fechaSolicitud: new Date('2023-11-20').toISOString(),
+                        dias: 4
+                    },
+                    {
+                        id: 'RES004',
+                        nombre: 'Juan',
+                        apellido: 'Pérez',
+                        fechaDesde: '2023-11-15',
+                        fechaHasta: '2023-11-18',
+                        estado: 'Completada',
+                        email: 'juan.perez@email.com',
+                        telefono: '+56 9 1234 5678',
+                        comentarios: 'Vacaciones familiares',
+                        fechaSolicitud: new Date('2023-10-30').toISOString(),
+                        dias: 3
+                    },
+                    {
+                        id: 'RES005',
+                        nombre: 'Juan',
+                        apellido: 'Pérez',
+                        fechaDesde: '2023-10-10',
+                        fechaHasta: '2023-10-12',
+                        estado: 'Rechazada',
+                        email: 'juan.perez@email.com',
+                        telefono: '+56 9 1234 5678',
+                        comentarios: 'Reserva de último momento',
+                        fechaSolicitud: new Date('2023-10-08').toISOString(),
+                        dias: 2
+                    }
+                ];
+            }
+            
+            // Limpiar tabla
+            table.find('tbody').empty();
+            
+            // Agregar reservas
+            huespedReservations.forEach(function(reserva) {
+                var estadoBadge = getEstadoBadge(reserva.estado);
+                var botones = `
+                    <button class="btn btn-info btn-sm btn-ver-reserva" data-reserva-id="${reserva.id}" title="Ver detalles">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                    <button class="btn btn-warning btn-sm btn-editar-reserva" data-reserva-id="${reserva.id}" title="Editar reserva">
+                        <i class="fa fa-edit"></i>
+                    </button>
+                `;
+                
+                // Agregar botón Eliminar solo para reservas pendientes
+                if (reserva.estado === 'Pendiente') {
+                    botones += `
+                        <button class="btn btn-danger btn-sm btn-eliminar-reserva" data-reserva-id="${reserva.id}" title="Eliminar reserva">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    `;
+                }
+                
+                var row = `
+                    <tr>
+                        <td>${reserva.id}</td>
+                        <td>${reserva.nombre}</td>
+                        <td>${reserva.apellido}</td>
+                        <td>${reserva.fechaDesde}</td>
+                        <td>${reserva.fechaHasta}</td>
+                        <td>${estadoBadge}</td>
+                        <td>${botones}</td>
+                    </tr>
+                `;
+                
+                table.find('tbody').append(row);
+            });
+            
+            console.log('Tabla actualizada con', huespedReservations.length, 'filas');
+            console.log('=== Fin de loadHuespedReservations ===');
+        }
+        
+        // Función para obtener el badge del estado
+        function getEstadoBadge(estado) {
+            var badgeClass = '';
+            var badgeStyle = '';
+            switch(estado) {
+                case 'Pendiente':
+                    badgeClass = 'badge badge-warning';
+                    badgeStyle = 'background-color: #f0ad4e; color: white;';
+                    break;
+                case 'Aprobada':
+                    badgeClass = 'badge badge-success';
+                    badgeStyle = 'background-color: #5cb85c; color: white;';
+                    break;
+                case 'Rechazada':
+                    badgeClass = 'badge badge-danger';
+                    badgeStyle = 'background-color: #d9534f; color: white;';
+                    break;
+                default:
+                    badgeClass = 'badge badge-secondary';
+                    badgeStyle = 'background-color: #6c757d; color: white;';
+            }
+            return `<span class="${badgeClass}" style="${badgeStyle} padding: 4px 8px; border-radius: 4px; font-size: 12px;">${estado}</span>`;
         }
         
         // Función para configurar filtros específicos del admin
@@ -4810,6 +6448,593 @@
             }
         }
         
+        // ==================== FUNCIONES ESPECÍFICAS PARA HUÉSPED ====================
+        
+        // Función para configurar manejadores específicos del huesped
+        function setupHuespedReservationHandlers() {
+            console.log('Configurando manejadores para huesped');
+            
+            // Configurar botón de nueva reserva (si existe)
+            if ($('#createReservationBtn').length) {
+                $('#createReservationBtn').on('click', function() {
+                    showHuespedReservationModal();
+                });
+            }
+            
+            // Configurar búsqueda de reservas propias
+            $('#searchReservationsBtn').on('click', function() {
+                searchHuespedReservationsAdvanced();
+            });
+            
+            // Configurar botón limpiar búsqueda
+            $('#clearSearchBtn').on('click', function() {
+                clearHuespedSearch();
+            });
+            
+            // Configurar botón ver todas las reservas
+            $('#showAllReservationsBtn').on('click', function() {
+                showAllHuespedReservations();
+            });
+            
+            // Configurar eliminación de reservas pendientes
+            $(document).on('click', '.delete-reservation-huesped', function() {
+                var reservationId = $(this).data('reservation-id');
+                deleteHuespedReservation(reservationId);
+            });
+        }
+        
+        // Función para filtrar reservas del huesped actual
+        function filterReservationsByCurrentHuesped() {
+            var currentUser = getCurrentUser();
+            var table = $('#datatable-buttons').DataTable();
+            
+            // Filtrar por el nombre del huesped actual (simulado)
+            var huespedName = getHuespedDisplayName();
+            table.search(huespedName).draw();
+            
+            console.log('Filtrando reservas para huesped:', huespedName);
+        }
+        
+        // Función para obtener nombre de display del huesped
+        function getHuespedDisplayName() {
+            var currentUser = getCurrentUser();
+            // Simular nombre del huesped - en producción vendría de la base de datos
+            var huespedNames = {
+                'huesped': 'Juan Pérez' // Nombre simulado para el huesped
+            };
+            
+            return huespedNames[currentUser] || 'Usuario';
+        }
+        
+        // Función para mostrar modal de nueva reserva para huesped
+        function showHuespedReservationModal() {
+            // Crear modal específico para huesped
+            var modalHtml = `
+                <div class="modal fade" id="huespedReservationModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success">
+                                <h4 class="modal-title text-white">
+                                    <i class="fa fa-calendar-plus-o"></i> Nueva Reserva
+                                </h4>
+                                <button type="button" class="close text-white" data-dismiss="modal">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="huespedReservationForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Turno de Trabajo:</label>
+                                                <select class="form-control" id="workShift" required>
+                                                    <option value="">Seleccionar turno...</option>
+                                                    <option value="dia">Turno Día (06:00 - 14:00)</option>
+                                                    <option value="tarde">Turno Tarde (14:00 - 22:00)</option>
+                                                    <option value="noche">Turno Noche (22:00 - 06:00)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Días de Estadía:</label>
+                                                <select class="form-control" id="stayDays" required>
+                                                    <option value="">Seleccionar días...</option>
+                                                    <option value="1">1 día</option>
+                                                    <option value="2">2 días</option>
+                                                    <option value="3">3 días</option>
+                                                    <option value="7">1 semana</option>
+                                                    <option value="15">15 días</option>
+                                                    <option value="30">1 mes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Fecha de Ingreso:</label>
+                                                <input type="date" class="form-control" id="checkinDate" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Email para Confirmación:</label>
+                                                <input type="email" class="form-control" id="confirmationEmail" 
+                                                       placeholder="tu@email.com" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Observaciones:</label>
+                                        <textarea class="form-control" id="reservationNotes" rows="3" 
+                                                  placeholder="Observaciones adicionales..."></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-success" id="submitHuespedReservation">
+                                    <i class="fa fa-check"></i> Solicitar Reserva
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remover modal anterior si existe
+            $('#huespedReservationModal').remove();
+            
+            // Agregar modal al DOM
+            $('body').append(modalHtml);
+            
+            // Mostrar modal
+            $('#huespedReservationModal').modal('show');
+            
+            // Configurar evento de envío
+            $('#submitHuespedReservation').on('click', function() {
+                submitHuespedReservation();
+            });
+        }
+        
+        // Función para enviar reserva del huesped
+        function submitHuespedReservation() {
+            var workShift = $('#workShift').val();
+            var stayDays = $('#stayDays').val();
+            var checkinDate = $('#checkinDate').val();
+            var confirmationEmail = $('#confirmationEmail').val();
+            var reservationNotes = $('#reservationNotes').val();
+            
+            if (!workShift || !stayDays || !checkinDate || !confirmationEmail) {
+                new PNotify({
+                    title: 'Error',
+                    text: 'Por favor complete todos los campos obligatorios',
+                    type: 'error',
+                    styling: 'bootstrap3'
+                });
+                return;
+            }
+            
+            // Simular creación de reserva
+            var reservationId = 'RES' + Date.now();
+            var huespedName = getHuespedDisplayName().split(' ');
+            var nombre = huespedName[0] || 'Usuario';
+            var apellido = huespedName[1] || 'Huésped';
+            
+            // Calcular fecha de salida
+            var checkoutDate = new Date(checkinDate);
+            checkoutDate.setDate(checkoutDate.getDate() + parseInt(stayDays));
+            var checkoutDateStr = checkoutDate.toISOString().split('T')[0];
+            
+            // Crear objeto de reserva y agregarlo al array global
+            var nuevaReserva = {
+                id: reservationId,
+                nombre: nombre,
+                apellido: apellido,
+                fechaDesde: checkinDate,
+                fechaHasta: checkoutDateStr,
+                estado: 'Pendiente',
+                email: confirmationEmail,
+                telefono: '+56 9 1234 5678',
+                comentarios: reservationNotes || '',
+                fechaSolicitud: new Date().toISOString(),
+                dias: parseInt(stayDays)
+            };
+            
+            // Agregar al array global
+            huespedReservations.unshift(nuevaReserva);
+            
+            // Recargar la tabla completa para que los botones funcionen
+            loadHuespedReservations();
+            
+            // Enviar email de confirmación (simulado)
+            sendReservationConfirmationEmail(confirmationEmail, reservationId);
+            
+            // Cerrar modal
+            $('#huespedReservationModal').modal('hide');
+            
+            // Mostrar mensaje de confirmación
+            $('#confirmationMessage').show();
+            
+            // Scroll al mensaje de confirmación
+            $('html, body').animate({
+                scrollTop: $('#confirmationMessage').offset().top - 100
+            }, 500);
+            
+            // Ocultar mensaje después de 5 segundos
+            setTimeout(function() {
+                $('#confirmationMessage').fadeOut();
+            }, 5000);
+            
+            // Mostrar notificación de éxito
+            new PNotify({
+                title: 'Reserva Solicitada',
+                text: 'Su reserva ha sido registrada. Recibirá confirmación por email.',
+                type: 'success',
+                hide: true,
+                delay: 3000,
+                styling: 'bootstrap3'
+            });
+        }
+        
+        // Función para enviar email de confirmación (simulada)
+        function sendReservationConfirmationEmail(email, reservationId) {
+            console.log('Enviando email de confirmación a:', email, 'para reserva:', reservationId);
+            
+            // Simular envío de email
+            setTimeout(function() {
+                new PNotify({
+                    title: 'Email Enviado',
+                    text: 'Confirmación enviada a: ' + email,
+                    type: 'info',
+                    styling: 'bootstrap3'
+                });
+            }, 2000);
+        }
+        
+        // Función para configurar check-in/check-out para huesped
+        function setupHuespedCheckInOut() {
+            console.log('Configurando check-in/check-out para huesped');
+            
+            // Los eventos de check-in/check-out ya están configurados globalmente
+            // Aquí podemos agregar validaciones específicas para huesped
+        }
+        
+        // Función para búsqueda avanzada de reservas del huesped
+        function searchHuespedReservationsAdvanced() {
+            console.log('=== BÚSQUEDA AVANZADA DE RESERVAS ===');
+            
+            var searchId = $('#searchReservationId').val().trim();
+            var searchState = $('#searchReservationState').val();
+            var searchDate = $('#searchReservationDate').val();
+            
+            console.log('Criterios de búsqueda:', {
+                id: searchId,
+                estado: searchState,
+                fecha: searchDate
+            });
+            
+            // Filtrar reservas basado en los criterios
+            var filteredReservations = huespedReservations.filter(function(reserva) {
+                var matchId = !searchId || reserva.id.toLowerCase().includes(searchId.toLowerCase());
+                var matchState = !searchState || reserva.estado === searchState;
+                var matchDate = !searchDate || reserva.fechaDesde >= searchDate;
+                
+                return matchId && matchState && matchDate;
+            });
+            
+            console.log('Reservas encontradas:', filteredReservations.length);
+            
+            // Mostrar resultados filtrados
+            displayFilteredReservations(filteredReservations);
+            
+            // Mostrar notificación
+            new PNotify({
+                title: 'Búsqueda Completada',
+                text: `Se encontraron ${filteredReservations.length} reservas que coinciden con los criterios.`,
+                type: 'success',
+                hide: true,
+                delay: 500
+            });
+        }
+        
+        // Función para mostrar reservas filtradas
+        function displayFilteredReservations(filteredReservations) {
+            var table = $('#huespedReservationsTable');
+            table.find('tbody').empty();
+            
+            if (filteredReservations.length === 0) {
+                var noResultsRow = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            <i class="fa fa-search"></i> No se encontraron reservas que coincidan con los criterios de búsqueda.
+                        </td>
+                    </tr>
+                `;
+                table.find('tbody').append(noResultsRow);
+                return;
+            }
+            
+            // Mostrar reservas filtradas
+            filteredReservations.forEach(function(reserva) {
+                var estadoBadge = getEstadoBadge(reserva.estado);
+                var botones = `
+                    <button class="btn btn-info btn-sm btn-ver-reserva" data-reserva-id="${reserva.id}" title="Ver detalles">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                    <button class="btn btn-warning btn-sm btn-editar-reserva" data-reserva-id="${reserva.id}" title="Editar reserva">
+                        <i class="fa fa-edit"></i>
+                    </button>
+                `;
+                
+                // Agregar botón Eliminar solo para reservas pendientes
+                if (reserva.estado === 'Pendiente') {
+                    botones += `
+                        <button class="btn btn-danger btn-sm btn-eliminar-reserva" data-reserva-id="${reserva.id}" title="Eliminar reserva">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    `;
+                }
+                
+                var row = `
+                    <tr>
+                        <td>${reserva.id}</td>
+                        <td>${reserva.nombre}</td>
+                        <td>${reserva.apellido}</td>
+                        <td>${reserva.fechaDesde}</td>
+                        <td>${reserva.fechaHasta}</td>
+                        <td>${estadoBadge}</td>
+                        <td>${botones}</td>
+                    </tr>
+                `;
+                
+                table.find('tbody').append(row);
+            });
+        }
+        
+        // Función para limpiar búsqueda
+        function clearHuespedSearch() {
+            console.log('=== LIMPIANDO BÚSQUEDA ===');
+            
+            // Limpiar campos de búsqueda
+            $('#searchReservationId').val('');
+            $('#searchReservationState').val('');
+            $('#searchReservationDate').val('');
+            
+            // Mostrar todas las reservas
+            showAllHuespedReservations();
+            
+            new PNotify({
+                title: 'Búsqueda Limpiada',
+                text: 'Se han limpiado los filtros y se muestran todas las reservas.',
+                type: 'info',
+                hide: true,
+                delay: 500
+            });
+        }
+        
+        // Función para mostrar todas las reservas
+        function showAllHuespedReservations() {
+            console.log('=== MOSTRANDO TODAS LAS RESERVAS ===');
+            loadHuespedReservations();
+        }
+        
+        // Función original para buscar reservas del huesped (mantenida para compatibilidad)
+        function searchHuespedReservations() {
+            var table = $('#datatable-buttons').DataTable();
+            var huespedName = getHuespedDisplayName();
+            
+            // Limpiar búsqueda anterior
+            table.search('').draw();
+            
+            // Buscar por nombre del huesped
+            table.search(huespedName).draw();
+            
+            new PNotify({
+                title: 'Búsqueda Realizada',
+                text: 'Mostrando reservas para: ' + huespedName,
+                type: 'info',
+                styling: 'bootstrap3'
+            });
+        }
+        
+        // Función para eliminar reserva del huesped (versión mejorada)
+        function eliminarReservaHuesped(reservaId) {
+            console.log('=== ELIMINANDO RESERVA HUÉSPED ===', reservaId);
+            
+            // Buscar la reserva en los datos
+            var reservaIndex = huespedReservations.findIndex(r => r.id === reservaId);
+            if (reservaIndex === -1) {
+                new PNotify({
+                    title: 'Error',
+                    text: 'No se encontró la reserva.',
+                    type: 'error',
+                    hide: true,
+                    delay: 500
+                });
+                return;
+            }
+            
+            var reserva = huespedReservations[reservaIndex];
+            
+            // Solo permitir eliminar reservas pendientes
+            if (reserva.estado !== 'Pendiente') {
+                new PNotify({
+                    title: 'No se puede eliminar',
+                    text: 'Solo se pueden eliminar reservas con estado Pendiente.',
+                    type: 'warning',
+                    hide: true,
+                    delay: 500
+                });
+                return;
+            }
+            
+            // Confirmar eliminación
+            if (confirm(`¿Está seguro de que desea eliminar la reserva ${reservaId}?\n\nEsto liberará el cupo y evitará duplicidad.`)) {
+                // Eliminar del array
+                huespedReservations.splice(reservaIndex, 1);
+                
+                // Recargar la tabla
+                loadHuespedReservations();
+                
+                // Mostrar notificación de éxito
+                new PNotify({
+                    title: 'Reserva Eliminada',
+                    text: 'La reserva ha sido eliminada exitosamente. El cupo ha sido liberado.',
+                    type: 'success',
+                    hide: true,
+                    delay: 500
+                });
+                
+                // Enviar email de confirmación (simulado)
+                enviarNotificacionReservaEliminada(reserva);
+                
+                console.log('Reserva eliminada exitosamente');
+            }
+        }
+        
+        // Función para enviar notificación de reserva eliminada
+        function enviarNotificacionReservaEliminada(reserva) {
+            var emailData = {
+                to: 'huesped@email.com', // En producción sería el email del huésped
+                subject: `Reserva ${reserva.id} Eliminada - Hotel SabTech`,
+                message: `
+                    <h3>Reserva Eliminada Exitosamente</h3>
+                    <p>Estimado/a ${reserva.nombre} ${reserva.apellido},</p>
+                    <p>Su reserva ha sido eliminada exitosamente:</p>
+                    <ul>
+                        <li><strong>ID de Reserva:</strong> ${reserva.id}</li>
+                        <li><strong>Fecha Desde:</strong> ${reserva.fechaDesde}</li>
+                        <li><strong>Fecha Hasta:</strong> ${reserva.fechaHasta}</li>
+                        <li><strong>Estado:</strong> ${reserva.estado}</li>
+                    </ul>
+                    <p>El cupo ha sido liberado y está disponible para nuevas reservas.</p>
+                    <p>Gracias por utilizar nuestros servicios.</p>
+                    <br>
+                    <p><strong>Hotel SabTech</strong><br>
+                    Sistema de Gestión de Reservas</p>
+                `
+            };
+            
+            // Simular envío de email
+            console.log('Email de confirmación de eliminación enviado:', emailData);
+        }
+
+        // Función para eliminar reserva del huesped (versión original - mantenida para compatibilidad)
+        function deleteHuespedReservation(reservationId) {
+            if (confirm('¿Está seguro de que desea eliminar esta reserva?')) {
+                var table = $('#datatable-buttons').DataTable();
+                
+                // Buscar y eliminar la fila
+                table.rows().every(function() {
+                    var data = this.data();
+                    if (data[0] === reservationId) {
+                        this.remove();
+                    }
+                });
+                
+                table.draw();
+                
+                new PNotify({
+                    title: 'Reserva Eliminada',
+                    text: 'La reserva ha sido eliminada exitosamente',
+                    type: 'success',
+                    styling: 'bootstrap3'
+                });
+            }
+        }
+        
+        // Función para forzar visibilidad del menú específico para huesped
+        function forceHuespedMenuVisibility() {
+            console.log('Forzando visibilidad del menú para huesped');
+            
+            // Ocultar todos los elementos del menú principal
+            $('.nav.side-menu > li').hide();
+            
+            // Crear menús directos para huesped: Reservas y Servicios
+            createHuespedDirectMenus();
+            
+            // Verificar que los menús se crearon
+            setTimeout(function() {
+                if ($('.huesped-direct-menu').length === 0) {
+                    console.log('Recreando menús del huesped...');
+                    createHuespedDirectMenus();
+                }
+            }, 1000);
+            
+            // Método alternativo: inyectar directamente en el HTML
+            setTimeout(function() {
+                var menuContainer = $('.nav.side-menu');
+                if (menuContainer.length > 0 && $('.huesped-direct-menu').length === 0) {
+                    console.log('Inyectando menús directamente en el HTML...');
+                    menuContainer.html(`
+                        <li class="huesped-direct-menu">
+                            <a href="index2.html">
+                                <i class="fa fa-calendar"></i> Reservas
+                            </a>
+                        </li>
+                        <li class="huesped-direct-menu">
+                            <a href="index3.html">
+                                <i class="fa fa-cogs"></i> Servicios
+                            </a>
+                        </li>
+                    `);
+                    $('.huesped-direct-menu').show();
+                }
+            }, 2000);
+        }
+        
+        // Función para crear menús directos para huesped
+        function createHuespedDirectMenus() {
+            // Verificar si ya existen los menús directos del huesped
+            if ($('.huesped-direct-menu').length > 0) {
+                $('.huesped-direct-menu').show();
+                return; // Ya existen, solo mostrarlos
+            }
+            
+            // Obtener el contenedor del menú
+            var menuContainer = $('.nav.side-menu');
+            
+            // Crear menú directo de Reservas
+            var reservasMenu = $(`
+                <li class="huesped-direct-menu">
+                    <a href="index2.html">
+                        <i class="fa fa-calendar"></i> Reservas
+                    </a>
+                </li>
+            `);
+            
+            // Crear menú directo de Servicios
+            var serviciosMenu = $(`
+                <li class="huesped-direct-menu">
+                    <a href="index3.html">
+                        <i class="fa fa-cogs"></i> Servicios
+                    </a>
+                </li>
+            `);
+            
+            // Agregar los menús al contenedor
+            menuContainer.append(reservasMenu);
+            menuContainer.append(serviciosMenu);
+            
+            // Forzar visibilidad de los menús
+            $('.huesped-direct-menu').show();
+            $('.huesped-direct-menu').css('display', 'block');
+            
+            console.log('Menús directos creados para huesped: Reservas y Servicios');
+            console.log('Menús creados:', $('.huesped-direct-menu').length);
+            
+            // Verificar que se crearon correctamente
+            setTimeout(function() {
+                console.log('Verificación - Menús del huesped:', $('.huesped-direct-menu').length);
+                if ($('.huesped-direct-menu').length === 0) {
+                    console.log('Reintentando crear menús del huesped...');
+                    createHuespedDirectMenus();
+                }
+            }, 500);
+        }
+        
         // Función para mostrar modal de configuración SLA
         function showSLAConfigurationModal() {
             var modal = `
@@ -4875,5 +7100,208 @@
         }
     </script>
 
+    <!-- Configuración ULTRA AGRESIVA para huesped - DESHABILITADA -->
+    <!--
+    <script>
+        // Función para configurar huesped (versión simplificada)
+        function configurarHuesped() {
+            console.log('=== CONFIGURACIÓN SIMPLIFICADA PARA HUÉSPED ===');
+            
+            // OCULTAR TODO EL CONTENIDO ADMINISTRATIVO
+            $('.row, .col-md-3, .col-md-4, .col-md-6, .col-md-8, .col-md-12').each(function() {
+                var $this = $(this);
+                if ($this.find('.dashboard-stats, .chart-container, .admin-controls, .operational-alerts, .top-service-requests, .x_panel').length > 0) {
+                    $this.hide();
+                }
+            });
+            
+            $('.dashboard-stats, .chart-container, .admin-controls, .operational-alerts, .top-service-requests, .x_panel').hide();
+            
+            // OCULTAR TODOS LOS MENÚS ORIGINALES
+            $('.nav.side-menu > li:not(.huesped-direct-menu)').hide();
+            $('.nav.side-menu > li:not(.huesped-direct-menu)').css('display', 'none');
+            
+            // MOSTRAR SOLO EL MENÚ DEL HUÉSPED
+            $('.huesped-direct-menu').show();
+            $('.huesped-direct-menu').css('display', 'block');
+            
+            // CREAR CONTENIDO BÁSICO PARA HUÉSPED
+            if ($('.huesped-content').length === 0) {
+                $('.right_col').append(`
+                    <div class="huesped-content">
+                        <div class="page-title">
+                            <h3>Mis Reservas - Huésped</h3>
+                        </div>
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Gestión de Reservas</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="panel panel-primary">
+                                            <div class="panel-heading">
+                                                <h4><i class="fa fa-plus"></i> Nueva Reserva</h4>
+                                            </div>
+                                            <div class="panel-body">
+                                                <p>Puede crear una nueva reserva para su estadía.</p>
+                                                <button class="btn btn-primary btn-block">
+                                                    <i class="fa fa-calendar-plus-o"></i> Crear Reserva
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="panel panel-info">
+                                            <div class="panel-heading">
+                                                <h4><i class="fa fa-list"></i> Mis Reservas</h4>
+                                            </div>
+                                            <div class="panel-body">
+                                                <p>Consulte el estado de sus reservas actuales.</p>
+                                                <button class="btn btn-info btn-block">
+                                                    <i class="fa fa-eye"></i> Ver Mis Reservas
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="panel panel-success">
+                                            <div class="panel-heading">
+                                                <h4><i class="fa fa-sign-in"></i> Check-in</h4>
+                                            </div>
+                                            <div class="panel-body">
+                                                <p>Realice su check-in al llegar al establecimiento.</p>
+                                                <button class="btn btn-success btn-block" id="huespedCheckinBtn">
+                                                    <i class="fa fa-check-circle"></i> Realizar Check-in
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="panel panel-warning">
+                                            <div class="panel-heading">
+                                                <h4><i class="fa fa-sign-out"></i> Check-out</h4>
+                                            </div>
+                                            <div class="panel-body">
+                                                <p>Complete su check-out al finalizar su estadía.</p>
+                                                <button class="btn btn-warning btn-block" id="huespedCheckoutBtn">
+                                                    <i class="fa fa-times-circle"></i> Realizar Check-out
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            }
+            
+            // FORZAR VISIBILIDAD DEL MENÚ DESPUÉS DE CREAR CONTENIDO
+            setTimeout(function() {
+                $('.huesped-direct-menu').show();
+                $('.huesped-direct-menu').css('display', 'block');
+                $('.huesped-direct-menu a').show();
+                $('.huesped-direct-menu a').css('display', 'block');
+                console.log('Forzando visibilidad del menú después de crear contenido');
+            }, 100);
+            
+            console.log('Menús del huesped recreados:', $('.huesped-direct-menu').length);
+        }
+        
+        // Script ULTRA SIMPLE para mostrar menú del huesped
+        $(document).ready(function() {
+            // Verificar si es huesped
+            if (getCurrentUser() === 'huesped') {
+                console.log('=== HUÉSPED DETECTADO - MOSTRANDO MENÚ ===');
+                
+                // Agregar clase al body
+                $('body').addClass('huesped-user');
+                
+                // Mostrar menús del huesped
+                $('.huesped-menu-reservas').show();
+                $('.huesped-menu-servicios').show();
+                $('.huesped-menu-reservas').css('display', 'block');
+                $('.huesped-menu-servicios').css('display', 'block');
+                
+                // Ocultar todos los otros menús
+                $('.nav.side-menu > li').not('.huesped-menu-reservas').not('.huesped-menu-servicios').hide();
+                
+                console.log('Menús del huesped mostrados:', $('.huesped-menu-reservas').length, $('.huesped-menu-servicios').length);
+            }
+            
+            // Ejecutar inmediatamente
+            if (getCurrentUser() === 'huesped') {
+                configurarHuesped();
+            }
+            
+            // Ejecutar después de 100ms
+            setTimeout(function() {
+                if (getCurrentUser() === 'huesped') {
+                    configurarHuesped();
+                }
+            }, 100);
+            
+            // Ejecutar después de 500ms
+            setTimeout(function() {
+                if (getCurrentUser() === 'huesped') {
+                    configurarHuesped();
+                }
+            }, 500);
+            
+            // Ejecutar después de 1 segundo
+            setTimeout(function() {
+                if (getCurrentUser() === 'huesped') {
+                    configurarHuesped();
+                }
+            }, 1000);
+            
+            // Ejecutar cada 2 segundos para mantener
+            setInterval(function() {
+                if (getCurrentUser() === 'huesped') {
+                    configurarHuesped();
+                }
+            }, 2000);
+            
+            // Ejecutar cuando se hace clic en los enlaces del menú
+            $(document).on('click', '.huesped-direct-menu a', function() {
+                console.log('Click en menú huesped detectado');
+                setTimeout(function() {
+                    if (getCurrentUser() === 'huesped') {
+                        configurarHuesped();
+                    }
+                }, 100);
+            });
+            
+            // Ejecutar cuando se carga una nueva página
+            $(window).on('load', function() {
+                if (getCurrentUser() === 'huesped') {
+                    configurarHuesped();
+                }
+            });
+            
+            // Ejecutar cuando se cambia de página (para navegación SPA)
+            $(document).on('DOMNodeInserted', function() {
+                if (getCurrentUser() === 'huesped') {
+                    setTimeout(function() {
+                        configurarHuesped();
+                    }, 200);
+                }
+            });
+            
+            // Ejecutar cuando se hace clic en cualquier enlace
+            $(document).on('click', 'a', function() {
+                if (getCurrentUser() === 'huesped') {
+                    setTimeout(function() {
+                        configurarHuesped();
+                    }, 300);
+                }
+            });
+        });
+    </script>
+    -->
   </body>
 </html>

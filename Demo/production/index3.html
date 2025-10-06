@@ -47,6 +47,121 @@
             display: none !important;
         }
         
+        /* Mostrar elementos para usuario plataforma */
+        .plataforma-user .admin-hidden {
+            display: block !important;
+        }
+        
+        /* Forzar visibilidad para usuarios no-admin */
+        body:not(.admin-user) .admin-hidden {
+            display: block !important;
+        }
+        
+        /* Corregir superposición del formulario de reparaciones */
+        .panel-danger {
+            position: relative;
+            z-index: 10;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .table-responsive {
+            position: relative;
+            z-index: 1;
+            overflow: visible;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        #repairRequestsTable {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 0;
+        }
+        
+        /* Asegurar que el formulario no se superponga */
+        .col-md-4 .panel {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+        
+        /* Mejorar separación entre columnas */
+        .col-md-8 {
+            padding-right: 15px;
+        }
+        
+        .col-md-4 {
+            padding-left: 15px;
+        }
+        
+        /* Sticky header para la tabla */
+        #repairRequestsTable thead th {
+            background-color: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+            font-weight: bold;
+        }
+        
+        /* Estilos para los controles de colapso */
+        .panel_toolbox li {
+            float: left;
+            cursor: pointer;
+        }
+        
+        .panel_toolbox li a {
+            padding: 5px;
+            color: #C5C7CB;
+            font-size: 14px;
+        }
+        
+        .panel_toolbox li a:hover {
+            color: #A6A6A6;
+        }
+        
+        .collapse-link i {
+            transition: transform 0.3s ease;
+        }
+        
+        .x_panel.collapsed .collapse-link i {
+            transform: rotate(180deg);
+        }
+        
+        /* Estilos para scroll horizontal en tablas */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        #pendingServicesTable {
+            min-width: 600px;
+            white-space: nowrap;
+        }
+        
+        #pendingServicesTable th,
+        #pendingServicesTable td {
+            white-space: nowrap;
+            min-width: 80px;
+            padding: 8px 12px;
+        }
+        
+        #pendingServicesTable th:first-child,
+        #pendingServicesTable td:first-child {
+            min-width: 100px;
+        }
+        
+        #pendingServicesTable th:last-child,
+        #pendingServicesTable td:last-child {
+            min-width: 120px;
+        }
+        
+        /* Asegurar que el texto del título no se corte */
+        .panel-title {
+            white-space: nowrap;
+            overflow: visible;
+            text-overflow: ellipsis;
+            max-width: none;
+        }
+        
         /* Estilo para indicar que es usuario admin */
         .admin-user .admin-title {
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
@@ -55,6 +170,118 @@
             border-radius: 4px;
             font-size: 12px;
             margin-left: 10px;
+        }
+        
+        /* Estilo para indicar que es usuario plataforma */
+        .plataforma-user .admin-title {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        /* Estilo para indicar que es usuario huesped */
+        .huesped-user .admin-title {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        /* Ocultar contenido administrativo para huesped */
+        .huesped-user .dashboard-stats,
+        .huesped-user .chart-container,
+        .huesped-user .admin-controls,
+        .huesped-user .operational-alerts,
+        .huesped-user .top-service-requests,
+        .huesped-user .x_panel:has(.dashboard-stats),
+        .huesped-user .x_panel:has(.chart-container) {
+            display: none !important;
+        }
+        
+        /* Ocultar filas que contienen estadísticas */
+        .huesped-user .row:has(.dashboard-stats),
+        .huesped-user .row:has(.chart-container) {
+            display: none !important;
+        }
+        
+        /* OCULTAR MENÚS ORIGINALES PARA HUÉSPED */
+        body.huesped-user .nav.side-menu > li:not(.huesped-direct-menu) {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        /* OCULTAR SUBMENÚS PARA HUÉSPED */
+        body.huesped-user .nav.child_menu {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        body.huesped-user .huesped-direct-menu {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        /* Asegurar que el menú del huesped se mantenga visible SOLO para huesped */
+        body.huesped-user .huesped-direct-menu {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        body.huesped-user .huesped-direct-menu a {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* CSS adicional para estabilizar el menú */
+        body.huesped-user .nav.side-menu {
+            position: relative !important;
+        }
+        
+        body.huesped-user .huesped-direct-menu {
+            position: relative !important;
+            z-index: 9999 !important;
+        }
+        
+        /* OCULTAR MENÚ DEL HUÉSPED POR DEFECTO PARA TODOS LOS USUARIOS */
+        .huesped-direct-menu {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        /* MOSTRAR MENÚ DEL HUÉSPED SOLO PARA USUARIO HUÉSPED */
+        body.huesped-user .huesped-menu-reservas,
+        body.huesped-user .huesped-menu-servicios {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        /* OCULTAR MENÚS ORIGINALES PARA HUÉSPED */
+        body.huesped-user .nav.side-menu > li:not(.huesped-menu-reservas):not(.huesped-menu-servicios) {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        /* Ocultar solo contenido administrativo específico */
+        body.huesped-user .dashboard-stats,
+        body.huesped-user .chart-container,
+        body.huesped-user .admin-controls,
+        body.huesped-user .operational-alerts,
+        body.huesped-user .top-service-requests {
+            display: none !important;
+        }
+        
+        /* Ocultar filas que contienen estadísticas administrativas */
+        body.huesped-user .row:has(.dashboard-stats),
+        body.huesped-user .row:has(.chart-container),
+        body.huesped-user .row:has(.admin-controls) {
+            display: none !important;
         }
         
         /* Estilos específicos para la vista de admin */
@@ -307,6 +534,110 @@
   </head>
 
   <body class="nav-md">
+    <!-- Script SIMPLE para huesped - SIN CONFLICTOS -->
+    <script>
+      console.log('=== SCRIPT SIMPLE PARA HUÉSPED EN SERVICIOS ===');
+      
+      // Función simple para mostrar menú del huesped
+      function mostrarMenuHuesped() {
+        console.log('=== MOSTRANDO MENÚ HUÉSPED EN SERVICIOS ===');
+        
+        // Agregar clase al body
+        if (document.body.className.indexOf('huesped-user') === -1) {
+          document.body.className += ' huesped-user';
+        }
+        
+        // Buscar elementos del menú del huesped
+        var reservasMenu = document.querySelector('.huesped-menu-reservas');
+        var serviciosMenu = document.querySelector('.huesped-menu-servicios');
+        var reclamosMenu = document.querySelector('.huesped-menu-reclamos');
+        
+        console.log('Menú Reservas encontrado en servicios:', reservasMenu);
+        console.log('Menú Servicios encontrado en servicios:', serviciosMenu);
+        console.log('Menú Reclamos encontrado en servicios:', reclamosMenu);
+        
+        // Mostrar menús del huesped - FORZAR COMPLETAMENTE
+        if (reservasMenu) {
+          // Remover todos los estilos inline existentes
+          reservasMenu.removeAttribute('style');
+          // Aplicar estilos completamente nuevos
+          reservasMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #2ecc71 !important;';
+          console.log('✅ Menú Reservas FORZADO a mostrar en servicios');
+        }
+        
+        if (serviciosMenu) {
+          // Remover todos los estilos inline existentes
+          serviciosMenu.removeAttribute('style');
+          // Aplicar estilos completamente nuevos
+          serviciosMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #2ecc71 !important;';
+          console.log('✅ Menú Servicios FORZADO a mostrar en servicios');
+        }
+        
+        if (reclamosMenu) {
+          // Remover todos los estilos inline existentes
+          reclamosMenu.removeAttribute('style');
+          // Aplicar estilos completamente nuevos
+          reclamosMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #f39c12 !important;';
+          console.log('✅ Menú Reclamos FORZADO a mostrar en servicios');
+        }
+        
+        // Ocultar otros menús
+        var allMenus = document.querySelectorAll('.nav.side-menu > li');
+        allMenus.forEach(function(menu) {
+          if (!menu.classList.contains('huesped-menu-reservas') && 
+              !menu.classList.contains('huesped-menu-servicios') &&
+              !menu.classList.contains('huesped-menu-reclamos')) {
+            menu.style.cssText = 'display: none !important; visibility: hidden !important;';
+          }
+        });
+        
+        console.log('=== MENÚ HUÉSPED CONFIGURADO EN SERVICIOS ===');
+      }
+      
+      // Verificar si es huesped
+      if (typeof localStorage !== 'undefined') {
+        var currentUser = localStorage.getItem('currentUser');
+        console.log('Usuario actual en servicios:', currentUser);
+        
+        if (currentUser === 'huesped') {
+          console.log('HUÉSPED DETECTADO EN SERVICIOS - CONFIGURANDO MENÚ');
+          
+          // Ejecutar cuando se cargue el DOM
+          document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM cargado en servicios - Configurando menú del huesped');
+            mostrarMenuHuesped();
+          });
+          
+          // Ejecutar también inmediatamente
+          setTimeout(mostrarMenuHuesped, 100);
+          
+          // Ejecutar continuamente para mantener visibilidad
+          setInterval(function() {
+            var reservasMenu = document.querySelector('.huesped-menu-reservas');
+            var serviciosMenu = document.querySelector('.huesped-menu-servicios');
+            var reclamosMenu = document.querySelector('.huesped-menu-reclamos');
+            
+            if (reservasMenu && reservasMenu.style.display === 'none') {
+              console.log('⚠️ Menú Reservas oculto en servicios - FORZANDO visibilidad');
+              reservasMenu.removeAttribute('style');
+              reservasMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #2ecc71 !important;';
+            }
+            
+            if (serviciosMenu && serviciosMenu.style.display === 'none') {
+              console.log('⚠️ Menú Servicios oculto en servicios - FORZANDO visibilidad');
+              serviciosMenu.removeAttribute('style');
+              serviciosMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #2ecc71 !important;';
+            }
+            
+            if (reclamosMenu && reclamosMenu.style.display === 'none') {
+              console.log('⚠️ Menú Reclamos oculto en servicios - FORZANDO visibilidad');
+              reclamosMenu.removeAttribute('style');
+              reclamosMenu.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; background-color: rgba(255,255,255,0.1) !important; border-left: 3px solid #f39c12 !important;';
+            }
+          }, 5000); // Cada 5 segundos
+        }
+      }
+    </script>
     <div class="container body">
       <div class="main_container">
         <div class="col-md-3 left_col">
@@ -336,9 +667,25 @@
               <div class="menu_section">
                 <h3>Menú Usuario</h3>
                 <ul class="nav side-menu">
+                  <!-- Menú específico para huesped - OCULTO POR DEFECTO -->
+                  <li class="huesped-menu-reservas" style="display: none !important;">
+                    <a href="index2.html" style="color: #fff !important; padding: 12px 15px !important; display: block !important; text-decoration: none !important;">
+                      <i class="fa fa-calendar" style="margin-right: 10px !important; color: #2ecc71 !important;"></i> Reservas
+                    </a>
+                  </li>
+                  <li class="huesped-menu-servicios" style="display: none !important;">
+                    <a href="index3.html" style="color: #fff !important; padding: 12px 15px !important; display: block !important; text-decoration: none !important;">
+                      <i class="fa fa-cogs" style="margin-right: 10px !important; color: #2ecc71 !important;"></i> Servicios
+                    </a>
+                  </li>
+                  <li class="huesped-menu-reclamos" style="display: none !important;">
+                    <a href="reclamos.html" style="color: #fff !important; padding: 12px 15px !important; display: block !important; text-decoration: none !important;">
+                      <i class="fa fa-comments" style="margin-right: 10px !important; color: #f39c12 !important;"></i> Reclamos
+                    </a>
+                  </li>
                   <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                                               <li><a href="index2.html">Reservas</a></li>
+                      <li><a href="index2.html">Reservas</a></li>
                                                <li class="current-page"><a href="index3.html">Servicios</a></li>
                                                <li><a href="index.html">Habitaciones</a></li>
                                                <li class="admin-hidden"><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
@@ -368,21 +715,6 @@
                      
                     </ul>
                   </li>-->
-                   <li class="admin-hidden"><a><i class="fa fa-bars"></i> Mantenedores <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="#">Habitaciones</a></li>
-                      <li><a href="#">Servicios</a></li>
-                      <li><a href="#">Mantenciones</a></li>
-                      <li><a href="#">Ordenes de trabajo</a></li>
-                      <li><a href="#">Bodega</a></li>
-                     
-                    </ul>
-                  </li>
-                  <li class="admin-hidden"><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li><a href="Home.html">Home</a></li>
-                    </ul>
-                  </li>
                 </ul>
               </div>
               
@@ -1094,13 +1426,13 @@
                                             <h3 class="panel-title"><i class="fa fa-clock-o"></i> Servicios Pendientes</h3>
                                           </div>
                                           <div class="panel-body">
-                                            <div class="table-responsive">
-                                              <table class="table table-striped" id="pendingServicesTable">
-                                                <thead>
-                                                  <tr>
+                                            <div class="table-responsive" style="overflow-x: auto; max-width: 100%;">
+                                              <table class="table table-striped" id="pendingServicesTable" style="min-width: 600px;">
+                      <thead>
+                        <tr>
                                                     <th>Habitación</th>
-                                                    <th>Servicio</th>
-                                                    <th>Prioridad</th>
+                          <th>Servicio</th>
+                          <th>Prioridad</th>
                                                     <th>Tiempo</th>
                                                     <th>Acciones</th>
                                                   </tr>
@@ -1273,14 +1605,18 @@
                                 <div class="x_panel">
                                   <div class="x_title">
                                     <h2><i class="fa fa-wrench"></i> Requerimientos de Reparación</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                                      <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                                    </ul>
                                     <div class="clearfix"></div>
                                   </div>
                                   <div class="x_content">
-                                    <div class="row">
-                                      <div class="col-md-8">
-                                        <div class="table-responsive">
+                                    <div class="row" style="margin-bottom: 20px;">
+                                      <div class="col-md-8" style="position: relative; z-index: 1; padding-right: 20px;">
+                                        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
                                           <table class="table table-striped" id="repairRequestsTable">
-                                            <thead>
+                                            <thead style="position: sticky; top: 0; background: white; z-index: 10;">
                                               <tr>
                                                 <th>ID</th>
                                                 <th>Ubicación</th>
@@ -1299,8 +1635,8 @@
                                         </div>
                                       </div>
                                       
-                                      <div class="col-md-4">
-                                        <div class="panel panel-danger">
+                                      <div class="col-md-4" style="position: relative; z-index: 2; padding-left: 10px;">
+                                        <div class="panel panel-danger" style="max-height: 500px; overflow-y: auto;">
                                           <div class="panel-heading">
                                             <h3 class="panel-title"><i class="fa fa-plus"></i> Nuevo Requerimiento</h3>
                                           </div>
@@ -1700,24 +2036,63 @@
     <!-- Custom Theme Scripts -->
     <script src="../build/js/custom.min.js"></script>
     
+    <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
+    <script src="auth-simple.js"></script>
+    
+    <!-- FORZAR VISIBILIDAD DE MENÚS - TEMPORALMENTE DESHABILITADO -->
+    <!-- <script src="force-menu.js"></script> -->
+    
+    <!-- FORZAR VISIBILIDAD AGRESIVA - TEMPORALMENTE DESHABILITADO -->
+    <!-- <script src="force-menu-aggressive.js"></script> -->
+    
+    <!-- LIMPIAR NOTIFICACIONES DUPLICADAS - TEMPORALMENTE DESHABILITADO -->
+    <!-- <script src="cleanup-notifications.js"></script> -->
+    
     <!-- Script simple para mantener texto Admin -->
     <script>
         $(document).ready(function() {
-            // Función simple para mantener Admin
-            function setAdminText() {
-                $('.profile_info h2').text('Admin');
+            // Función para establecer el texto correcto según el usuario
+            function setUserText() {
+                var currentUser = localStorage.getItem('currentUser');
+                console.log('Usuario actual en localStorage:', currentUser);
+                
+                var displayText = '';
+                
+                if (currentUser === 'admin') {
+                    displayText = 'Admin';
+                } else if (currentUser === 'plataforma') {
+                    displayText = 'Plataforma';
+                } else if (currentUser === 'huesped') {
+                    displayText = 'Huésped';
+                } else if (currentUser === 'mantencion') {
+                    displayText = 'Mantención';
+                } else {
+                    displayText = 'Usuario'; // Por defecto
+                }
+                
+                console.log('Texto a mostrar:', displayText);
+                
+                // Solo cambiar si es diferente al actual
+                var currentText = $('.profile_info h2').text();
+                if (currentText !== displayText) {
+                    $('.profile_info h2').text(displayText);
+                    console.log('Texto cambiado de "' + currentText + '" a "' + displayText + '"');
+                }
+                
                 $('.user-profile').contents().filter(function() {
                     return this.nodeType === 3 && this.nodeValue.trim() !== '';
                 }).each(function() {
-                    this.nodeValue = 'Admin';
+                    if (this.nodeValue.trim() !== displayText) {
+                        this.nodeValue = displayText;
+                    }
                 });
             }
             
             // Ejecutar inmediatamente
-            setAdminText();
+            setUserText();
             
-            // Ejecutar cada segundo para mantenerlo
-            setInterval(setAdminText, 1000);
+            // Ejecutar cada 5 segundos para mantenerlo (menos agresivo)
+            setInterval(setUserText, 5000);
         });
     </script>
     
@@ -1938,7 +2313,7 @@
                         title: 'Error',
                         text: 'Por favor complete todos los campos requeridos (*)',
                         type: 'error',
-                        hide: false,
+                        hide: true,
                         styling: 'bootstrap3'
                     });
                     return;
@@ -2038,7 +2413,7 @@
                         title: 'Servicio Aprobado',
                         text: `El servicio de ${servicio} para la habitación ${habitacion} ha sido aprobado y enviado al panel de servicios.`,
                         type: 'success',
-                        hide: false,
+                        hide: true,
                         styling: 'bootstrap3'
                     });
                     
@@ -2067,7 +2442,7 @@
                         title: 'Servicio Eliminado',
                         text: `El servicio de ${servicio} para la habitación ${habitacion} ha sido eliminado.`,
                         type: 'error',
-                        hide: false,
+                        hide: true,
                         styling: 'bootstrap3'
                     });
                 }
@@ -2106,7 +2481,7 @@
                             title: 'Error',
                             text: 'Por favor complete todos los campos requeridos (*)',
                             type: 'error',
-                            hide: false,
+                            hide: true,
                             styling: 'bootstrap3'
                         });
                         return;
@@ -2120,7 +2495,7 @@
                         title: 'Cambios Guardados',
                         text: 'Los cambios en el servicio han sido guardados correctamente.',
                         type: 'success',
-                        hide: false,
+                        hide: true,
                         styling: 'bootstrap3'
                     });
                     
@@ -2133,7 +2508,7 @@
                         title: 'Servicio Aprobado',
                         text: `El servicio de ${servicio} para la habitación ${habitacion} ha sido aprobado exitosamente.`,
                         type: 'success',
-                        hide: false,
+                        hide: true,
                         styling: 'bootstrap3'
                     });
                 }
@@ -2358,7 +2733,7 @@
                         title: 'Sin Personal Disponible',
                         text: 'No hay personal de aseo disponible en este momento.',
                         type: 'warning',
-                        hide: false,
+                        hide: true,
                         styling: 'bootstrap3'
                     });
                     return;
@@ -2399,7 +2774,7 @@
                         title: 'Asignación Automática Completada',
                         text: `Se asignaron ${assignedCount} servicios al personal de aseo.`,
                         type: 'success',
-                        hide: false,
+                        hide: true,
                         styling: 'bootstrap3'
                     });
                     
@@ -2410,7 +2785,7 @@
                         title: 'No se Pudo Asignar',
                         text: 'No hay servicios pendientes o personal disponible.',
                         type: 'info',
-                        hide: false,
+                        hide: true,
                         styling: 'bootstrap3'
                     });
                 }
@@ -2460,7 +2835,7 @@
                         title: 'Sin Personal Disponible',
                         text: 'No hay personal de aseo disponible en este momento.',
                         type: 'warning',
-                        hide: false,
+                        hide: true,
                         styling: 'bootstrap3'
                     });
                     return;
@@ -2545,7 +2920,7 @@
                             title: 'Servicio Asignado',
                             text: `El servicio de la habitación ${service.habitacion} ha sido asignado a ${selectedStaff.nombre}.`,
                             type: 'success',
-                            hide: false,
+                            hide: true,
                             styling: 'bootstrap3'
                         });
                     }
@@ -2766,9 +3141,9 @@
                         title: 'Estadísticas de Servicios',
                         text: message,
                         type: type,
-                        hide: false,
+                        hide: true,
                         styling: 'bootstrap3',
-                        delay: 8000
+                        delay: 500
                     });
                     window.lastServiceStatsAlert = Date.now();
                 }
@@ -2894,6 +3269,8 @@
         function checkUserRole() {
             var currentUser = getCurrentUser();
             
+            console.log('Usuario actual detectado:', currentUser);
+            
             if (currentUser === 'admin') {
                 // Ocultar opciones del menú que no debe ver el admin
                 $('.admin-hidden').hide();
@@ -2913,13 +3290,66 @@
                 
                 // Configurar vista específica para admin
                 configureAdminServicesView();
+            } else if (currentUser === 'huesped') {
+                // Ocultar opciones del menú que no debe ver el huesped
+                $('.admin-hidden').hide();
+                
+                // Agregar indicador visual de que es usuario huesped
+                $('.navbar-brand').append('<span class="admin-title">HUÉSPED</span>');
+                $('body').addClass('huesped-user');
+                
+                // Mostrar mensaje informativo (solo una vez)
+                if (!window.huespedWelcomeShown) {
+                    window.huespedWelcomeShown = true;
+                    new PNotify({
+                        title: 'Bienvenido Huésped',
+                        text: 'Acceso limitado a servicios básicos',
+                        type: 'info',
+                        hide: true,
+                        delay: 500,
+                        styling: 'bootstrap3'
+                    });
+                }
+                
+                // Configurar vista específica para huesped
+                configureHuespedServicesView();
+            } else {
+                // Para plataforma y otros usuarios - MOSTRAR TODOS LOS MENÚS
+                $('.admin-hidden').show();
+                
+                // Agregar indicador visual
+                if (currentUser === 'plataforma') {
+                    $('.navbar-brand').append('<span class="admin-title">PLATAFORMA</span>');
+                    $('body').addClass('plataforma-user');
+                    
+                    // Mostrar mensaje informativo (solo una vez)
+                    if (!window.plataformaWelcomeShown) {
+                        window.plataformaWelcomeShown = true;
+                        new PNotify({
+                            title: 'Bienvenido Plataforma',
+                            text: 'Acceso completo a todas las funcionalidades del sistema',
+                            type: 'success',
+                            hide: true,
+                            delay: 500,
+                            styling: 'bootstrap3'
+                        });
+                    }
+                } else {
+                    $('.navbar-brand').append('<span class="admin-title">USUARIO</span>');
+                    $('body').addClass('user');
+                }
             }
         }
         
         // Función para obtener el usuario actual
         function getCurrentUser() {
             var user = localStorage.getItem('currentUser');
-            return user || 'plataforma';
+            
+            if (user && user !== 'null' && user !== 'undefined') {
+                return user;
+            }
+            
+            return 'plataforma';
         }
         
         // Función para configurar la vista específica del admin en servicios
@@ -2944,6 +3374,1001 @@
                     styling: 'bootstrap3'
                 });
             }, 2000);
+        }
+        
+        // Función para configurar vista específica para huesped
+        function configureHuespedServicesView() {
+            console.log('=== CONFIGURANDO VISTA DE SERVICIOS PARA HUÉSPED ===');
+            
+            // Reemplazar todo el contenido con la vista específica del huésped
+            replaceContentForHuespedServices();
+            
+            // Configurar eventos específicos para huesped
+            setupHuespedServicesHandlers();
+            
+            // Mostrar notificación sobre funcionalidades huesped
+            setTimeout(function() {
+                new PNotify({
+                    title: 'Servicios para Huésped',
+                    text: 'Puede solicitar servicios de limpieza, reposición y reparación',
+                    type: 'success',
+                    hide: true,
+                    delay: 500,
+                    styling: 'bootstrap3'
+                });
+            }, 2000);
+        }
+        
+        // Función para reemplazar contenido con vista de servicios para huésped
+        function replaceContentForHuespedServices() {
+            // Reemplazar todo el contenido del right_col
+            $('.right_col').html(`
+                <div class="right_col" role="main">
+                    <div class="">
+                        <div class="page-title">
+                            <div class="title_left">
+                                <h3>Servicios</h3>
+                                <h3><small>Solicite servicios para mantener el confort de su estadía</small></h3>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                        
+                        <!-- Mensaje de confirmación (se muestra después de solicitar servicio) -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="alert alert-success" id="serviceConfirmationMessage" style="display: none;">
+                                    <h4><i class="fa fa-check-circle"></i> ¡Solicitud Enviada!</h4>
+                                    <p>Su solicitud de servicio ha sido enviada correctamente. Nos pondremos en contacto con usted pronto.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Layout de dos columnas -->
+                        <div class="huesped-services-layout">
+                            <!-- Columna principal -->
+                            <div class="huesped-services-main">
+                                <!-- Formulario de solicitud de servicios -->
+                                <div class="x_panel">
+                                    <div class="x_title">
+                                        <h2><i class="fa fa-plus"></i> Solicitar Servicio</h2>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="x_content">
+                                        <form id="huespedServiceRequestForm" action="" method="post">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="serviceType">Tipo de Servicio *</label>
+                                                        <select class="form-control" id="serviceType" name="serviceType" required>
+                                                            <option value="">Seleccione un tipo de servicio</option>
+                                                            <option value="limpieza">Limpieza de Habitación</option>
+                                                            <option value="reposicion">Reposición de Artículos</option>
+                                                            <option value="reparacion">Reparación/Mantenimiento</option>
+                                                            <option value="conexion">Conexión WiFi/TV</option>
+                                                            <option value="temperatura">Ajuste de Temperatura</option>
+                                                            <option value="transporte">Servicio de Transporte</option>
+                                                            <option value="lavanderia">Servicio de Lavandería</option>
+                                                            <option value="otro">Otro</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="servicePriority">Prioridad *</label>
+                                                        <select class="form-control" id="servicePriority" name="priority" required>
+                                                            <option value="">Seleccione prioridad</option>
+                                                            <option value="baja">Baja - Puede esperar</option>
+                                                            <option value="media">Media - Durante el día</option>
+                                                            <option value="alta">Alta - Lo antes posible</option>
+                                                            <option value="urgente">Urgente - Inmediato</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="serviceDescription">Descripción del Servicio *</label>
+                                                        <textarea class="form-control" id="serviceDescription" name="description" rows="4" 
+                                                                  placeholder="Describa detalladamente el servicio que necesita..." required></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="serviceTime">Hora Preferida</label>
+                                                        <input type="time" class="form-control" id="serviceTime" name="preferredTime">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="serviceContact">Método de Contacto</label>
+                                                        <select class="form-control" id="serviceContact" name="contactMethod">
+                                                            <option value="habitacion">Llamada a la habitación</option>
+                                                            <option value="celular">Celular/WhatsApp</option>
+                                                            <option value="email">Email</option>
+                                                            <option value="recepcion">Pasar por recepción</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label for="serviceNotes">Notas Adicionales</label>
+                                                        <textarea class="form-control" id="serviceNotes" name="notes" rows="2" 
+                                                                  placeholder="Información adicional que pueda ser útil..."></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-12 text-center">
+                                                    <button type="button" class="btn btn-primary btn-lg" id="submitServiceRequest" onclick="submitHuespedServiceRequestDirect()">
+                                                        <i class="fa fa-paper-plane"></i> Enviar Solicitud
+                                                    </button>
+                                                    <button type="button" class="btn btn-default btn-lg" id="clearServiceForm">
+                                                        <i class="fa fa-refresh"></i> Limpiar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                
+                                <!-- Mis Solicitudes de Servicio -->
+                                <div class="x_panel">
+                                    <div class="x_title">
+                                        <h2><i class="fa fa-list"></i> Mis Solicitudes de Servicio</h2>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="x_content">
+                                        <div class="table-responsive" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                                            <table class="table table-striped" id="huespedServicesTable" style="min-width: 800px;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Tipo</th>
+                                                        <th>Descripción</th>
+                                                        <th>Prioridad</th>
+                                                        <th>Estado</th>
+                                                        <th>Fecha</th>
+                                                        <th>Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Las solicitudes se cargarán dinámicamente -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Sidebar con widgets útiles -->
+                            <div class="huesped-services-sidebar">
+                                <!-- Widget de servicios rápidos -->
+                                <div class="widget">
+                                    <h4><i class="fa fa-bolt"></i> Servicios Rápidos</h4>
+                                    <div class="quick-services">
+                                        <button class="btn btn-info btn-block quick-service-btn" data-service="limpieza" onclick="quickServiceClick('limpieza')">
+                                            <i class="fa fa-broom"></i> Limpieza
+                                        </button>
+                                        <button class="btn btn-warning btn-block quick-service-btn" data-service="reposicion" onclick="quickServiceClick('reposicion')">
+                                            <i class="fa fa-refresh"></i> Reposición
+                                        </button>
+                                        <button class="btn btn-danger btn-block quick-service-btn" data-service="reparacion" onclick="quickServiceClick('reparacion')">
+                                            <i class="fa fa-wrench"></i> Reparación
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Widget de estadísticas -->
+                                <div class="widget">
+                                    <h4><i class="fa fa-bar-chart"></i> Mis Estadísticas</h4>
+                                    <div class="quick-stats">
+                                        <div class="stat-item">
+                                            <div class="stat-number">3</div>
+                                            <div class="stat-label">Solicitudes</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-number">2</div>
+                                            <div class="stat-label">Completadas</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-number">1</div>
+                                            <div class="stat-label">Pendientes</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Widget de información de contacto -->
+                                <div class="widget">
+                                    <h4><i class="fa fa-phone"></i> Contacto</h4>
+                                    <div style="font-size: 13px; line-height: 1.5;">
+                                        <div style="margin-bottom: 8px;">
+                                            <strong>Recepción:</strong><br>
+                                            <span style="color: #3498db;">+56 9 1234 5678</span>
+                                        </div>
+                                        <div style="margin-bottom: 8px;">
+                                            <strong>Servicios 24/7:</strong><br>
+                                            <span style="color: #e74c3c;">+56 9 8765 4321</span>
+                                        </div>
+                                        <div>
+                                            <strong>Email:</strong><br>
+                                            <span style="color: #27ae60;">servicios@hotelsabtech.com</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <style>
+                /* Layout de servicios para huésped */
+                .huesped-services-layout {
+                    display: flex;
+                    gap: 30px;
+                    justify-content: flex-end;
+                    align-items: flex-start;
+                    margin-top: 20px;
+                    padding-left: 40px;
+                    padding-right: 80px;
+                }
+                
+                .huesped-services-main {
+                    flex: 0 0 750px;
+                    max-width: 750px;
+                    padding: 0;
+                }
+                
+                .huesped-services-sidebar {
+                    flex: 0 0 280px;
+                    max-width: 280px;
+                    padding: 0;
+                    margin-right: 20px;
+                }
+                
+                .huesped-services-main .x_panel {
+                    margin-bottom: 30px;
+                    width: 100%;
+                }
+                
+                .huesped-services-main .x_content {
+                    padding: 25px;
+                }
+                
+                /* Widgets laterales */
+                .widget {
+                    background: #f8f9fa;
+                    border: 1px solid #e9ecef;
+                    border-radius: 8px;
+                    padding: 18px;
+                    margin-bottom: 20px;
+                    margin-right: 10px;
+                    width: calc(100% - 10px);
+                    box-sizing: border-box;
+                    overflow: hidden;
+                }
+                
+                .widget h4 {
+                    color: #2c3e50;
+                    margin-bottom: 15px;
+                    font-size: 16px;
+                }
+                
+                .quick-services .btn {
+                    margin-bottom: 8px;
+                    font-size: 13px;
+                    padding: 8px 12px;
+                    width: 100%;
+                    box-sizing: border-box;
+                }
+                
+                .quick-stats {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 15px;
+                }
+                
+                .stat-item {
+                    text-align: center;
+                    flex: 1;
+                }
+                
+                .stat-number {
+                    font-size: 24px;
+                    font-weight: bold;
+                    color: #3498db;
+                }
+                
+                .stat-label {
+                    font-size: 12px;
+                    color: #7f8c8d;
+                }
+                
+                /* Estilo para el subtítulo de servicios */
+                .page-title h3 small {
+                    display: block;
+                    margin-top: 5px;
+                    white-space: nowrap;
+                    color: #7f8c8d;
+                    font-size: 16px;
+                }
+                
+                /* Scroll horizontal para la tabla de solicitudes */
+                .table-responsive {
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                }
+                
+                #huespedServicesTable {
+                    min-width: 800px;
+                    width: 100%;
+                }
+                
+                #huespedServicesTable th,
+                #huespedServicesTable td {
+                    white-space: nowrap;
+                    padding: 8px 12px;
+                }
+                
+                #huespedServicesTable th:nth-child(1) { min-width: 120px; }
+                #huespedServicesTable th:nth-child(2) { min-width: 100px; }
+                #huespedServicesTable th:nth-child(3) { min-width: 200px; max-width: 200px; }
+                #huespedServicesTable th:nth-child(4) { min-width: 80px; }
+                #huespedServicesTable th:nth-child(5) { min-width: 80px; }
+                #huespedServicesTable th:nth-child(6) { min-width: 100px; }
+                #huespedServicesTable th:nth-child(7) { min-width: 80px; }
+                
+                #huespedServicesTable th:nth-child(3),
+                #huespedServicesTable td:nth-child(3) {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                </style>
+            `);
+            
+            // Cargar solicitudes del huésped
+            loadHuespedServiceRequests();
+            
+            // Configurar event listeners adicionales después de cargar el contenido
+            setTimeout(function() {
+                setupAdditionalHuespedHandlers();
+            }, 100);
+            
+            // Configurar handlers directamente en los botones después de un delay mayor
+            setTimeout(function() {
+                console.log('=== CONFIGURANDO HANDLERS DIRECTOS ===');
+                $('.quick-service-btn').each(function(index, button) {
+                    console.log('Configurando botón:', index, $(button).data('service'));
+                    $(button).off('click').on('click', function(e) {
+                        e.preventDefault();
+                        console.log('=== BOTÓN CLICKEADO DIRECTAMENTE ===');
+                        var serviceType = $(this).data('service');
+                        console.log('Tipo de servicio:', serviceType);
+                        
+                        // Llenar formulario directamente
+                        $('#serviceType').val(serviceType);
+                        $('#servicePriority').val('media');
+                        
+                        // Llenar descripción
+                        var descriptions = {
+                            'limpieza': 'Limpieza general de la habitación, cambio de sábanas y toallas.',
+                            'reposicion': 'Reposición de artículos de baño, toallas, jabones y amenidades.',
+                            'reparacion': 'Servicio de reparación o mantenimiento necesario en la habitación.'
+                        };
+                        
+                        if (descriptions[serviceType]) {
+                            $('#serviceDescription').val(descriptions[serviceType]);
+                        }
+                        
+                        // Notificación
+                        new PNotify({
+                            title: 'Servicio Rápido',
+                            text: 'Formulario prellenado con ' + serviceType,
+                            type: 'success',
+                            hide: true,
+                            delay: 500
+                        });
+                        
+                        // Scroll al formulario
+                        $('html, body').animate({
+                            scrollTop: $('#huespedServiceRequestForm').offset().top - 100
+                        }, 500);
+                    });
+                });
+            }, 500);
+        }
+
+        // Función adicional para configurar handlers después de cargar contenido
+        function setupAdditionalHuespedHandlers() {
+            console.log('=== SETTING UP ADDITIONAL HUESPED HANDLERS ===');
+            
+            // Verificar que los elementos existen
+            var quickServiceButtons = $('.quick-service-btn');
+            console.log('Quick service buttons found:', quickServiceButtons.length);
+            
+            // Re-configurar event listeners directamente en los elementos
+            quickServiceButtons.off('click').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                console.log('=== DIRECT QUICK SERVICE BUTTON CLICK ===');
+                var serviceType = $(this).data('service');
+                console.log('Service type:', serviceType);
+                
+                if (serviceType) {
+                    fillQuickService(serviceType);
+                }
+            });
+            
+            // Verificar elementos del formulario
+            console.log('Service type select found:', $('#serviceType').length);
+            console.log('Service description found:', $('#serviceDescription').length);
+            
+            // Configurar event listener adicional para el botón de envío
+            $('#submitServiceRequest').off('click').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('=== DIRECT SUBMIT BUTTON CLICK ===');
+                submitHuespedServiceRequest();
+                return false;
+            });
+            
+            // Configurar event listener adicional para botones "Ver"
+            $('.btn-view-service').off('click').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('=== DIRECT VIEW BUTTON CLICK ===');
+                var requestId = $(this).data('request-id');
+                console.log('Request ID:', requestId);
+                viewServiceRequestDetails(requestId);
+                return false;
+            });
+        }
+
+        // Función para configurar manejadores de eventos específicos del huésped
+        function setupHuespedServicesHandlers() {
+            // Evento para formulario de solicitud de servicio
+            $(document).on('submit', '#huespedServiceRequestForm', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('=== FORM SUBMIT PREVENTED ===');
+                submitHuespedServiceRequest();
+                return false;
+            });
+            
+            // Evento adicional para el botón de envío
+            $(document).on('click', '#submitServiceRequest', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('=== SUBMIT BUTTON CLICKED ===');
+                submitHuespedServiceRequest();
+                return false;
+            });
+            
+            // Evento para botón limpiar formulario
+            $(document).on('click', '#clearServiceForm', function() {
+                clearServiceForm();
+            });
+            
+            // Eventos para servicios rápidos
+            $(document).on('click', '.quick-service-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                console.log('=== QUICK SERVICE BUTTON CLICKED ===');
+                var serviceType = $(this).data('service');
+                console.log('Service type from data:', serviceType);
+                
+                if (serviceType) {
+                    fillQuickService(serviceType);
+                } else {
+                    console.error('No service type found in data attribute');
+                }
+            });
+            
+            // Evento para botón "Ver" en la tabla de solicitudes
+            $(document).on('click', '.btn-view-service', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('=== VIEW BUTTON CLICKED ===');
+                var requestId = $(this).data('request-id');
+                console.log('Request ID:', requestId);
+                viewServiceRequestDetails(requestId);
+            });
+        }
+        
+        // Variable global para las solicitudes de servicios del huésped
+        var huespedServiceRequests = [];
+        
+        // Función global para enviar solicitud de servicio (llamada directa)
+        window.submitHuespedServiceRequestDirect = function() {
+            console.log('=== SUBMIT HUESPED SERVICE REQUEST DIRECT ===');
+            submitHuespedServiceRequest();
+        };
+
+        // Función para enviar solicitud de servicio
+        function submitHuespedServiceRequest() {
+            console.log('=== SUBMIT HUESPED SERVICE REQUEST FUNCTION ===');
+            
+            var serviceType = $('#serviceType').val();
+            var priority = $('#servicePriority').val();
+            var description = $('#serviceDescription').val();
+            var preferredTime = $('#serviceTime').val();
+            var contactMethod = $('#serviceContact').val();
+            var notes = $('#serviceNotes').val();
+            
+            console.log('Form values:', {
+                serviceType: serviceType,
+                priority: priority,
+                description: description,
+                preferredTime: preferredTime,
+                contactMethod: contactMethod,
+                notes: notes
+            });
+            
+            // Validaciones básicas
+            if (!serviceType || !priority || !description) {
+                console.log('=== VALIDATION FAILED ===');
+                new PNotify({
+                    title: 'Error',
+                    text: 'Por favor complete todos los campos obligatorios.',
+                    type: 'error',
+                    hide: true,
+                    delay: 500
+                });
+                return;
+            }
+            
+            console.log('=== VALIDATION PASSED ===');
+            
+            // Crear ID único para la solicitud
+            var requestId = 'SRV' + Date.now();
+            
+            // Crear objeto de solicitud
+            var newRequest = {
+                id: requestId,
+                type: serviceType,
+                priority: priority,
+                description: description,
+                preferredTime: preferredTime || 'No especificada',
+                contactMethod: contactMethod || 'habitacion',
+                notes: notes || '',
+                status: 'Pendiente',
+                date: new Date().toISOString(),
+                huespedName: 'Huésped Actual'
+            };
+            
+            console.log('=== NEW REQUEST CREATED ===', newRequest);
+            
+            // Agregar al array global
+            huespedServiceRequests.unshift(newRequest);
+            console.log('=== REQUEST ADDED TO ARRAY ===', huespedServiceRequests.length, 'requests total');
+            
+            // Recargar la tabla
+            loadHuespedServiceRequests();
+            console.log('=== TABLE RELOADED ===');
+            
+            // Limpiar formulario
+            clearServiceForm();
+            
+            // Mostrar confirmación
+            $('#serviceConfirmationMessage').show();
+            
+            // Scroll al mensaje de confirmación
+            $('html, body').animate({
+                scrollTop: $('#serviceConfirmationMessage').offset().top - 100
+            }, 500);
+            
+            // Ocultar mensaje después de 5 segundos
+            setTimeout(function() {
+                $('#serviceConfirmationMessage').fadeOut();
+            }, 5000);
+            
+            // Mostrar notificación
+            new PNotify({
+                title: 'Solicitud Enviada',
+                text: 'Su solicitud de servicio ha sido registrada exitosamente.',
+                type: 'success',
+                hide: true,
+                delay: 500
+            });
+            
+            // Enviar email de confirmación
+            sendServiceRequestConfirmationEmail(newRequest);
+            
+            // Log para desarrollo
+            console.log('Solicitud de servicio enviada:', newRequest);
+        }
+        
+        // Función para cargar solicitudes de servicios del huésped
+        function loadHuespedServiceRequests() {
+            var table = $('#huespedServicesTable');
+            
+            // Datos de ejemplo si no hay solicitudes
+            if (huespedServiceRequests.length === 0) {
+                huespedServiceRequests = [
+                    {
+                        id: 'SRV001',
+                        type: 'limpieza',
+                        priority: 'media',
+                        description: 'Limpieza general de la habitación',
+                        preferredTime: '14:00',
+                        contactMethod: 'habitacion',
+                        notes: 'Por favor cambiar las sábanas también',
+                        status: 'Completada',
+                        date: new Date(Date.now() - 86400000).toISOString(), // Ayer
+                        huespedName: getHuespedDisplayName()
+                    },
+                    {
+                        id: 'SRV002',
+                        type: 'reposicion',
+                        priority: 'baja',
+                        description: 'Reposición de toallas y jabones',
+                        preferredTime: 'No especificada',
+                        contactMethod: 'celular',
+                        notes: '',
+                        status: 'Completada',
+                        date: new Date(Date.now() - 172800000).toISOString(), // Hace 2 días
+                        huespedName: getHuespedDisplayName()
+                    },
+                    {
+                        id: 'SRV003',
+                        type: 'reparacion',
+                        priority: 'alta',
+                        description: 'El aire acondicionado no funciona correctamente',
+                        preferredTime: 'Lo antes posible',
+                        contactMethod: 'recepcion',
+                        notes: 'Hace mucho ruido y no enfría',
+                        status: 'En Proceso',
+                        date: new Date(Date.now() - 3600000).toISOString(), // Hace 1 hora
+                        huespedName: getHuespedDisplayName()
+                    }
+                ];
+            }
+            
+            // Limpiar tabla
+            table.find('tbody').empty();
+            
+            // Agregar solicitudes
+            huespedServiceRequests.forEach(function(request) {
+                var typeText = getServiceTypeText(request.type);
+                var priorityBadge = getPriorityBadge(request.priority);
+                var statusBadge = getStatusBadge(request.status);
+                var dateFormatted = new Date(request.date).toLocaleDateString();
+                
+                var row = `
+                    <tr>
+                        <td style="min-width: 120px;">${request.id}</td>
+                        <td style="min-width: 100px;">${typeText}</td>
+                        <td style="min-width: 200px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${request.description}">${request.description}</td>
+                        <td style="min-width: 80px;">${priorityBadge}</td>
+                        <td style="min-width: 80px;">${statusBadge}</td>
+                        <td style="min-width: 100px;">${dateFormatted}</td>
+                        <td style="min-width: 80px;">
+                            <button class="btn btn-info btn-sm btn-view-service" data-request-id="${request.id}" onclick="viewServiceRequestDetails('${request.id}')">
+                                <i class="fa fa-eye"></i> Ver
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                
+                table.find('tbody').append(row);
+            });
+        }
+        
+        // Función para obtener texto del tipo de servicio
+        function getServiceTypeText(type) {
+            var types = {
+                'limpieza': 'Limpieza',
+                'reposicion': 'Reposición',
+                'reparacion': 'Reparación',
+                'conexion': 'Conexión',
+                'temperatura': 'Temperatura',
+                'transporte': 'Transporte',
+                'lavanderia': 'Lavandería',
+                'otro': 'Otro'
+            };
+            return types[type] || type;
+        }
+        
+        // Función para obtener badge de prioridad
+        function getPriorityBadge(priority) {
+            var badges = {
+                'baja': '<span class="badge badge-success">Baja</span>',
+                'media': '<span class="badge badge-warning">Media</span>',
+                'alta': '<span class="badge badge-danger">Alta</span>',
+                'urgente': '<span class="badge badge-danger" style="background-color: #8e44ad;">Urgente</span>'
+            };
+            return badges[priority] || priority;
+        }
+        
+        // Función para obtener badge de estado
+        function getStatusBadge(status) {
+            var badges = {
+                'Pendiente': '<span class="badge badge-warning">Pendiente</span>',
+                'En Proceso': '<span class="badge badge-info">En Proceso</span>',
+                'Completada': '<span class="badge badge-success">Completada</span>',
+                'Cancelada': '<span class="badge badge-danger">Cancelada</span>'
+            };
+            return badges[status] || status;
+        }
+        
+        // Función para limpiar formulario
+        function clearServiceForm() {
+            $('#huespedServiceRequestForm')[0].reset();
+        }
+        
+        // Función global para manejar clicks de servicios rápidos
+        function quickServiceClick(serviceType) {
+            console.log('=== QUICK SERVICE CLICK FUNCTION ===', serviceType);
+            
+            // Llenar formulario directamente
+            setTimeout(function() {
+                $('#serviceType').val(serviceType);
+                $('#servicePriority').val('media');
+                
+                // Llenar descripción
+                var descriptions = {
+                    'limpieza': 'Limpieza general de la habitación, cambio de sábanas y toallas.',
+                    'reposicion': 'Reposición de artículos de baño, toallas, jabones y amenidades.',
+                    'reparacion': 'Servicio de reparación o mantenimiento necesario en la habitación.'
+                };
+                
+                if (descriptions[serviceType]) {
+                    $('#serviceDescription').val(descriptions[serviceType]);
+                }
+                
+                // Notificación
+                new PNotify({
+                    title: 'Servicio Rápido',
+                    text: 'Formulario prellenado con ' + serviceType,
+                    type: 'success',
+                    hide: true,
+                    delay: 500
+                });
+                
+                // Scroll al formulario
+                var formElement = $('#huespedServiceRequestForm');
+                if (formElement.length > 0) {
+                    $('html, body').animate({
+                        scrollTop: formElement.offset().top - 100
+                    }, 500);
+                }
+            }, 100);
+        }
+
+        // Función para llenar formulario con servicio rápido
+        function fillQuickService(serviceType) {
+            console.log('=== FILLING QUICK SERVICE ===', serviceType);
+            
+            // Verificar que el elemento existe
+            var serviceTypeSelect = $('#serviceType');
+            var serviceDescription = $('#serviceDescription');
+            
+            console.log('Service Type Select found:', serviceTypeSelect.length);
+            console.log('Service Description found:', serviceDescription.length);
+            
+            if (serviceTypeSelect.length === 0) {
+                console.error('No se encontró el select de tipo de servicio');
+                return;
+            }
+            
+            // Establecer valor del tipo de servicio
+            serviceTypeSelect.val(serviceType);
+            
+            // Llenar descripción según el tipo
+            var descriptions = {
+                'limpieza': 'Limpieza general de la habitación, cambio de sábanas y toallas.',
+                'reposicion': 'Reposición de artículos de baño, toallas, jabones y amenidades.',
+                'reparacion': 'Servicio de reparación o mantenimiento necesario en la habitación.'
+            };
+            
+            if (descriptions[serviceType] && serviceDescription.length > 0) {
+                serviceDescription.val(descriptions[serviceType]);
+            }
+            
+            // Establecer prioridad por defecto
+            $('#servicePriority').val('media');
+            
+            // Scroll al formulario
+            var formElement = $('#huespedServiceRequestForm');
+            if (formElement.length > 0) {
+                $('html, body').animate({
+                    scrollTop: formElement.offset().top - 100
+                }, 500);
+            }
+            
+            new PNotify({
+                title: 'Servicio Rápido',
+                text: 'Formulario prellenado con ' + getServiceTypeText(serviceType),
+                type: 'info',
+                hide: true,
+                delay: 500
+            });
+        }
+        
+        // Función para enviar email de confirmación
+        function sendServiceRequestConfirmationEmail(request) {
+            var emailData = {
+                to: 'huesped@email.com', // En producción sería el email del huésped
+                subject: `Solicitud de Servicio ${request.id} - Hotel SabTech`,
+                message: `
+                    <h3>Solicitud de Servicio Registrada</h3>
+                    <p>Estimado/a ${request.huespedName},</p>
+                    <p>Hemos recibido su solicitud de servicio. Nos pondremos en contacto con usted pronto.</p>
+                    
+                    <h4>Detalles de su solicitud:</h4>
+                    <ul>
+                        <li><strong>ID de Solicitud:</strong> ${request.id}</li>
+                        <li><strong>Tipo de Servicio:</strong> ${getServiceTypeText(request.type)}</li>
+                        <li><strong>Prioridad:</strong> ${request.priority}</li>
+                        <li><strong>Descripción:</strong> ${request.description}</li>
+                        <li><strong>Hora Preferida:</strong> ${request.preferredTime}</li>
+                        <li><strong>Método de Contacto:</strong> ${request.contactMethod}</li>
+                        <li><strong>Estado:</strong> ${request.status}</li>
+                    </ul>
+                    
+                    ${request.notes ? `
+                    <h4>Notas adicionales:</h4>
+                    <p><em>"${request.notes}"</em></p>
+                    ` : ''}
+                    
+                    <p>Gracias por confiar en nosotros para su comodidad.</p>
+                    <p>Saludos cordiales,<br>Equipo Hotel SabTech</p>
+                `
+            };
+            
+            // Simular envío de email
+            console.log('Email de confirmación de servicio enviado:', emailData);
+        }
+        
+        // Función global para ver detalles de solicitud de servicio
+        window.viewServiceRequestDetails = function(requestId) {
+            console.log('=== VIEW SERVICE REQUEST DETAILS ===', requestId);
+            console.log('Available requests:', huespedServiceRequests);
+            
+            // Buscar la solicitud en los datos
+            var request = huespedServiceRequests.find(r => r.id === requestId);
+            console.log('Found request:', request);
+            
+            if (!request) {
+                new PNotify({
+                    title: 'Error',
+                    text: 'No se encontró la solicitud de servicio.',
+                    type: 'error',
+                    hide: true,
+                    delay: 500
+                });
+                return;
+            }
+            
+            // Crear modal de detalles
+            var modalHtml = `
+                <div class="modal fade" id="serviceRequestDetailsModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title"><i class="fa fa-eye"></i> Detalle de Solicitud de Servicio</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5><strong>Información de la Solicitud</strong></h5>
+                                        <p><strong>ID de Solicitud:</strong> ${request.id}</p>
+                                        <p><strong>Estado:</strong> ${getStatusBadge(request.status)}</p>
+                                        <p><strong>Fecha de Solicitud:</strong> ${new Date(request.date).toLocaleDateString()}</p>
+                                        <p><strong>Hora de Solicitud:</strong> ${new Date(request.date).toLocaleTimeString()}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h5><strong>Detalles del Servicio</strong></h5>
+                                        <p><strong>Tipo de Servicio:</strong> ${getServiceTypeText(request.type)}</p>
+                                        <p><strong>Prioridad:</strong> ${getPriorityBadge(request.priority)}</p>
+                                        <p><strong>Hora Preferida:</strong> ${request.preferredTime}</p>
+                                        <p><strong>Método de Contacto:</strong> ${getContactMethodText(request.contactMethod)}</p>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <h5><strong>Descripción del Servicio</strong></h5>
+                                        <p style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #3498db;">
+                                            ${request.description}
+                                        </p>
+                                    </div>
+                                </div>
+                                ${request.notes ? `
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <h5><strong>Notas Adicionales</strong></h5>
+                                        <p style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #e67e22;">
+                                            ${request.notes}
+                                        </p>
+                                    </div>
+                                </div>
+                                ` : ''}
+                                
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <h5><strong>Información del Huésped</strong></h5>
+                                        <p><strong>Nombre:</strong> ${request.huespedName}</p>
+                                        <p><strong>Estado de la Solicitud:</strong> ${request.status}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                ${request.status === 'Pendiente' ? 
+                                    `<button type="button" class="btn btn-warning" onclick="cancelServiceRequest('${request.id}')">
+                                        <i class="fa fa-times"></i> Cancelar Solicitud
+                                    </button>` : ''
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remover modal anterior si existe
+            $('#serviceRequestDetailsModal').remove();
+            
+            // Agregar nuevo modal al body
+            $('body').append(modalHtml);
+            
+            // Mostrar modal
+            $('#serviceRequestDetailsModal').modal('show');
+        };
+        
+        // Función para obtener texto del método de contacto
+        function getContactMethodText(method) {
+            var methods = {
+                'habitacion': 'Llamada a la habitación',
+                'celular': 'Celular/WhatsApp',
+                'email': 'Email',
+                'recepcion': 'Pasar por recepción'
+            };
+            return methods[method] || method;
+        }
+        
+        // Función para cancelar solicitud de servicio
+        function cancelServiceRequest(requestId) {
+            if (confirm('¿Está seguro de que desea cancelar esta solicitud de servicio?')) {
+                // Buscar y actualizar la solicitud
+                var requestIndex = huespedServiceRequests.findIndex(r => r.id === requestId);
+                if (requestIndex !== -1) {
+                    huespedServiceRequests[requestIndex].status = 'Cancelada';
+                    
+                    // Recargar la tabla
+                    loadHuespedServiceRequests();
+                    
+                    // Cerrar modal
+                    $('#serviceRequestDetailsModal').modal('hide');
+                    
+                    new PNotify({
+                        title: 'Solicitud Cancelada',
+                        text: 'Su solicitud de servicio ha sido cancelada exitosamente.',
+                        type: 'warning',
+                        hide: true,
+                        delay: 500
+                    });
+                    
+                    console.log('Solicitud cancelada:', huespedServiceRequests[requestIndex]);
+                }
+            }
+        }
+        
+        // Función para cargar estadísticas básicas para huesped
+        function loadBasicServiceStats() {
+            // Cargar solo estadísticas generales, no datos de gestión
+            updateServiceStats();
         }
         
         // Función para configurar manejadores de eventos específicos del admin
@@ -3297,7 +4722,199 @@
                 styling: 'bootstrap3'
             });
         }
+        
     </script>
 
+    <!-- Configuración ULTRA AGRESIVA para huesped - DESHABILITADA -->
+    <!--
+    <script>
+        // Función para configurar huesped (versión simplificada)
+        function configurarHuesped() {
+            console.log('=== CONFIGURACIÓN SIMPLIFICADA PARA HUÉSPED EN SERVICIOS ===');
+            
+            // OCULTAR TODO EL CONTENIDO ADMINISTRATIVO
+            $('.row, .col-md-3, .col-md-4, .col-md-6, .col-md-8, .col-md-12').each(function() {
+                var $this = $(this);
+                if ($this.find('.dashboard-stats, .chart-container, .admin-controls, .operational-alerts, .top-service-requests, .x_panel').length > 0) {
+                    $this.hide();
+                }
+            });
+            
+            $('.dashboard-stats, .chart-container, .admin-controls, .operational-alerts, .top-service-requests, .x_panel').hide();
+            
+            // OCULTAR TODOS LOS MENÚS ORIGINALES
+            $('.nav.side-menu > li:not(.huesped-direct-menu)').hide();
+            $('.nav.side-menu > li:not(.huesped-direct-menu)').css('display', 'none');
+            
+            // MOSTRAR SOLO EL MENÚ DEL HUÉSPED
+            $('.huesped-direct-menu').show();
+            $('.huesped-direct-menu').css('display', 'block');
+            
+            // CREAR CONTENIDO BÁSICO PARA HUÉSPED
+            if ($('.huesped-content').length === 0) {
+                $('.right_col').append(`
+                    <div class="huesped-content">
+                        <div class="page-title">
+                            <h3>Servicios - Huésped</h3>
+                        </div>
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>Servicios Disponibles</h2>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="panel panel-info">
+                                            <div class="panel-heading">
+                                                <h4><i class="fa fa-wifi"></i> Servicios Básicos</h4>
+                                            </div>
+                                            <div class="panel-body">
+                                                <p>Acceso a WiFi, limpieza, y servicios básicos del establecimiento.</p>
+                                                <button class="btn btn-info btn-block">
+                                                    <i class="fa fa-info-circle"></i> Ver Detalles
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="panel panel-success">
+                                            <div class="panel-heading">
+                                                <h4><i class="fa fa-bell"></i> Solicitar Servicio</h4>
+                                            </div>
+                                            <div class="panel-body">
+                                                <p>Puede solicitar servicios adicionales durante su estadía.</p>
+                                                <button class="btn btn-success btn-block">
+                                                    <i class="fa fa-plus"></i> Solicitar Servicio
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h4><i class="fa fa-clock-o"></i> Estado de Servicios</h4>
+                                            </div>
+                                            <div class="panel-body">
+                                                <p>Consulte el estado de sus solicitudes de servicios.</p>
+                                                <div class="alert alert-info">
+                                                    <i class="fa fa-info-circle"></i> 
+                                                    Sus servicios están siendo atendidos según el horario establecido.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            }
+            
+            // FORZAR VISIBILIDAD DEL MENÚ DESPUÉS DE CREAR CONTENIDO
+            setTimeout(function() {
+                $('.huesped-direct-menu').show();
+                $('.huesped-direct-menu').css('display', 'block');
+                $('.huesped-direct-menu a').show();
+                $('.huesped-direct-menu a').css('display', 'block');
+                console.log('Forzando visibilidad del menú después de crear contenido');
+            }, 100);
+            
+            console.log('Menús del huesped recreados en servicios:', $('.huesped-direct-menu').length);
+        }
+        
+        // Script ULTRA SIMPLE para mostrar menú del huesped
+        $(document).ready(function() {
+            // Verificar si es huesped
+            if (getCurrentUser() === 'huesped') {
+                console.log('=== HUÉSPED DETECTADO EN SERVICIOS - MOSTRANDO MENÚ ===');
+                
+                // Agregar clase al body
+                $('body').addClass('huesped-user');
+                
+                // Mostrar menús del huesped
+                $('.huesped-menu-reservas').show();
+                $('.huesped-menu-servicios').show();
+                $('.huesped-menu-reservas').css('display', 'block');
+                $('.huesped-menu-servicios').css('display', 'block');
+                
+                // Ocultar todos los otros menús
+                $('.nav.side-menu > li').not('.huesped-menu-reservas').not('.huesped-menu-servicios').hide();
+                
+                console.log('Menús del huesped mostrados:', $('.huesped-menu-reservas').length, $('.huesped-menu-servicios').length);
+            }
+            
+            // Ejecutar inmediatamente
+            if (getCurrentUser() === 'huesped') {
+                configurarHuesped();
+            }
+            
+            // Ejecutar después de 100ms
+            setTimeout(function() {
+                if (getCurrentUser() === 'huesped') {
+                    configurarHuesped();
+                }
+            }, 100);
+            
+            // Ejecutar después de 500ms
+            setTimeout(function() {
+                if (getCurrentUser() === 'huesped') {
+                    configurarHuesped();
+                }
+            }, 500);
+            
+            // Ejecutar después de 1 segundo
+            setTimeout(function() {
+                if (getCurrentUser() === 'huesped') {
+                    configurarHuesped();
+                }
+            }, 1000);
+            
+            // Ejecutar cada 2 segundos para mantener
+            setInterval(function() {
+                if (getCurrentUser() === 'huesped') {
+                    configurarHuesped();
+                }
+            }, 2000);
+            
+            // Ejecutar cuando se hace clic en los enlaces del menú
+            $(document).on('click', '.huesped-direct-menu a', function() {
+                console.log('Click en menú huesped detectado en servicios');
+                setTimeout(function() {
+                    if (getCurrentUser() === 'huesped') {
+                        configurarHuesped();
+                    }
+                }, 100);
+            });
+            
+            // Ejecutar cuando se carga una nueva página
+            $(window).on('load', function() {
+                if (getCurrentUser() === 'huesped') {
+                    configurarHuesped();
+                }
+            });
+            
+            // Ejecutar cuando se cambia de página (para navegación SPA)
+            $(document).on('DOMNodeInserted', function() {
+                if (getCurrentUser() === 'huesped') {
+                    setTimeout(function() {
+                        configurarHuesped();
+                    }, 200);
+                }
+            });
+            
+            // Ejecutar cuando se hace clic en cualquier enlace
+            $(document).on('click', 'a', function() {
+                if (getCurrentUser() === 'huesped') {
+                    setTimeout(function() {
+                        configurarHuesped();
+                    }, 300);
+                }
+            });
+        });
+    </script>
+    -->
   </body>
 </html>

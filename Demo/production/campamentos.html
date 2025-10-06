@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Gestión de Campamentos | Sabtech Group</title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- bootstrap-progressbar -->
+    <link href="../vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <!-- PNotify -->
+    <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    
+    <style>
+        .camp-stats {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .area-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .area-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .area-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-active { background-color: #5cb85c; color: white; }
+        .status-maintenance { background-color: #f0ad4e; color: white; }
+        .status-inactive { background-color: #d9534f; color: white; }
+        
+        .infrastructure-item {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <!-- Sidebar -->
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title" style="border: 0;">
+                        <a href="index.html" class="site_title"><span>Hoteleria</span></a>
+                    </div>
+                    <div class="clearfix"></div>
+
+                    <!-- Profile -->
+                    <div class="profile clearfix">
+                        <div class="profile_pic">
+                            <img src="images/img.jpg" alt="..." class="img-circle profile_img">
+                        </div>
+                        <div class="profile_info">
+                            <span>Bienvenido,</span>
+                            <h2>Admin</h2>
+                        </div>
+                    </div>
+                    <br />
+
+                    <!-- Sidebar Menu -->
+                    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                        <div class="menu_section">
+                            <h3>Menú Usuario</h3>
+                            <ul class="nav side-menu">
+                                <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        <li><a href="index2.html">Reservas</a></li>
+                                        <li><a href="index3.html">Servicios</a></li>
+                                        <li><a href="index.html">Habitaciones</a></li>
+                                        <li><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
+                                        <li><a href="inventario.html">Inventario</a></li>
+                                        <li class="current-page"><a href="campamentos.html">Campamentos</a></li>
+                                        <li><a href="contratos.html">Contratos</a></li>
+                                        <li><a href="dotaciones.html">Dotaciones</a></li>
+                                        <li><a href="roles.html">Roles</a></li>
+                                        <li><a href="calendario.html">Calendario</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <img src="images/img.jpg" alt="">Admin
+                                    <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                    <li><a href="profile.html"> Perfil</a></li>
+                                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Cerrar Sesión</a></li>
+                                </ul>
+                            </li>
+                            <li role="presentation" class="dropdown">
+                                <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-envelope-o"></i>
+                                    <span class="badge bg-green" style="border-radius: 50%;">3</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>Gestión de Campamentos <small>Control de Infraestructura</small></h3>
+                        </div>
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Buscar campamento...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">Go!</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- Estadísticas Generales -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="camp-stats">
+                                <div class="row">
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="totalCamps">4</h3>
+                                        <p>Campamentos Activos</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="totalAreas">12</h3>
+                                        <p>Áreas Comunes</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="totalRooms">156</h3>
+                                        <p>Habitaciones</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="utilizationRate">78%</h3>
+                                        <p>Tasa de Utilización</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="x_panel">
+                                <div class="x_content">
+                                    <div class="row" style="margin-bottom: 20px;">
+                                        <div class="col-md-6">
+                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createCampModal">
+                                                <i class="fa fa-plus"></i> Nuevo Campamento
+                                            </button>
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createAreaModal">
+                                                <i class="fa fa-building"></i> Nueva Área Común
+                                            </button>
+                                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#infrastructureModal">
+                                                <i class="fa fa-cogs"></i> Gestionar Infraestructura
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button type="button" class="btn btn-warning" id="exportReportBtn">
+                                                <i class="fa fa-file-excel-o"></i> Exportar Reporte
+                                            </button>
+                                            <button type="button" class="btn btn-default" id="refreshDataBtn">
+                                                <i class="fa fa-refresh"></i> Actualizar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Campamentos -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Campamentos Registrados</h2>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div id="campamentosList">
+                                        <!-- Los campamentos se cargarán dinámicamente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer>
+                <div class="pull-right">
+                    Sabtech Group | Sistemas Hotelero para la Minería <a href="https://sabtechgroup.com/">conocer más</a>
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modales -->
+    <!-- Modal para Crear Campamento -->
+    <div class="modal fade" id="createCampModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Crear Nuevo Campamento</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="createCampForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="campName">Nombre del Campamento *</label>
+                                    <input type="text" class="form-control" id="campName" name="name" required placeholder="Ej: Campamento Norte">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="campCode">Código *</label>
+                                    <input type="text" class="form-control" id="campCode" name="code" required placeholder="Ej: CAMP-N-001">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="campLocation">Ubicación *</label>
+                                    <input type="text" class="form-control" id="campLocation" name="location" required placeholder="Ej: Sector Norte, Mina Escondida">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="campCapacity">Capacidad Total *</label>
+                                    <input type="number" class="form-control" id="campCapacity" name="capacity" required min="1" placeholder="Ej: 200">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="campStatus">Estado</label>
+                                    <select class="form-control" id="campStatus" name="status">
+                                        <option value="active">Activo</option>
+                                        <option value="maintenance">Mantenimiento</option>
+                                        <option value="inactive">Inactivo</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="campManager">Encargado</label>
+                                    <input type="text" class="form-control" id="campManager" name="manager" placeholder="Ej: Juan Pérez">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="campDescription">Descripción</label>
+                            <textarea class="form-control" id="campDescription" name="description" rows="3" placeholder="Descripción del campamento..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveCampBtn">Crear Campamento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+    <script src="../build/js/custom.min.js"></script>
+    
+    <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
+    <script src="auth-simple.js"></script>
+    
+    <!-- Script para mantener texto correcto del usuario -->
+    <script>
+        $(document).ready(function() {
+            // Función para establecer el texto correcto según el usuario
+            function setUserText() {
+                var currentUser = localStorage.getItem('currentUser');
+                console.log('Usuario actual en localStorage:', currentUser);
+                
+                var displayText = '';
+                
+                if (currentUser === 'admin') {
+                    displayText = 'Admin';
+                } else if (currentUser === 'plataforma') {
+                    displayText = 'Plataforma';
+                } else if (currentUser === 'huesped') {
+                    displayText = 'Huésped';
+                } else if (currentUser === 'mantencion') {
+                    displayText = 'Mantención';
+                } else {
+                    displayText = 'Usuario'; // Por defecto
+                }
+                
+                console.log('Texto a mostrar:', displayText);
+                
+                // Solo cambiar si es diferente al actual
+                var currentText = $('.profile_info h2').text();
+                if (currentText !== displayText) {
+                    $('.profile_info h2').text(displayText);
+                    console.log('Texto cambiado de "' + currentText + '" a "' + displayText + '"');
+                }
+                
+                $('.user-profile').contents().filter(function() {
+                    return this.nodeType === 3 && this.nodeValue.trim() !== '';
+                }).each(function() {
+                    if (this.nodeValue.trim() !== displayText) {
+                        this.nodeValue = displayText;
+                    }
+                });
+            }
+            
+            // Ejecutar inmediatamente
+            setUserText();
+            
+            // Ejecutar cada 5 segundos para mantenerlo (menos agresivo)
+            setInterval(setUserText, 5000);
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Datos de ejemplo
+            var campamentos = [
+                {
+                    id: 1,
+                    name: "Campamento Norte",
+                    code: "CAMP-N-001",
+                    location: "Sector Norte, Mina Escondida",
+                    capacity: 200,
+                    currentOccupancy: 156,
+                    status: "active",
+                    manager: "Juan Pérez",
+                    areas: [
+                        { name: "Comedor Principal", type: "comedor", capacity: 100, status: "active" },
+                        { name: "Lavandería Central", type: "lavanderia", capacity: 50, status: "active" },
+                        { name: "Sala de Recreación", type: "recreacion", capacity: 30, status: "maintenance" }
+                    ]
+                },
+                {
+                    id: 2,
+                    name: "Campamento Sur",
+                    code: "CAMP-S-002",
+                    location: "Sector Sur, Mina Los Pelambres",
+                    capacity: 150,
+                    currentOccupancy: 120,
+                    status: "active",
+                    manager: "María González",
+                    areas: [
+                        { name: "Comedor Sur", type: "comedor", capacity: 80, status: "active" },
+                        { name: "Gimnasio", type: "recreacion", capacity: 20, status: "active" }
+                    ]
+                }
+            ];
+
+            // Función para renderizar campamentos
+            function renderCampamentos() {
+                var html = '';
+                campamentos.forEach(function(camp) {
+                    var utilizationPercent = Math.round((camp.currentOccupancy / camp.capacity) * 100);
+                    var statusClass = camp.status === 'active' ? 'status-active' : 
+                                     camp.status === 'maintenance' ? 'status-maintenance' : 'status-inactive';
+                    var statusText = camp.status === 'active' ? 'Activo' : 
+                                    camp.status === 'maintenance' ? 'Mantenimiento' : 'Inactivo';
+
+                    html += `
+                        <div class="area-card">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h4>${camp.name} <small>${camp.code}</small></h4>
+                                    <p><strong>Ubicación:</strong> ${camp.location}</p>
+                                    <p><strong>Encargado:</strong> ${camp.manager}</p>
+                                    <p><strong>Ocupación:</strong> ${camp.currentOccupancy}/${camp.capacity} (${utilizationPercent}%)</p>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: ${utilizationPercent}%"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <span class="area-status ${statusClass}">${statusText}</span>
+                                    <br><br>
+                                    <button class="btn btn-sm btn-info" onclick="viewCampDetails(${camp.id})">
+                                        <i class="fa fa-eye"></i> Ver
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" onclick="editCamp(${camp.id})">
+                                        <i class="fa fa-edit"></i> Editar
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h5>Áreas Comunes:</h5>
+                                    <div class="row">
+                                        ${camp.areas.map(area => `
+                                            <div class="col-md-4">
+                                                <div class="infrastructure-item">
+                                                    <strong>${area.name}</strong><br>
+                                                    <small>Capacidad: ${area.capacity} | Estado: ${area.status}</small>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                $('#campamentosList').html(html);
+            }
+
+            // Función para crear nuevo campamento
+            $('#saveCampBtn').on('click', function() {
+                var form = $('#createCampForm');
+                var formData = {};
+                
+                form.find('input, select, textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+
+                // Validar campos requeridos
+                if (!formData.name || !formData.code || !formData.location || !formData.capacity) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos (*)',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Crear nuevo campamento
+                var newCamp = {
+                    id: campamentos.length + 1,
+                    name: formData.name,
+                    code: formData.code,
+                    location: formData.location,
+                    capacity: parseInt(formData.capacity),
+                    currentOccupancy: 0,
+                    status: formData.status,
+                    manager: formData.manager,
+                    description: formData.description,
+                    areas: []
+                };
+
+                campamentos.push(newCamp);
+                renderCampamentos();
+                updateStats();
+
+                new PNotify({
+                    title: 'Éxito',
+                    text: `Campamento "${formData.name}" creado exitosamente`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+
+                $('#createCampModal').modal('hide');
+                form[0].reset();
+            });
+
+            // Función para actualizar estadísticas
+            function updateStats() {
+                var totalCamps = campamentos.length;
+                var totalAreas = campamentos.reduce((sum, camp) => sum + camp.areas.length, 0);
+                var totalRooms = campamentos.reduce((sum, camp) => sum + camp.currentOccupancy, 0);
+                var totalCapacity = campamentos.reduce((sum, camp) => sum + camp.capacity, 0);
+                var utilizationRate = Math.round((totalRooms / totalCapacity) * 100);
+
+                $('#totalCamps').text(totalCamps);
+                $('#totalAreas').text(totalAreas);
+                $('#totalRooms').text(totalRooms);
+                $('#utilizationRate').text(utilizationRate + '%');
+            }
+
+            // Funciones globales
+            window.viewCampDetails = function(campId) {
+                var camp = campamentos.find(c => c.id === campId);
+                if (camp) {
+                    alert(`Detalles del ${camp.name}:\n\nUbicación: ${camp.location}\nCapacidad: ${camp.capacity}\nOcupación: ${camp.currentOccupancy}\nEncargado: ${camp.manager}`);
+                }
+            };
+
+            window.editCamp = function(campId) {
+                var camp = campamentos.find(c => c.id === campId);
+                if (camp) {
+                    alert(`Editar campamento: ${camp.name}`);
+                    // Aquí se implementaría la funcionalidad de edición
+                }
+            };
+
+            // Inicializar
+            renderCampamentos();
+            updateStats();
+
+            // Botón de actualizar
+            $('#refreshDataBtn').on('click', function() {
+                renderCampamentos();
+                updateStats();
+                new PNotify({
+                    title: 'Datos Actualizados',
+                    text: 'La información ha sido actualizada correctamente',
+                    type: 'info',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            // Botón de exportar reporte
+            $('#exportReportBtn').on('click', function() {
+                new PNotify({
+                    title: 'Reporte Exportado',
+                    text: 'El reporte de campamentos ha sido exportado exitosamente',
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Gestión de Roles y Permisos | Sabtech Group</title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- bootstrap-progressbar -->
+    <link href="../vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <!-- PNotify -->
+    <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    
+    <style>
+        .roles-stats {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .role-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .role-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .role-admin { background-color: #d9534f; color: white; }
+        .role-manager { background-color: #f0ad4e; color: white; }
+        .role-supervisor { background-color: #5bc0de; color: white; }
+        .role-worker { background-color: #5cb85c; color: white; }
+        .role-guest { background-color: #777; color: white; }
+        
+        .permission-matrix {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .permission-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .permission-item:last-child {
+            border-bottom: none;
+        }
+        
+        .permission-toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .permission-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .permission-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .permission-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .permission-slider {
+            background-color: #2196F3;
+        }
+        
+        input:checked + .permission-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .worker-role-item {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        
+        .role-assignment {
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <!-- Sidebar -->
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title" style="border: 0;">
+                        <a href="index.html" class="site_title"><span>Hoteleria</span></a>
+                    </div>
+                    <div class="clearfix"></div>
+
+                    <!-- Profile -->
+                    <div class="profile clearfix">
+                        <div class="profile_pic">
+                            <img src="images/img.jpg" alt="..." class="img-circle profile_img">
+                        </div>
+                        <div class="profile_info">
+                            <span>Bienvenido,</span>
+                            <h2>Admin</h2>
+                        </div>
+                    </div>
+                    <br />
+
+                    <!-- Sidebar Menu -->
+                    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                        <div class="menu_section">
+                            <h3>Menú Usuario</h3>
+                            <ul class="nav side-menu">
+                                <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        <li><a href="index2.html">Reservas</a></li>
+                                        <li><a href="index3.html">Servicios</a></li>
+                                        <li><a href="index.html">Habitaciones</a></li>
+                                        <li><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
+                                        <li><a href="inventario.html">Inventario</a></li>
+                                        <li><a href="campamentos.html">Campamentos</a></li>
+                                        <li><a href="contratos.html">Contratos</a></li>
+                                        <li><a href="dotaciones.html">Dotaciones</a></li>
+                                        <li class="current-page"><a href="roles.html">Roles</a></li>
+                                        <li><a href="calendario.html">Calendario</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <img src="images/img.jpg" alt="">Admin
+                                    <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                    <li><a href="profile.html"> Perfil</a></li>
+                                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Cerrar Sesión</a></li>
+                                </ul>
+                            </li>
+                            <li role="presentation" class="dropdown">
+                                <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-envelope-o"></i>
+                                    <span class="badge bg-green" style="border-radius: 50%;">3</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>Gestión de Roles y Permisos <small>Control de Acceso y Funcionalidades</small></h3>
+                        </div>
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Buscar rol o trabajador...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">Go!</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- Estadísticas Generales -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="roles-stats">
+                                <div class="row">
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="totalRoles">5</h3>
+                                        <p>Roles Definidos</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="adminUsers">3</h3>
+                                        <p>Administradores</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="managerUsers">8</h3>
+                                        <p>Supervisores</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 id="workerUsers">145</h3>
+                                        <p>Trabajadores</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="x_panel">
+                                <div class="x_content">
+                                    <div class="row" style="margin-bottom: 20px;">
+                                        <div class="col-md-6">
+                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createRoleModal">
+                                                <i class="fa fa-plus"></i> Crear Rol
+                                            </button>
+                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#assignRoleModal">
+                                                <i class="fa fa-user-plus"></i> Asignar Rol
+                                            </button>
+                                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#permissionsModal">
+                                                <i class="fa fa-shield"></i> Gestionar Permisos
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button type="button" class="btn btn-warning" id="exportRolesBtn">
+                                                <i class="fa fa-file-excel-o"></i> Exportar Roles
+                                            </button>
+                                            <button type="button" class="btn btn-default" id="refreshDataBtn">
+                                                <i class="fa fa-refresh"></i> Actualizar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Roles -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Roles y Permisos del Sistema</h2>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div id="rolesList">
+                                        <!-- Los roles se cargarán dinámicamente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Asignaciones de Roles -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Asignaciones de Roles por Empresa</h2>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div id="assignmentsList">
+                                        <!-- Las asignaciones se cargarán dinámicamente -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer>
+                <div class="pull-right">
+                    Sabtech Group | Sistemas Hotelero para la Minería <a href="https://sabtechgroup.com/">conocer más</a>
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modal para Crear Rol -->
+    <div class="modal fade" id="createRoleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Crear Nuevo Rol</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="createRoleForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="roleName">Nombre del Rol *</label>
+                                    <input type="text" class="form-control" id="roleName" name="name" required placeholder="Ej: Supervisor de Mantenimiento">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="roleCode">Código del Rol *</label>
+                                    <input type="text" class="form-control" id="roleCode" name="code" required placeholder="Ej: SUP_MANT">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="roleDescription">Descripción</label>
+                            <textarea class="form-control" id="roleDescription" name="description" rows="3" placeholder="Descripción del rol y sus responsabilidades..."></textarea>
+                        </div>
+                        
+                        <h5>Permisos del Rol:</h5>
+                        <div class="permission-matrix">
+                            <div class="permission-item">
+                                <span><i class="fa fa-home"></i> Gestión de Habitaciones</span>
+                                <label class="permission-toggle">
+                                    <input type="checkbox" name="permissions" value="rooms_view">
+                                    <span class="permission-slider"></span>
+                                </label>
+                            </div>
+                            <div class="permission-item">
+                                <span><i class="fa fa-calendar"></i> Gestión de Reservas</span>
+                                <label class="permission-toggle">
+                                    <input type="checkbox" name="permissions" value="reservations_view">
+                                    <span class="permission-slider"></span>
+                                </label>
+                            </div>
+                            <div class="permission-item">
+                                <span><i class="fa fa-wrench"></i> Gestión de Servicios</span>
+                                <label class="permission-toggle">
+                                    <input type="checkbox" name="permissions" value="services_view">
+                                    <span class="permission-slider"></span>
+                                </label>
+                            </div>
+                            <div class="permission-item">
+                                <span><i class="fa fa-building"></i> Gestión de Campamentos</span>
+                                <label class="permission-toggle">
+                                    <input type="checkbox" name="permissions" value="camps_view">
+                                    <span class="permission-slider"></span>
+                                </label>
+                            </div>
+                            <div class="permission-item">
+                                <span><i class="fa fa-file-text"></i> Gestión de Contratos</span>
+                                <label class="permission-toggle">
+                                    <input type="checkbox" name="permissions" value="contracts_view">
+                                    <span class="permission-slider"></span>
+                                </label>
+                            </div>
+                            <div class="permission-item">
+                                <span><i class="fa fa-users"></i> Gestión de Dotaciones</span>
+                                <label class="permission-toggle">
+                                    <input type="checkbox" name="permissions" value="staff_view">
+                                    <span class="permission-slider"></span>
+                                </label>
+                            </div>
+                            <div class="permission-item">
+                                <span><i class="fa fa-shield"></i> Gestión de Roles</span>
+                                <label class="permission-toggle">
+                                    <input type="checkbox" name="permissions" value="roles_view">
+                                    <span class="permission-slider"></span>
+                                </label>
+                            </div>
+                            <div class="permission-item">
+                                <span><i class="fa fa-bar-chart"></i> Reportes y Estadísticas</span>
+                                <label class="permission-toggle">
+                                    <input type="checkbox" name="permissions" value="reports_view">
+                                    <span class="permission-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveRoleBtn">Crear Rol</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Asignar Rol -->
+    <div class="modal fade" id="assignRoleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Asignar Rol a Trabajador</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="assignRoleForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="assignWorker">Trabajador *</label>
+                                    <select class="form-control" id="assignWorker" name="workerId" required>
+                                        <option value="">Seleccionar trabajador...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="assignRole">Rol *</label>
+                                    <select class="form-control" id="assignRole" name="roleId" required>
+                                        <option value="">Seleccionar rol...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="assignStartDate">Fecha de Inicio</label>
+                                    <input type="date" class="form-control" id="assignStartDate" name="startDate">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="assignEndDate">Fecha de Vencimiento</label>
+                                    <input type="date" class="form-control" id="assignEndDate" name="endDate">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="assignNotes">Observaciones</label>
+                            <textarea class="form-control" id="assignNotes" name="notes" rows="2" placeholder="Observaciones sobre la asignación..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveAssignmentBtn">Asignar Rol</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Gestionar Permisos -->
+    <div class="modal fade" id="permissionsModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Matriz de Permisos por Rol</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Módulo</th>
+                                    <th class="text-center">Administrador</th>
+                                    <th class="text-center">Supervisor</th>
+                                    <th class="text-center">Trabajador</th>
+                                    <th class="text-center">Invitado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><i class="fa fa-home"></i> Habitaciones</td>
+                                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                                    <td class="text-center"><span class="badge bg-blue">Lectura</span></td>
+                                    <td class="text-center"><span class="badge bg-blue">Lectura</span></td>
+                                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa fa-calendar"></i> Reservas</td>
+                                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                                    <td class="text-center"><span class="badge bg-blue">Lectura</span></td>
+                                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa fa-wrench"></i> Servicios</td>
+                                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                                    <td class="text-center"><span class="badge bg-orange">Limitado</span></td>
+                                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa fa-building"></i> Campamentos</td>
+                                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                                    <td class="text-center"><span class="badge bg-blue">Lectura</span></td>
+                                    <td class="text-center"><span class="badge bg-blue">Lectura</span></td>
+                                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa fa-file-text"></i> Contratos</td>
+                                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                                    <td class="text-center"><span class="badge bg-blue">Lectura</span></td>
+                                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa fa-users"></i> Dotaciones</td>
+                                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                                    <td class="text-center"><span class="badge bg-blue">Lectura</span></td>
+                                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa fa-shield"></i> Roles</td>
+                                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa fa-bar-chart"></i> Reportes</td>
+                                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5>Leyenda de Permisos:</h5>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <span class="badge bg-green">Completo</span> - Acceso total (crear, leer, editar, eliminar)
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="badge bg-blue">Lectura</span> - Solo visualización
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="badge bg-orange">Limitado</span> - Acceso restringido
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="badge bg-red">Sin acceso</span> - Sin permisos
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="exportPermissionsBtn">
+                        <i class="fa fa-file-excel-o"></i> Exportar Matriz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+    <script src="../build/js/custom.min.js"></script>
+    
+    <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
+    <script src="auth-simple.js"></script>
+    
+    <!-- Script para mantener texto correcto del usuario -->
+    <script>
+        $(document).ready(function() {
+            // Función para establecer el texto correcto según el usuario
+            function setUserText() {
+                var currentUser = localStorage.getItem('currentUser');
+                console.log('Usuario actual en localStorage:', currentUser);
+                
+                var displayText = '';
+                
+                if (currentUser === 'admin') {
+                    displayText = 'Admin';
+                } else if (currentUser === 'plataforma') {
+                    displayText = 'Plataforma';
+                } else if (currentUser === 'huesped') {
+                    displayText = 'Huésped';
+                } else if (currentUser === 'mantencion') {
+                    displayText = 'Mantención';
+                } else {
+                    displayText = 'Usuario'; // Por defecto
+                }
+                
+                console.log('Texto a mostrar:', displayText);
+                
+                // Solo cambiar si es diferente al actual
+                var currentText = $('.profile_info h2').text();
+                if (currentText !== displayText) {
+                    $('.profile_info h2').text(displayText);
+                    console.log('Texto cambiado de "' + currentText + '" a "' + displayText + '"');
+                }
+                
+                $('.user-profile').contents().filter(function() {
+                    return this.nodeType === 3 && this.nodeValue.trim() !== '';
+                }).each(function() {
+                    if (this.nodeValue.trim() !== displayText) {
+                        this.nodeValue = displayText;
+                    }
+                });
+            }
+            
+            // Ejecutar inmediatamente
+            setUserText();
+            
+            // Ejecutar cada 5 segundos para mantenerlo (menos agresivo)
+            setInterval(setUserText, 5000);
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Datos de ejemplo
+            var roles = [
+                {
+                    id: 1,
+                    name: "Administrador",
+                    code: "ADMIN",
+                    description: "Acceso completo a todas las funcionalidades del sistema",
+                    permissions: ["rooms_view", "rooms_edit", "reservations_view", "reservations_edit", "services_view", "services_edit", "camps_view", "camps_edit", "contracts_view", "contracts_edit", "staff_view", "staff_edit", "roles_view", "roles_edit", "reports_view"],
+                    userCount: 3
+                },
+                {
+                    id: 2,
+                    name: "Supervisor",
+                    code: "SUPERVISOR",
+                    description: "Acceso de supervisión a operaciones diarias",
+                    permissions: ["rooms_view", "reservations_view", "reservations_edit", "services_view", "services_edit", "camps_view", "staff_view", "staff_edit", "reports_view"],
+                    userCount: 8
+                },
+                {
+                    id: 3,
+                    name: "Trabajador",
+                    code: "WORKER",
+                    description: "Acceso básico para operaciones de campo",
+                    permissions: ["rooms_view", "reservations_view", "services_view"],
+                    userCount: 145
+                },
+                {
+                    id: 4,
+                    name: "Invitado",
+                    code: "GUEST",
+                    description: "Acceso limitado solo para consultas",
+                    permissions: [],
+                    userCount: 0
+                },
+                {
+                    id: 5,
+                    name: "Supervisor de Mantenimiento",
+                    code: "SUP_MANT",
+                    description: "Especializado en gestión de servicios y mantenimiento",
+                    permissions: ["rooms_view", "services_view", "services_edit", "camps_view", "staff_view"],
+                    userCount: 5
+                }
+            ];
+
+            var workers = [
+                {
+                    id: 1,
+                    name: "Juan",
+                    lastName: "Pérez",
+                    rut: "12.345.678-9",
+                    company: "Constructora ABC Ltda.",
+                    currentRole: "ADMIN",
+                    position: "Supervisor"
+                },
+                {
+                    id: 2,
+                    name: "Carlos",
+                    lastName: "Méndez",
+                    rut: "11.222.333-4",
+                    company: "Constructora ABC Ltda.",
+                    currentRole: "WORKER",
+                    position: "Operador"
+                },
+                {
+                    id: 3,
+                    name: "María",
+                    lastName: "González",
+                    rut: "13.456.789-0",
+                    company: "Servicios Mineros XYZ S.A.",
+                    currentRole: "SUPERVISOR",
+                    position: "Gerente"
+                }
+            ];
+
+            var roleAssignments = [
+                {
+                    id: 1,
+                    workerId: 1,
+                    roleId: 1,
+                    assignedDate: "2024-01-01",
+                    status: "active",
+                    assignedBy: "Sistema"
+                },
+                {
+                    id: 2,
+                    workerId: 2,
+                    roleId: 3,
+                    assignedDate: "2024-01-15",
+                    status: "active",
+                    assignedBy: "Juan Pérez"
+                },
+                {
+                    id: 3,
+                    workerId: 3,
+                    roleId: 2,
+                    assignedDate: "2024-02-01",
+                    status: "active",
+                    assignedBy: "Admin"
+                }
+            ];
+
+            // Función para renderizar roles
+            function renderRoles() {
+                var html = '';
+                roles.forEach(function(role) {
+                    var permissionCount = role.permissions.length;
+                    var roleClass = role.code.toLowerCase().replace('_', '-');
+
+                    html += `
+                        <div class="role-card">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h4>${role.name} <small>${role.code}</small></h4>
+                                    <p>${role.description}</p>
+                                    <p><strong>Usuarios asignados:</strong> ${role.userCount} | <strong>Permisos:</strong> ${permissionCount}</p>
+                                    <div class="permissions-preview">
+                                        ${role.permissions.slice(0, 5).map(perm => `
+                                            <span class="role-badge role-${getRoleClass(role.code)}">${getPermissionName(perm)}</span>
+                                        `).join('')}
+                                        ${role.permissions.length > 5 ? `<span class="text-muted">... y ${role.permissions.length - 5} más</span>` : ''}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <button class="btn btn-sm btn-info" onclick="viewRoleDetails(${role.id})">
+                                        <i class="fa fa-eye"></i> Ver
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" onclick="editRole(${role.id})">
+                                        <i class="fa fa-edit"></i> Editar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                $('#rolesList').html(html);
+            }
+
+            // Función para renderizar asignaciones
+            function renderAssignments() {
+                var html = '';
+                
+                // Agrupar por empresa
+                var assignmentsByCompany = {};
+                
+                roleAssignments.forEach(function(assignment) {
+                    var worker = workers.find(w => w.id === assignment.workerId);
+                    if (worker) {
+                        if (!assignmentsByCompany[worker.company]) {
+                            assignmentsByCompany[worker.company] = [];
+                        }
+                        assignmentsByCompany[worker.company].push({
+                            worker: worker,
+                            assignment: assignment
+                        });
+                    }
+                });
+
+                Object.keys(assignmentsByCompany).forEach(function(company) {
+                    var companyAssignments = assignmentsByCompany[company];
+                    
+                    html += `
+                        <div class="role-card">
+                            <h4>${company}</h4>
+                            <div class="row">
+                                ${companyAssignments.map(item => {
+                                    var role = roles.find(r => r.id === item.assignment.roleId);
+                                    return `
+                                        <div class="col-md-6">
+                                            <div class="worker-role-item">
+                                                <strong>${item.worker.name} ${item.worker.lastName}</strong><br>
+                                                <small>
+                                                    <span class="role-badge role-${getRoleClass(role.code)}">${role.name}</span> | 
+                                                    Asignado: ${item.assignment.assignedDate} | 
+                                                    Por: ${item.assignment.assignedBy}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                $('#assignmentsList').html(html);
+            }
+
+            // Función auxiliar para obtener clase de rol
+            function getRoleClass(roleCode) {
+                switch(roleCode) {
+                    case 'ADMIN': return 'admin';
+                    case 'SUPERVISOR': return 'manager';
+                    case 'WORKER': return 'worker';
+                    case 'GUEST': return 'guest';
+                    default: return 'supervisor';
+                }
+            }
+
+            // Función auxiliar para obtener nombre de permiso
+            function getPermissionName(permission) {
+                switch(permission) {
+                    case 'rooms_view': return 'Ver Habitaciones';
+                    case 'rooms_edit': return 'Editar Habitaciones';
+                    case 'reservations_view': return 'Ver Reservas';
+                    case 'reservations_edit': return 'Editar Reservas';
+                    case 'services_view': return 'Ver Servicios';
+                    case 'services_edit': return 'Editar Servicios';
+                    case 'camps_view': return 'Ver Campamentos';
+                    case 'camps_edit': return 'Editar Campamentos';
+                    case 'contracts_view': return 'Ver Contratos';
+                    case 'contracts_edit': return 'Editar Contratos';
+                    case 'staff_view': return 'Ver Dotaciones';
+                    case 'staff_edit': return 'Editar Dotaciones';
+                    case 'roles_view': return 'Ver Roles';
+                    case 'roles_edit': return 'Editar Roles';
+                    case 'reports_view': return 'Ver Reportes';
+                    default: return permission;
+                }
+            }
+
+            // Función para actualizar estadísticas
+            function updateStats() {
+                var totalRoles = roles.length;
+                var adminUsers = roles.find(r => r.code === 'ADMIN').userCount;
+                var managerUsers = roles.find(r => r.code === 'SUPERVISOR').userCount;
+                var workerUsers = roles.find(r => r.code === 'WORKER').userCount;
+
+                $('#totalRoles').text(totalRoles);
+                $('#adminUsers').text(adminUsers);
+                $('#managerUsers').text(managerUsers);
+                $('#workerUsers').text(workerUsers);
+            }
+
+            // Función para cargar trabajadores en selector
+            function loadWorkersInSelector() {
+                var workerOptions = '<option value="">Seleccionar trabajador...</option>';
+                workers.forEach(function(worker) {
+                    workerOptions += `<option value="${worker.id}">${worker.name} ${worker.lastName} - ${worker.company}</option>`;
+                });
+                $('#assignWorker').html(workerOptions);
+            }
+
+            // Función para cargar roles en selector
+            function loadRolesInSelector() {
+                var roleOptions = '<option value="">Seleccionar rol...</option>';
+                roles.forEach(function(role) {
+                    roleOptions += `<option value="${role.id}">${role.name} (${role.code})</option>`;
+                });
+                $('#assignRole').html(roleOptions);
+            }
+
+            // ==================== FUNCIONALIDADES ====================
+
+            // 1. CREAR NUEVO ROL
+            $('#saveRoleBtn').on('click', function() {
+                var form = $('#createRoleForm');
+                var formData = {};
+                
+                form.find('input[type="text"], textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+
+                // Obtener permisos seleccionados
+                var selectedPermissions = [];
+                form.find('input[name="permissions"]:checked').each(function() {
+                    selectedPermissions.push($(this).val());
+                });
+
+                // Validar campos requeridos
+                if (!formData.name || !formData.code) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos (*)',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Verificar que el código no exista
+                var codeExists = roles.some(r => r.code === formData.code);
+                if (codeExists) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'El código del rol ya existe. Por favor use otro código.',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Crear nuevo rol
+                var newRole = {
+                    id: Math.max(...roles.map(r => r.id)) + 1,
+                    name: formData.name,
+                    code: formData.code,
+                    description: formData.description,
+                    permissions: selectedPermissions,
+                    userCount: 0
+                };
+
+                roles.push(newRole);
+                renderRoles();
+                updateStats();
+                loadRolesInSelector();
+
+                new PNotify({
+                    title: 'Éxito',
+                    text: `Rol "${formData.name}" creado exitosamente con ${selectedPermissions.length} permisos`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+
+                $('#createRoleModal').modal('hide');
+                form[0].reset();
+                form.find('input[name="permissions"]').prop('checked', false);
+            });
+
+            // 2. ASIGNAR ROL A TRABAJADOR
+            $('#saveAssignmentBtn').on('click', function() {
+                var form = $('#assignRoleForm');
+                var formData = {};
+                
+                form.find('input, select, textarea').each(function() {
+                    formData[$(this).attr('name')] = $(this).val();
+                });
+
+                // Validar campos requeridos
+                if (!formData.workerId || !formData.roleId) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor seleccione un trabajador y un rol',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Verificar si ya tiene una asignación activa
+                var existingAssignment = roleAssignments.find(ra => ra.workerId == formData.workerId && ra.status === 'active');
+                if (existingAssignment) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'El trabajador ya tiene un rol asignado. Debe desactivar el rol actual primero.',
+                        type: 'error',
+                        hide: false,
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Crear nueva asignación
+                var newAssignment = {
+                    id: Math.max(...roleAssignments.map(ra => ra.id)) + 1,
+                    workerId: parseInt(formData.workerId),
+                    roleId: parseInt(formData.roleId),
+                    assignedDate: formData.startDate || new Date().toISOString().split('T')[0],
+                    endDate: formData.endDate,
+                    status: 'active',
+                    assignedBy: 'Admin',
+                    notes: formData.notes
+                };
+
+                roleAssignments.push(newAssignment);
+                renderAssignments();
+
+                // Actualizar contador de usuarios en el rol
+                var role = roles.find(r => r.id == formData.roleId);
+                if (role) {
+                    role.userCount++;
+                }
+
+                renderRoles();
+                updateStats();
+
+                new PNotify({
+                    title: 'Éxito',
+                    text: `Rol asignado exitosamente al trabajador`,
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+
+                $('#assignRoleModal').modal('hide');
+                form[0].reset();
+            });
+
+            // Funciones globales
+            window.viewRoleDetails = function(roleId) {
+                var role = roles.find(r => r.id === roleId);
+                if (role) {
+                    var details = `
+Detalles del Rol: ${role.name}
+Código: ${role.code}
+Descripción: ${role.description}
+Usuarios asignados: ${role.userCount}
+
+Permisos:
+${role.permissions.map(p => `- ${getPermissionName(p)}`).join('\n')}
+                    `;
+                    alert(details);
+                }
+            };
+
+            window.editRole = function(roleId) {
+                var role = roles.find(r => r.id === roleId);
+                if (role) {
+                    alert(`Editar rol: ${role.name}`);
+                    // Aquí se implementaría la funcionalidad de edición
+                }
+            };
+
+            // Botón de actualizar
+            $('#refreshDataBtn').on('click', function() {
+                renderRoles();
+                renderAssignments();
+                updateStats();
+                new PNotify({
+                    title: 'Datos Actualizados',
+                    text: 'La información ha sido actualizada correctamente',
+                    type: 'info',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            // Botón de exportar roles
+            $('#exportRolesBtn').on('click', function() {
+                new PNotify({
+                    title: 'Reporte Exportado',
+                    text: 'El reporte de roles y permisos ha sido exportado exitosamente',
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            // Botón de exportar matriz de permisos
+            $('#exportPermissionsBtn').on('click', function() {
+                new PNotify({
+                    title: 'Matriz Exportada',
+                    text: 'La matriz de permisos ha sido exportada exitosamente',
+                    type: 'success',
+                    hide: false,
+                    styling: 'bootstrap3'
+                });
+            });
+
+            // Inicializar
+            renderRoles();
+            renderAssignments();
+            updateStats();
+            loadWorkersInSelector();
+            loadRolesInSelector();
+
+            // Configurar PNotify
+            PNotify.prototype.options.styling = "bootstrap3";
+        });
+    </script>
+</body>
+</html>
