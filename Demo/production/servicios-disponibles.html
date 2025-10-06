@@ -192,6 +192,35 @@
         body:not(.admin-user) .admin-hidden {
             display: block !important;
         }
+        
+        /* Asegurar que el menú se muestre completo */
+        .nav.child_menu {
+            overflow: visible !important;
+            max-height: none !important;
+            height: auto !important;
+        }
+        
+        .nav.side-menu {
+            overflow: visible !important;
+        }
+        
+        #sidebar-menu {
+            overflow: visible !important;
+            max-height: none !important;
+        }
+        
+        .left_col {
+            overflow: visible !important;
+        }
+        
+        /* Forzar que el menú esté expandido */
+        .nav.child_menu {
+            display: block !important;
+        }
+        
+        li.active .nav.child_menu {
+            display: block !important;
+        }
     </style>
 </head>
 
@@ -225,8 +254,8 @@
                         <div class="menu_section">
                             <h3>Menú Usuario</h3>
                             <ul class="nav side-menu">
-                                <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
-                                    <ul class="nav child_menu">
+                                <li class="active"><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu" style="display: block;">
                                         <li><a href="index2.html">Reservas</a></li>
                                         <li><a href="index3.html">Servicios</a></li>
                                         <li><a href="index.html">Habitaciones</a></li>
@@ -239,9 +268,6 @@
                                         <li><a href="calendario.html">Calendario</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="Home.html"><i class="fa fa-home"></i> Inicio</a></li>
-                                <li><a href="profile.html"><i class="fa fa-user"></i> Perfil</a></li>
-                                <li><a href="login.html"><i class="fa fa-sign-out"></i> Cerrar Sesión</a></li>
                             </ul>
                         </div>
                     </div>
@@ -1070,17 +1096,67 @@
     <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
     <script src="auth-simple.js"></script>
     
+    <!-- Script para mantener texto correcto del usuario -->
+    <script>
+        $(document).ready(function() {
+            // Función para establecer el texto correcto según el usuario
+            function setUserText() {
+                var currentUser = localStorage.getItem('currentUser');
+                console.log('Usuario actual en localStorage:', currentUser);
+                
+                var displayText = '';
+                
+                if (currentUser === 'admin') {
+                    displayText = 'Admin';
+                } else if (currentUser === 'plataforma') {
+                    displayText = 'Plataforma';
+                } else if (currentUser === 'huesped') {
+                    displayText = 'Huésped';
+                } else if (currentUser === 'mantencion') {
+                    displayText = 'Mantención';
+                } else {
+                    displayText = 'Usuario'; // Por defecto
+                }
+                
+                console.log('Texto a mostrar:', displayText);
+                
+                // Solo cambiar si es diferente al actual
+                var currentText = $('.profile_info h2').text();
+                if (currentText !== displayText) {
+                    $('.profile_info h2').text(displayText);
+                    console.log('Texto cambiado de "' + currentText + '" a "' + displayText + '"');
+                }
+                
+                $('.user-profile').contents().filter(function() {
+                    return this.nodeType === 3 && this.nodeValue.trim() !== '';
+                }).each(function() {
+                    if (this.nodeValue.trim() !== displayText) {
+                        this.nodeValue = displayText;
+                    }
+                });
+            }
+            
+            // Ejecutar inmediatamente
+            setUserText();
+            
+            // Ejecutar cada 5 segundos para mantenerlo (menos agresivo)
+            setInterval(setUserText, 5000);
+        });
+    </script>
+    
     <!-- FORZAR VISIBILIDAD DE MENÚS -->
-    <script src="force-menu.js"></script>
+    <!-- <script src="force-menu.js"></script> -->
     
-    <!-- FORZAR VISIBILIDAD AGRESIVA -->
-    <script src="force-menu-aggressive.js"></script>
+    <!-- FORZAR VISIBILIDAD AGRESIVA - DESHABILITADO -->
+    <!-- <script src="force-menu-aggressive.js"></script> -->
     
-    <!-- LIMPIAR NOTIFICACIONES DUPLICADAS -->
-    <script src="cleanup-notifications.js"></script>
+    <!-- LIMPIAR NOTIFICACIONES DUPLICADAS - DESHABILITADO -->
+    <!-- <script src="cleanup-notifications.js"></script> -->
     
-    <!-- CORREGIR MENÚS EN TODAS LAS PÁGINAS -->
-    <script src="fix-menu-scripts.js"></script>
+    <!-- SCRIPT DE CORRECCIÓN DE MENÚ REMOVIDO - CAUSABA PROBLEMAS VISUALES -->
+    
+    <!-- CORREGIR MENÚS EN TODAS LAS PÁGINAS - DESHABILITADO -->
+    <!-- <script src="fix-menu-scripts.js"></script> -->
 
     <!-- Script para gestión de servicios disponibles -->
     <script>

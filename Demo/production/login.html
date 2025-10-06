@@ -409,6 +409,9 @@
             } else if (username.toLowerCase() === 'huesped') {
                 setUserSession('huesped', sessionToken);
                 window.location.href = 'index2.html'; // Página de reservas para huesped
+            } else if (username.toLowerCase() === 'personal') {
+                setUserSession('personal', sessionToken);
+                window.location.href = 'mantencion.html'; // Página específica para personal
             } else {
                 setUserSession('guest', sessionToken);
                 window.location.href = 'Home.html'; // Página de selección de perfiles
@@ -471,7 +474,7 @@
                 'plataforma': 'admin123',
                 'admin': 'admin123',
                 'huesped': 'admin123',
-                'mantencion': 'admin123'
+                'personal': 'admin123'
             };
             
             return validUsers[username.toLowerCase()] === password;

@@ -117,6 +117,8 @@
                                         <li><a href="index2.html">Reservas</a></li>
                                         <li><a href="index3.html">Servicios</a></li>
                                         <li><a href="index.html">Habitaciones</a></li>
+                                        <li><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
+                                        <li><a href="inventario.html">Inventario</a></li>
                                         <li><a href="campamentos.html">Campamentos</a></li>
                                         <li class="current-page"><a href="contratos.html">Contratos</a></li>
                                         <li><a href="dotaciones.html">Dotaciones</a></li>
@@ -143,6 +145,10 @@
                                     <img src="images/img.jpg" alt="">Admin
                                     <span class=" fa fa-angle-down"></span>
                                 </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                    <li><a href="profile.html"> Perfil</a></li>
+                                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Cerrar Sesión</a></li>
+                                </ul>
                             </li>
                             <li role="presentation" class="dropdown">
                                 <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
@@ -516,6 +522,54 @@
     
     <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
     <script src="auth-simple.js"></script>
+    
+    <!-- Script para mantener texto correcto del usuario -->
+    <script>
+        $(document).ready(function() {
+            // Función para establecer el texto correcto según el usuario
+            function setUserText() {
+                var currentUser = localStorage.getItem('currentUser');
+                console.log('Usuario actual en localStorage:', currentUser);
+                
+                var displayText = '';
+                
+                if (currentUser === 'admin') {
+                    displayText = 'Admin';
+                } else if (currentUser === 'plataforma') {
+                    displayText = 'Plataforma';
+                } else if (currentUser === 'huesped') {
+                    displayText = 'Huésped';
+                } else if (currentUser === 'mantencion') {
+                    displayText = 'Mantención';
+                } else {
+                    displayText = 'Usuario'; // Por defecto
+                }
+                
+                console.log('Texto a mostrar:', displayText);
+                
+                // Solo cambiar si es diferente al actual
+                var currentText = $('.profile_info h2').text();
+                if (currentText !== displayText) {
+                    $('.profile_info h2').text(displayText);
+                    console.log('Texto cambiado de "' + currentText + '" a "' + displayText + '"');
+                }
+                
+                $('.user-profile').contents().filter(function() {
+                    return this.nodeType === 3 && this.nodeValue.trim() !== '';
+                }).each(function() {
+                    if (this.nodeValue.trim() !== displayText) {
+                        this.nodeValue = displayText;
+                    }
+                });
+            }
+            
+            // Ejecutar inmediatamente
+            setUserText();
+            
+            // Ejecutar cada 5 segundos para mantenerlo (menos agresivo)
+            setInterval(setUserText, 5000);
+        });
+    </script>
 
     <script>
         $(document).ready(function() {

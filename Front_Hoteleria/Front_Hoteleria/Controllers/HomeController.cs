@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace Front_Hoteleria.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : System.Web.Mvc.Controller
     {
         public ActionResult Index()
         {
@@ -16,14 +12,12 @@ namespace Front_Hoteleria.Controllers
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
-
-            return View();
+            return (ActionResult)View();
         }
 
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
-
             return View();
         }
     }
