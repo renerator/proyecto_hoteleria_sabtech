@@ -236,10 +236,16 @@ namespace DemoBackend.Controllers
         /// <response code="500">Error interno.</response>
         [HttpGet("BuscarReservas")]
         public ActionResult<List<ReservaDto>> BuscarReservas(
-     [FromQuery] int? idReserva,
-     [FromQuery] int? idHabitacion,
-     [FromQuery] int? idTrabajador,
-     [FromQuery] int? idEstadoReserva)
+            [FromQuery] int? idReserva,
+            [FromQuery] int? idHabitacion,
+            [FromQuery] int? idTrabajador,
+            [FromQuery] DateTime? FechaDesde,
+            [FromQuery] DateTime? FechaHasta,
+            [FromQuery] bool? QuiereTransporte,
+            [FromQuery] DateTime? FechaCheckIN,
+            [FromQuery] DateTime? FechaCheckOut,
+            [FromQuery] int? idEstadoReserva,
+            [FromQuery] string? MotivoReserva)
         {
             try
             {
@@ -248,7 +254,19 @@ namespace DemoBackend.Controllers
                     IdReserva = idReserva ?? 0,
                     IdHabitacion = idHabitacion ?? 0,
                     IdTrabajador = idTrabajador ?? 0,
-                    IdEstadoReserva = idEstadoReserva ?? 0
+                    IdEstadoReserva = idEstadoReserva ?? 0,
+                
+                    FechaDesde = FechaDesde ?? null,
+                    FechaHasta = FechaHasta ?? null,
+
+                   
+                    QuiereTransporte = QuiereTransporte ?? false,
+       
+
+                    FechaCheckIN = FechaCheckIN ?? null,
+                    FechaCheckOut = FechaCheckOut ?? null,
+
+                    MotivoReserva = string.IsNullOrWhiteSpace(MotivoReserva) ? null : MotivoReserva!.Trim()
                 };
 
                 var resultados = _reservaService.BuscaReservas(filtro);
