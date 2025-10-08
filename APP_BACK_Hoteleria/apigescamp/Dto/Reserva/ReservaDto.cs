@@ -9,7 +9,7 @@ namespace DemoBackend.Dto.Reserva
         public int IdTrabajador { get; set; }
         public DateTime? FechaDesde { get; set; }
         public DateTime? FechaHasta { get; set; }
-        public bool QuiereTransporte { get; set; }
+        public bool? QuiereTransporte { get; set; }
         public DateTime? FechaCheckIN { get; set; }
         public DateTime? FechaCheckOut { get; set; }
         public int IdEstadoReserva { get; set; }

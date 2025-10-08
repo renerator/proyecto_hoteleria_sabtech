@@ -1,10 +1,12 @@
 ﻿
-using DemoBackend.Models.Mantenedores;
 using DemoBackend.Models.Habitacion;
-using DemoBackend.Models.Reserva;
-using DemoBackend.Models.Trabajador;
-using DemoBackend.Models.Servicio;
+using DemoBackend.Models.Insumos;
+using DemoBackend.Models.Bodega;
+using DemoBackend.Models.Mantenedores;
 using DemoBackend.Models.Menu;
+using DemoBackend.Models.Reserva;
+using DemoBackend.Models.Servicio;
+using DemoBackend.Models.Trabajador;
 using Microsoft.EntityFrameworkCore;
 
 namespace DemoBackend.Models
@@ -27,6 +29,9 @@ namespace DemoBackend.Models
         public virtual DbSet<MenuModels> ListaMenus { get; set; }
 
         public virtual DbSet<TrabajadorModels> ListaTrabajadores { get; set; }
+       
+        public virtual DbSet<InsumoModels> ListaInsumos { get; set; }
+        public virtual DbSet<BodegaModels> ListaBodegas { get; set; }
         public virtual DbSet<ServicioModels> ListaServicio { get; set; }
 
 
