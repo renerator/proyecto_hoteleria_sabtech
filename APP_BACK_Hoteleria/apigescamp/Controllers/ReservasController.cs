@@ -260,7 +260,7 @@ namespace DemoBackend.Controllers
                     FechaHasta = FechaHasta ?? null,
 
                    
-                    QuiereTransporte = QuiereTransporte ?? false,
+                    QuiereTransporte = QuiereTransporte ?? null,
        
 
                     FechaCheckIN = FechaCheckIN ?? null,

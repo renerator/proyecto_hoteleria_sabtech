@@ -6,12 +6,12 @@ using DemoBackend.Repository;
 using DemoBackend.RepositoryGes;
 using DemoBackend.Services;
 using DemoBackend.Services.Autenticacion;
+using DemoBackend.Services.Habitacion;
 using DemoBackend.Services.Mantenedores;
 using DemoBackend.Services.Menu;
-using DemoBackend.Services.Habitacion;
+using DemoBackend.Services.Reserva;
 using DemoBackend.Services.Servicio;
 using DemoBackend.Services.Trabajador;
-using DemoBackend.Services.Reserva;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -73,6 +73,11 @@ namespace DemoBackend
                 services.AddTransient<IMenuService, MenuService>();
                 services.AddTransient<IServicioService, ServicioService>();
                 services.AddTransient<ITrabajadorService, TrabajadorService>();
+                // === Mantenedores ===
+               
+                services.AddTransient<IBodegaService, BodegaService>();
+                services.AddTransient<IInsumoService, InsumoService>();
+
 
                 services.AddTransient<IValidaUsuarioService, ValidaUsuarioService>();
                 services.Configure<CredencialesConfig>(Configuration.GetSection("CredencialesConfig"));

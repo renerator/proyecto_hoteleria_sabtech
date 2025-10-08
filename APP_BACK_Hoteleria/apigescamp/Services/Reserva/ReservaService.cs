@@ -142,7 +142,7 @@ namespace DemoBackend.Services
             parametros[2] = new SqlParameter("@idTrabajador", reserva.IdTrabajador);
             parametros[3] = new SqlParameter("@FechaDesde", (object?)reserva.FechaDesde ?? DBNull.Value);
             parametros[4] = new SqlParameter("@FechaHasta", (object?)reserva.FechaHasta ?? DBNull.Value);
-            parametros[5] = new SqlParameter("@QuiereTransporte", reserva.QuiereTransporte);
+            parametros[5] = new SqlParameter("@QuiereTransporte", (object?)reserva.QuiereTransporte ?? DBNull.Value);
             parametros[6] = new SqlParameter("@FechaCheckIN", (object?)reserva.FechaCheckIN ?? DBNull.Value);
             parametros[7] = new SqlParameter("@FechaCheckOut", (object?)reserva.FechaCheckOut ?? DBNull.Value);
             parametros[8] = new SqlParameter("@idEstadoReserva", reserva.IdEstadoReserva);
