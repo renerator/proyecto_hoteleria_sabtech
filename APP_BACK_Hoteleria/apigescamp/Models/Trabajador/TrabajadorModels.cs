@@ -8,8 +8,8 @@ namespace DemoBackend.Models.Trabajador
     public class TrabajadorModels : EntityBase
     {
         [Key]
-        [Column("idTrabajador")]
-        public int IdTrabajador { get; set; }
+        [Column("idUsuario")]
+        public int IdUsuario { get; set; }
 
         [Column("idEmpresaContratista")]
         public int IdEmpresaContratista { get; set; }

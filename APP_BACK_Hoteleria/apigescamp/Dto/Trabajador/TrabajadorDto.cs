@@ -4,7 +4,7 @@ namespace DemoBackend.Dto.Trabajador
 {
     public class TrabajadorDto
     {
-        public int IdTrabajador { get; set; }
+        public int IdUsuario { get; set; }
         public int IdEmpresaContratista { get; set; }
         public string DNITrabajador { get; set; }
         public string NombresTrabajador { get; set; }

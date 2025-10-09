@@ -11,7 +11,7 @@ namespace DemoBackend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class InsumosController : ControllerBase
+    public class InsumosController : BaseController
     {
         private readonly IInsumoService _service;
         private readonly ILogger<InsumosController> _logger;
