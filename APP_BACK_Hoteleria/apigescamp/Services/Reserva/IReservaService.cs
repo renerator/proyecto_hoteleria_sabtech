@@ -1,5 +1,6 @@
 ﻿using DemoBackend.Dto.Mantenedores;
 using DemoBackend.Dto.Reserva;
+using System;
 using System.Collections.Generic;
 
 namespace DemoBackend.Services.Reserva
@@ -14,6 +15,8 @@ namespace DemoBackend.Services.Reserva
         List<ReservaDto> VerificaReservaPorId(ReservaDto reserva);
 
         List<ReservaDto> BuscaReservas(ReservaDto reserva);
+
+        ReservaDashboardDto ObtenerDashboard(DateTime? desde, DateTime? hasta);
     }
 }
 

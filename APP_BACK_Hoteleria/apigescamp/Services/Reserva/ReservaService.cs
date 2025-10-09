@@ -7,19 +7,23 @@ using DemoBackend.Services.Reserva;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DemoBackend.Services
 {
     public class ReservaService : IReservaService
     {
         private readonly IGenericRepositoryEntity<ReservaModels> _listaReserva;
+        private readonly IGenericRepositoryEntity<ReservaDashboardKPI> _listaReservaDashboard;
         private readonly IMapper _mapper;
 
         public ReservaService(
             IGenericRepositoryEntity<ReservaModels> listaReserva,
+            IGenericRepositoryEntity<ReservaDashboardKPI> listaReservaDashboard,
             IMapper mapper)
         {
             _listaReserva = listaReserva;
+            _listaReservaDashboard = listaReservaDashboard;
             _mapper = mapper;
         }
 
@@ -153,5 +157,52 @@ namespace DemoBackend.Services
             return _mapper.Map<List<ReservaDto>>(lista);
         }
 
+        public ReservaDashboardDto ObtenerDashboard(DateTime? desde, DateTime? hasta)
+        {
+            var hoy = DateTime.Today;
+            var d = (desde ?? hoy).Date;
+            var h = (hasta ?? hoy).Date;
+
+            // Nombre del SP correcto
+            string sql = "HOT_DASH_TotalesYEstados @Desde, @Hasta";
+            var parametros = new SqlParameter[2];
+            parametros[0] = new SqlParameter("@Desde", d);
+            parametros[1] = new SqlParameter("@Hasta", h);
+
+            var dto = new ReservaDashboardDto();
+
+            try
+            {
+                var kpiRow = _listaReservaDashboard.GetStoreProcedure(sql, parametros).FirstOrDefault();
+                if (kpiRow != null)
+                {
+                    dto.NuevasReservas = kpiRow.NuevasReservas;
+                    dto.Servicios = kpiRow.Servicios;
+                    dto.CheckIn = kpiRow.CheckIn;
+                    dto.CheckOut = kpiRow.CheckOut;
+
+                    dto.Pendientes = kpiRow.Pendientes;
+                    dto.Confirmadas = kpiRow.Confirmadas;
+                    dto.Rechazadas = kpiRow.Rechazadas;
+                    dto.Realizadas = kpiRow.Realizadas;
+                }
+
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en ObtenerDashboard: {ex.Message}");
+            }
+
+            return dto;
+        }
+
+
+
+
     }
+
+
+
 }
