@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using DemoBackend.Services.Autenticacion;
-using DemoBackend.Models;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -12,115 +11,97 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using DemoBackend.Dto;
-using Microsoft.AspNetCore.Identity;
 
 namespace DemoBackend.Controllers
 {
     public class AutenticacionController : BaseController
     {
-
         private readonly IAutenticacionService _service;
         private readonly IConfiguration _config;
         private readonly ILogger _logger;
-        public AutenticacionController(IAutenticacionService service, IConfiguration config, ILogger<AutenticacionController> logger)
+
+        public AutenticacionController(
+            IAutenticacionService service,
+            IConfiguration config,
+            ILogger<AutenticacionController> logger)
         {
             _config = config;
             _service = service;
             _logger = logger;
         }
 
-        /// <summary>
-        /// Login de usuarios
-        /// </summary>
-        /// <param name="user">usuario y pass</param>
-        /// <returns>token</returns>
-        /// <response code="200">token</response>
-        /// <response code="204">No encuentra datos</response>
-        /// <response code="400">Datos entradas inválidos</response>
-        /// <response code="500">Error interno</response>
+        /// <summary>Login de usuarios</summary>
         [AllowAnonymous]
         [HttpPost("Login")]
-#pragma warning disable CS1998 // El método asincrónico carece de operadores "await" y se ejecutará de forma sincrónica
+#pragma warning disable CS1998
         public async Task<IActionResult> Login(LoginDto user)
-#pragma warning restore CS1998 // El método asincrónico carece de operadores "await" y se ejecutará de forma sincrónica
+#pragma warning restore CS1998
         {
-            
-
-            if (user.username.Length <= 0 || user.password.Length <= 0)
+            if (string.IsNullOrWhiteSpace(user?.username) || string.IsNullOrWhiteSpace(user?.password))
             {
-                _logger.LogInformation($"Login: Datos de autenticación invalidos  ");
-                return StatusCode(400, "Login: Datos de autenticación invalidos");
+                _logger.LogInformation("Login: Datos de autenticación inválidos");
+                return StatusCode(400, "Login: Datos de autenticación inválidos");
             }
 
             try
             {
                 var login = _service.Login(user.username, user.password);
-                int idUser = 0;
-                int idPerfil = 0;
-
-                if (login.Count == 0)
+                if (login == null || login.Count == 0)
                 {
-                    _logger.LogWarning($"Login: Usuario o contraseña no son correctos");
-                    return StatusCode(400, $"Login: Usuario o contraseña no son correctos");
+                    _logger.LogWarning("Login: Usuario o contraseña no son correctos");
+                    return StatusCode(400, "Usuario o contraseña no son correctos");
                 }
 
-                else
-                {
+                var first = login.First();
+                int idUser = first.idUsuario;
+                int idPerfil = first.idPerfil;
 
-                    if (login != null)
-                    {
-                        var login1 = login.First(); // toma el primer objeto de la lista
+                // Para auditoría: el filtro leerá esto SOLO en /Login
+                HttpContext.Items["idUsuarioLogin"] = idUser;
 
-                        idUser = login1.idUsuario;
-                        idPerfil = login1.idPerfil;
-                       
-                    }
-                    else
-                    {
-                        // Manejar caso sin resultados
-                    }
+                var tokenString = GenerateJSONWebToken(idUser, idPerfil, user.username);
+                _logger.LogInformation($"Login: Usuario {user.username} válido");
 
-
-                   
-
-                    var tokenString = GenerateJSONWebToken(login.FirstOrDefault());
-                    _logger.LogInformation($"Login: Usuario {user.username} válido");
-                    return Ok(new { Token = tokenString, Message = "Success" , IdUser= idUser, IdPerfil =idPerfil});
-                }
+                return Ok(new { Token = tokenString, Message = "Success", IdUser = idUser, IdPerfil = idPerfil });
             }
             catch (Exception e)
             {
-                _logger.LogError($"Login: Ha ocurrido el siguiente error en la autenticación de usuarios --> {e.Message}");
+                _logger.LogError($"Login: Ha ocurrido un error --> {e.Message}");
                 _logger.LogTrace(e.StackTrace);
                 return StatusCode(500, e.Message);
             }
-
         }
 
         #region GenerateJWT
-        /// <summary>
-        /// Generate Json Web Token Method
-        /// </summary>
-        /// <param name="userInfo"></param>
-        /// <returns></returns>
-        private string GenerateJSONWebToken(LoginDto userInfo)
+        /// <summary>Genera JWT con claims (idUsuario, idPerfil)</summary>
+        private string GenerateJSONWebToken(int idUsuario, int idPerfil, string username)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var claims = new[] {
-                new Claim(JwtRegisteredClaimNames.UniqueName, userInfo.id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                // estándar
+                new Claim(JwtRegisteredClaimNames.Sub, username ?? string.Empty),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                // donde ya lo tenías (id como UniqueName)
+                new Claim(JwtRegisteredClaimNames.UniqueName, idUsuario.ToString()),
+                // explícitos (recomendado para la API/filtros)
+                new Claim("idUsuario", idUsuario.ToString()),
+                new Claim("idPerfil", idPerfil.ToString())
             };
-            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-              _config["Jwt:Issuer"],
-              claims,
-              expires: DateTime.Now.AddYears(100),
-              signingCredentials: credentials);
+
+            var token = new JwtSecurityToken(
+                issuer: _config["Jwt:Issuer"],
+                audience: _config["Jwt:Audience"],      // si no usas Audience, puedes igualarlo al Issuer
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(8),   // evita 100 años :)
+                signingCredentials: creds
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
         #endregion
-
-
     }
 }
+

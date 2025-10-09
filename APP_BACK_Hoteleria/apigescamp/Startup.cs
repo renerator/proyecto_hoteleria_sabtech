@@ -1,5 +1,6 @@
 using AutoMapper;
 using DemoBackend.Configurations;
+using DemoBackend.Filters;
 using DemoBackend.Models;
 using DemoBackend.Repositories;
 using DemoBackend.Repository;
@@ -9,8 +10,6 @@ using DemoBackend.Services.Autenticacion;
 using DemoBackend.Services.Habitacion;
 using DemoBackend.Services.Mantenedores;
 using DemoBackend.Services.Menu;
-using DemoBackend.Services.Habitacion;
-using DemoBackend.Services.Trabajador;
 using DemoBackend.Services.Reserva;
 using DemoBackend.Services.Servicio;
 using DemoBackend.Services.Trabajador;
@@ -81,6 +80,15 @@ namespace DemoBackend
                 services.AddTransient<IInsumoService, InsumoService>();
 
 
+                //auditoria registro
+
+                services.AddScoped<AuditActionFilter>();
+
+                services.AddControllers(options =>
+                {
+                    options.Filters.AddService<AuditActionFilter>(); // <- global
+                });
+                // ************
                 services.AddTransient<IValidaUsuarioService, ValidaUsuarioService>();
                 services.Configure<CredencialesConfig>(Configuration.GetSection("CredencialesConfig"));
 
@@ -154,7 +162,8 @@ namespace DemoBackend
                     ValidateLifetime = false,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = Configuration["Jwt:Issuer"],
-                    ValidAudience = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Audience"],
+                    //ValidAudience = Configuration["Jwt:Issuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])) //Configuration["JwtToken:SecretKey"]
                 };
             });
@@ -177,13 +186,14 @@ namespace DemoBackend
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-            app.UseAuthentication();
+           
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

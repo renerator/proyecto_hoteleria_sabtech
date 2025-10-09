@@ -9,7 +9,7 @@ namespace DemoBackend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class BodegasController : ControllerBase
+    public class BodegasController : BaseController
     {
         private readonly IBodegaService _service;
         private readonly ILogger<BodegasController> _logger;
