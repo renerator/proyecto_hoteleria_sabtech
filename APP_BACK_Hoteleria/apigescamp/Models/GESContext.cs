@@ -26,6 +26,20 @@ namespace DemoBackend.Models
         public virtual DbSet<AreasModels> ListaAreas { get; set; }
         public virtual DbSet<HabitacionModels> ListaHabitaciones { get; set; }
         public virtual DbSet<ReservaModels> ListaReservas { get; set; }
+        public virtual DbSet<ReservaDashboardKPI> Dashboard { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ReservaDashboardKPI>(eb =>
+            {
+                eb.HasNoKey();     // <- clave
+                eb.ToView(null);   // <- no está mapeado a vista/tabla
+            });
+
+            // ...tus otras entidades
+        }
         public virtual DbSet<MenuModels> ListaMenus { get; set; }
 
         public virtual DbSet<TrabajadorModels> ListaTrabajadores { get; set; }
