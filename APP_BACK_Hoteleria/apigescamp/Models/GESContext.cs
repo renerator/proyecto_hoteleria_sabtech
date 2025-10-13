@@ -7,6 +7,7 @@ using DemoBackend.Models.Menu;
 using DemoBackend.Models.Reserva;
 using DemoBackend.Models.Servicio;
 using DemoBackend.Models.Trabajador;
+using DemoBackend.Models.HabitacionInsumo;
 using Microsoft.EntityFrameworkCore;
 
 namespace DemoBackend.Models
@@ -26,6 +27,7 @@ namespace DemoBackend.Models
         public virtual DbSet<AreasModels> ListaAreas { get; set; }
         public virtual DbSet<HabitacionModels> ListaHabitaciones { get; set; }
         public virtual DbSet<ReservaModels> ListaReservas { get; set; }
+        public virtual DbSet<HabitacionInsumoModels> ListaHabitacionInsumo { get; set; }
         public virtual DbSet<ReservaDashboardKPI> Dashboard { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

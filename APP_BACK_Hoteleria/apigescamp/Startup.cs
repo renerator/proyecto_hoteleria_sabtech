@@ -8,6 +8,7 @@ using DemoBackend.RepositoryGes;
 using DemoBackend.Services;
 using DemoBackend.Services.Autenticacion;
 using DemoBackend.Services.Habitacion;
+using DemoBackend.Services.HabitacionInsumo;
 using DemoBackend.Services.Mantenedores;
 using DemoBackend.Services.Menu;
 using DemoBackend.Services.Reserva;
@@ -73,6 +74,7 @@ namespace DemoBackend
                 services.AddTransient<IReservaService, ReservaService>();
                 services.AddTransient<IMenuService, MenuService>();
                 services.AddTransient<IServicioService, ServicioService>();
+                services.AddTransient<IHabitacionInsumoService, HabitacionInsumoService>();
                 services.AddTransient<ITrabajadorService, TrabajadorService>();
                 // === Mantenedores ===
                

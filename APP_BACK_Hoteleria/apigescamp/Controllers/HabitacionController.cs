@@ -271,8 +271,21 @@ namespace DemoBackend.Controllers
             }
         }
 
+        // -------- DASHBOARD --------
+        // Devuelve KPIs del dashboard (nuevas, servicios, checkin, checkout, pendientes, confirmadas, rechazadas, realizadas)
+        [HttpGet("dashboardHabiatacion")]
+        public IActionResult Dashboard([FromQuery] DateTime? desde, [FromQuery] DateTime? hasta)
+        {
+            var data = _grupoService.ObtenerDashboardHabitacion(desde, hasta);
+
+            // Evitar caché para “tiempo real”
+            Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, proxy-revalidate";
+            Response.Headers["Pragma"] = "no-cache";
+            Response.Headers["Expires"] = "0";
+
+            return Ok(data);
 
 
-
+        }
     }
 }
