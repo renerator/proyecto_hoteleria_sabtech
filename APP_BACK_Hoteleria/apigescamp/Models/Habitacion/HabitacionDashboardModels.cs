@@ -2,7 +2,7 @@
 using DemoBackend.Models;
 using System;
 
-namespace DemoBackend.Dto.Dashboard
+namespace DemoBackend.Dto.Habitacion
 {
     public class HabitacionDashboardModels : EntityBase
     {

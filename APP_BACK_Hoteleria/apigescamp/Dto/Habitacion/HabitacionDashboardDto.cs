@@ -1,7 +1,7 @@
 ﻿// DemoBackend/Dto/Dashboard/DashboardResumenDto.cs
 using System;
 
-namespace DemoBackend.Dto.Dashboard
+namespace DemoBackend.Dto.Habitacion
 {
     public class HabitacionDashboardDto
     {
