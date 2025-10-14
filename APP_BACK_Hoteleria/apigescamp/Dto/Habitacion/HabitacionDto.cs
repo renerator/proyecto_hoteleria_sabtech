@@ -6,6 +6,9 @@ namespace DemoBackend.Dto.Habitacion
     {
         public int IdHabitacion { get; set; }
         public int IdArea { get; set; }
+        public string NombreArea { get; set; }
+        public string Ala { get; set; }
+        public string Pasillo { get; set; }
         public string NombreHabitacion { get; set; }
         public int Capacidad { get; set; }
         public bool VIP { get; set; }

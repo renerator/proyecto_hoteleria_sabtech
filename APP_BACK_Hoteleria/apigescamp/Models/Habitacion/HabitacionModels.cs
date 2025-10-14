@@ -20,6 +20,12 @@ namespace DemoBackend.Models.Habitacion
         [Column("Capacidad")]
         public int Capacidad { get; set; }
 
+        //[Column("Ala")]
+        //public string Ala { get; set; }
+
+        //[Column("Pasillo")]
+        //public string Pasillo { get; set; }
+
         [Column("VIP")]
         public bool VIP { get; set; }
 

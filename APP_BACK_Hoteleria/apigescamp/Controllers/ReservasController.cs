@@ -285,7 +285,7 @@ namespace DemoBackend.Controllers
 
         // -------- DASHBOARD --------
         // Devuelve KPIs del dashboard (nuevas, servicios, checkin, checkout, pendientes, confirmadas, rechazadas, realizadas)
-        [HttpGet("dashboard")]
+        [HttpGet("dashboardReservas")]
         public IActionResult Dashboard([FromQuery] DateTime? desde, [FromQuery] DateTime? hasta)
         {
             var data = _reservaService.ObtenerDashboard(desde, hasta);

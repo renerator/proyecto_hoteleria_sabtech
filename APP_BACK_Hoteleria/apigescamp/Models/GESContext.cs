@@ -1,7 +1,9 @@
 ﻿
-using DemoBackend.Models.Habitacion;
-using DemoBackend.Models.Insumos;
+using DemoBackend.Dto.Habitacion;
 using DemoBackend.Models.Bodega;
+using DemoBackend.Models.Habitacion;
+using DemoBackend.Models.HabitacionInsumo;
+using DemoBackend.Models.Insumos;
 using DemoBackend.Models.Mantenedores;
 using DemoBackend.Models.Menu;
 using DemoBackend.Models.Reserva;
@@ -26,8 +28,9 @@ namespace DemoBackend.Models
         public virtual DbSet<AreasModels> ListaAreas { get; set; }
         public virtual DbSet<HabitacionModels> ListaHabitaciones { get; set; }
         public virtual DbSet<ReservaModels> ListaReservas { get; set; }
+        public virtual DbSet<HabitacionInsumoModels> ListaHabitacionInsumo { get; set; }
         public virtual DbSet<ReservaDashboardKPI> Dashboard { get; set; }
-
+        public virtual DbSet<HabitacionDashboardModels> DashboardHabitacion { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -37,9 +40,17 @@ namespace DemoBackend.Models
                 eb.HasNoKey();     // <- clave
                 eb.ToView(null);   // <- no está mapeado a vista/tabla
             });
-
+            modelBuilder.Entity<HabitacionDashboardModels>(eb =>
+            {
+                eb.HasNoKey();     // <- clave
+                eb.ToView(null);   // <- no está mapeado a vista/tabla
+            });
             // ...tus otras entidades
         }
+
+        
+
+      
         public virtual DbSet<MenuModels> ListaMenus { get; set; }
 
         public virtual DbSet<TrabajadorModels> ListaTrabajadores { get; set; }
