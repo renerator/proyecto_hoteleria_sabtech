@@ -5,9 +5,9 @@ using DemoBackend.Models.Habitacion;
 
 namespace DemoBackend.Mapping
 {
-    public class HabitacionKPI: Profile
+    public class HabitacionKPIMapping: Profile
     {
-        public HabitacionKPI()
+        public HabitacionKPIMapping()
         {
             CreateMap<HabitacionDashboardDto, HabitacionDashboardModels>();
             CreateMap<HabitacionDashboardModels, HabitacionDashboardDto>();

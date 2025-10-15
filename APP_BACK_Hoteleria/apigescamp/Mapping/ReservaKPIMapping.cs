@@ -5,9 +5,9 @@ using DemoBackend.Models.Reserva;
 
 namespace DemoBackend.Mapping
 {
-    public class ReservaKPI: Profile
+    public class ReservaKPIMapping: Profile
     {
-        public ReservaKPI()
+        public ReservaKPIMapping()
         {
             CreateMap<ReservaDashboardDto, ReservaDashboardKPI>();
             CreateMap<ReservaDashboardKPI, ReservaDashboardDto>();

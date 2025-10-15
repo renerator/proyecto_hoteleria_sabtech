@@ -9,6 +9,8 @@ using DemoBackend.Models.Menu;
 using DemoBackend.Models.Reserva;
 using DemoBackend.Models.Servicio;
 using DemoBackend.Models.Trabajador;
+using DemoBackend.Models.SolicitudServicio;
+using DemoBackend.Models.OrdenTrabajo;
 using Microsoft.EntityFrameworkCore;
 
 namespace DemoBackend.Models
@@ -31,6 +33,9 @@ namespace DemoBackend.Models
         public virtual DbSet<HabitacionInsumoModels> ListaHabitacionInsumo { get; set; }
         public virtual DbSet<ReservaDashboardKPI> Dashboard { get; set; }
         public virtual DbSet<HabitacionDashboardModels> DashboardHabitacion { get; set; }
+
+        public virtual DbSet<SolicitudServicioModels> SolicitudServicio { get; set; }
+        public virtual DbSet<OrdenTrabajoModels> ListaOrdenTrabajo { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
