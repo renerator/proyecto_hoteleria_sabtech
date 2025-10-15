@@ -12,7 +12,9 @@ using DemoBackend.Services.HabitacionInsumo;
 using DemoBackend.Services.Mantenedores;
 using DemoBackend.Services.Menu;
 using DemoBackend.Services.Reserva;
+using DemoBackend.Services.OrdenTrabajo;
 using DemoBackend.Services.Servicio;
+using DemoBackend.Services.SolicitudServicio;
 using DemoBackend.Services.Trabajador;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -73,11 +75,14 @@ namespace DemoBackend
                 services.AddTransient<IHabitacionService, HabitacionService>();
                 services.AddTransient<IReservaService, ReservaService>();
                 services.AddTransient<IMenuService, MenuService>();
+                services.AddTransient<IMenuService, MenuService>();
+                services.AddTransient<ISolicitudServicioService, SolicitudServicioService>();
                 services.AddTransient<IServicioService, ServicioService>();
                 services.AddTransient<IHabitacionInsumoService, HabitacionInsumoService>();
                 services.AddTransient<ITrabajadorService, TrabajadorService>();
+                services.AddTransient<IOrdenTrabajoService, OrdenTrabajoService>();
                 // === Mantenedores ===
-               
+
                 services.AddTransient<IBodegaService, BodegaService>();
                 services.AddTransient<IInsumoService, InsumoService>();
 
