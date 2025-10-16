@@ -3,9 +3,9 @@
 <table id="tablaHabitaciones" class="table table-striped table-bordered">
     <thead>
         <tr>
-            <th>Área</th>
-            <th>Ala</th>
-            <th>Pasillo</th>
+            @*<th>Área</th>*@
+            @*<th>Ala</th>
+            <th>Pasillo</th>*@
             <th>Nro habitación</th>
             <th>Disponible</th>
             <th>Capacidad</th>
@@ -22,12 +22,12 @@
             foreach (var h in Model)
             {
                 <tr>
-                    <td>@h.Area</td>
-                    <td>@h.Ala</td>
-                    <td>@h.Pasillo</td>
-                    <td>@h.Numero</td>
+                    @*<td>@h.Area</td>*@
+                    @*<td>@h.Ala</td>
+                    <td>@h.Pasillo</td>*@
+                    <td>@h.NombreHabitacion</td>
                     <td>
-                        @if (h.Disponible)
+                        @if (h.VIP)
                         {
                             <i class="green fa fa-check"></i>
                         }

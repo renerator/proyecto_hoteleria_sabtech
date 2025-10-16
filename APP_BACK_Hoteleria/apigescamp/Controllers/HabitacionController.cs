@@ -1,4 +1,5 @@
-﻿using DemoBackend.Dto.Habitacion;
+﻿using DemoBackend.Dto.BitacoraHabitacion;
+using DemoBackend.Dto.Habitacion;
 using DemoBackend.Services.Habitacion;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -286,6 +287,25 @@ namespace DemoBackend.Controllers
             return Ok(data);
 
 
+        }
+
+        [HttpPost("CrearBitacoraHabitacion")]
+        public ActionResult CrearBitacoraHabitacion([FromBody] BitacoraHabitacionDto dto)
+        {
+            _logger.LogInformation("PostCrearBitacoraHabitacion: inicio.");
+            try
+            {
+                if (dto == null) return BadRequest("Datos vacíos.");
+                if (dto.IdHabitacion <= 0) return Ok("Status 200: Error de validación (IdHabitacion requerido).");
+
+                var ok = _grupoService.CrearBitacoraHabitacion(dto);
+                return Ok(ok ? "Bitácora creada correctamente." : "No se pudo crear la bitácora.");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "PostCrearBitacoraHabitacion: error.");
+                return StatusCode(500, e.Message);
+            }
         }
     }
 }

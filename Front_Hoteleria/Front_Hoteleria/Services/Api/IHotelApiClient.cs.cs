@@ -2,6 +2,7 @@
 using Front_Hoteleria.Dto.Habitacion;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Front_Hoteleria.Services.Api
 {
@@ -18,11 +19,17 @@ namespace Front_Hoteleria.Services.Api
         bool ModificarHabitacion(HabitacionDto habitacion);
         bool EliminarHabitacion(int idHabitacion);
 
+        Task<HabitacionDashboardDto> DashboardHabitacionAsync(DateTime? desde, DateTime? hasta, string bearer = null);
+
         // Búsquedas/validaciones
         List<HabitacionDto> VerificaHabitacionPorId(int idHabitacion);
         List<HabitacionDto> BuscaHabitaciones(HabitacionDto filtro);
 
-        // (Opcional) Métricas/Dashboard del módulo habitación
-        //HabitacionDashboardDto ObtenerDashboard(DateTime? desde, DateTime? hasta);
+
+        // ⬇️ NUEVO: debe coincidir EXACTO con la implementación y con lo que llama tu controller
+
+        
+
+
     }
 }
