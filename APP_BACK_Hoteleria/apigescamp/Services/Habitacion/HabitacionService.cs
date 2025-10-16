@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 
 using DemoBackend.Dto.Habitacion;
+using DemoBackend.Dto.BitacoraHabitacion;
 
 using DemoBackend.Dto.Reserva;
 using DemoBackend.Models.Habitacion;
@@ -191,6 +192,33 @@ namespace DemoBackend.Services
 
             return _mapper.Map<List<HabitacionDto>>(listagrupos);
         }
+
+
+        public bool CrearBitacoraHabitacion(BitacoraHabitacionDto dto)
+        {
+            if (dto == null) return false;
+            if (dto.IdHabitacion <= 0) return false;
+
+            const string sql = "HOT_BIT_CRE_BitacoraHabitacion @idHabitacion,@FechaBitacora,@TipoBitacora";
+            var p = new SqlParameter[]
+            {
+                new SqlParameter("@idHabitacion",   dto.IdHabitacion),
+                new SqlParameter("@FechaBitacora", (object?)dto.FechaBitacora ?? DBNull.Value),
+                new SqlParameter("@TipoBitacora",  (object?)dto.TipoBitacora  ?? DBNull.Value),
+            };
+
+            try
+            {
+                _listaHabitacion.InsertProcedure(sql, p);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+        }
+
         #endregion
     }
 }

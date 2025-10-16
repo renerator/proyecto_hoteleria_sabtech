@@ -11,7 +11,7 @@
 <div class="right_col" role="main">
     <div class="x_panel">
         <div class="x_title">
-            <h2>Listado de Habitaciones <small>API REST</small></h2>
+            <h2>Listado de Habitaciones <small>Todos los Estados</small></h2>
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
@@ -42,8 +42,9 @@
                     <input name="capacidadMin" type="number" min="1" class="form-control" />
                 </div>
                 <div class="col-md-3" style="display:flex;gap:8px;align-items:end">
-                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
-                    <button type="button" id="btnNuevo" class="btn btn-success" data-toggle="modal" data-target="#modalUpsert"><i class="fa fa-plus"></i> Nuevo</button>
+                    
+                    <button type="button" id="btnNuevo" class="btn btn-primary" data-toggle="modal" data-target="#modalUpsert"><i class="fa fa-plus"></i> Crear Nueva Habitacion</button>
+                    <button type="submit" class="btn btn-success"><i class="fa fa-search"></i> Buscar</button>
                     <button type="button" id="btnLimpiar" class="btn btn-secondary">Limpiar</button>
                 </div>
             </form>
@@ -76,6 +77,18 @@
     <script src="~/vendors/pnotify/dist/pnotify.buttons.js"></script>
 
     <script>
+
+    const urlDashboard = '@Url.Action("Dashboard","Habitaciones")';
+
+  function cargarDashboard(){
+    const d = $('#desde').val();
+    const h = $('#hasta').val();
+    $('#dashContainer').load(urlDashboard + '?desde=' + encodeURIComponent(d) + '&hasta=' + encodeURIComponent(h));
+  }
+
+  $('#frmDash').on('submit', function(e){ e.preventDefault(); cargarDashboard(); });
+  $(function(){ cargarDashboard(); }); // carga inicial
+
     const urlTabla = '@Url.Action("TablaPartial","Habitaciones")';
     const urlUpsertGet = '@Url.Action("Upsert","Habitaciones")';
     const urlUpsertPost = '@Url.Action("Upsert","Habitaciones")';

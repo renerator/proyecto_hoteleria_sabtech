@@ -1,5 +1,7 @@
 ﻿
 using DemoBackend.Dto.Habitacion;
+
+using DemoBackend.Dto.BitacoraHabitacion;
 using System;
 using System.Collections.Generic;
 
@@ -17,5 +19,7 @@ namespace DemoBackend.Services.Habitacion
         List<HabitacionDto> VerificaHabitacionPorNombre(HabitacionDto HabitacionModels);
         List<HabitacionDto> VerificaHabitacionPorId(HabitacionDto HabitacionModels);
         public HabitacionDashboardDto ObtenerDashboardHabitacion(DateTime? desde, DateTime? hasta);
+
+        bool CrearBitacoraHabitacion(BitacoraHabitacionDto dto);
     }
 }

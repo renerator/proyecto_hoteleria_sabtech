@@ -1,12 +1,14 @@
 ﻿using Front_Hoteleria.Dto.Habitacion;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using System.Web;
 
 namespace Front_Hoteleria.Services.Api
 {
@@ -51,6 +53,7 @@ namespace Front_Hoteleria.Services.Api
             SetBearer(bearer);
 
             var url = "/api/Habitacion/HabitacionesDisponibles?vigencia=" + vigencia;
+
             using (var resp = await _http.GetAsync(url))
             {
                 if (resp.StatusCode == System.Net.HttpStatusCode.NoContent)
@@ -58,9 +61,37 @@ namespace Front_Hoteleria.Services.Api
 
                 resp.EnsureSuccessStatusCode();
                 var json = await resp.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<HabitacionDto>>(json) ?? new List<HabitacionDto>();
+
+                return JsonConvert.DeserializeObject<List<HabitacionDto>>(json)
+                       ?? new List<HabitacionDto>();
             }
         }
+
+        public async Task<HabitacionDashboardDto> DashboardHabitacionAsync(
+         DateTime? desde, DateTime? hasta, string bearer = null)
+        {
+            SetBearer(bearer);
+
+            var qs = System.Web.HttpUtility.ParseQueryString(string.Empty);
+            if (desde.HasValue) qs["desde"] = desde.Value.ToString("yyyy-MM-dd");
+            if (hasta.HasValue) qs["hasta"] = hasta.Value.ToString("yyyy-MM-dd");
+
+            var url = "/api/Habitacion/dashboardHabitacion";
+            var query = qs.ToString();
+            if (!string.IsNullOrEmpty(query)) url += "?" + query;
+
+            using (var resp = await _http.GetAsync(url))
+            {
+                if (resp.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    return new HabitacionDashboardDto();
+
+                resp.EnsureSuccessStatusCode();
+                var json = await resp.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<HabitacionDashboardDto>(json)
+                       ?? new HabitacionDashboardDto();
+            }
+        }
+
 
         public async Task<bool> CrearHabitacionAsync(HabitacionDto dto, string bearer = null)
         {
@@ -73,7 +104,7 @@ namespace Front_Hoteleria.Services.Api
                 return resp.IsSuccessStatusCode;
             }
         }
-
+       
         public async Task<bool> ConfirmarHabitacionAsync(HabitacionDto dto, string bearer = null)
         {
             SetBearer(bearer);

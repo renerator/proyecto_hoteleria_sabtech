@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DemoBackend.Dto.BitacoraReserva;
 using DemoBackend.Dto.Reserva;
 using DemoBackend.Models.Reserva;
 using DemoBackend.RepositoryGes;
@@ -26,7 +27,31 @@ namespace DemoBackend.Services
             _listaReservaDashboard = listaReservaDashboard;
             _mapper = mapper;
         }
+        public bool CrearBitacoraReserva(BitacoraReservaDto dto)
+        {
+            if (dto == null) return false;
+            if (dto.IdReserva <= 0) return false;
 
+            const string sql = "HOT_RESBIT_CRE_BitacoraReserva @idReserva,@FechaBitacora,@idEstadoReserva,@Observaciones";
+            var p = new SqlParameter[]
+            {
+                new SqlParameter("@idReserva", dto.IdReserva),
+                new SqlParameter("@FechaBitacora", (object?)dto.FechaBitacora ?? DBNull.Value),
+                new SqlParameter("@idEstadoReserva", (object?)dto.IdEstadoReserva ?? DBNull.Value),
+                new SqlParameter("@Observaciones", (object?)dto.Observaciones ?? DBNull.Value)
+            };
+
+            try
+            {
+                _listaReserva.InsertProcedure(sql, p);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+        }
         #region Reservas
         public bool CrearReserva(ReservaDto reserva)
         {

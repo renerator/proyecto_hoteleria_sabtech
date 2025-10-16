@@ -1,4 +1,5 @@
-﻿using DemoBackend.Dto.Mantenedores;
+﻿using DemoBackend.Dto.BitacoraReserva;
+using DemoBackend.Dto.Mantenedores;
 using DemoBackend.Dto.Reserva;
 using DemoBackend.Models.Reserva;
 using DemoBackend.Services;
@@ -297,6 +298,26 @@ namespace DemoBackend.Controllers
 
             return Ok(data);
         }
+
+        [HttpPost("CrearBitacoraReserva")]
+        public ActionResult CrearBitacoraReserva([FromBody] BitacoraReservaDto dto)
+        {
+            _logger.LogInformation("PostCrearBitacoraReserva: inicio.");
+            try
+            {
+                if (dto == null) return BadRequest("Datos vacíos.");
+                if (dto.IdReserva <= 0) return Ok("Status 200: Error de validación (IdReserva requerido).");
+
+                var ok = _reservaService.CrearBitacoraReserva(dto);
+                return Ok(ok ? "Bitácora de reserva creada correctamente." : "No se pudo crear la bitácora.");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "PostCrearBitacoraReserva: error.");
+                return StatusCode(500, e.Message);
+            }
+        }
+
     }
 }
 
