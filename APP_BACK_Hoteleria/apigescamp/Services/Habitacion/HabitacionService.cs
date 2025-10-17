@@ -124,49 +124,29 @@ namespace DemoBackend.Services
             return _mapper.Map<List<HabitacionDto>>(listagrupos);
         }
 
-        public HabitacionDashboardDto ObtenerDashboardHabitacion(DateTime? desde, DateTime? hasta)
+        public HabitacionDashboardDto ObtenerDashboardHabitacion()
         {
-            var hoy = DateTime.Today;
-            var d = (desde ?? hoy).Date;
-            var h = (hasta ?? hoy).Date;
-
-            // Nombre del SP correcto
-            string sql = "DASH_ResumenHabitaciones @FechaDesde, @FechaHasta";
-            var parametros = new SqlParameter[2];
-            parametros[0] = new SqlParameter("@FechaDesde", d);
-            parametros[1] = new SqlParameter("@FechaHasta", h);
-
+            const string sql = "DASH_ResumenHabitaciones"; // SP sin parámetros
             var dto = new HabitacionDashboardDto();
 
-            try
+            if (_listaHabitacionDashboard == null)
+                throw new InvalidOperationException("_listaHabitacionDashboard es null (no inyectado en DI).");
+
+            var rows = _listaHabitacionDashboard.GetStoreProcedure(sql, Array.Empty<SqlParameter>());
+            var k = rows?.FirstOrDefault();
+            if (k != null)
             {
-                if (_listaHabitacionDashboard == null)
-                    throw new InvalidOperationException("_listaHabitacionDashboard es null (no inyectado en DI).");
-
-                // 
-                //var rows = _listaHabitacionDashboard.GetStoreProcedure(sql, parametros)
-                         //  ?? Enumerable.Empty<object>();
-
-                //var kpiRow = rows.FirstOrDefault();
-
-                var kpiRow = _listaHabitacionDashboard.GetStoreProcedure(sql, parametros).FirstOrDefault();
-                if (kpiRow != null)
-                {
-                    dto.HabitacionesHabilitadas = kpiRow.HabitacionesHabilitadas;
-                    dto.HabitacionesMantencion = kpiRow.HabitacionesMantencion;
-                    dto.HabitacionesOcupadas = kpiRow.HabitacionesOcupadas;
-                    dto.ServiciosSolicitados = kpiRow.ServiciosSolicitados;
-                    dto.AseoEnCurso = kpiRow.AseoEnCurso;
-                }
-
+                dto.HabitacionesHabilitadas = k.HabitacionesHabilitadas;
+                dto.HabitacionesMantencion = k.HabitacionesMantencion;
+                dto.HabitacionesOcupadas = k.HabitacionesOcupadas;
+                dto.ServiciosSolicitados = k.ServiciosSolicitados;
+                dto.AseoEnCurso = k.AseoEnCurso;
+                if (k.GetType().GetProperty("ServiciosVarPorcentaje") != null);// dto.ServiciosVarPorcentaje = k.ServiciosVarPorcentaje;
+                if (k.GetType().GetProperty("HuespedesRegistrados") != null);// dto.HuespedesRegistrados = k.HuespedesRegistrados;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error en ObtenerDashboard: {ex.Message}");
-            }
-
             return dto;
         }
+
 
         public List<HabitacionDto> VerificaHabitacionPorNombre(HabitacionDto habitacion)
         {

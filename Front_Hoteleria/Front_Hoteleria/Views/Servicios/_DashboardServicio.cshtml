@@ -1,0 +1,43 @@
+﻿@model Front_Hoteleria.Dto.Servicio.ServicioDto
+
+<div class="row tile_count" style="margin-bottom:15px">
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-user"></i> Habitaciones Habilitadas</span>
+        <div class="count">@Model.HabitacionesHabilitadas.ToString("N0")</div>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-clock-o"></i> Habitaciones en Mantención</span>
+        <div class="count">@Model.HabitacionesMantencion.ToString("N0")</div>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-user"></i> Habitaciones Ocupadas</span>
+        <div class="count green">@Model.HabitacionesOcupadas.ToString("N0")</div>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-user"></i> Servicios solicitados</span>
+        <div class="count">@Model.ServiciosSolicitados.ToString("N0")</div>
+        <span class="count_bottom">
+            @if (Model.ServiciosVarPorcentaje.HasValue)
+            {
+                var v = Model.ServiciosVarPorcentaje.Value;
+                if (v >= 0)
+                {<i class="green"><i class="fa fa-sort-asc"></i> @v.ToString("0.#")% </i> }
+            else
+            { <i class="red"><i class="fa fa-sort-desc"></i> @Math.Abs(v).ToString("0.#")% </i> }
+        @: En la última semana
+    }
+    else
+    {
+        @: &nbsp;
+    }
+        </span>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-user"></i> Aseo en curso</span>
+        <div class="count">@Model.AseoEnCurso.ToString("N0")</div>
+    </div>
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-user"></i> Huespedes Registrados</span>
+        <div class="count">@((Model.ServiciosPrevPeriodo ?? 0).ToString("N0"))</div>
+    </div>
+</div>

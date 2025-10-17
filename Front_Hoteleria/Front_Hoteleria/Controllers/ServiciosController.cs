@@ -1,9 +1,8 @@
-ï»¿using Front_Hoteleria.Dto.Habitacion;
-using Front_Hoteleria.Services.Habitacion;
-using Front_Hoteleria.Services.HabitacionInsumo;
-using Front_Hoteleria.ViewModels.Habitacion;
+
+using Front_Hoteleria.Dto.Reserva;
+using Front_Hoteleria.Dto.Servicio;
+using Front_Hoteleria.Services.Servicio;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -13,22 +12,14 @@ using System.Web.Mvc;
 
 namespace Front_Hoteleria.Controllers
 {
-    public class HabitacionesController : Controller
+    public class ServiciosController : Controller
     {
-        private readonly IHabitacionService _api;
-        private readonly IHabitacionInsumoService _habInsumoApi;
+        private readonly IServicioService _api;
 
-        // ----- DI (recomendado) -----
-        public HabitacionesController(IHabitacionService api, IHabitacionInsumoService habInsumoApi)
-        {
-            _api = api ?? throw new ArgumentNullException(nameof(api));
-            _habInsumoApi = habInsumoApi ?? throw new ArgumentNullException(nameof(habInsumoApi));
-        }
+        public ServiciosController() : this(new ServicioService()) { }
+        public ServiciosController(IServicioService api) { _api = api; }
 
-        // ----- Fallback sin contenedor de DI (opcional) -----
-        public HabitacionesController() : this(new HabitacionService(), new HabitacionInsumoService()) { }
-
-        // ----- Helper para obtener el Bearer -----
+        // Helper unificado para leer el bearer
         private string GetBearer()
         {
             try
@@ -46,7 +37,6 @@ namespace Front_Hoteleria.Controllers
         [HttpGet]
         public ActionResult Index() => View();
 
-        // ===================== LISTADO HABITACIONES =====================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> TablaPartial(int? vigencia, string nombre, bool? vip, int? capacidadMin)
@@ -55,21 +45,21 @@ namespace Front_Hoteleria.Controllers
             {
                 var token = GetBearer();
                 if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "SesiÃ³n expirada o sin autenticaciÃ³n.");
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
 
                 var data = await _api.HabitacionesDisponiblesAsync(vigencia ?? 1, token);
 
                 if (!string.IsNullOrWhiteSpace(nombre))
-                    data = data.Where(x => (x.NombreHabitacion ?? string.Empty)
+                    data = data.Where(x => (x.NombreServicio ?? string.Empty)
                                 .IndexOf(nombre, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
 
-                if (vip.HasValue)
-                    data = data.Where(x => x.VIP == vip.Value).ToList();
+                //if (vip.HasValue)
+                //    data = data.Where(x => x..VIP == vip.Value).ToList();
 
-                if (capacidadMin.HasValue)
-                    data = data.Where(x => x.Capacidad >= capacidadMin.Value).ToList();
+                //if (capacidadMin.HasValue)
+                //    data = data.Where(x => x..Capacidad >= capacidadMin.Value).ToList();
 
-                return PartialView("_TablaHabitaciones", data);
+                return PartialView("_TablaServicio", data);
             }
             catch (HttpRequestException ex)
             {
@@ -79,7 +69,7 @@ namespace Front_Hoteleria.Controllers
             catch (TaskCanceledException ex)
             {
                 Trace.TraceError($"[TablaPartial] Timeout al consultar API: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta a la API excediÃ³ el tiempo de espera.");
+                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta a la API excedió el tiempo de espera.");
             }
             catch (Exception ex)
             {
@@ -88,20 +78,24 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
-        // ===================== DASHBOARD (SIN FECHAS) =====================
+        // Dashboard (estilo Upsert: arma modelo y devuelve partial)
         [HttpGet]
-        public async Task<ActionResult> Dashboard()
+        public async Task<ActionResult> Dashboard(DateTime? desde, DateTime? hasta)
         {
             try
             {
                 var token = GetBearer();
                 if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "SesiÃ³n expirada o sin autenticaciÃ³n.");
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
 
-                var dto = await _api.DashboardHabitacionAsync(token) ?? new HabitacionDashboardDto();
+                // Defaults de fecha (últimos 30 días) si vienen nulas
+                var d = desde ?? DateTime.Today.AddDays(-30);
+                var h = hasta ?? DateTime.Today;
 
-                // Usamos ruta absoluta para evitar problemas de resoluciÃ³n del partial
-                return PartialView("~/Views/Habitaciones/_DashboardHabitacion.cshtml", dto);
+                var dto = await _api.DashboardHabitacionAsync(d, h, token);
+                dto = dto ?? new ServicioDashboardDto();
+
+                return PartialView("_DashboardServicio", dto);
             }
             catch (HttpRequestException ex)
             {
@@ -111,7 +105,7 @@ namespace Front_Hoteleria.Controllers
             catch (TaskCanceledException ex)
             {
                 Trace.TraceError($"[Dashboard] Timeout al consultar API: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta de dashboard excediÃ³ el tiempo de espera.");
+                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta de dashboard excedió el tiempo de espera.");
             }
             catch (Exception ex)
             {
@@ -121,71 +115,20 @@ namespace Front_Hoteleria.Controllers
         }
 
         [HttpGet]
-        public async Task<JsonResult> FiltrosInventario()
-        {
-            try
-            {
-                var bearer = GetBearer();
-                var data = await _habInsumoApi.ListarAsync(1, bearer).ConfigureAwait(false);
-
-                var habs = data.Select(x => x.IdHabitacion).Distinct()
-                               .OrderBy(x => x)
-                               .Select(x => new { value = x, text = x.ToString() })
-                               .ToList();
-
-                var ins = data.Select(x => new { x.IdInsumo, x.NombreInsumo })
-                              .Distinct()
-                              .OrderBy(x => x.NombreInsumo)
-                              .Select(x => new { value = x.IdInsumo, text = x.NombreInsumo })
-                              .ToList();
-
-                return Json(new { habitaciones = habs, insumos = ins }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[FiltrosInventario] Error: {ex}");
-                return Json(new { habitaciones = new object[0], insumos = new object[0] }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        // Tabla inventario
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<PartialViewResult> TablaInventario(FiltroInventarioVm f)
-        {
-            try
-            {
-                var bearer = GetBearer();
-                var data = await _habInsumoApi.ListarAsync(1, bearer).ConfigureAwait(false);
-
-                if (f?.IdHabitacion != null) data = data.Where(d => d.IdHabitacion == f.IdHabitacion.Value).ToList();
-                if (f?.IdInsumo != null) data = data.Where(d => d.IdInsumo == f.IdInsumo.Value).ToList();
-
-                return PartialView("_TablaInventario", data);
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[TablaInventario] Error: {ex}");
-                return PartialView("_TablaInventario", new List<InventarioFilaVm>());
-            }
-        }
-
-        // ===================== UPSERT HABITACIÃ“N =====================
-        [HttpGet]
         public async Task<ActionResult> Upsert(int? id)
         {
             try
             {
                 var token = GetBearer();
                 if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "SesiÃ³n expirada o sin autenticaciÃ³n.");
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
 
-                var dto = new HabitacionDto { Capacidad = 1, IdEstado = 1 };
+                var dto = new ServicioDto();
 
                 if (id.HasValue)
                 {
                     var lista = await _api.HabitacionesDisponiblesAsync(1, token);
-                    var existente = lista.FirstOrDefault(x => x.IdHabitacion == id.Value);
+                    var existente = lista.FirstOrDefault(x => x.IdServicio == id.Value);
                     if (existente != null) dto = existente;
                 }
 
@@ -199,7 +142,7 @@ namespace Front_Hoteleria.Controllers
             catch (TaskCanceledException ex)
             {
                 Trace.TraceError($"[Upsert-GET] Timeout al consultar API: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta excediÃ³ el tiempo de espera.");
+                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta excedió el tiempo de espera.");
             }
             catch (Exception ex)
             {
@@ -210,18 +153,18 @@ namespace Front_Hoteleria.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Upsert(HabitacionDto dto)
+        public async Task<ActionResult> Upsert(ServicioDto dto)
         {
             try
             {
                 if (!ModelState.IsValid)
-                    return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "Datos invÃ¡lidos.");
+                    return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "Datos inválidos.");
 
                 var token = GetBearer();
                 if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "SesiÃ³n expirada o sin autenticaciÃ³n.");
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
 
-                bool ok = dto.IdHabitacion == 0
+                bool ok = dto.IdServicio == 0
                     ? await _api.CrearHabitacionAsync(dto, token)
                     : await _api.ModificarHabitacionAsync(dto, token);
 
@@ -236,16 +179,15 @@ namespace Front_Hoteleria.Controllers
             catch (TaskCanceledException ex)
             {
                 Trace.TraceError($"[Upsert-POST] Timeout al llamar API: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La operaciÃ³n excediÃ³ el tiempo de espera.");
+                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La operación excedió el tiempo de espera.");
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[Upsert-POST] Error inesperado: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al guardar la habitaciÃ³n.");
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al guardar la habitación.");
             }
         }
 
-        // ===================== ELIMINAR HABITACIÃ“N =====================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Eliminar(int idHabitacion)
@@ -254,7 +196,7 @@ namespace Front_Hoteleria.Controllers
             {
                 var token = GetBearer();
                 if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "SesiÃ³n expirada o sin autenticaciÃ³n.");
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
 
                 var ok = await _api.EliminarHabitacionAsync(idHabitacion, token);
                 if (!ok) return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "No se pudo eliminar.");
@@ -268,12 +210,12 @@ namespace Front_Hoteleria.Controllers
             catch (TaskCanceledException ex)
             {
                 Trace.TraceError($"[Eliminar] Timeout al llamar API: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La operaciÃ³n excediÃ³ el tiempo de espera.");
+                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La operación excedió el tiempo de espera.");
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[Eliminar] Error inesperado: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al eliminar la habitaciÃ³n.");
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al eliminar la habitación.");
             }
         }
     }

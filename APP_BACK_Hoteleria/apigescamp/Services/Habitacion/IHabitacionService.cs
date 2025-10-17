@@ -18,7 +18,7 @@ namespace DemoBackend.Services.Habitacion
         public bool EliminarHabitacion(HabitacionDto HabitacionModels);
         List<HabitacionDto> VerificaHabitacionPorNombre(HabitacionDto HabitacionModels);
         List<HabitacionDto> VerificaHabitacionPorId(HabitacionDto HabitacionModels);
-        public HabitacionDashboardDto ObtenerDashboardHabitacion(DateTime? desde, DateTime? hasta);
+        public HabitacionDashboardDto ObtenerDashboardHabitacion();
 
         bool CrearBitacoraHabitacion(BitacoraHabitacionDto dto);
     }

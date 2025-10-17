@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Habitaciones";
+    ViewData["Title"] = "Reservas";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <link rel="stylesheet" href="~/vendors/bootstrap/dist/css/bootstrap.min.css" />
@@ -10,21 +10,6 @@
 
 <div class="right_col" role="main">
     <div class="x_panel">
-
-        <!-- DASHBOARD HABITACIONES (sin fechas) -->
-        <div class="x_panel">
-            <div class="x_title">
-                @*<h2>Dashboard Habitaciones</h2>*@
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <!-- Aquí se inyecta el parcial con los KPIs -->
-                <div id="dashContainer">
-                    <div class="text-muted">Cargando dashboard…</div>
-                </div>
-            </div>
-        </div>
-
         <div class="x_title">
             <h2>Listado de Habitaciones <small>Todos los Estados</small></h2>
             <div class="clearfix"></div>
@@ -57,6 +42,7 @@
                     <input name="capacidadMin" type="number" min="1" class="form-control" />
                 </div>
                 <div class="col-md-3" style="display:flex;gap:8px;align-items:end">
+                    
                     <button type="button" id="btnNuevo" class="btn btn-primary" data-toggle="modal" data-target="#modalUpsert"><i class="fa fa-plus"></i> Crear Nueva Habitacion</button>
                     <button type="submit" class="btn btn-success"><i class="fa fa-search"></i> Buscar</button>
                     <button type="button" id="btnLimpiar" class="btn btn-secondary">Limpiar</button>
@@ -66,47 +52,6 @@
             <hr />
             <div id="tablaContainer" class="table-responsive"></div>
         </div>
-
-        <!-- INVENTARIO DE MATERIALES POR HABITACIÓN -->
-        <div class="x_panel">
-            <div class="x_title">
-                <h2>
-                    Inventario de Materiales por Habitación
-                    <small>Control detallado de insumos por habitación</small>
-                </h2>
-                <div class="clearfix"></div>
-            </div>
-
-            <div class="x_content">
-                <div class="row" style="margin-bottom:12px">
-                    <div class="col-md-3">
-                        <select id="invHabitacion" class="form-control">
-                            <option value="">Todas las habitaciones</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <select id="invInsumo" class="form-control">
-                            <option value="">Todos los materiales</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <button type="button" id="btnInvLimpiar" class="btn btn-default">
-                            <i class="fa fa-times"></i> Limpiar Filtros
-                        </button>
-                    </div>
-                    <div class="col-md-3 text-right">
-                        <button type="button" id="btnInvNuevo" class="btn btn-success">
-                            <i class="fa fa-plus"></i> Agregar Material
-                        </button>
-                    </div>
-                </div>
-
-                <div id="invTablaContainer" class="table-responsive">
-                    <div class="text-muted">Cargando inventario…</div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
     <!-- Modal crear/editar -->
@@ -132,19 +77,18 @@
     <script src="~/vendors/pnotify/dist/pnotify.buttons.js"></script>
 
     <script>
-    // -------- Dashboard sin parámetros --------
+
     const urlDashboard = '@Url.Action("Dashboard","Habitaciones")';
 
-    function cargarDashboard(){
-      // Carga parcial sin querystring; maneja error
-      $('#dashContainer').load(urlDashboard, function (resp, status, xhr) {
-        if (status === 'error') {
-          $('#dashContainer').html('<div class="text-danger">No se pudo cargar el dashboard.</div>');
-        }
-      });
-    }
+  function cargarDashboard(){
+    const d = $('#desde').val();
+    const h = $('#hasta').val();
+    $('#dashContainer').load(urlDashboard + '?desde=' + encodeURIComponent(d) + '&hasta=' + encodeURIComponent(h));
+  }
 
-    // -------- Tabla --------
+  $('#frmDash').on('submit', function(e){ e.preventDefault(); cargarDashboard(); });
+  $(function(){ cargarDashboard(); }); // carga inicial
+
     const urlTabla = '@Url.Action("TablaPartial","Habitaciones")';
     const urlUpsertGet = '@Url.Action("Upsert","Habitaciones")';
     const urlUpsertPost = '@Url.Action("Upsert","Habitaciones")';
@@ -200,77 +144,6 @@
     });
 
     // Carga inicial
-    $(function(){
-      cargarDashboard();
-      cargarTabla();
-    });
+    $(function(){ cargarTabla(); });
     </script>
-    <script>
-// ------- Endpoints Inventario -------
-const urlInvTabla   = '@Url.Action("TablaInventario","Habitaciones")';
-const urlInvFiltros = '@Url.Action("FiltrosInventario","Habitaciones")';
-const urlInvUpsertG = '@Url.Action("UpsertInventario","Habitaciones")';   // opcional (modal)
-const urlInvDelete  = '@Url.Action("EliminarInventario","Habitaciones")'; // opcional (delete)
-function token(){ return $('input[name="__RequestVerificationToken"]').val(); }
-
-// Filtros (cargar combos)
-function cargarInvFiltros(){
-  $.getJSON(urlInvFiltros, function(f){
-    const $hab = $('#invHabitacion'), $ins = $('#invInsumo');
-    $hab.find('option:not(:first)').remove();
-    $ins.find('option:not(:first)').remove();
-    (f.habitaciones||[]).forEach(x => $hab.append($('<option/>',{value:x.value,text:x.text})));
-    (f.insumos||[]).forEach(x => $ins.append($('<option/>',{value:x.value,text:x.text})));
-  });
-}
-
-// Tabla
-function cargarInvTabla(){
-  $('#invTablaContainer').html('<div class="text-muted">Cargando…</div>');
-  $.ajax({
-    url: urlInvTabla, type:'POST',
-    headers:{ 'RequestVerificationToken': token() },
-    data: {
-      idHabitacion: $('#invHabitacion').val(),
-      idInsumo: $('#invInsumo').val()
-    },
-    success: function(html){
-      $('#invTablaContainer').html(html);
-      $('#tablaInventario').DataTable({
-        destroy:true, responsive:true,
-        language:{ url:'//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
-      });
-    },
-    error: function(){
-      $('#invTablaContainer').html('<div class="text-danger">No se pudo cargar el inventario.</div>');
-    }
-  });
-}
-
-// Eventos
-$('#invHabitacion, #invInsumo').on('change', cargarInvTabla);
-$('#btnInvLimpiar').on('click', function(){
-  $('#invHabitacion').val(''); $('#invInsumo').val(''); cargarInvTabla();
-});
-
-// Delegados (opcional: ver/editar/eliminar)
-$('#invTablaContainer').on('click', '.btn-inv-eliminar', function(){
-  const id = $(this).data('id');
-  if(!confirm('¿Eliminar material de la habitación?')) return;
-  $.ajax({
-    url: urlInvDelete, type:'POST',
-    headers:{ 'RequestVerificationToken': token() },
-    data:{ idHabitacionInsumo: id },
-    success: function(){ new PNotify({title:'Inventario', text:'Eliminado', type:'success', styling:'bootstrap3'}); cargarInvTabla(); },
-    error: function(xhr){ new PNotify({title:'Error', text:xhr.responseText||'Error', type:'error', styling:'bootstrap3'}); }
-  });
-});
-
-// Init
-$(function(){
-  cargarInvFiltros();
-  cargarInvTabla();
-});
-    </script>
-
 }

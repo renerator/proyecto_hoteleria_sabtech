@@ -1,9 +1,6 @@
-﻿using Front_Hoteleria.Dto.Habitacion;
-using Front_Hoteleria.Services.Habitacion;
-using Front_Hoteleria.Services.HabitacionInsumo;
-using Front_Hoteleria.ViewModels.Habitacion;
+using Front_Hoteleria.Dto.Reserva;
+using Front_Hoteleria.Services.Reserva;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -13,22 +10,14 @@ using System.Web.Mvc;
 
 namespace Front_Hoteleria.Controllers
 {
-    public class HabitacionesController : Controller
+    public class ReservasController : Controller
     {
-        private readonly IHabitacionService _api;
-        private readonly IHabitacionInsumoService _habInsumoApi;
+        private readonly IReservaService _api;
 
-        // ----- DI (recomendado) -----
-        public HabitacionesController(IHabitacionService api, IHabitacionInsumoService habInsumoApi)
-        {
-            _api = api ?? throw new ArgumentNullException(nameof(api));
-            _habInsumoApi = habInsumoApi ?? throw new ArgumentNullException(nameof(habInsumoApi));
-        }
+        public ReservasController() : this(new ReservaService()) { }
+        public ReservasController(IReservaService api) { _api = api; }
 
-        // ----- Fallback sin contenedor de DI (opcional) -----
-        public HabitacionesController() : this(new HabitacionService(), new HabitacionInsumoService()) { }
-
-        // ----- Helper para obtener el Bearer -----
+        // Helper unificado para leer el bearer
         private string GetBearer()
         {
             try
@@ -46,7 +35,6 @@ namespace Front_Hoteleria.Controllers
         [HttpGet]
         public ActionResult Index() => View();
 
-        // ===================== LISTADO HABITACIONES =====================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> TablaPartial(int? vigencia, string nombre, bool? vip, int? capacidadMin)
@@ -60,14 +48,14 @@ namespace Front_Hoteleria.Controllers
                 var data = await _api.HabitacionesDisponiblesAsync(vigencia ?? 1, token);
 
                 if (!string.IsNullOrWhiteSpace(nombre))
-                    data = data.Where(x => (x.NombreHabitacion ?? string.Empty)
+                    data = data.Where(x => (x.MotivoReserva ?? string.Empty)
                                 .IndexOf(nombre, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
 
-                if (vip.HasValue)
-                    data = data.Where(x => x.VIP == vip.Value).ToList();
+                //if (vip.HasValue)
+                //    data = data.Where(x => x.VIP == vip.Value).ToList();
 
-                if (capacidadMin.HasValue)
-                    data = data.Where(x => x.Capacidad >= capacidadMin.Value).ToList();
+                //if (capacidadMin.HasValue)
+                //    data = data.Where(x => x.Capacidad >= capacidadMin.Value).ToList();
 
                 return PartialView("_TablaHabitaciones", data);
             }
@@ -88,9 +76,9 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
-        // ===================== DASHBOARD (SIN FECHAS) =====================
+        // Dashboard (estilo Upsert: arma modelo y devuelve partial)
         [HttpGet]
-        public async Task<ActionResult> Dashboard()
+        public async Task<ActionResult> Dashboard(DateTime? desde, DateTime? hasta)
         {
             try
             {
@@ -98,10 +86,14 @@ namespace Front_Hoteleria.Controllers
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
 
-                var dto = await _api.DashboardHabitacionAsync(token) ?? new HabitacionDashboardDto();
+                // Defaults de fecha (últimos 30 días) si vienen nulas
+                var d = desde ?? DateTime.Today.AddDays(-30);
+                var h = hasta ?? DateTime.Today;
 
-                // Usamos ruta absoluta para evitar problemas de resolución del partial
-                return PartialView("~/Views/Habitaciones/_DashboardHabitacion.cshtml", dto);
+                var dto = await _api.DashboardHabitacionAsync(d, h, token);
+                dto = dto ?? new ReservaDashboardDto();
+
+                return PartialView("_DashboardReserva", dto);
             }
             catch (HttpRequestException ex)
             {
@@ -121,57 +113,6 @@ namespace Front_Hoteleria.Controllers
         }
 
         [HttpGet]
-        public async Task<JsonResult> FiltrosInventario()
-        {
-            try
-            {
-                var bearer = GetBearer();
-                var data = await _habInsumoApi.ListarAsync(1, bearer).ConfigureAwait(false);
-
-                var habs = data.Select(x => x.IdHabitacion).Distinct()
-                               .OrderBy(x => x)
-                               .Select(x => new { value = x, text = x.ToString() })
-                               .ToList();
-
-                var ins = data.Select(x => new { x.IdInsumo, x.NombreInsumo })
-                              .Distinct()
-                              .OrderBy(x => x.NombreInsumo)
-                              .Select(x => new { value = x.IdInsumo, text = x.NombreInsumo })
-                              .ToList();
-
-                return Json(new { habitaciones = habs, insumos = ins }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[FiltrosInventario] Error: {ex}");
-                return Json(new { habitaciones = new object[0], insumos = new object[0] }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        // Tabla inventario
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<PartialViewResult> TablaInventario(FiltroInventarioVm f)
-        {
-            try
-            {
-                var bearer = GetBearer();
-                var data = await _habInsumoApi.ListarAsync(1, bearer).ConfigureAwait(false);
-
-                if (f?.IdHabitacion != null) data = data.Where(d => d.IdHabitacion == f.IdHabitacion.Value).ToList();
-                if (f?.IdInsumo != null) data = data.Where(d => d.IdInsumo == f.IdInsumo.Value).ToList();
-
-                return PartialView("_TablaInventario", data);
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[TablaInventario] Error: {ex}");
-                return PartialView("_TablaInventario", new List<InventarioFilaVm>());
-            }
-        }
-
-        // ===================== UPSERT HABITACIÓN =====================
-        [HttpGet]
         public async Task<ActionResult> Upsert(int? id)
         {
             try
@@ -180,7 +121,7 @@ namespace Front_Hoteleria.Controllers
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
 
-                var dto = new HabitacionDto { Capacidad = 1, IdEstado = 1 };
+                var dto = new ReservaDto();
 
                 if (id.HasValue)
                 {
@@ -210,7 +151,7 @@ namespace Front_Hoteleria.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Upsert(HabitacionDto dto)
+        public async Task<ActionResult> Upsert(ReservaDto dto)
         {
             try
             {
@@ -245,7 +186,6 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
-        // ===================== ELIMINAR HABITACIÓN =====================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Eliminar(int idHabitacion)
