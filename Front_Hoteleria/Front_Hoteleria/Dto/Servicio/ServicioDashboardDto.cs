@@ -3,10 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Front_Hoteleria.Dto.Reserva
+namespace Front_Hoteleria.Dto.Servicio
 {
     public class ServicioDashboardDto
     {
+
+      
+
+            public int TotalServicios { get; set; }
+        public int TotalDesayunos { get; set; }
+        public int TotalTickets { get; set; }
+        public int TotalLimpieza { get; set; }
+
         public int HabitacionesHabilitadas { get; set; }
         public int HabitacionesMantencion { get; set; }
         public int HabitacionesOcupadas { get; set; }

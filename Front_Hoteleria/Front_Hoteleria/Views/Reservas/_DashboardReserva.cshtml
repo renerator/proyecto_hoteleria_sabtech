@@ -1,43 +1,54 @@
-﻿@model Front_Hoteleria.Dto.Reserva.ReservaDashboardDto
+﻿@* Opcionalmente usa un modelo fuerte *@
+@* @model ReservasDashboardVm
+    // public int Nuevas {get;set;}
+    // public int Servicios {get;set;}
+    // public int CheckIn {get;set;}
+    // public int CheckOut {get;set;}
+*@
 
-<div class="row tile_count" style="margin-bottom:15px">
-    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-        <span class="count_top"><i class="fa fa-user"></i> Habitaciones Habilitadas</span>
-        <div class="count">@Model.HabitacionesHabilitadas.ToString("N0")</div>
+<div class="row">
+    <div class="col-md-9 col-sm-12 col-xs-12">
+        <div class="demo-container" style="height:280px">
+            <div id="chart_plot_02" class="demo-placeholder"
+                 style="height:100%; width:100%; background:rgba(0,0,0,.02); border-radius:6px;"></div>
+        </div>
+
+        <div class="tiles">
+            <div class="col-md-4 tile">
+                <span>Total Reservas Confirmadas</span>
+                <h2>@(Model?.CheckIn ?? 0)</h2>
+                <span class="sparkline11 graph" style="height: 160px;"></span>
+            </div>
+            <div class="col-md-4 tile">
+                <span>Total Reservas Rechazadas</span>
+                <h2>@(Model?.CheckOut ?? 0)</h2>
+                <span class="sparkline22 graph" style="height: 160px;"></span>
+            </div>
+            <div class="col-md-4 tile">
+                <span>Total Servicios</span>
+                <h2>@(Model?.Servicios ?? 0)</h2>
+                <span class="sparkline11 graph" style="height: 160px;"></span>
+            </div>
+        </div>
     </div>
-    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-        <span class="count_top"><i class="fa fa-clock-o"></i> Habitaciones en Mantención</span>
-        <div class="count">@Model.HabitacionesMantencion.ToString("N0")</div>
-    </div>
-    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-        <span class="count_top"><i class="fa fa-user"></i> Habitaciones Ocupadas</span>
-        <div class="count green">@Model.HabitacionesOcupadas.ToString("N0")</div>
-    </div>
-    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-        <span class="count_top"><i class="fa fa-user"></i> Servicios solicitados</span>
-        <div class="count">@Model.ServiciosSolicitados.ToString("N0")</div>
-        <span class="count_bottom">
-            @if (Model.ServiciosVarPorcentaje.HasValue)
-            {
-                var v = Model.ServiciosVarPorcentaje.Value;
-                if (v >= 0)
-                {<i class="green"><i class="fa fa-sort-asc"></i> @v.ToString("0.#")% </i> }
-            else
-            { <i class="red"><i class="fa fa-sort-desc"></i> @Math.Abs(v).ToString("0.#")% </i> }
-        @: En la última semana
-    }
-    else
-    {
-        @: &nbsp;
-    }
-        </span>
-    </div>
-    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-        <span class="count_top"><i class="fa fa-user"></i> Aseo en curso</span>
-        <div class="count">@Model.AseoEnCurso.ToString("N0")</div>
-    </div>
-    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-        <span class="count_top"><i class="fa fa-user"></i> Huespedes Registrados</span>
-        <div class="count">@((Model.ServiciosPrevPeriodo ?? 0).ToString("N0"))</div>
+
+    <div class="col-md-3 col-sm-12 col-xs-12">
+        <div>
+            <div class="x_title">
+                <h2>Top Solicitud de servicios</h2>
+                <div class="clearfix"></div>
+            </div>
+            <ul class="list-unstyled top_profiles scroll-view" id="listaTopServicios">
+                @* Rellena desde el controlador o deja estático de ejemplo *@
+                <li class="media event">
+                    <a class="pull-left border-aero profile_thumb"><i class="fa fa-user aero"></i></a>
+                    <div class="media-body">
+                        <a class="title" href="#">—</a>
+                        <p><strong>0</strong> Solicitudes</p>
+                        <p><small>0 hoy</small></p>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>

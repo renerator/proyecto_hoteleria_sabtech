@@ -1,86 +1,70 @@
-﻿@model  Front_Hoteleria.Dto.Reserva.ReservaDto
+﻿@* Modelo sugerido: ReservaEditVm con Id/Nombre/Apellido/Fechas/HoraLlegada *@
+@model dynamic
 
-@using (Html.BeginForm("Upsert", "Habitaciones", FormMethod.Post, new { id = "frmUpsert", @class = "form-horizontal form-label-left" }))
-{
-    @Html.AntiForgeryToken()
-    @Html.HiddenFor(m => m.IdHabitacion)
+@Html.AntiForgeryToken()
+<form id="frmUpsertReserva" class="form-horizontal">
+    <input type="hidden" name="Id" value="@(Model?.Id ?? 0)" />
 
     <div class="form-group">
-        <label class="control-label col-md-3">Área</label>
+        <label class="control-label col-md-3">Nombre</label>
         <div class="col-md-6">
-            @Html.TextBoxFor(m => m.NombreHabitacion, new { @class = "form-control", required = "required" })
+            <input name="Nombre" class="form-control" required value="@(Model?.Nombre ?? "")" />
         </div>
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3">Ala</label>
+        <label class="control-label col-md-3">Apellido</label>
         <div class="col-md-6">
-            @Html.TextBoxFor(m => m.Ala, new { @class = "form-control", required = "required" })
+            <input name="Apellido" class="form-control" required value="@(Model?.Apellido ?? "")" />
         </div>
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3">Pasillo</label>
-        <div class="col-md-6">
-            @Html.TextBoxFor(m => m.Pasillo, new { @class = "form-control" })
+        <label class="control-label col-md-3">Fecha Desde</label>
+        <div class="col-md-3">
+            <input name="FechaDesde" type="date" class="form-control" required
+                   value="@(Model?.FechaDesde?.ToString("yyyy-MM-dd") ?? "")" />
+        </div>
+
+        <label class="control-label col-md-2">Fecha Hasta</label>
+        <div class="col-md-3">
+            <input name="FechaHasta" type="date" class="form-control" required
+                   value="@(Model?.FechaHasta?.ToString("yyyy-MM-dd") ?? "")" />
         </div>
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-3">Nro Habitación</label>
-        <div class="col-md-6">
-            @Html.TextBoxFor(m => m.NombreHabitacion, new { @class = "form-control", required = "required" })
-        </div>
-    </div>
-
-    @*<div class="form-group">
-        <label class="control-label col-md-3">Disponible</label>
-        <div class="col-md-6">
-            <div class="checkbox">
-                <label>@Html.CheckBoxFor(m => m.Motivo) Sí</label>
-            </div>
-        </div>
-    </div>*@
-
-    <div class="form-group">
-        <label class="control-label col-md-3">Capacidad</label>
-        <div class="col-md-6">
-            @Html.TextBoxFor(m => m.Capacidad, new { @class = "form-control", type = "number", min = "1", required = "required" })
+        <label class="control-label col-md-3">Hora llegada</label>
+        <div class="col-md-3">
+            <input name="HoraLlegada" type="time" class="form-control"
+                   value="@(Model?.HoraLlegada ?? "")" />
         </div>
     </div>
 
     <div class="ln_solid"></div>
     <div class="form-group">
-        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
-            <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
-            <button class="btn btn-warning" type="reset">Borrar datos</button>
-            <button type="submit" class="btn btn-success">Guardar</button>
+        <div class="col-md-6 col-md-offset-3">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
         </div>
     </div>
-}
+</form>
 
 <script>
-  // submit AJAX del upsert
-  $('#frmUpsert').on('submit', function (e) {
+  // POST por AJAX al mismo endpoint de UpsertReserva (ajusta la URL si usas otro)
+  $('#frmUpsertReserva').off('submit').on('submit', function (e) {
     e.preventDefault();
-    var $f = $(this);
     $.ajax({
-      url: '@Url.Action("Upsert","Habitaciones")',
+      url: '@Url.Action("UpsertReserva","Reservas")',
       type: 'POST',
-      data: $f.serialize(),
-      headers: { 'RequestVerificationToken': $f.find('input[name="__RequestVerificationToken"]').val() },
-      success: function () {
-        new PNotify({ title: 'Guardar', text: 'Habitación guardada.', type: 'success', styling: 'bootstrap3' });
-        $('#modalUpsert').modal('hide');
-        // recargar tabla
-        $('#tablaContainer').html('<div class="text-muted">Actualizando…</div>');
-        // reutiliza la función en Index
-        if (window.cargarTabla) window.cargarTabla();
-      },
-      error: function (xhr) {
-        new PNotify({ title: 'Error', text: xhr.responseText || 'No se pudo guardar.', type: 'error', styling: 'bootstrap3' });
-      }
+      headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').first().val() },
+      data: $(this).serialize()
+    }).done(function(){
+      new PNotify({title:'Reservas', text:'Guardado correctamente', type:'success', styling:'bootstrap3'});
+      $('#modalUpsertReserva').modal('hide');
+      if (window.cargarTablaReservas) { cargarTablaReservas(); }
+    }).fail(function(xhr){
+      new PNotify({title:'Error', text: xhr.responseText || 'No se pudo guardar', type:'error', styling:'bootstrap3'});
     });
   });
 </script>
-

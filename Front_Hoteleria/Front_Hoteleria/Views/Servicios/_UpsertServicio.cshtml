@@ -1,86 +1,71 @@
-﻿@model  Front_Hoteleria.Dto.Servicio.ServicioDto
+﻿@model Front_Hoteleria.Dto.Servicio.ServicioDto
 
-@using (Html.BeginForm("Upsert", "Servicio", FormMethod.Post, new { id = "frmUpsert", @class = "form-horizontal form-label-left" }))
-{
-    @Html.AntiForgeryToken()
-    @Html.HiddenFor(m => m.IdHabitacion)
-
-    <div class="form-group">
-        <label class="control-label col-md-3">Área</label>
-        <div class="col-md-6">
-            @Html.TextBoxFor(m => m.NombreHabitacion, new { @class = "form-control", required = "required" })
+@Html.AntiForgeryToken()
+<form id="frmUpsertServicio" method="post">
+    <input type="hidden" name="IdServicio" value="@(Model?.IdServicio ?? 0)" />
+    <div class="row">
+        <div class="col-md-4">
+            <label>Habitación</label>
+            <input name="NumeroHabitacion" value="@(Model?.NumeroHabitacion ?? "")" class="form-control" placeholder="0001" />
+        </div>
+        <div class="col-md-4">
+            <label>Tipo de Servicio</label>
+            <input name="NombreServicio" value="@(Model?.NombreServicio ?? "")" class="form-control" placeholder="Limpieza / Desayuno / …" />
+        </div>
+        <div class="col-md-4">
+            <label>Prioridad</label>
+            <select name="Prioridad" class="form-control">
+                @{
+                    var prio = Model?.Prioridad ?? "Normal";
+                    string Sel(string v) => prio == v ? "selected" : "";
+                }
+                <option @Sel("Baja")>Baja</option>
+                <option @Sel("Media")>Media</option>
+                <option @Sel("Alta")>Alta</option>
+                <option @Sel("Urgente")>Urgente</option>
+                <option @Sel("Normal")>Normal</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label>Fecha</label>
+            <input name="Fecha" value="@(Model?.Fecha?.ToString("yyyy-MM-dd") ?? "")" class="form-control" placeholder="dd-mm-aaaa" />
+        </div>
+        <div class="col-md-4">
+            <label>Hora</label>
+            <input name="Hora" value="@(Model?.Hora ?? "")" class="form-control" placeholder="hh:mm" />
+        </div>
+        <div class="col-md-12">
+            <label>Comentarios</label>
+            <textarea name="Comentarios" class="form-control" rows="3">@Model?.Comentarios</textarea>
         </div>
     </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-3">Ala</label>
-        <div class="col-md-6">
-            @Html.TextBoxFor(m => m.Ala, new { @class = "form-control", required = "required" })
-        </div>
+    <hr />
+    <div class="text-right">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Guardar</button>
     </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-3">Pasillo</label>
-        <div class="col-md-6">
-            @Html.TextBoxFor(m => m.Pasillo, new { @class = "form-control" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label col-md-3">Nro Habitación</label>
-        <div class="col-md-6">
-            @Html.TextBoxFor(m => m.NombreHabitacion, new { @class = "form-control", required = "required" })
-        </div>
-    </div>
-
-    @*<div class="form-group">
-        <label class="control-label col-md-3">Disponible</label>
-        <div class="col-md-6">
-            <div class="checkbox">
-                <label>@Html.CheckBoxFor(m => m.Motivo) Sí</label>
-            </div>
-        </div>
-    </div>*@
-
-    <div class="form-group">
-        <label class="control-label col-md-3">Capacidad</label>
-        <div class="col-md-6">
-            @Html.TextBoxFor(m => m.Capacidad, new { @class = "form-control", type = "number", min = "1", required = "required" })
-        </div>
-    </div>
-
-    <div class="ln_solid"></div>
-    <div class="form-group">
-        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
-            <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
-            <button class="btn btn-warning" type="reset">Borrar datos</button>
-            <button type="submit" class="btn btn-success">Guardar</button>
-        </div>
-    </div>
-}
+</form>
 
 <script>
-  // submit AJAX del upsert
-  $('#frmUpsert').on('submit', function (e) {
-    e.preventDefault();
-    var $f = $(this);
-    $.ajax({
-      url: '@Url.Action("Upsert","Habitaciones")',
-      type: 'POST',
-      data: $f.serialize(),
-      headers: { 'RequestVerificationToken': $f.find('input[name="__RequestVerificationToken"]').val() },
-      success: function () {
-        new PNotify({ title: 'Guardar', text: 'Habitación guardada.', type: 'success', styling: 'bootstrap3' });
-        $('#modalUpsert').modal('hide');
-        // recargar tabla
-        $('#tablaContainer').html('<div class="text-muted">Actualizando…</div>');
-        // reutiliza la función en Index
-        if (window.cargarTabla) window.cargarTabla();
-      },
-      error: function (xhr) {
-        new PNotify({ title: 'Error', text: xhr.responseText || 'No se pudo guardar.', type: 'error', styling: 'bootstrap3' });
-      }
-    });
-  });
-</script>
+(function(){
+    var urlPost = '@Url.Action("UpsertServicio","Servicios")';
+    function token(){ return $('input[name="__RequestVerificationToken"]').val(); }
 
+    $('#frmUpsertServicio').on('submit', function(e){
+        e.preventDefault();
+        $.ajax({
+            url: urlPost, type:'POST',
+            headers: { 'RequestVerificationToken': token() },
+            data: $(this).serialize(),
+            success: function(){
+                $('#modalUpsert').modal('hide');
+                // recargar tabla si existe
+                if (window.$) { $('#frmFiltrosServicios').trigger('submit'); }
+            },
+            error: function(xhr){
+                alert(xhr.responseText || 'No se pudo guardar.');
+            }
+        });
+    });
+})();
+</script>

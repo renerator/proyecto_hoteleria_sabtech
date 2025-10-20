@@ -1,149 +1,138 @@
 ﻿@{
-    ViewData["Title"] = "Servicio";
+    ViewBag.Title = "Servicios";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<link rel="stylesheet" href="~/vendors/bootstrap/dist/css/bootstrap.min.css" />
-<link rel="stylesheet" href="~/vendors/font-awesome/css/font-awesome.min.css" />
-<link rel="stylesheet" href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" />
-<link rel="stylesheet" href="~/vendors/pnotify/dist/pnotify.css" />
-<link rel="stylesheet" href="~/vendors/pnotify/dist/pnotify.buttons.css" />
 
 <div class="right_col" role="main">
     <div class="x_panel">
         <div class="x_title">
-            <h2>Listado de Habitaciones <small>Todos los Estados</small></h2>
+            <h2>Servicios <small>Panel Operativo</small></h2>
             <div class="clearfix"></div>
         </div>
+
         <div class="x_content">
-            <!-- Filtros front -->
-            <form id="frmFiltros" method="post" class="row g-2">
+            <!-- Filtros básicos para la tabla -->
+            <form id="frmFiltrosServicios" class="form-inline" method="post" style="margin-bottom:10px">
                 @Html.AntiForgeryToken()
-                <div class="col-md-2">
-                    <label>Vigencia</label>
-                    <select name="vigencia" class="form-control">
-                        <option value="1">Disponibles</option>
-                        <option value="0">No disponibles</option>
-                    </select>
+                <input type="hidden" name="vigencia" value="1" />
+                <div class="form-group">
+                    <label for="txtNombre" class="sr-only">Nombre</label>
+                    <input id="txtNombre" name="nombre" class="form-control" placeholder="Buscar servicio..." />
                 </div>
-                <div class="col-md-3">
-                    <label>Nombre contiene</label>
-                    <input name="nombre" class="form-control" />
-                </div>
-                <div class="col-md-2">
-                    <label>VIP</label>
-                    <select name="vip" class="form-control">
-                        <option value="">(todos)</option>
-                        <option value="true">Sí</option>
-                        <option value="false">No</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label>Capacidad mín.</label>
-                    <input name="capacidadMin" type="number" min="1" class="form-control" />
-                </div>
-                <div class="col-md-3" style="display:flex;gap:8px;align-items:end">
-                    
-                    <button type="button" id="btnNuevo" class="btn btn-primary" data-toggle="modal" data-target="#modalUpsert"><i class="fa fa-plus"></i> Crear Nueva Habitacion</button>
-                    <button type="submit" class="btn btn-success"><i class="fa fa-search"></i> Buscar</button>
-                    <button type="button" id="btnLimpiar" class="btn btn-secondary">Limpiar</button>
-                </div>
+                <button type="submit" class="btn btn-default"><i class="fa fa-search"></i> Buscar</button>
+                <button type="button" id="btnLimpiarFiltros" class="btn btn-default"><i class="fa fa-eraser"></i> Limpiar</button>
+                <button type="button" id="btnNuevoServicio" class="btn btn-primary pull-right" data-toggle="modal" data-target="#modalUpsert">
+                    <i class="fa fa-plus"></i> Crear Nuevo Servicio
+                </button>
             </form>
 
-            <hr />
+            <!-- 1) Dashboard -->
+            <div id="dashContainer" style="margin-bottom:15px"></div>
+
+            <!-- 2) Paneles intermedios -->
+            <div id="panelesContainer" style="margin-bottom:15px"></div>
+
+            <!-- 3) Tabla -->
             <div id="tablaContainer" class="table-responsive"></div>
         </div>
     </div>
+</div>
 
-    <!-- Modal crear/editar -->
-    <div class="modal fade" id="modalUpsert" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                    <h4 class="modal-title">Habitación</h4>
-                </div>
-                <div class="modal-body" id="upsertBody"><div class="text-muted">Cargando…</div></div>
+<!-- Modal Upsert -->
+<div class="modal fade" id="modalUpsert" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title">Servicio</h4>
+            </div>
+            <div class="modal-body" id="upsertBody">
+                <div class="text-muted">Cargando…</div>
             </div>
         </div>
     </div>
 </div>
 
-@section Scripts {
-    <script src="~/vendors/jquery/dist/jquery.min.js"></script>
-    <script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-    <script src="~/vendors/pnotify/dist/pnotify.js"></script>
-    <script src="~/vendors/pnotify/dist/pnotify.buttons.js"></script>
-
+@section Scripts{
     <script>
+(function(){
+    const urlDashboard  = '@Url.Action("DashboardServicio","Servicios")';
+    const urlPaneles    = '@Url.Action("PanelesServicio","Servicios")';
+    const urlTabla      = '@Url.Action("TablaServicio","Servicios")';
+    const urlUpsertGet  = '@Url.Action("UpsertServicio","Servicios")';
+    const urlUpsertPost = '@Url.Action("UpsertServicio","Servicios")';
+    const urlEliminar   = '@Url.Action("EliminarServicio","Servicios")';
 
-    const urlDashboard = '@Url.Action("Dashboard","Habitaciones")';
-
-  function cargarDashboard(){
-    const d = $('#desde').val();
-    const h = $('#hasta').val();
-    $('#dashContainer').load(urlDashboard + '?desde=' + encodeURIComponent(d) + '&hasta=' + encodeURIComponent(h));
-  }
-
-  $('#frmDash').on('submit', function(e){ e.preventDefault(); cargarDashboard(); });
-  $(function(){ cargarDashboard(); }); // carga inicial
-
-    const urlTabla = '@Url.Action("TablaPartial","Habitaciones")';
-    const urlUpsertGet = '@Url.Action("Upsert","Habitaciones")';
-    const urlUpsertPost = '@Url.Action("Upsert","Habitaciones")';
-    const urlEliminar = '@Url.Action("Eliminar","Habitaciones")';
-    function token(){ return $('input[name="__RequestVerificationToken"]').val(); }
-
-    function cargarTabla(){
-      $('#tablaContainer').html('<div class="text-muted">Cargando…</div>');
-      $.ajax({
-        url: urlTabla, type: 'POST',
-        data: $('#frmFiltros').serialize(),
-        headers: { 'RequestVerificationToken': token() },
-        success: function(html){
-          $('#tablaContainer').html(html);
-          $('#tablaHabitaciones').DataTable({
-            destroy: true, responsive: true,
-            language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
-          });
-        },
-        error: function(xhr){
-          $('#tablaContainer').html('<div class="text-danger">Error al cargar.</div>');
-        }
-      });
+    function token(){
+        var $t = $('#frmFiltrosServicios').find('input[name="__RequestVerificationToken"]');
+        return $t.length ? $t.val() : $('input[name="__RequestVerificationToken"]').val();
     }
 
-    // Nuevo
-    $('#btnNuevo').on('click', function(){
-      $('#upsertBody').html('<div class="text-muted">Cargando…</div>');
-      $('#upsertBody').load(urlUpsertGet);
+    function cargarDashboard(){
+        $('#dashContainer').load(urlDashboard, function(_, status){
+            if(status!=='success') $('#dashContainer').html('<div class="text-danger">No se pudo cargar el dashboard.</div>');
+        });
+    }
+
+    function cargarPaneles(){
+        $('#panelesContainer').load(urlPaneles, function(_, status){
+            if(status!=='success') $('#panelesContainer').html('<div class="text-danger">No se pudieron cargar los paneles.</div>');
+        });
+    }
+
+    function cargarTabla(){
+        $('#tablaContainer').html('<div class="text-muted">Cargando…</div>');
+        $.ajax({
+            url: urlTabla, type: 'POST',
+            data: $('#frmFiltrosServicios').serialize(),
+            headers: { 'RequestVerificationToken': token() },
+            success: function(html){
+                $('#tablaContainer').html(html);
+            },
+            error: function(){
+                $('#tablaContainer').html('<div class="text-danger">No se pudo cargar el listado.</div>');
+            }
+        });
+    }
+
+    // Crear
+    $('#btnNuevoServicio').on('click', function(){
+        $('#upsertBody').html('<div class="text-muted">Cargando…</div>');
+        $('#upsertBody').load(urlUpsertGet);
     });
 
     // Buscar / limpiar
-    $('#frmFiltros').on('submit', function(e){ e.preventDefault(); cargarTabla(); });
-    $('#btnLimpiar').on('click', function(){ $('#frmFiltros')[0].reset(); cargarTabla(); });
-
-    // Delegados editar/eliminar
-    $('#tablaContainer').on('click', '.btn-editar', function () {
-      const id = $(this).data('id');
-      $('#upsertBody').html('<div class="text-muted">Cargando…</div>');
-      $('#modalUpsert').modal('show');
-      $('#upsertBody').load(urlUpsertGet + '?id=' + id);
+    $('#frmFiltrosServicios').on('submit', function(e){ e.preventDefault(); cargarTabla(); });
+    $('#btnLimpiarFiltros').on('click', function(){
+        $('#frmFiltrosServicios')[0].reset(); cargarTabla();
     });
-    $('#tablaContainer').on('click', '.btn-eliminar', function () {
-      const id = $(this).data('id');
-      if (!confirm('¿Eliminar la habitación?')) return;
-      $.ajax({
-        url: urlEliminar, type: 'POST',
-        headers: { 'RequestVerificationToken': token() },
-        data: { idHabitacion: id },
-        success: function(){ new PNotify({title:'Eliminar', text:'OK', type:'success', styling:'bootstrap3'}); cargarTabla(); },
-        error: function(xhr){ new PNotify({title:'Error', text: xhr.responseText||'Error', type:'error', styling:'bootstrap3'}); }
-      });
+
+    // Delegados editar / eliminar
+    $('#tablaContainer').on('click','.btn-editar-servicio', function(){
+        var id = $(this).data('id');
+        $('#upsertBody').html('<div class="text-muted">Cargando…</div>');
+        $('#modalUpsert').modal('show');
+        $('#upsertBody').load(urlUpsertGet + '?id=' + id);
+    });
+
+    $('#tablaContainer').on('click','.btn-eliminar-servicio', function(){
+        var id = $(this).data('id');
+        if(!confirm('¿Eliminar el servicio?')) return;
+        $.ajax({
+            url: urlEliminar, type:'POST',
+            headers: { 'RequestVerificationToken': token() },
+            data: { idServicio: id },
+            success: function(){ cargarTabla(); },
+            error: function(xhr){ alert(xhr.responseText || 'Error al eliminar.'); }
+        });
     });
 
     // Carga inicial
-    $(function(){ cargarTabla(); });
+    $(function(){
+        cargarDashboard();
+        cargarPaneles();
+        cargarTabla();
+    });
+})();
     </script>
 }
