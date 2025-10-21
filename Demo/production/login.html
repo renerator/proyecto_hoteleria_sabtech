@@ -402,10 +402,10 @@
             
             if (username.toLowerCase() === 'plataforma') {
                 setUserSession('plataforma', sessionToken);
-                window.location.href = 'index.html'; // Página principal del administrador
+                window.location.href = 'index.html'; // Página de habitaciones para plataforma
             } else if (username.toLowerCase() === 'admin') {
                 setUserSession('admin', sessionToken);
-                window.location.href = 'index3.html'; // Página de servicios para admin
+                window.location.href = 'admin-dashboard.html?t=' + Date.now(); // Dashboard principal para admin
             } else if (username.toLowerCase() === 'huesped') {
                 setUserSession('huesped', sessionToken);
                 window.location.href = 'index2.html'; // Página de reservas para huesped
