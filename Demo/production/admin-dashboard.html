@@ -1,0 +1,2510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Dashboard Administrador | Sabtech Group</title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Font Awesome Local (fallback) -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- Datatables -->
+    <link href="../vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="../vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <link href="../vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <link href="../vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+    <link href="../vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+    <!-- PNotify -->
+    <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    
+    <style>
+        .dashboard-card {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-height: 120px;
+            position: relative;
+        }
+        
+        .dashboard-card h3 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            line-height: 1.2;
+        }
+        
+        .dashboard-card p {
+            font-size: 1rem;
+            color: #7f8c8d;
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        .dashboard-card i {
+            font-size: 3rem;
+            color: #3498db;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            opacity: 0.8;
+        }
+        
+        .chart-mini {
+            position: absolute;
+            bottom: 15px;
+            left: 20px;
+            right: 20px;
+            height: 40px;
+        }
+        
+        .chart-mini canvas {
+            width: 100% !important;
+            height: 40px !important;
+        }
+        
+        .progress-bar-mini {
+            width: 100%;
+            height: 6px;
+            background-color: #ecf0f1;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        .stats-card {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .stats-number {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+        
+        .stats-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        
+        .control-panel {
+            background: #f8f9fa;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .control-panel h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .action-btn {
+            margin: 5px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .reservations-table {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .table-header {
+            background: #34495e;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .table-header h4 {
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-confirmed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-checked-in {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-checked-out {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .btn-action {
+            padding: 4px 8px;
+            margin: 1px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+        }
+        
+        .real-time-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #27ae60;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .chart-container {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            height: 300px;
+        }
+        
+        .chart-wrapper {
+            height: 200px;
+            width: 100%;
+            position: relative;
+        }
+        
+        .chart-container canvas {
+            max-height: 200px !important;
+            width: 100% !important;
+        }
+        
+        .css-chart {
+            display: flex;
+            height: 200px;
+            position: relative;
+            margin-top: 20px;
+        }
+        
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            right: 0;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .chart-area {
+            flex: 1;
+            position: relative;
+            background: linear-gradient(to top, rgba(39, 174, 96, 0.1) 0%, rgba(39, 174, 96, 0.05) 100%);
+            border-left: 1px solid #e5e5e5;
+            border-bottom: 1px solid #e5e5e5;
+            margin-left: 40px;
+        }
+        
+        .chart-line {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .chart-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #27ae60;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .chart-point::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: rgba(39, 174, 96, 0.3);
+            border-radius: 50%;
+        }
+        
+        .chart-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(to top, rgba(39, 174, 96, 0.1) 0%, transparent 100%);
+            clip-path: polygon(10% 60%, 30% 40%, 50% 20%, 70% 10%, 90% 30%, 90% 100%, 10% 100%);
+        }
+        
+        .chart-y-axis {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 40px;
+            height: 100%;
+            font-size: 12px;
+            color: #7f8c8d;
+            text-align: right;
+            padding-right: 10px;
+        }
+        
+        /* Estilos para botones de acciones */
+        .action-btn {
+            margin: 1px;
+            padding: 4px 8px;
+            border-radius: 3px;
+            border: none;
+            font-size: 11px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .action-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .btn-group .action-btn {
+            margin: 0;
+            border-radius: 0;
+        }
+        
+        .btn-group .action-btn:first-child {
+            border-top-left-radius: 3px;
+            border-bottom-left-radius: 3px;
+        }
+        
+        .btn-group .action-btn:last-child {
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+        }
+        
+        .action-btn i {
+            font-size: 10px;
+        }
+        
+        .chart-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title" style="border: 0;">
+                        <a href="admin-dashboard.html" class="site_title"><i class="fa fa-building"></i> <span>Hoteleria</span></a>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- menu profile quick info -->
+                    <div class="profile clearfix">
+                        <div class="profile_pic">
+                            <img src="images/img.jpg" alt="..." class="img-circle profile_img">
+                        </div>
+                        <div class="profile_info">
+                            <span>Bienvenido,</span>
+                            <h2>Admin</h2>
+                        </div>
+                    </div>
+                    <!-- /menu profile quick info -->
+
+                    <br />
+
+                    <!-- sidebar menu -->
+                    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                        <div class="menu_section">
+                            <h3>Menú Administrador</h3>
+                            <ul class="nav side-menu">
+                                <li class="active"><a><i class="fa fa-dashboard"></i> Dashboard <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu" style="display: block;">
+                                        <li class="current-page"><a href="admin-dashboard.html">Panel Principal</a></li>
+                                    </ul>
+                                </li>
+                                <li><a><i class="fa fa-check"></i> Administración <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        <li><a href="reservas-detalladas.html">Reservas</a></li>
+                                        <li><a href="index3.html">Servicios</a></li>
+                                        <li><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
+                                        <li><a href="contratos.html">Contratos</a></li>
+                                        <li><a href="dotaciones.html">Dotaciones</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- /sidebar menu -->
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <img src="images/img.jpg" alt="">Admin
+                                    <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                    <li><a href="profile.html"> Perfil</a></li>
+                                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Cerrar Sesión</a></li>
+                                </ul>
+                            </li>
+
+                            <li role="presentation" class="dropdown">
+                                <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-envelope-o"></i>
+                                    <span class="badge bg-green" style="border-radius: 50%;">5</span>
+                                </a>
+                                <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
+                                    <li>
+                                        <a>
+                                            <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
+                                            <span>
+                                                <span>Admin</span>
+                                                <span class="time">2 mins ago</span>
+                                            </span>
+                                            <span class="message">
+                                                Nueva reserva confirmada - Habitación 0015
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a>
+                                            <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
+                                            <span>
+                                                <span>Admin</span>
+                                                <span class="time">15 mins ago</span>
+                                            </span>
+                                            <span class="message">
+                                                Check-in realizado - Huésped Juan Pérez
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a>
+                                            <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
+                                            <span>
+                                                <span>Admin</span>
+                                                <span class="time">1 hour ago</span>
+                                            </span>
+                                            <span class="message">
+                                                Alerta: Habitación 0008 requiere limpieza
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- /top navigation -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3><span class="real-time-indicator"></span>Dashboard Administrador</h3>
+                            <small>Control operativo en tiempo real</small>
+                        </div>
+                        <div class="title_right">
+                            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Buscar reserva...">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">Go!</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- Estadísticas Principales con Gráficos -->
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="dashboard-card">
+                                <i class="fa fa-calendar-check-o"></i>
+                                <h3 id="totalReservations">179</h3>
+                                <p>Nuevas Reservas ingresadas</p>
+                                <div class="chart-mini">
+                                    <canvas id="reservationsMiniChart" width="100" height="40"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="dashboard-card">
+                                <i class="fa fa-comments"></i>
+                                <h3 id="totalServices">180</h3>
+                                <p>Servicios</p>
+                                <div class="chart-mini">
+                                    <canvas id="servicesMiniChart" width="100" height="40"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="dashboard-card">
+                                <i class="fa fa-sign-in"></i>
+                                <h3 id="checkIns">675</h3>
+                                <p>New Check In</p>
+                                <div class="chart-mini">
+                                    <canvas id="checkinMiniChart" width="100" height="40"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="dashboard-card">
+                                <i class="fa fa-sign-out"></i>
+                                <h3 id="checkOuts">375</h3>
+                                <p>Check Out</p>
+                                <div class="chart-mini">
+                                    <canvas id="checkoutMiniChart" width="100" height="40"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Reservas en Tiempo Real -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="chart-container">
+                                <h4 class="chart-title">Reservas x Fecha - Progreso Semanal</h4>
+                                <div class="css-chart">
+                                    <div class="chart-labels">
+                                        <span>18/10/25</span>
+                                        <span>24/10/25</span>
+                                        <span>30/10/25</span>
+                                        <span>01/11/25</span>
+                                        <span>05/11/25</span>
+                                    </div>
+                                    <div class="chart-area">
+                                        <div class="chart-line">
+                                            <div class="chart-point" style="left: 10%; bottom: 40%;"></div>
+                                            <div class="chart-point" style="left: 30%; bottom: 60%;"></div>
+                                            <div class="chart-point" style="left: 50%; bottom: 80%;"></div>
+                                            <div class="chart-point" style="left: 70%; bottom: 90%;"></div>
+                                            <div class="chart-point" style="left: 90%; bottom: 70%;"></div>
+                                        </div>
+                                        <div class="chart-fill"></div>
+                                    </div>
+                                    <div class="chart-y-axis">
+                                        <span>120</span>
+                                        <span>100</span>
+                                        <span>80</span>
+                                        <span>60</span>
+                                        <span>40</span>
+                                        <span>20</span>
+                                        <span>0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Control Operativo -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="control-panel">
+                                <h4><i class="fa fa-cogs"></i> Control Operativo</h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <button type="button" class="btn btn-success action-btn" data-toggle="modal" data-target="#newReservationModal">
+                                            <i class="fa fa-plus"></i> Crear Nueva Reserva
+                                        </button>
+                                        <button type="button" class="btn btn-info action-btn" id="refreshDataBtn" onclick="actualizarDatos();">
+                                            <i class="fa fa-refresh"></i> Actualizar Datos
+                                        </button>
+                                        <button type="button" class="btn btn-warning action-btn" id="exportDataBtn" onclick="exportarReporte();">
+                                            <i class="fa fa-download"></i> Exportar Reporte
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6 text-right">
+                                        <button type="button" class="btn btn-primary action-btn" id="viewAllReservationsBtn" onclick="verTodasReservas();">
+                                            <i class="fa fa-list"></i> Ver Todas las Reservas
+                                        </button>
+                                        <button type="button" class="btn btn-default action-btn" id="settingsBtn" onclick="abrirConfiguracion();">
+                                            <i class="fa fa-cog"></i> Configuración
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Reservas para Acciones Directas -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="reservations-table">
+                                <div class="table-header">
+                                    <h4><i class="fa fa-list"></i> Reservas Listado de Reservas en Línea</h4>
+                                </div>
+                                <div style="padding: 20px;">
+                                    <table id="reservationsTable" class="table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Huésped</th>
+                                                <th>Habitación</th>
+                                                <th>Check In</th>
+                                                <th>Check Out</th>
+                                                <th>Tipo</th>
+                                                <th>Estado</th>
+                                                <th>Total</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>RES-001</td>
+                                                <td>Juan Pérez</td>
+                                                <td>0015</td>
+                                                <td>15/12/2024</td>
+                                                <td>18/12/2024</td>
+                                                <td>Individual</td>
+                                                <td><span class="status-badge status-confirmed">Confirmada</span></td>
+                                                <td>$450.00</td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <button class="btn btn-success btn-sm action-btn" onclick="confirmReservation('RES-001')" title="Confirmar Reserva">
+                                                            <i class="fa fa-check"></i>
+                                                        </button>
+                                                        <button class="btn btn-info btn-sm action-btn" onclick="viewReservation('RES-001')" title="Ver Detalles">
+                                                            <i class="fa fa-eye"></i>
+                                                        </button>
+                                                        <button class="btn btn-warning btn-sm action-btn" onclick="editReservation('RES-001')" title="Editar Reserva">
+                                                            <i class="fa fa-edit"></i>
+                                                        </button>
+                                                        <button class="btn btn-danger btn-sm action-btn" onclick="cancelReservation('RES-001')" title="Cancelar Reserva">
+                                                            <i class="fa fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>RES-002</td>
+                                                <td>María González</td>
+                                                <td>0008</td>
+                                                <td>16/12/2024</td>
+                                                <td>20/12/2024</td>
+                                                <td>Grupal</td>
+                                                <td><span class="status-badge status-pending">Pendiente</span></td>
+                                                <td>$380.00</td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <button class="btn btn-success btn-sm action-btn" onclick="confirmReservation('RES-002')" title="Confirmar Reserva">
+                                                            <i class="fa fa-check"></i>
+                                                        </button>
+                                                        <button class="btn btn-info btn-sm action-btn" onclick="viewReservation('RES-002')" title="Ver Detalles">
+                                                            <i class="fa fa-eye"></i>
+                                                        </button>
+                                                        <button class="btn btn-warning btn-sm action-btn" onclick="editReservation('RES-002')" title="Editar Reserva">
+                                                            <i class="fa fa-edit"></i>
+                                                        </button>
+                                                        <button class="btn btn-danger btn-sm action-btn" onclick="cancelReservation('RES-002')" title="Cancelar Reserva">
+                                                            <i class="fa fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>RES-003</td>
+                                                <td>Carlos Rodríguez</td>
+                                                <td>0012</td>
+                                                <td>14/12/2024</td>
+                                                <td>17/12/2024</td>
+                                                <td>Corporativa</td>
+                                                <td><span class="status-badge status-checked-in">Check In</span></td>
+                                                <td>$520.00</td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <button class="btn btn-success btn-sm action-btn" onclick="confirmReservation('RES-003')" title="Confirmar Reserva">
+                                                            <i class="fa fa-check"></i>
+                                                        </button>
+                                                        <button class="btn btn-info btn-sm action-btn" onclick="viewReservation('RES-003')" title="Ver Detalles">
+                                                            <i class="fa fa-eye"></i>
+                                                        </button>
+                                                        <button class="btn btn-warning btn-sm action-btn" onclick="editReservation('RES-003')" title="Editar Reserva">
+                                                            <i class="fa fa-edit"></i>
+                                                        </button>
+                                                        <button class="btn btn-danger btn-sm action-btn" onclick="cancelReservation('RES-003')" title="Cancelar Reserva">
+                                                            <i class="fa fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>RES-004</td>
+                                                <td>Ana Martínez</td>
+                                                <td>0005</td>
+                                                <td>13/12/2024</td>
+                                                <td>16/12/2024</td>
+                                                <td>Individual</td>
+                                                <td><span class="status-badge status-checked-out">Check Out</span></td>
+                                                <td>$320.00</td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <button class="btn btn-success btn-sm action-btn" onclick="confirmReservation('RES-004')" title="Confirmar Reserva">
+                                                            <i class="fa fa-check"></i>
+                                                        </button>
+                                                        <button class="btn btn-info btn-sm action-btn" onclick="viewReservation('RES-004')" title="Ver Detalles">
+                                                            <i class="fa fa-eye"></i>
+                                                        </button>
+                                                        <button class="btn btn-warning btn-sm action-btn" onclick="editReservation('RES-004')" title="Editar Reserva">
+                                                            <i class="fa fa-edit"></i>
+                                                        </button>
+                                                        <button class="btn btn-danger btn-sm action-btn" onclick="cancelReservation('RES-004')" title="Cancelar Reserva">
+                                                            <i class="fa fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>RES-005</td>
+                                                <td>Luis Fernández</td>
+                                                <td>0020</td>
+                                                <td>17/12/2024</td>
+                                                <td>22/12/2024</td>
+                                                <td>Grupal</td>
+                                                <td><span class="status-badge status-cancelled">Cancelada</span></td>
+                                                <td>$680.00</td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <button class="btn btn-success btn-sm action-btn" onclick="confirmReservation('RES-005')" title="Confirmar Reserva">
+                                                            <i class="fa fa-check"></i>
+                                                        </button>
+                                                        <button class="btn btn-info btn-sm action-btn" onclick="viewReservation('RES-005')" title="Ver Detalles">
+                                                            <i class="fa fa-eye"></i>
+                                                        </button>
+                                                        <button class="btn btn-warning btn-sm action-btn" onclick="editReservation('RES-005')" title="Editar Reserva">
+                                                            <i class="fa fa-edit"></i>
+                                                        </button>
+                                                        <button class="btn btn-danger btn-sm action-btn" onclick="cancelReservation('RES-005')" title="Cancelar Reserva">
+                                                            <i class="fa fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /page content -->
+        </div>
+    </div>
+
+    <!-- Modal para Nueva Reserva -->
+    <div class="modal fade" id="newReservationModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Nueva Reserva</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="newReservationForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="guestName">Nombre *</label>
+                                    <input type="text" class="form-control" id="guestName" name="guestName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="guestLastName">Apellido *</label>
+                                    <input type="text" class="form-control" id="guestLastName" name="guestLastName" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="guestEmail">Email *</label>
+                                    <input type="email" class="form-control" id="guestEmail" name="guestEmail" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="guestPhone">Teléfono *</label>
+                                    <input type="tel" class="form-control" id="guestPhone" name="guestPhone" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="roomNumber">Habitación *</label>
+                                    <select class="form-control" id="roomNumber" name="roomNumber" required>
+                                        <option value="">Seleccionar habitación...</option>
+                                        <option value="0001">Habitación 0001</option>
+                                        <option value="0002">Habitación 0002</option>
+                                        <option value="0003">Habitación 0003</option>
+                                        <option value="0004">Habitación 0004</option>
+                                        <option value="0005">Habitación 0005</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="reservationType">Tipo de Reserva *</label>
+                                    <select class="form-control" id="reservationType" name="reservationType" required>
+                                        <option value="">Seleccionar tipo...</option>
+                                        <option value="individual">Individual</option>
+                                        <option value="grupal">Grupal</option>
+                                        <option value="corporativa">Corporativa</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="checkInDate">Fecha Check In *</label>
+                                    <input type="date" class="form-control" id="checkInDate" name="checkInDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="checkOutDate">Fecha Check Out *</label>
+                                    <input type="date" class="form-control" id="checkOutDate" name="checkOutDate" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="totalAmount">Monto Total *</label>
+                                    <input type="number" class="form-control" id="totalAmount" name="totalAmount" required min="0" step="0.01">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="specialRequests">Solicitudes Especiales</label>
+                                    <textarea class="form-control" id="specialRequests" name="specialRequests" rows="3" placeholder="Cama extra, cuna, etc."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveReservationBtn" onclick="crearReservaSimple();">Crear Reserva</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Ver Todas las Reservas -->
+    <div class="modal fade" id="allReservationsModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <i class="fa fa-list"></i> Todas las Reservas
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table id="allReservationsTable" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Huésped</th>
+                                    <th>Habitación</th>
+                                    <th>Check In</th>
+                                    <th>Check Out</th>
+                                    <th>Tipo</th>
+                                    <th>Estado</th>
+                                    <th>Total</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Las reservas se cargarán aquí dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="exportarReporte();">
+                        <i class="fa fa-download"></i> Exportar Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="../vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="../vendors/nprogress/nprogress.js"></script>
+    <!-- iCheck -->
+    <script src="../vendors/iCheck/icheck.min.js"></script>
+    <!-- Datatables -->
+    <script src="../vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="../vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="../vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="../vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="../vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+    <script src="../vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+    <script src="../vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="../vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+    <script src="../vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+    <script src="../vendors/jszip/dist/jszip.min.js"></script>
+    <script src="../vendors/pdfmake/build/pdfmake.min.js"></script>
+    <script src="../vendors/pdfmake/build/vfs_fonts.js"></script>
+    <!-- PNotify -->
+    <script src="../vendors/pnotify/dist/pnotify.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.nonblock.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    
+    <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
+    <script src="auth-simple.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Configurar PNotify
+            PNotify.prototype.options.styling = "bootstrap3";
+
+            // Inicializar DataTable
+            $('#reservationsTable').DataTable({
+                responsive: true,
+                pageLength: 10,
+                order: [[0, 'desc']],
+                columnDefs: [
+                    { orderable: false, targets: 7 }
+                ],
+                language: {
+                    "sProcessing": "Procesando...",
+                    "sLengthMenu": "Mostrar _MENU_ registros",
+                    "sZeroRecords": "No se encontraron resultados",
+                    "sEmptyTable": "Ningún dato disponible en esta tabla",
+                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                    "sSearch": "Buscar:",
+                    "oPaginate": {
+                        "sFirst": "Primero",
+                        "sLast": "Último",
+                        "sNext": "Siguiente",
+                        "sPrevious": "Anterior"
+                    }
+                }
+            });
+
+            // Crear gráficos mini para las tarjetas
+            createMiniChart('reservationsMiniChart', [45, 67, 89, 102, 78, 95, 120], '#27ae60');
+            createMiniChart('servicesMiniChart', [120, 135, 150, 145, 160, 175, 180], '#3498db');
+            createMiniChart('checkinMiniChart', [600, 620, 640, 650, 660, 670, 675], '#f39c12');
+            createMiniChart('checkoutMiniChart', [350, 360, 365, 370, 372, 374, 375], '#e74c3c');
+
+            // Crear gráfico principal de reservas en tiempo real
+            console.log('Chart.js disponible:', typeof Chart !== 'undefined');
+            var ctx = document.getElementById('reservationsChart');
+            console.log('Canvas encontrado:', ctx);
+            if (ctx && typeof Chart !== 'undefined') {
+                var reservationsChart = new Chart(ctx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['18/10/25', '24/10/25', '30/10/25', '01/11/25', '05/11/25'],
+                        datasets: [{
+                            label: 'Reservas',
+                            data: [45, 67, 89, 102, 78],
+                            borderColor: '#27ae60',
+                            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 20
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Función para crear gráficos mini
+            function createMiniChart(canvasId, data, color) {
+                var ctx = document.getElementById(canvasId).getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['', '', '', '', '', '', ''],
+                        datasets: [{
+                            data: data,
+                            borderColor: color,
+                            backgroundColor: color + '20',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                display: false
+                            },
+                            y: {
+                                display: false
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        elements: {
+                            point: {
+                                radius: 0
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Actualizar datos en tiempo real
+            function updateRealTimeData() {
+                // Simular actualización de datos
+                var newReservations = Math.floor(Math.random() * 5) + 175;
+                var newCheckIns = Math.floor(Math.random() * 10) + 670;
+                var newCheckOuts = Math.floor(Math.random() * 8) + 370;
+                var newAvailableRooms = Math.floor(Math.random() * 5) + 43;
+                
+                $('#totalReservations').text(newReservations);
+                $('#checkIns').text(newCheckIns);
+                $('#checkOuts').text(newCheckOuts);
+                $('#availableRooms').text(newAvailableRooms);
+            }
+
+            // Actualizar cada 30 segundos
+            setInterval(updateRealTimeData, 30000);
+
+            // Botones de acción
+            $('#refreshDataBtn').on('click', function() {
+                updateRealTimeData();
+                $('#reservationsTable').DataTable().ajax.reload();
+                new PNotify({
+                    title: 'Datos Actualizados',
+                    text: 'La información ha sido actualizada correctamente',
+                    type: 'info',
+                    styling: 'bootstrap3'
+                });
+            });
+
+            $('#exportDataBtn').on('click', function() {
+                new PNotify({
+                    title: 'Reporte Exportado',
+                    text: 'El reporte ha sido generado y enviado a gsanchez@sabtechgroup.com',
+                    type: 'success',
+                    styling: 'bootstrap3'
+                });
+            });
+
+            $('#viewAllReservationsBtn').on('click', function() {
+                window.location.href = 'reservas-detalladas.html';
+            });
+
+            $('#settingsBtn').on('click', function() {
+                new PNotify({
+                    title: 'Configuración',
+                    text: 'Panel de configuración del sistema disponible próximamente',
+                    type: 'info',
+                    styling: 'bootstrap3'
+                });
+            });
+
+            // Debug: Verificar que el botón existe
+            console.log('Botón encontrado:', $('#saveReservationBtn').length);
+            
+            // Usar event delegation para asegurar que funcione
+            $(document).on('click', '#saveReservationBtn', function(e) {
+                e.preventDefault();
+                console.log('Botón clickeado!');
+                var form = $('#newReservationForm');
+                var formData = {};
+                
+                // Obtener datos del formulario
+                formData.guestName = $('#guestName').val();
+                formData.guestEmail = $('#guestEmail').val();
+                formData.roomNumber = $('#roomNumber').val();
+                formData.totalAmount = $('#totalAmount').val();
+                formData.checkInDate = $('#checkInDate').val();
+                formData.checkOutDate = $('#checkOutDate').val();
+
+                // Validar campos requeridos
+                if (!formData.guestName || !formData.guestEmail || !formData.roomNumber || !formData.totalAmount || !formData.checkInDate || !formData.checkOutDate) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'Por favor complete todos los campos requeridos',
+                        type: 'error',
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Validar fechas
+                var checkIn = new Date(formData.checkInDate);
+                var checkOut = new Date(formData.checkOutDate);
+                
+                if (checkOut <= checkIn) {
+                    new PNotify({
+                        title: 'Error',
+                        text: 'La fecha de Check Out debe ser posterior a la fecha de Check In',
+                        type: 'error',
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+
+                // Simular creación de reserva
+                var newReservationId = 'RES-' + String(Math.floor(Math.random() * 9000) + 1000);
+                
+                // Agregar a la tabla (si existe)
+                if ($.fn.DataTable && $('#reservationsTable').length) {
+                    var table = $('#reservationsTable').DataTable();
+                    var newRow = [
+                        newReservationId,
+                        formData.guestName,
+                        formData.roomNumber,
+                        formData.checkInDate,
+                        formData.checkOutDate,
+                        '<span class="badge badge-warning">Pendiente</span>',
+                        '$' + parseFloat(formData.totalAmount).toFixed(2),
+                        generateActionButtons(newReservationId)
+                    ];
+                    table.row.add(newRow).draw();
+                }
+
+                new PNotify({
+                    title: 'Reserva Creada',
+                    text: `La reserva ${newReservationId} ha sido creada exitosamente`,
+                    type: 'success',
+                    styling: 'bootstrap3'
+                });
+
+                $('#newReservationModal').modal('hide');
+                form[0].reset();
+                updateRealTimeData();
+            });
+
+            // Función simple para crear reserva
+            function crearReserva() {
+                // Obtener datos
+                var nombre = document.getElementById('guestName').value;
+                var email = document.getElementById('guestEmail').value;
+                var habitacion = document.getElementById('roomNumber').value;
+                var monto = document.getElementById('totalAmount').value;
+                var checkIn = document.getElementById('checkInDate').value;
+                var checkOut = document.getElementById('checkOutDate').value;
+                
+                // Validar
+                if (!nombre || !email || !habitacion || !monto || !checkIn || !checkOut) {
+                    alert('Por favor complete todos los campos requeridos');
+                    return;
+                }
+                
+                // Validar fechas
+                var fechaIn = new Date(checkIn);
+                var fechaOut = new Date(checkOut);
+                if (fechaOut <= fechaIn) {
+                    alert('La fecha de Check Out debe ser posterior a la fecha de Check In');
+                    return;
+                }
+                
+                // Crear ID
+                var id = 'RES-' + Math.floor(Math.random() * 9000) + 1000;
+                
+                // Agregar a tabla
+                var tabla = document.getElementById('reservationsTable');
+                if (tabla) {
+                    var tbody = tabla.getElementsByTagName('tbody')[0];
+                    var fila = tbody.insertRow();
+                    
+                    fila.insertCell(0).innerHTML = id;
+                    fila.insertCell(1).innerHTML = nombre;
+                    fila.insertCell(2).innerHTML = habitacion;
+                    fila.insertCell(3).innerHTML = checkIn;
+                    fila.insertCell(4).innerHTML = checkOut;
+                    fila.insertCell(5).innerHTML = '<span class="badge badge-warning">Pendiente</span>';
+                    fila.insertCell(6).innerHTML = '$' + parseFloat(monto).toFixed(2);
+                    fila.insertCell(7).innerHTML = `
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-success btn-sm action-btn" onclick="confirmReservation('${id}')" title="Confirmar Reserva">
+                                <i class="fa fa-check"></i>
+                            </button>
+                            <button class="btn btn-info btn-sm action-btn" onclick="viewReservation('${id}')" title="Ver Detalles">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                            <button class="btn btn-warning btn-sm action-btn" onclick="editReservation('${id}')" title="Editar Reserva">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm action-btn" onclick="cancelReservation('${id}')" title="Cancelar Reserva">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Mostrar notificación de éxito
+                    if (typeof PNotify !== 'undefined') {
+                        new PNotify({
+                            title: 'Reserva Creada',
+                            text: 'La reserva ' + id + ' ha sido creada exitosamente',
+                            type: 'success',
+                            styling: 'bootstrap3'
+                        });
+                    }
+                }
+                
+                // Cerrar modal inmediatamente
+                $('#newReservationModal').modal('hide');
+                
+                // Limpiar formulario
+                document.getElementById('newReservationForm').reset();
+                
+                // Actualizar estadísticas
+                updateRealTimeData();
+            }
+
+            // Función global para crear reserva
+            window.createReservation = function() {
+                // Obtener datos del formulario
+                var guestName = document.getElementById('guestName').value;
+                var guestEmail = document.getElementById('guestEmail').value;
+                var roomNumber = document.getElementById('roomNumber').value;
+                var totalAmount = document.getElementById('totalAmount').value;
+                var checkInDate = document.getElementById('checkInDate').value;
+                var checkOutDate = document.getElementById('checkOutDate').value;
+
+                // Validar campos requeridos
+                if (!guestName || !guestEmail || !roomNumber || !totalAmount || !checkInDate || !checkOutDate) {
+                    alert('Por favor complete todos los campos requeridos');
+                    return;
+                }
+
+                // Validar fechas
+                var checkIn = new Date(checkInDate);
+                var checkOut = new Date(checkOutDate);
+                
+                if (checkOut <= checkIn) {
+                    alert('La fecha de Check Out debe ser posterior a la fecha de Check In');
+                    return;
+                }
+
+                // Simular creación de reserva
+                var newReservationId = 'RES-' + String(Math.floor(Math.random() * 9000) + 1000);
+                
+                // Agregar a la tabla
+                addReservationToTable(newReservationId, guestName, roomNumber, checkInDate, checkOutDate, totalAmount);
+
+                // Mostrar notificación de éxito
+                if (typeof PNotify !== 'undefined') {
+                    new PNotify({
+                        title: 'Reserva Creada',
+                        text: `La reserva ${newReservationId} ha sido creada exitosamente`,
+                        type: 'success',
+                        styling: 'bootstrap3'
+                    });
+                } else {
+                    alert('Reserva creada: ' + newReservationId);
+                }
+
+                // Cerrar modal
+                $('#newReservationModal').modal('hide');
+                
+                // Limpiar formulario
+                document.getElementById('newReservationForm').reset();
+                
+                // Actualizar estadísticas
+                updateRealTimeData();
+            };
+
+            // Función para agregar reserva a la tabla
+            function addReservationToTable(id, guestName, roomNumber, checkInDate, checkOutDate, totalAmount) {
+                // Buscar la tabla
+                var table = document.getElementById('reservationsTable');
+                if (!table) {
+                    console.log('Tabla no encontrada');
+                    return;
+                }
+
+                // Crear nueva fila
+                var tbody = table.getElementsByTagName('tbody')[0];
+                var newRow = tbody.insertRow();
+
+                // Agregar celdas
+                var cells = [
+                    id,
+                    guestName,
+                    roomNumber,
+                    checkInDate,
+                    checkOutDate,
+                    '<span class="badge badge-warning">Pendiente</span>',
+                    '$' + parseFloat(totalAmount).toFixed(2),
+                    generateActionButtonsHTML(id)
+                ];
+
+                for (var i = 0; i < cells.length; i++) {
+                    var cell = newRow.insertCell();
+                    cell.innerHTML = cells[i];
+                }
+
+                console.log('Reserva agregada a la tabla:', id);
+            }
+
+            // Función para generar HTML de botones de acción
+            function generateActionButtonsHTML(reservationId) {
+                return `
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-success btn-sm action-btn" onclick="confirmReservation('${reservationId}')" title="Confirmar Reserva">
+                            <i class="fa fa-check"></i>
+                        </button>
+                        <button type="button" class="btn btn-info btn-sm action-btn" onclick="viewReservation('${reservationId}')" title="Ver Detalles">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                        <button type="button" class="btn btn-warning btn-sm action-btn" onclick="editReservation('${reservationId}')" title="Editar Reserva">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm action-btn" onclick="cancelReservation('${reservationId}')" title="Cancelar Reserva">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            }
+
+            // Función para generar botones de acción
+            function generateActionButtons(reservationId) {
+                return `
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-success btn-sm action-btn" onclick="confirmReservation('${reservationId}')" title="Confirmar Reserva">
+                            <i class="fa fa-check"></i>
+                        </button>
+                        <button type="button" class="btn btn-info btn-sm action-btn" onclick="viewReservation('${reservationId}')" title="Ver Detalles">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                        <button type="button" class="btn btn-warning btn-sm action-btn" onclick="editReservation('${reservationId}')" title="Editar Reserva">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm action-btn" onclick="cancelReservation('${reservationId}')" title="Cancelar Reserva">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            }
+
+            // ===== FUNCIONES GLOBALES PARA BOTONES DE ACCIÓN DE LA TABLA =====
+            
+            // Funciones globales para botones de la tabla principal
+            window.confirmReservation = function(reservationId) {
+                if (typeof PNotify !== 'undefined') {
+                    new PNotify({
+                        title: 'Reserva Confirmada',
+                        text: 'La reserva ' + reservationId + ' ha sido confirmada exitosamente',
+                        type: 'success',
+                        styling: 'bootstrap3'
+                    });
+                } else {
+                    alert('Reserva ' + reservationId + ' confirmada exitosamente');
+                }
+            };
+            
+            window.viewReservation = function(reservationId) {
+                if (typeof PNotify !== 'undefined') {
+                    new PNotify({
+                        title: 'Detalles de Reserva',
+                        text: 'Mostrando detalles de la reserva ' + reservationId,
+                        type: 'info',
+                        styling: 'bootstrap3'
+                    });
+                } else {
+                    alert('Mostrando detalles de la reserva ' + reservationId);
+                }
+            };
+            
+            window.editReservation = function(reservationId) {
+                if (typeof PNotify !== 'undefined') {
+                    new PNotify({
+                        title: 'Editar Reserva',
+                        text: 'Abriendo formulario de edición para la reserva ' + reservationId,
+                        type: 'info',
+                        styling: 'bootstrap3'
+                    });
+                } else {
+                    alert('Abriendo edición de la reserva ' + reservationId);
+                }
+            };
+            
+            window.cancelReservation = function(reservationId) {
+                if (confirm('¿Estás seguro de que deseas cancelar la reserva ' + reservationId + '?')) {
+                    if (typeof PNotify !== 'undefined') {
+                        new PNotify({
+                            title: 'Reserva Cancelada',
+                            text: 'La reserva ' + reservationId + ' ha sido cancelada',
+                            type: 'warning',
+                            styling: 'bootstrap3'
+                        });
+                    } else {
+                        alert('Reserva ' + reservationId + ' cancelada');
+                    }
+                }
+            };
+
+            // ===== FUNCIONES AUXILIARES =====
+            
+            // Función para obtener datos de una reserva específica
+            function obtenerDatosReserva(idReserva) {
+                // Buscar primero en tabla principal
+                var tablaPrincipal = document.getElementById('reservationsTable');
+                if (tablaPrincipal) {
+                    var filas = tablaPrincipal.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                    for (var i = 0; i < filas.length; i++) {
+                        var celdas = filas[i].getElementsByTagName('td');
+                        if (celdas.length > 0 && celdas[0].textContent.trim() === idReserva) {
+                            return {
+                                id: celdas[0].textContent.trim(),
+                                huesped: celdas[1].textContent.trim(),
+                                habitacion: celdas[2].textContent.trim(),
+                                checkIn: celdas[3].textContent.trim(),
+                                checkOut: celdas[4].textContent.trim(),
+                                tipo: celdas[5].textContent.trim(),
+                                estado: celdas[6].textContent.trim(),
+                                total: celdas[7].textContent.trim()
+                            };
+                        }
+                    }
+                }
+                
+                // Si no se encuentra en tabla principal, buscar en tabla del modal
+                var tablaModal = document.getElementById('allReservationsTable');
+                if (tablaModal) {
+                    var filasModal = tablaModal.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                    for (var i = 0; i < filasModal.length; i++) {
+                        var celdas = filasModal[i].getElementsByTagName('td');
+                        if (celdas.length > 0 && celdas[0].textContent.trim() === idReserva) {
+                            return {
+                                id: celdas[0].textContent.trim(),
+                                huesped: celdas[1].textContent.trim(),
+                                habitacion: celdas[2].textContent.trim(),
+                                checkIn: celdas[3].textContent.trim(),
+                                checkOut: celdas[4].textContent.trim(),
+                                tipo: celdas[5].textContent.trim(),
+                                estado: celdas[6].textContent.trim(),
+                                total: celdas[7].textContent.trim()
+                            };
+                        }
+                    }
+                }
+                
+                return null;
+            }
+            
+            // Función para mostrar modal de detalles
+            function mostrarModalDetalles(datos) {
+                console.log('Creando modal con datos:', datos);
+                alert('CREANDO MODAL PARA: ' + datos.id);
+                
+                var modalHTML = `
+                    <div class="modal fade" id="detallesModal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">
+                                        <i class="fa fa-eye"></i> Detalles de la Reserva ${datos.id}
+                                    </h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h5><i class="fa fa-user"></i> Información del Huésped</h5>
+                                            <table class="table table-bordered">
+                                                <tr>
+                                                    <td><strong>ID de Reserva:</strong></td>
+                                                    <td>${datos.id}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Huésped:</strong></td>
+                                                    <td>${datos.huesped}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Habitación:</strong></td>
+                                                    <td>${datos.habitacion}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Tipo de Reserva:</strong></td>
+                                                    <td>${datos.tipo}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5><i class="fa fa-calendar"></i> Detalles de la Reserva</h5>
+                                            <table class="table table-bordered">
+                                                <tr>
+                                                    <td><strong>Check In:</strong></td>
+                                                    <td>${datos.checkIn}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Check Out:</strong></td>
+                                                    <td>${datos.checkOut}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Estado:</strong></td>
+                                                    <td>${datos.estado}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Total:</strong></td>
+                                                    <td><strong class="text-success">${datos.total}</strong></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                                        <i class="fa fa-times"></i> Cerrar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                console.log('Modal HTML creado');
+                
+                // Remover modal anterior si existe
+                var modalAnterior = document.getElementById('detallesModal');
+                if (modalAnterior) {
+                    console.log('Removiendo modal anterior');
+                    modalAnterior.remove();
+                }
+                
+                // Agregar nuevo modal al body
+                console.log('Agregando modal al body');
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                
+                // Mostrar modal
+                console.log('Intentando mostrar modal');
+                try {
+                    $('#detallesModal').modal('show');
+                    console.log('Modal mostrado exitosamente');
+                } catch (error) {
+                    console.error('Error al mostrar modal:', error);
+                    alert('Error al mostrar modal: ' + error.message);
+                }
+            }
+            
+            // Función auxiliar para calcular duración
+            function calcularDuracion(checkIn, checkOut) {
+                var fechaIn = new Date(checkIn.split('/').reverse().join('-'));
+                var fechaOut = new Date(checkOut.split('/').reverse().join('-'));
+                var diffTime = Math.abs(fechaOut - fechaIn);
+                var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                return diffDays;
+            }
+
+            // CREAR FUNCIONES GLOBALES DIRECTAS PARA ONCLICK
+            function confirmReservation(reservationId) {
+                alert('CONFIRMANDO: ' + reservationId);
+                console.log('CONFIRMANDO: ' + reservationId);
+                
+                // Actualizar tabla principal
+                var tabla = document.getElementById('reservationsTable');
+                if (tabla) {
+                    var filas = tabla.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                    for (var i = 0; i < filas.length; i++) {
+                        var celdas = filas[i].getElementsByTagName('td');
+                        if (celdas.length > 0 && celdas[0].textContent.trim() === reservationId) {
+                            if (celdas[6]) {
+                                celdas[6].innerHTML = '<span class="badge badge-success">Confirmada</span>';
+                            }
+                            break;
+                        }
+                    }
+                }
+                
+                // Actualizar tabla modal
+                var tablaModal = document.getElementById('allReservationsTable');
+                if (tablaModal) {
+                    var filasModal = tablaModal.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                    for (var i = 0; i < filasModal.length; i++) {
+                        var celdas = filasModal[i].getElementsByTagName('td');
+                        if (celdas.length > 0 && celdas[0].textContent.trim() === reservationId) {
+                            if (celdas[6]) {
+                                celdas[6].innerHTML = '<span class="badge badge-success">Confirmada</span>';
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            function viewReservation(reservationId) {
+                console.log('VIENDO DETALLES DE: ' + reservationId);
+                alert('ABRIENDO DETALLES DE: ' + reservationId);
+                
+                // Buscar datos de la reserva
+                var datosReserva = obtenerDatosReserva(reservationId);
+                console.log('Datos encontrados:', datosReserva);
+                
+                if (datosReserva) {
+                    console.log('Mostrando modal de detalles...');
+                    mostrarModalDetalles(datosReserva);
+                } else {
+                    alert('Error: No se pudieron obtener los detalles de la reserva ' + reservationId);
+                }
+            }
+            
+            function editReservation(reservationId) {
+                alert('EDITANDO: ' + reservationId);
+                console.log('EDITANDO: ' + reservationId);
+            }
+            
+            function cancelReservation(reservationId) {
+                if (confirm('¿Cancelar ' + reservationId + '?')) {
+                    alert('CANCELANDO: ' + reservationId);
+                    console.log('CANCELANDO: ' + reservationId);
+                    
+                    // Actualizar tabla principal
+                    var tabla = document.getElementById('reservationsTable');
+                    if (tabla) {
+                        var filas = tabla.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                        for (var i = 0; i < filas.length; i++) {
+                            var celdas = filas[i].getElementsByTagName('td');
+                            if (celdas.length > 0 && celdas[0].textContent.trim() === reservationId) {
+                                if (celdas[6]) {
+                                    celdas[6].innerHTML = '<span class="badge badge-danger">Cancelada</span>';
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Actualizar tabla modal
+                    var tablaModal = document.getElementById('allReservationsTable');
+                    if (tablaModal) {
+                        var filasModal = tablaModal.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                        for (var i = 0; i < filasModal.length; i++) {
+                            var celdas = filasModal[i].getElementsByTagName('td');
+                            if (celdas.length > 0 && celdas[0].textContent.trim() === reservationId) {
+                                if (celdas[6]) {
+                                    celdas[6].innerHTML = '<span class="badge badge-danger">Cancelada</span>';
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Acciones en la tabla (fallback)
+            $(document).on('click', '.btn-action', function() {
+                var action = $(this).attr('title');
+                var row = $(this).closest('tr');
+                var reservationId = row.find('td:eq(0)').text();
+                
+                new PNotify({
+                    title: 'Acción Ejecutada',
+                    text: `${action} para reserva ${reservationId} ejecutado correctamente`,
+                    type: 'info',
+                    styling: 'bootstrap3'
+                });
+            });
+        });
+
+        // ===== FUNCIONALIDADES DE BOTONES DEL CONTROL OPERATIVO =====
+        
+        // Botón Actualizar Datos
+        function actualizarDatos() {
+            // Actualizar estadísticas
+            updateRealTimeData();
+            
+            // Mostrar notificación
+            if (typeof PNotify !== 'undefined') {
+                new PNotify({
+                    title: 'Datos Actualizados',
+                    text: 'La información ha sido actualizada correctamente',
+                    type: 'success',
+                    styling: 'bootstrap3'
+                });
+            } else {
+                alert('Datos actualizados correctamente');
+            }
+        }
+        
+        // Botón Exportar Reporte
+        function exportarReporte() {
+            try {
+                // Obtener datos de la tabla
+                var tabla = document.getElementById('reservationsTable');
+                var filas = tabla.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                
+                // Crear datos para Excel
+                var datos = [];
+                
+                // Encabezados
+                datos.push(['ID', 'Huésped', 'Habitación', 'Check In', 'Check Out', 'Estado', 'Total']);
+                
+                // Datos de las filas
+                for (var i = 0; i < filas.length; i++) {
+                    var celdas = filas[i].getElementsByTagName('td');
+                    if (celdas.length >= 7) {
+                        var fila = [
+                            celdas[0].textContent.trim(),
+                            celdas[1].textContent.trim(),
+                            celdas[2].textContent.trim(),
+                            celdas[3].textContent.trim(),
+                            celdas[4].textContent.trim(),
+                            celdas[5].textContent.trim(),
+                            celdas[6].textContent.trim()
+                        ];
+                        datos.push(fila);
+                    }
+                }
+                
+                // Crear archivo Excel
+                var fecha = new Date().toISOString().split('T')[0];
+                var nombreArchivo = 'Reporte_Reservas_' + fecha + '.csv';
+                
+                // Convertir a CSV
+                var csv = '';
+                for (var i = 0; i < datos.length; i++) {
+                    csv += datos[i].join(',') + '\n';
+                }
+                
+                // Crear y descargar archivo
+                var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                var link = document.createElement('a');
+                var url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', nombreArchivo);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Mostrar notificación
+                if (typeof PNotify !== 'undefined') {
+                    new PNotify({
+                        title: 'Reporte Exportado',
+                        text: 'El reporte Excel ha sido descargado exitosamente: ' + nombreArchivo,
+                        type: 'success',
+                        styling: 'bootstrap3'
+                    });
+                } else {
+                    alert('Reporte Excel descargado: ' + nombreArchivo);
+                }
+                
+            } catch (error) {
+                if (typeof PNotify !== 'undefined') {
+                    new PNotify({
+                        title: 'Error al Exportar',
+                        text: 'Error al generar el reporte: ' + error.message,
+                        type: 'error',
+                        styling: 'bootstrap3'
+                    });
+                } else {
+                    alert('Error al exportar: ' + error.message);
+                }
+            }
+        }
+        
+        // Botón Ver Todas las Reservas
+        function verTodasReservas() {
+            // Cargar datos en el modal
+            cargarTodasLasReservas();
+            // Abrir modal con todas las reservas
+            $('#allReservationsModal').modal('show');
+        }
+        
+        // Función para cargar todas las reservas en el modal
+        function cargarTodasLasReservas() {
+            var tablaModal = document.getElementById('allReservationsTable');
+            var tbody = tablaModal.getElementsByTagName('tbody')[0];
+            
+            // Limpiar tabla
+            tbody.innerHTML = '';
+            
+            // Obtener datos de la tabla principal
+            var tablaPrincipal = document.getElementById('reservationsTable');
+            var filas = tablaPrincipal.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            
+            // Agregar todas las filas al modal
+            for (var i = 0; i < filas.length; i++) {
+                var celdas = filas[i].getElementsByTagName('td');
+                if (celdas.length >= 8) {
+                    var nuevaFila = tbody.insertRow();
+                    
+                    // Copiar todas las celdas excepto la última (acciones)
+                    for (var j = 0; j < 8; j++) {
+                        var celda = nuevaFila.insertCell();
+                        celda.innerHTML = celdas[j].innerHTML;
+                    }
+                    
+                    // Agregar celda de acciones
+                    var celdaAcciones = nuevaFila.insertCell();
+                    var idReserva = celdas[0].textContent.trim();
+                    celdaAcciones.innerHTML = `
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-success btn-sm action-btn" onclick="confirmarReservaModal('${idReserva}')" title="Confirmar Reserva">
+                                <i class="fa fa-check"></i>
+                            </button>
+                            <button class="btn btn-info btn-sm action-btn" onclick="verDetallesReservaModal('${idReserva}')" title="Ver Detalles">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                            <button class="btn btn-warning btn-sm action-btn" onclick="editarReservaModal('${idReserva}')" title="Editar Reserva">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm action-btn" onclick="cancelarReservaModal('${idReserva}')" title="Cancelar Reserva">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        // Botón Configuración
+        function abrirConfiguracion() {
+            if (typeof PNotify !== 'undefined') {
+                new PNotify({
+                    title: 'Configuración del Sistema',
+                    text: 'Panel de configuración disponible próximamente. Aquí podrás configurar parámetros del sistema, usuarios, y preferencias.',
+                    type: 'info',
+                    styling: 'bootstrap3'
+                });
+            } else {
+                alert('Panel de configuración disponible próximamente');
+            }
+        }
+        
+        // Funciones para botones de acciones del modal
+        function confirmarReservaModal(idReserva) {
+            if (typeof PNotify !== 'undefined') {
+                new PNotify({
+                    title: 'Reserva Confirmada',
+                    text: 'La reserva ' + idReserva + ' ha sido confirmada exitosamente',
+                    type: 'success',
+                    styling: 'bootstrap3'
+                });
+            } else {
+                alert('Reserva ' + idReserva + ' confirmada exitosamente');
+            }
+            // Aquí podrías actualizar el estado en la tabla si es necesario
+        }
+        
+        function verDetallesReservaModal(idReserva) {
+            if (typeof PNotify !== 'undefined') {
+                new PNotify({
+                    title: 'Detalles de Reserva',
+                    text: 'Mostrando detalles completos de la reserva ' + idReserva,
+                    type: 'info',
+                    styling: 'bootstrap3'
+                });
+            } else {
+                alert('Mostrando detalles de la reserva ' + idReserva);
+            }
+            // Aquí podrías abrir un modal con los detalles completos
+        }
+        
+        function editarReservaModal(idReserva) {
+            if (typeof PNotify !== 'undefined') {
+                new PNotify({
+                    title: 'Editar Reserva',
+                    text: 'Abriendo formulario de edición para la reserva ' + idReserva,
+                    type: 'info',
+                    styling: 'bootstrap3'
+                });
+            } else {
+                alert('Abriendo edición de la reserva ' + idReserva);
+            }
+            // Aquí podrías abrir un modal de edición
+        }
+        
+        function cancelarReservaModal(idReserva) {
+            if (confirm('¿Estás seguro de que deseas cancelar la reserva ' + idReserva + '?')) {
+                if (typeof PNotify !== 'undefined') {
+                    new PNotify({
+                        title: 'Reserva Cancelada',
+                        text: 'La reserva ' + idReserva + ' ha sido cancelada',
+                        type: 'warning',
+                        styling: 'bootstrap3'
+                    });
+                } else {
+                    alert('Reserva ' + idReserva + ' cancelada');
+                }
+                // Aquí podrías actualizar el estado en la tabla
+            }
+        }
+        
+        // Función global simple para crear reserva
+        function crearReservaSimple() {
+            try {
+                // Obtener datos
+                var nombre = document.getElementById('guestName').value;
+                var apellido = document.getElementById('guestLastName').value;
+                var email = document.getElementById('guestEmail').value;
+                var telefono = document.getElementById('guestPhone').value;
+                var habitacion = document.getElementById('roomNumber').value;
+                var tipoReserva = document.getElementById('reservationType').value;
+                var monto = document.getElementById('totalAmount').value;
+                var checkIn = document.getElementById('checkInDate').value;
+                var checkOut = document.getElementById('checkOutDate').value;
+                var solicitudes = document.getElementById('specialRequests').value;
+                
+                // Validar campos requeridos
+                if (!nombre || !apellido || !email || !telefono || !habitacion || !tipoReserva || !monto || !checkIn || !checkOut) {
+                    alert('Complete todos los campos requeridos');
+                    return;
+                }
+                
+                // Validar fechas
+                var fechaIn = new Date(checkIn);
+                var fechaOut = new Date(checkOut);
+                if (fechaOut <= fechaIn) {
+                    alert('La fecha de Check Out debe ser posterior a la fecha de Check In');
+                    return;
+                }
+                
+                // Crear ID
+                var id = 'RES-' + Math.floor(Math.random() * 9000) + 1000;
+                
+                // Agregar a tabla
+                var tabla = document.getElementById('reservationsTable');
+                if (tabla && tabla.getElementsByTagName('tbody')[0]) {
+                    var tbody = tabla.getElementsByTagName('tbody')[0];
+                    var fila = tbody.insertRow();
+                    
+                    fila.insertCell(0).innerHTML = id;
+                    fila.insertCell(1).innerHTML = nombre + ' ' + apellido;
+                    fila.insertCell(2).innerHTML = habitacion;
+                    fila.insertCell(3).innerHTML = checkIn;
+                    fila.insertCell(4).innerHTML = checkOut;
+                    fila.insertCell(5).innerHTML = tipoReserva.charAt(0).toUpperCase() + tipoReserva.slice(1);
+                    fila.insertCell(6).innerHTML = '<span class="badge badge-warning">Pendiente</span>';
+                    fila.insertCell(7).innerHTML = '$' + parseFloat(monto).toFixed(2);
+                    fila.insertCell(8).innerHTML = `
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-success btn-sm action-btn" onclick="confirmReservation('${id}')" title="Confirmar Reserva">
+                                <i class="fa fa-check"></i>
+                            </button>
+                            <button class="btn btn-info btn-sm action-btn" onclick="viewReservation('${id}')" title="Ver Detalles">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                            <button class="btn btn-warning btn-sm action-btn" onclick="editReservation('${id}')" title="Editar Reserva">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm action-btn" onclick="cancelReservation('${id}')" title="Cancelar Reserva">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Cerrar modal
+                    if (typeof $ !== 'undefined' && $.fn.modal) {
+                        $('#newReservationModal').modal('hide');
+                    }
+                    
+                    // Limpiar formulario
+                    document.getElementById('newReservationForm').reset();
+                    
+                    // Mostrar notificación de éxito
+                    if (typeof PNotify !== 'undefined') {
+                        new PNotify({
+                            title: 'Reserva Creada',
+                            text: 'La reserva ' + id + ' ha sido creada exitosamente',
+                            type: 'success',
+                            styling: 'bootstrap3'
+                        });
+                    }
+                } else {
+                    alert('Error: No se pudo agregar a la tabla');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+    </script>
+
+    <!-- FUNCIONES GLOBALES PARA BOTONES DE ACCIÓN -->
+    <script>
+        // Funciones globales directas para onclick
+        function confirmReservation(reservationId) {
+            console.log('CONFIRMANDO: ' + reservationId);
+            
+            // Actualizar tabla principal
+            var tabla = document.getElementById('reservationsTable');
+            if (tabla) {
+                var filas = tabla.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for (var i = 0; i < filas.length; i++) {
+                    var celdas = filas[i].getElementsByTagName('td');
+                    if (celdas.length > 0 && celdas[0].textContent.trim() === reservationId) {
+                        if (celdas[6]) {
+                            celdas[6].innerHTML = '<span class="badge badge-success">Confirmada</span>';
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            // Actualizar tabla modal
+            var tablaModal = document.getElementById('allReservationsTable');
+            if (tablaModal) {
+                var filasModal = tablaModal.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for (var i = 0; i < filasModal.length; i++) {
+                    var celdas = filasModal[i].getElementsByTagName('td');
+                    if (celdas.length > 0 && celdas[0].textContent.trim() === reservationId) {
+                        if (celdas[6]) {
+                            celdas[6].innerHTML = '<span class="badge badge-success">Confirmada</span>';
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        
+        function viewReservation(reservationId) {
+            console.log('VIENDO DETALLES DE: ' + reservationId);
+            
+            // Buscar datos de la reserva
+            var datosReserva = obtenerDatosReserva(reservationId);
+            console.log('Datos encontrados:', datosReserva);
+            
+            if (datosReserva) {
+                console.log('Mostrando modal de detalles...');
+                mostrarModalDetalles(datosReserva);
+            } else {
+                console.error('Error: No se pudieron obtener los detalles de la reserva ' + reservationId);
+            }
+        }
+        
+        function editReservation(reservationId) {
+            console.log('EDITANDO: ' + reservationId);
+            
+            // Buscar datos de la reserva
+            var datosReserva = obtenerDatosReserva(reservationId);
+            console.log('Datos encontrados para editar:', datosReserva);
+            
+            if (datosReserva) {
+                console.log('Mostrando modal de edición...');
+                mostrarModalEdicion(datosReserva);
+            } else {
+                console.error('Error: No se pudieron obtener los datos de la reserva para editar ' + reservationId);
+            }
+        }
+        
+        function cancelReservation(reservationId) {
+            if (confirm('¿Cancelar ' + reservationId + '?')) {
+                console.log('CANCELANDO: ' + reservationId);
+                
+                // Actualizar tabla principal
+                var tabla = document.getElementById('reservationsTable');
+                if (tabla) {
+                    var filas = tabla.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                    for (var i = 0; i < filas.length; i++) {
+                        var celdas = filas[i].getElementsByTagName('td');
+                        if (celdas.length > 0 && celdas[0].textContent.trim() === reservationId) {
+                            if (celdas[6]) {
+                                celdas[6].innerHTML = '<span class="badge badge-danger">Cancelada</span>';
+                            }
+                            break;
+                        }
+                    }
+                }
+                
+                // Actualizar tabla modal
+                var tablaModal = document.getElementById('allReservationsTable');
+                if (tablaModal) {
+                    var filasModal = tablaModal.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                    for (var i = 0; i < filasModal.length; i++) {
+                        var celdas = filasModal[i].getElementsByTagName('td');
+                        if (celdas.length > 0 && celdas[0].textContent.trim() === reservationId) {
+                            if (celdas[6]) {
+                                celdas[6].innerHTML = '<span class="badge badge-danger">Cancelada</span>';
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Función para obtener datos de una reserva específica
+        function obtenerDatosReserva(idReserva) {
+            // Buscar primero en tabla principal
+            var tablaPrincipal = document.getElementById('reservationsTable');
+            if (tablaPrincipal) {
+                var filas = tablaPrincipal.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for (var i = 0; i < filas.length; i++) {
+                    var celdas = filas[i].getElementsByTagName('td');
+                    if (celdas.length > 0 && celdas[0].textContent.trim() === idReserva) {
+                        return {
+                            id: celdas[0].textContent.trim(),
+                            huesped: celdas[1].textContent.trim(),
+                            habitacion: celdas[2].textContent.trim(),
+                            checkIn: celdas[3].textContent.trim(),
+                            checkOut: celdas[4].textContent.trim(),
+                            tipo: celdas[5].textContent.trim(),
+                            estado: celdas[6].textContent.trim(),
+                            total: celdas[7].textContent.trim()
+                        };
+                    }
+                }
+            }
+            
+            // Si no se encuentra en tabla principal, buscar en tabla del modal
+            var tablaModal = document.getElementById('allReservationsTable');
+            if (tablaModal) {
+                var filasModal = tablaModal.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for (var i = 0; i < filasModal.length; i++) {
+                    var celdas = filasModal[i].getElementsByTagName('td');
+                    if (celdas.length > 0 && celdas[0].textContent.trim() === idReserva) {
+                        return {
+                            id: celdas[0].textContent.trim(),
+                            huesped: celdas[1].textContent.trim(),
+                            habitacion: celdas[2].textContent.trim(),
+                            checkIn: celdas[3].textContent.trim(),
+                            checkOut: celdas[4].textContent.trim(),
+                            tipo: celdas[5].textContent.trim(),
+                            estado: celdas[6].textContent.trim(),
+                            total: celdas[7].textContent.trim()
+                        };
+                    }
+                }
+            }
+            
+            return null;
+        }
+
+        // Función para mostrar modal de detalles
+        function mostrarModalDetalles(datos) {
+            console.log('Creando modal con datos:', datos);
+            
+            var modalHTML = `
+                <div class="modal fade" id="detallesModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">
+                                    <i class="fa fa-eye"></i> Detalles de la Reserva ${datos.id}
+                                </h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5><i class="fa fa-user"></i> Información del Huésped</h5>
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <td><strong>ID de Reserva:</strong></td>
+                                                <td>${datos.id}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Huésped:</strong></td>
+                                                <td>${datos.huesped}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Habitación:</strong></td>
+                                                <td>${datos.habitacion}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Tipo de Reserva:</strong></td>
+                                                <td>${datos.tipo}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h5><i class="fa fa-calendar"></i> Detalles de la Reserva</h5>
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <td><strong>Check In:</strong></td>
+                                                <td>${datos.checkIn}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Check Out:</strong></td>
+                                                <td>${datos.checkOut}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Estado:</strong></td>
+                                                <td>${datos.estado}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Total:</strong></td>
+                                                <td><strong class="text-success">${datos.total}</strong></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">
+                                    <i class="fa fa-times"></i> Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            console.log('Modal HTML creado');
+            
+            // Remover modal anterior si existe
+            var modalAnterior = document.getElementById('detallesModal');
+            if (modalAnterior) {
+                console.log('Removiendo modal anterior');
+                modalAnterior.remove();
+            }
+            
+            // Agregar nuevo modal al body
+            console.log('Agregando modal al body');
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Mostrar modal
+            console.log('Intentando mostrar modal');
+            try {
+                $('#detallesModal').modal('show');
+                console.log('Modal mostrado exitosamente');
+            } catch (error) {
+                console.error('Error al mostrar modal:', error);
+            }
+        }
+
+        // Función para mostrar modal de edición
+        function mostrarModalEdicion(datos) {
+            console.log('Creando modal de edición con datos:', datos);
+            
+            var modalHTML = `
+                <div class="modal fade" id="editarModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">
+                                    <i class="fa fa-edit"></i> Editar Reserva ${datos.id}
+                                </h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editarReservaForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Huésped:</label>
+                                                <input type="text" class="form-control" id="editHuesped" value="${datos.huesped}" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Habitación:</label>
+                                                <select class="form-control" id="editHabitacion">
+                                                    <option value="0001" ${datos.habitacion === '0001' ? 'selected' : ''}>Habitación 0001</option>
+                                                    <option value="0002" ${datos.habitacion === '0002' ? 'selected' : ''}>Habitación 0002</option>
+                                                    <option value="0003" ${datos.habitacion === '0003' ? 'selected' : ''}>Habitación 0003</option>
+                                                    <option value="0004" ${datos.habitacion === '0004' ? 'selected' : ''}>Habitación 0004</option>
+                                                    <option value="0005" ${datos.habitacion === '0005' ? 'selected' : ''}>Habitación 0005</option>
+                                                    <option value="0008" ${datos.habitacion === '0008' ? 'selected' : ''}>Habitación 0008</option>
+                                                    <option value="0012" ${datos.habitacion === '0012' ? 'selected' : ''}>Habitación 0012</option>
+                                                    <option value="0015" ${datos.habitacion === '0015' ? 'selected' : ''}>Habitación 0015</option>
+                                                    <option value="0020" ${datos.habitacion === '0020' ? 'selected' : ''}>Habitación 0020</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Check In:</label>
+                                                <input type="date" class="form-control" id="editCheckIn" value="${convertirFecha(datos.checkIn)}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Check Out:</label>
+                                                <input type="date" class="form-control" id="editCheckOut" value="${convertirFecha(datos.checkOut)}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Tipo:</label>
+                                                <select class="form-control" id="editTipo">
+                                                    <option value="individual" ${datos.tipo === 'Individual' ? 'selected' : ''}>Individual</option>
+                                                    <option value="grupal" ${datos.tipo === 'Grupal' ? 'selected' : ''}>Grupal</option>
+                                                    <option value="corporativa" ${datos.tipo === 'Corporativa' ? 'selected' : ''}>Corporativa</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Total:</label>
+                                                <input type="number" class="form-control" id="editTotal" value="${datos.total.replace('$', '')}" step="0.01">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">
+                                    <i class="fa fa-times"></i> Cancelar
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="guardarEdicion('${datos.id}')">
+                                    <i class="fa fa-save"></i> Guardar Cambios
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            console.log('Modal de edición HTML creado');
+            
+            // Remover modal anterior si existe
+            var modalAnterior = document.getElementById('editarModal');
+            if (modalAnterior) {
+                console.log('Removiendo modal de edición anterior');
+                modalAnterior.remove();
+            }
+            
+            // Agregar nuevo modal al body
+            console.log('Agregando modal de edición al body');
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Mostrar modal
+            console.log('Intentando mostrar modal de edición');
+            try {
+                $('#editarModal').modal('show');
+                console.log('Modal de edición mostrado exitosamente');
+            } catch (error) {
+                console.error('Error al mostrar modal de edición:', error);
+            }
+        }
+
+        // Función auxiliar para convertir fecha DD/MM/YYYY a YYYY-MM-DD
+        function convertirFecha(fechaDDMMYYYY) {
+            var partes = fechaDDMMYYYY.split('/');
+            if (partes.length === 3) {
+                return partes[2] + '-' + partes[1].padStart(2, '0') + '-' + partes[0].padStart(2, '0');
+            }
+            return fechaDDMMYYYY;
+        }
+
+        // Función para guardar los cambios de edición
+        function guardarEdicion(idReserva) {
+            console.log('Guardando edición para:', idReserva);
+            
+            var nuevaHabitacion = document.getElementById('editHabitacion').value;
+            var nuevoCheckIn = document.getElementById('editCheckIn').value;
+            var nuevoCheckOut = document.getElementById('editCheckOut').value;
+            var nuevoTipo = document.getElementById('editTipo').value;
+            var nuevoTotal = document.getElementById('editTotal').value;
+            
+            // Validar fechas
+            var fechaIn = new Date(nuevoCheckIn);
+            var fechaOut = new Date(nuevoCheckOut);
+            if (fechaOut <= fechaIn) {
+                alert('La fecha de Check Out debe ser posterior a la fecha de Check In');
+                return;
+            }
+            
+            // Validar total
+            if (nuevoTotal <= 0) {
+                alert('El total debe ser mayor a 0');
+                return;
+            }
+            
+            // Convertir fecha de vuelta a DD/MM/YYYY
+            var checkInFormateado = formatearFecha(nuevoCheckIn);
+            var checkOutFormateado = formatearFecha(nuevoCheckOut);
+            
+            // Actualizar la tabla principal
+            var tablaPrincipal = document.getElementById('reservationsTable');
+            if (tablaPrincipal) {
+                var filas = tablaPrincipal.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for (var i = 0; i < filas.length; i++) {
+                    var celdas = filas[i].getElementsByTagName('td');
+                    if (celdas.length > 0 && celdas[0].textContent.trim() === idReserva) {
+                        celdas[2].innerHTML = nuevaHabitacion;
+                        celdas[3].innerHTML = checkInFormateado;
+                        celdas[4].innerHTML = checkOutFormateado;
+                        celdas[5].innerHTML = nuevoTipo.charAt(0).toUpperCase() + nuevoTipo.slice(1);
+                        celdas[7].innerHTML = '$' + parseFloat(nuevoTotal).toFixed(2);
+                        break;
+                    }
+                }
+            }
+            
+            // Actualizar la tabla del modal
+            var tablaModal = document.getElementById('allReservationsTable');
+            if (tablaModal) {
+                var filasModal = tablaModal.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for (var i = 0; i < filasModal.length; i++) {
+                    var celdas = filasModal[i].getElementsByTagName('td');
+                    if (celdas.length > 0 && celdas[0].textContent.trim() === idReserva) {
+                        celdas[2].innerHTML = nuevaHabitacion;
+                        celdas[3].innerHTML = checkInFormateado;
+                        celdas[4].innerHTML = checkOutFormateado;
+                        celdas[5].innerHTML = nuevoTipo.charAt(0).toUpperCase() + nuevoTipo.slice(1);
+                        celdas[7].innerHTML = '$' + parseFloat(nuevoTotal).toFixed(2);
+                        break;
+                    }
+                }
+            }
+            
+            // Cerrar modal
+            $('#editarModal').modal('hide');
+            
+            // Mostrar notificación de éxito
+            if (typeof PNotify !== 'undefined') {
+                new PNotify({
+                    title: 'Reserva Actualizada',
+                    text: 'Los cambios de la reserva ' + idReserva + ' han sido guardados exitosamente',
+                    type: 'success',
+                    styling: 'bootstrap3'
+                });
+            }
+            
+            console.log('Edición guardada exitosamente');
+        }
+
+        // Función auxiliar para formatear fecha YYYY-MM-DD a DD/MM/YYYY
+        function formatearFecha(fechaYYYYMMDD) {
+            var partes = fechaYYYYMMDD.split('-');
+            if (partes.length === 3) {
+                return partes[2] + '/' + partes[1] + '/' + partes[0];
+            }
+            return fechaYYYYMMDD;
+        }
+    </script>
+</body>
+</html>
+

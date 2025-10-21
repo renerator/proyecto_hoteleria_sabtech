@@ -25,6 +25,28 @@
     <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
     
     <style>
+        /* Prevenir que el menú se achique */
+        .left_col {
+            width: 230px !important;
+            min-width: 230px !important;
+            max-width: 230px !important;
+        }
+        
+        .nav.side-menu {
+            width: 100% !important;
+            min-width: 100% !important;
+        }
+        
+        .main_menu_side {
+            width: 100% !important;
+            min-width: 100% !important;
+        }
+        
+        .menu_section {
+            width: 100% !important;
+            min-width: 100% !important;
+        }
+        
         .contract-stats {
             background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             color: white;
@@ -112,18 +134,18 @@
                         <div class="menu_section">
                             <h3>Menú Usuario</h3>
                             <ul class="nav side-menu">
-                                <li><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
+                                <li><a><i class="fa fa-dashboard"></i> Dashboard <span class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
-                                        <li><a href="index2.html">Reservas</a></li>
+                                        <li><a href="admin-dashboard.html">Panel Principal</a></li>
+                                    </ul>
+                                </li>
+                                <li class="active"><a><i class="fa fa-check"></i> Administración <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu" style="display: block;">
+                                        <li><a href="reservas-detalladas.html">Reservas</a></li>
                                         <li><a href="index3.html">Servicios</a></li>
-                                        <li><a href="index.html">Habitaciones</a></li>
                                         <li><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
-                                        <li><a href="inventario.html">Inventario</a></li>
-                                        <li><a href="campamentos.html">Campamentos</a></li>
                                         <li class="current-page"><a href="contratos.html">Contratos</a></li>
                                         <li><a href="dotaciones.html">Dotaciones</a></li>
-                                        <li><a href="roles.html">Roles</a></li>
-                                        <li><a href="calendario.html">Calendario</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -1021,6 +1043,43 @@ ${contract.workers ? contract.workers.map(w => `- ${w.name} ${w.lastName} (${w.p
 
             // Configurar PNotify
             PNotify.prototype.options.styling = "bootstrap3";
+            
+            // Detectar tipo de usuario y ajustar menú
+            var currentUser = localStorage.getItem('currentUser');
+            console.log('Usuario detectado en contratos.html:', currentUser);
+            
+            if (currentUser === 'plataforma') {
+                console.log('Cambiando menú a plataforma');
+                // Mostrar menú completo de plataforma
+                var menuHTML = `
+                    <h3>Menú Usuario</h3>
+                    <ul class="nav side-menu">
+                        <li class="active"><a><i class="fa fa-check"></i> Administracion <span class="fa fa-chevron-down"></span></a>
+                            <ul class="nav child_menu" style="display: block;">
+                                <li><a href="index.html">Habitaciones</a></li>
+                                <li><a href="servicios-disponibles.html">Servicios Disponibles</a></li>
+                                <li><a href="inventario.html">Inventario</a></li>
+                                <li><a href="campamentos.html">Campamentos</a></li>
+                                <li class="current-page"><a href="contratos.html">Contratos</a></li>
+                                <li><a href="dotaciones.html">Dotaciones</a></li>
+                                <li><a href="roles.html">Roles</a></li>
+                                <li><a href="calendario.html">Calendario</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                `;
+                
+                // Buscar el elemento del menú
+                var menuSection = document.querySelector('.menu_section');
+                if (menuSection) {
+                    menuSection.innerHTML = menuHTML;
+                    console.log('Menú cambiado a plataforma');
+                } else {
+                    console.log('No se encontró .menu_section');
+                }
+            } else {
+                console.log('Manteniendo menú de admin');
+            }
         });
     </script>
 </body>
