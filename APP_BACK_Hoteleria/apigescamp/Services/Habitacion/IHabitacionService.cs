@@ -1,4 +1,8 @@
-﻿using DemoBackend.Dto.Habitacion;
+﻿
+using DemoBackend.Dto.Habitacion;
+
+using DemoBackend.Dto.BitacoraHabitacion;
+using System;
 using System.Collections.Generic;
 
 namespace DemoBackend.Services.Habitacion
@@ -14,5 +18,8 @@ namespace DemoBackend.Services.Habitacion
         public bool EliminarHabitacion(HabitacionDto HabitacionModels);
         List<HabitacionDto> VerificaHabitacionPorNombre(HabitacionDto HabitacionModels);
         List<HabitacionDto> VerificaHabitacionPorId(HabitacionDto HabitacionModels);
+        public HabitacionDashboardDto ObtenerDashboardHabitacion(DateTime? desde, DateTime? hasta);
+
+        bool CrearBitacoraHabitacion(BitacoraHabitacionDto dto);
     }
 }

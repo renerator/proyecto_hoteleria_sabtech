@@ -31,8 +31,7 @@ namespace Front_Hoteleria.Services
             var session = HttpContext.Current?.Session;
             var token = session != null ? session["Token"] as string : null;
 
-            //  token en duro
-            token = ConfigurationManager.AppSettings["Token"];
+            
             if (!string.IsNullOrWhiteSpace(token))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);

@@ -19,8 +19,7 @@ namespace Front_Hoteleria.Controllers
             var idUsuario = (int)(Session["IdUsuario"] ?? 0);
             var idPerfil = (int)(Session["IdPerfil"] ?? 0);
 
-            idUsuario = 1;
-            idPerfil = 1;
+            
             // BLOQUEAR de forma segura la llamada async
             var modelo = _service.ObtenerMenuAsync(idUsuario, idPerfil)
                                  .ConfigureAwait(false)

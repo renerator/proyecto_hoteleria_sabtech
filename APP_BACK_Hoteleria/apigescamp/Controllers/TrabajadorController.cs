@@ -11,12 +11,12 @@ namespace DemoBackend.Controllers
     [ApiController]
     [Route("api/[Controller]")]
     [Authorize]
-    public class TrabajadorController : BaseController
+    public class UsuarioController : BaseController
     {
         private readonly ITrabajadorService _trabajadorService;
         private readonly ILogger _logger;
 
-        public TrabajadorController(ITrabajadorService trabajadorService, ILogger<TrabajadorController> logger)
+        public UsuarioController(ITrabajadorService trabajadorService, ILogger<UsuarioController> logger)
         {
             _logger = logger;
             _trabajadorService = trabajadorService;
@@ -30,7 +30,7 @@ namespace DemoBackend.Controllers
         /// <response code="401">No autorizado</response>
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
-        [HttpGet("ListarTrabajadores")]
+        [HttpGet("ListarUsuarios")]
         public ActionResult<List<TrabajadorDto>> TrabajadoresDisponibles(int vigencia)
         {
             _logger.LogInformation("GetListaTrabajador : Inicio proceso lista de Trabajador");
@@ -55,13 +55,13 @@ namespace DemoBackend.Controllers
         }
 
         /// <summary>
-        /// Servicio para crear Trabajador.
+        /// Servicio para crear Usuario.
         /// </summary>
         /// <response code="200">Inserción exitosa</response>
         /// <response code="401">No autorizado</response>
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
-        [HttpPost("CrearTrabajador")]
+        [HttpPost("CrearUsuario")]
         public ActionResult CrearTrabajador(TrabajadorDto trabajadorDto)
         {
             try
@@ -91,18 +91,18 @@ namespace DemoBackend.Controllers
 
 
         /// <summary>
-        /// Servicio para modificar Trabajador.
+        /// Servicio para modificar Usuario.
         /// </summary>
         /// <response code="200">Modificación exitosa</response>
         /// <response code="401">No autorizado</response>
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
-        [HttpPut("ModificaTrabajador")]
+        [HttpPut("ModificaUsuario")]
         public ActionResult ModificaTrabajador(TrabajadorDto trabajadorDto)
         {
             try
             {
-                if (string.IsNullOrEmpty(trabajadorDto.NombresTrabajador) || trabajadorDto.IdTrabajador == 0 || trabajadorDto.IdEmpresaContratista==0)
+                if (string.IsNullOrEmpty(trabajadorDto.NombresTrabajador) || trabajadorDto.IdUsuario == 0 || trabajadorDto.IdEmpresaContratista==0)
                 {
                     _logger.LogInformation("PutModificaTrabajador: Campos vacíos.");
                     return Ok("Status 200: Error de campos vacíos");
@@ -111,7 +111,7 @@ namespace DemoBackend.Controllers
                 var existe = _trabajadorService.VerificaTrabajadorPorId(trabajadorDto);
                 if (existe.Count == 0)
                 {
-                    return Ok("Status 200: No se puede modificar el trabajador, no existe Id: " + trabajadorDto.IdTrabajador);
+                    return Ok("Status 200: No se puede modificar el trabajador, no existe Id: " + trabajadorDto.IdUsuario);
                 }
 
                 var ok = _trabajadorService.ModificarTrabajador(trabajadorDto);
@@ -128,27 +128,27 @@ namespace DemoBackend.Controllers
         /// <summary>
         /// Servicio para eliminación de Trabajador.
         /// </summary>
-        /// <param name="idTrabajador">Id del Trabajador</param>
+        /// <param name="idUsuario">Id del Trabajador</param>
         /// <response code="200">Eliminación exitosa</response>
         /// <response code="401">No autorizado</response>
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
-        [HttpDelete("EliminaTrabajador")]
-        public ActionResult EliminaTrabajador(int idTrabajador)
+        [HttpDelete("EliminaUsuario")]
+        public ActionResult EliminaTrabajador(int idUsuario)
         {
             try
             {
-                if (idTrabajador == 0)
+                if (idUsuario == 0)
                 {
                     _logger.LogInformation("DelEliminaTrabajador: IdTrabajador no puede estar vacío.");
                     return Ok("Status 200: Error de campos vacíos");
                 }
 
-                var dto = new TrabajadorDto { IdTrabajador = idTrabajador };
+                var dto = new TrabajadorDto { IdUsuario = idUsuario };
                 var existe = _trabajadorService.VerificaTrabajadorPorId(dto);
                 if (existe.Count == 0)
                 {
-                    return Ok("Status 200: No se puede eliminar, no existe Id: " + idTrabajador);
+                    return Ok("Status 200: No se puede eliminar, no existe Id: " + idUsuario);
                 }
 
                 var ok = _trabajadorService.EliminarTrabajador(dto);

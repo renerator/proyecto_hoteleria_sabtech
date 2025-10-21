@@ -1,4 +1,5 @@
-﻿using DemoBackend.Dto.Mantenedores;
+﻿using DemoBackend.Dto.BitacoraReserva;
+using DemoBackend.Dto.Mantenedores;
 using DemoBackend.Dto.Reserva;
 using DemoBackend.Models.Reserva;
 using DemoBackend.Services;
@@ -221,5 +222,102 @@ namespace DemoBackend.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+
+
+        /// <summary>
+        /// Servicio que devuelve una lista de reservas según los filtros ingresados.
+        /// </summary>
+        /// <param name="reservaDto">Objeto con los filtros opcionales de búsqueda.</param>
+        /// <returns>Lista de reservas que cumplen los criterios.</returns>
+        /// <response code="200">OK - Retorna lista de reservas.</response>
+        /// <response code="204">Sin resultados.</response>
+        /// <response code="400">Solicitud inválida.</response>
+        /// <response code="401">No autorizado.</response>
+        /// <response code="403">Acceso denegado.</response>
+        /// <response code="500">Error interno.</response>
+        [HttpGet("BuscarReservas")]
+        public ActionResult<List<ReservaDto>> BuscarReservas(
+            [FromQuery] int? idReserva,
+            [FromQuery] int? idHabitacion,
+            [FromQuery] int? idTrabajador,
+            [FromQuery] DateTime? FechaDesde,
+            [FromQuery] DateTime? FechaHasta,
+            [FromQuery] bool? QuiereTransporte,
+            [FromQuery] DateTime? FechaCheckIN,
+            [FromQuery] DateTime? FechaCheckOut,
+            [FromQuery] int? idEstadoReserva,
+            [FromQuery] string? MotivoReserva)
+        {
+            try
+            {
+                var filtro = new ReservaDto
+                {
+                    IdReserva = idReserva ?? 0,
+                    IdHabitacion = idHabitacion ?? 0,
+                    IdTrabajador = idTrabajador ?? 0,
+                    IdEstadoReserva = idEstadoReserva ?? 0,
+                
+                    FechaDesde = FechaDesde ?? null,
+                    FechaHasta = FechaHasta ?? null,
+
+                   
+                    QuiereTransporte = QuiereTransporte ?? null,
+       
+
+                    FechaCheckIN = FechaCheckIN ?? null,
+                    FechaCheckOut = FechaCheckOut ?? null,
+
+                    MotivoReserva = string.IsNullOrWhiteSpace(MotivoReserva) ? null : MotivoReserva!.Trim()
+                };
+
+                var resultados = _reservaService.BuscaReservas(filtro);
+
+                if (resultados == null || resultados.Count == 0)
+                    return NoContent();
+
+                return Ok(resultados);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "GetBuscarReservas: error inesperado.");
+                return StatusCode(500, "Error interno del servidor.");
+            }
+        }
+
+        // -------- DASHBOARD --------
+        // Devuelve KPIs del dashboard (nuevas, servicios, checkin, checkout, pendientes, confirmadas, rechazadas, realizadas)
+        [HttpGet("dashboardReservas")]
+        public IActionResult Dashboard([FromQuery] DateTime? desde, [FromQuery] DateTime? hasta)
+        {
+            var data = _reservaService.ObtenerDashboard(desde, hasta);
+
+            // Evitar caché para “tiempo real”
+            Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, proxy-revalidate";
+            Response.Headers["Pragma"] = "no-cache";
+            Response.Headers["Expires"] = "0";
+
+            return Ok(data);
+        }
+
+        [HttpPost("CrearBitacoraReserva")]
+        public ActionResult CrearBitacoraReserva([FromBody] BitacoraReservaDto dto)
+        {
+            _logger.LogInformation("PostCrearBitacoraReserva: inicio.");
+            try
+            {
+                if (dto == null) return BadRequest("Datos vacíos.");
+                if (dto.IdReserva <= 0) return Ok("Status 200: Error de validación (IdReserva requerido).");
+
+                var ok = _reservaService.CrearBitacoraReserva(dto);
+                return Ok(ok ? "Bitácora de reserva creada correctamente." : "No se pudo crear la bitácora.");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "PostCrearBitacoraReserva: error.");
+                return StatusCode(500, e.Message);
+            }
+        }
+
     }
 }
+

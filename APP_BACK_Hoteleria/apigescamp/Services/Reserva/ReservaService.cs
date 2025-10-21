@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DemoBackend.Dto.BitacoraReserva;
 using DemoBackend.Dto.Reserva;
 using DemoBackend.Models.Reserva;
 using DemoBackend.RepositoryGes;
@@ -7,22 +8,50 @@ using DemoBackend.Services.Reserva;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DemoBackend.Services
 {
     public class ReservaService : IReservaService
     {
         private readonly IGenericRepositoryEntity<ReservaModels> _listaReserva;
+        private readonly IGenericRepositoryEntity<ReservaDashboardKPI> _listaReservaDashboard;
         private readonly IMapper _mapper;
 
         public ReservaService(
             IGenericRepositoryEntity<ReservaModels> listaReserva,
+            IGenericRepositoryEntity<ReservaDashboardKPI> listaReservaDashboard,
             IMapper mapper)
         {
             _listaReserva = listaReserva;
+            _listaReservaDashboard = listaReservaDashboard;
             _mapper = mapper;
         }
+        public bool CrearBitacoraReserva(BitacoraReservaDto dto)
+        {
+            if (dto == null) return false;
+            if (dto.IdReserva <= 0) return false;
 
+            const string sql = "HOT_RESBIT_CRE_BitacoraReserva @idReserva,@FechaBitacora,@idEstadoReserva,@Observaciones";
+            var p = new SqlParameter[]
+            {
+                new SqlParameter("@idReserva", dto.IdReserva),
+                new SqlParameter("@FechaBitacora", (object?)dto.FechaBitacora ?? DBNull.Value),
+                new SqlParameter("@idEstadoReserva", (object?)dto.IdEstadoReserva ?? DBNull.Value),
+                new SqlParameter("@Observaciones", (object?)dto.Observaciones ?? DBNull.Value)
+            };
+
+            try
+            {
+                _listaReserva.InsertProcedure(sql, p);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+        }
         #region Reservas
         public bool CrearReserva(ReservaDto reserva)
         {
@@ -130,5 +159,75 @@ namespace DemoBackend.Services
         }
 
         #endregion
+   
+    public List<ReservaDto> BuscaReservas(ReservaDto reserva)
+        {
+            // Stored procedure que permite filtrar por múltiples campos
+            string sql = "HOT_BUSCA_Reserva @idReserva, @idHabitacion, @idTrabajador, @FechaDesde, @FechaHasta, @QuiereTransporte, @FechaCheckIN, @FechaCheckOut, @idEstadoReserva, @MotivoReserva";
+
+            var parametros = new SqlParameter[10];
+            parametros[0] = new SqlParameter("@idReserva", reserva.IdReserva);
+            parametros[1] = new SqlParameter("@idHabitacion", reserva.IdHabitacion);
+            parametros[2] = new SqlParameter("@idTrabajador", reserva.IdTrabajador);
+            parametros[3] = new SqlParameter("@FechaDesde", (object?)reserva.FechaDesde ?? DBNull.Value);
+            parametros[4] = new SqlParameter("@FechaHasta", (object?)reserva.FechaHasta ?? DBNull.Value);
+            parametros[5] = new SqlParameter("@QuiereTransporte", (object?)reserva.QuiereTransporte ?? DBNull.Value);
+            parametros[6] = new SqlParameter("@FechaCheckIN", (object?)reserva.FechaCheckIN ?? DBNull.Value);
+            parametros[7] = new SqlParameter("@FechaCheckOut", (object?)reserva.FechaCheckOut ?? DBNull.Value);
+            parametros[8] = new SqlParameter("@idEstadoReserva", reserva.IdEstadoReserva);
+            parametros[9] = new SqlParameter("@MotivoReserva", (object?)reserva.MotivoReserva ?? DBNull.Value);
+
+            var lista = _listaReserva.GetStoreProcedure(sql, parametros);
+
+            return _mapper.Map<List<ReservaDto>>(lista);
+        }
+
+        public ReservaDashboardDto ObtenerDashboard(DateTime? desde, DateTime? hasta)
+        {
+            var hoy = DateTime.Today;
+            var d = (desde ?? hoy).Date;
+            var h = (hasta ?? hoy).Date;
+
+            // Nombre del SP correcto
+            string sql = "HOT_DASH_TotalesYEstados @Desde, @Hasta";
+            var parametros = new SqlParameter[2];
+            parametros[0] = new SqlParameter("@Desde", d);
+            parametros[1] = new SqlParameter("@Hasta", h);
+
+            var dto = new ReservaDashboardDto();
+
+            try
+            {
+                var kpiRow = _listaReservaDashboard.GetStoreProcedure(sql, parametros).FirstOrDefault();
+                if (kpiRow != null)
+                {
+                    dto.NuevasReservas = kpiRow.NuevasReservas;
+                    dto.Servicios = kpiRow.Servicios;
+                    dto.CheckIn = kpiRow.CheckIn;
+                    dto.CheckOut = kpiRow.CheckOut;
+
+                    dto.Pendientes = kpiRow.Pendientes;
+                    dto.Confirmadas = kpiRow.Confirmadas;
+                    dto.Rechazadas = kpiRow.Rechazadas;
+                    dto.Realizadas = kpiRow.Realizadas;
+                }
+
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en ObtenerDashboard: {ex.Message}");
+            }
+
+            return dto;
+        }
+
+
+
+
     }
+
+
+
 }

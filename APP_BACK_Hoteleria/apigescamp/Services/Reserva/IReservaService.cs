@@ -1,5 +1,7 @@
-﻿using DemoBackend.Dto.Mantenedores;
+﻿using DemoBackend.Dto.BitacoraReserva;
+using DemoBackend.Dto.Mantenedores;
 using DemoBackend.Dto.Reserva;
+using System;
 using System.Collections.Generic;
 
 namespace DemoBackend.Services.Reserva
@@ -12,6 +14,12 @@ namespace DemoBackend.Services.Reserva
         bool ModificarReserva(ReservaDto reserva);
         bool EliminarReserva(ReservaDto reserva);
         List<ReservaDto> VerificaReservaPorId(ReservaDto reserva);
+
+        List<ReservaDto> BuscaReservas(ReservaDto reserva);
+
+        ReservaDashboardDto ObtenerDashboard(DateTime? desde, DateTime? hasta);
+
+        bool CrearBitacoraReserva(BitacoraReservaDto dto);
     }
 }
 

@@ -71,7 +71,7 @@ namespace DemoBackend.Services
         {
             // TODO: Ajusta el nombre del SP si es diferente
             string sql = "TRA_UPD_Trabajador " +
-                         "@idTrabajador," +
+                         "@idUsuario," +
                          "@idEmpresaContratista," +
                          "@DNITrabajador," +
                          "@NombresTrabajador," +
@@ -84,7 +84,7 @@ namespace DemoBackend.Services
                          "@Estado";
 
             var p = new SqlParameter[11];
-            p[0] = new SqlParameter("@idTrabajador", trabajador.IdTrabajador);
+            p[0] = new SqlParameter("@idUsuario", trabajador.IdUsuario);
             p[1] = new SqlParameter("@idEmpresaContratista", trabajador.IdEmpresaContratista);
             p[2] = new SqlParameter("@DNITrabajador", (object?)trabajador.DNITrabajador ?? DBNull.Value);
             p[3] = new SqlParameter("@NombresTrabajador", (object?)trabajador.NombresTrabajador ?? DBNull.Value);
@@ -112,9 +112,9 @@ namespace DemoBackend.Services
         public bool EliminarTrabajador(TrabajadorDto trabajador)
         {
             // TODO: Ajusta el nombre del SP si es diferente
-            string sql = "TRA_DEL_Trabajador @idTrabajador";
+            string sql = "TRA_DEL_Trabajador @idUsuario";
             var p = new SqlParameter[1];
-            p[0] = new SqlParameter("@idTrabajador", trabajador.IdTrabajador);
+            p[0] = new SqlParameter("@idusuario", trabajador.IdUsuario);
 
             try
             {
@@ -167,7 +167,7 @@ namespace DemoBackend.Services
            
             string sql = "TRA_VERIFICA_ID_TRABAJADOR @ID";
             var p = new SqlParameter[1];
-            p[0] = new SqlParameter("@ID", trabajador.IdTrabajador);
+            p[0] = new SqlParameter("@ID", trabajador.IdUsuario);
 
             var lista = _repoTrabajador.GetStoreProcedure(sql, p);
             return _mapper.Map<List<TrabajadorDto>>(lista);

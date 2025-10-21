@@ -1,16 +1,21 @@
 using AutoMapper;
 using DemoBackend.Configurations;
+using DemoBackend.Filters;
 using DemoBackend.Models;
 using DemoBackend.Repositories;
 using DemoBackend.Repository;
 using DemoBackend.RepositoryGes;
 using DemoBackend.Services;
 using DemoBackend.Services.Autenticacion;
+using DemoBackend.Services.Habitacion;
+using DemoBackend.Services.HabitacionInsumo;
 using DemoBackend.Services.Mantenedores;
 using DemoBackend.Services.Menu;
-using DemoBackend.Services.Habitacion;
-using DemoBackend.Services.Trabajador;
 using DemoBackend.Services.Reserva;
+using DemoBackend.Services.OrdenTrabajo;
+using DemoBackend.Services.Servicio;
+using DemoBackend.Services.SolicitudServicio;
+using DemoBackend.Services.Trabajador;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -70,8 +75,27 @@ namespace DemoBackend
                 services.AddTransient<IHabitacionService, HabitacionService>();
                 services.AddTransient<IReservaService, ReservaService>();
                 services.AddTransient<IMenuService, MenuService>();
+                services.AddTransient<IMenuService, MenuService>();
+                services.AddTransient<ISolicitudServicioService, SolicitudServicioService>();
+                services.AddTransient<IServicioService, ServicioService>();
+                services.AddTransient<IHabitacionInsumoService, HabitacionInsumoService>();
                 services.AddTransient<ITrabajadorService, TrabajadorService>();
+                services.AddTransient<IOrdenTrabajoService, OrdenTrabajoService>();
+                // === Mantenedores ===
 
+                services.AddTransient<IBodegaService, BodegaService>();
+                services.AddTransient<IInsumoService, InsumoService>();
+
+
+                //auditoria registro
+
+                services.AddScoped<AuditActionFilter>();
+
+                services.AddControllers(options =>
+                {
+                    options.Filters.AddService<AuditActionFilter>(); // <- global
+                });
+                // ************
                 services.AddTransient<IValidaUsuarioService, ValidaUsuarioService>();
                 services.Configure<CredencialesConfig>(Configuration.GetSection("CredencialesConfig"));
 
@@ -145,7 +169,8 @@ namespace DemoBackend
                     ValidateLifetime = false,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = Configuration["Jwt:Issuer"],
-                    ValidAudience = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Audience"],
+                    //ValidAudience = Configuration["Jwt:Issuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])) //Configuration["JwtToken:SecretKey"]
                 };
             });
@@ -168,13 +193,14 @@ namespace DemoBackend
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-            app.UseAuthentication();
+           
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
