@@ -1,0 +1,468 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "Inicio de Sesión";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewBag.Title | Sabtech Group</title>
+
+    <!-- Vendors locales -->
+    <link href="~/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <!-- Fallback CDN (opcional) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" onerror="this.remove()" />
+
+    <style>
+        :root {
+            --bg: #30455A; /* fondo página */
+            --card: #F4F5F6; /* tarjeta login */
+            --muted: #6b7280;
+            --text: #1f2937;
+            --grad1: #0ea5e9;
+            --grad2: #10b981;
+            --ring: rgba(59,130,246,.20);
+        }
+
+        html, body {
+            height: 100%
+        }
+
+        body {
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: Arial, Helvetica, sans-serif; /* Arial */
+        }
+
+        /* Contenedor del login (angosto y sin excesiva altura) */
+        .login-shell {
+            width: 100%;
+            max-width: 400px; /* más largo horizontal */
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow: 0 24px 80px rgba(0,0,0,.32);
+            height: 630px;
+            overflow: hidden;
+        }
+
+        .login-inner {
+            padding: 26px 26px 16px;
+        }
+
+        /* Header centrado (icono + texto) */
+        .login-header {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .login-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .login-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg,var(--grad1),var(--grad2));
+            color: #fff;
+            font-size: 26px; /* icono un poco más grande */
+            box-shadow: 0 8px 18px rgba(16,185,129,.25);
+        }
+
+        .login-title {
+            margin: 0;
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.1;
+        }
+
+        .login-sub {
+            margin: 6px 0 14px; /* separación con “Usuario” */
+            color: #334155; /* un poco más legible */
+            font-size: 16px;
+            text-align: center; /* centrado */
+        }
+
+        /* Labels e inputs (alineados a la izquierda) */
+        .form-label {
+            display: block;
+            margin: 10px 0 6px;
+            color: #374151;
+            font-weight: 700;
+            text-align: left; /* izquierda */
+        }
+
+        .input-wrap {
+            position: relative;
+            width: 100%;
+        }
+
+            .input-wrap .form-control {
+                width: 100%;
+                height: 58px; /* un poco más “ancho” vertical */
+                padding: 12px 52px 12px 14px; /* deja espacio al icono */
+                font-size: 16px;
+                border: 1px solid #e5e7eb;
+                border-radius: 12px;
+                box-shadow: 0 1px 0 rgba(0,0,0,.02) inset;
+                transition: border-color .15s ease, box-shadow .15s ease;
+                box-sizing: border-box; /* que no se salga a la derecha */
+            }
+
+                .input-wrap .form-control:focus {
+                    border-color: #93c5fd;
+                    outline: 0;
+                    box-shadow: 0 0 0 3px var(--ring);
+                }
+
+        .input-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 20px; /* iconos dentro más grandes */
+            pointer-events: none;
+        }
+
+        /* Utilidades: recordar usuario = tamaño del link “olvidaste…” */
+        .utils-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 10px 2px 6px;
+        }
+
+            .utils-row label, .utils-row a {
+                font-size: 14px; /* mismo tamaño */
+                line-height: 1.4;
+            }
+
+            .utils-row a {
+                color: var(--grad2);
+                text-decoration: none;
+            }
+
+                .utils-row a:hover {
+                    text-decoration: underline;
+                }
+
+        .alert-mini {
+            margin: 10px 2px 0;
+            display: none;
+        }
+
+        .btn-grad {
+            width: 100%;
+            height: 56px;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(90deg,var(--grad1),var(--grad2));
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 10px 22px rgba(16,185,129,.25);
+        }
+
+            .btn-grad:active {
+                transform: translateY(1px);
+            }
+
+        .login-footer {
+            border-top: 1px solid #e5e7eb;
+            padding: 14px 10px 18px;
+            text-align: center;
+            background: var(--card);
+        }
+
+        .brand-line {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            color: var(--grad2);
+        }
+
+        .brand-chip {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            background: linear-gradient(135deg,var(--grad2),var(--grad1));
+            box-shadow: 0 6px 14px rgba(16,185,129,.25);
+        }
+
+        .brand-name {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .meta {
+            color: #667085;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* Responsive (Razor: usar @@media) */
+        @@media (max-width:480px) {
+            .login-inner {
+                padding: 22px 16px 14px;
+            }
+
+            .login-title {
+                font-size: 26px;
+            }
+
+            .login-badge {
+                width: 48px;
+                height: 48px;
+                font-size: 24px;
+            }
+            /* Botón Iniciar Sesión: color solicitado */
+            .btn-grad {
+                width: 100%;
+                height: 56px;
+                border: 0;
+                border-radius: 12px;
+                background: #1F9687 !important; /* color sólido */
+                color: #fff;
+                font-weight: 700;
+                font-size: 16px;
+                box-shadow: 0 10px 22px rgba(31,150,135,.25);
+            }
+
+                .btn-grad:hover {
+                    filter: brightness(.98);
+                    color: #fff;
+                }
+
+                .btn-grad:active {
+                    transform: translateY(1px);
+                }
+
+                .btn-grad:focus {
+                    outline: 0;
+                    box-shadow: 0 0 0 3px rgba(31,150,135,.25), 0 10px 22px rgba(31,150,135,.25);
+                }
+        }
+    </style>
+    <style>
+        /* Banner de éxito suave */
+        .alert-ok {
+            display: none;
+            background: #DCEFE7; /* verde muy suave, como la captura */
+            color: #0F5132; /* verde oscuro para el texto */
+            border: 0;
+            border-radius: 12px;
+            padding: 12px 44px 12px 16px;
+            margin: 0 0 10px 0; /* separación con el label Usuario */
+            position: relative;
+            font-weight: 600;
+        }
+
+            .alert-ok .close {
+                position: absolute;
+                right: 12px;
+                top: 8px;
+                background: transparent;
+                border: 0;
+                font-size: 20px;
+                line-height: 1;
+                color: #2f5d4a;
+                cursor: pointer;
+            }
+    </style>
+    <style>
+        /* Banner de éxito suave */
+        .alert-ok {
+            display: none;
+            background: #DCEFE7; /* verde muy suave, como la captura */
+            color: #0F5132; /* verde oscuro para el texto */
+            border: 0;
+            border-radius: 12px;
+            padding: 12px 44px 12px 16px;
+            margin: 0 0 10px 0; /* separación con el label Usuario */
+            position: relative;
+            font-weight: 600;
+        }
+
+            .alert-ok .close {
+                position: absolute;
+                right: 12px;
+                top: 8px;
+                background: transparent;
+                border: 0;
+                font-size: 20px;
+                line-height: 1;
+                color: #2f5d4a;
+                cursor: pointer;
+            }
+    </style>
+
+</head>
+<body>
+    <div class="login-shell">
+        <div class="login-inner">
+            <!-- Header -->
+            <div class="login-header">
+                <div class="login-title-row">
+                    <span class="login-badge"><i class="fa fa-user"></i></span>
+                    <h1 class="login-title">Inicio de Sesión</h1>
+                </div>
+                <p class="login-sub">Accede a tu cuenta de Sabtech Group</p>
+            </div>
+
+            <!-- Form -->
+            <form id="frmLogin" onsubmit="return false;">
+
+                <!-- Banner de éxito -->
+                <div id="okBanner" class="alert-ok" role="status" aria-live="polite">
+                    <strong>¡Éxito!</strong> ¡Bienvenido! Redirigiendo…
+                    <button type="button" class="close" aria-label="Cerrar">×</button>
+                </div>
+                <label class="form-label"><i class="fa fa-user text-muted"></i> Usuario</label>
+                <div class="input-wrap">
+                    <input id="txtUsuario" class="form-control" placeholder="Ingresa tu usuario" maxlength="40" autocomplete="username" />
+                    <i class="fa fa-user input-icon"></i>
+                </div>
+
+                <label class="form-label"><i class="fa fa-lock text-muted"></i> Contraseña</label>
+                <div class="input-wrap">
+                    <input id="txtPassword" type="password" class="form-control" placeholder="Ingresa tu contraseña" maxlength="64" autocomplete="current-password" />
+                    <i class="fa fa-lock input-icon"></i>
+                </div>
+
+                <div class="utils-row">
+                    <label class="checkbox" style="margin:0"><input id="chkRemember" type="checkbox" /> Recordar usuario</label>
+                    <a href="#">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <div id="loginMsg" class="alert alert-danger alert-mini"></div>
+
+                <button id="btnLogin" class="btn btn-grad" type="button">Iniciar Sesión</button>
+            </form>
+        </div>
+
+        <div class="login-footer">
+            <div class="brand-line">
+                <span class="brand-chip"><i class="fa fa-building"></i></span>
+                <h2 class="brand-name">Sabtech Group</h2>
+            </div>
+            <div class="meta">©2025 Sistema Hotelero [Empresa Mandante]</div>
+            <div class="meta">Versión 1.0.0</div>
+        </div>
+    </div>
+
+    <script src="~/vendors/jquery/dist/jquery.min.js"></script>
+    <script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script>window.jQuery || document.write('<script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>')</script>
+
+    <script>
+  (function () {
+    var $u   = $('#txtUsuario'),
+        $p   = $('#txtPassword'),
+        $btn = $('#btnLogin'),
+        $msg = $('#loginMsg'),
+        $chk = $('#chkRemember'),
+        $ok  = $('#okBanner'); // banner de éxito (arriba de "Usuario")
+
+    // Prefill recordado
+    try {
+      var saved = localStorage.getItem('app.u');
+      if (saved) { $u.val(saved); $chk.prop('checked', true); }
+    } catch (e) {}
+
+    function busy(b){ $btn.prop('disabled', b).text(b ? 'Ingresando…' : 'Iniciar Sesión'); }
+    function showErr(t){ $msg.text(t || 'No se pudo iniciar sesión.').show(); }
+    function hideErr(){ $msg.hide().text(''); }
+
+    // returnUrl (si llegó como querystring)
+    function getReturnUrl(){
+      try {
+        return new URLSearchParams(window.location.search).get('returnUrl') || '';
+      } catch(e){ return ''; }
+    }
+
+    async function doLogin(){
+      hideErr(); busy(true);
+
+      var usuario  = ($u.val() || '').trim(),
+          password = $p.val() || '';
+
+      if (!usuario || !password) { showErr('Ingrese usuario y contraseña.'); busy(false); return; }
+
+      // Recordar usuario en localStorage
+      try {
+        if ($chk.is(':checked')) localStorage.setItem('app.u', usuario);
+        else localStorage.removeItem('app.u');
+      } catch(e){}
+
+      try {
+        // Construir body con recordar y returnUrl
+        var params = new URLSearchParams();
+        params.set('usuario', usuario);
+        params.set('password', password);
+        if ($chk.is(':checked')) params.set('recordar', 'true');
+        var ru = getReturnUrl();
+        if (ru) params.set('returnUrl', ru);
+
+        const r = await fetch('@Url.Action("DoLogin","Account")', {
+          method:'POST',
+          headers: {
+            'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With':'XMLHttpRequest'
+          },
+          body: params.toString()
+        });
+
+        const data = await r.json().catch(()=>null);
+
+        if (!r.ok || !data || !data.ok) {
+          showErr((data && data.message) || 'Credenciales inválidas o API no disponible.');
+          busy(false);
+          return;
+        }
+
+        // ÉXITO: mostrar banner y redirigir
+        hideErr();
+        if ($ok.length) {
+          $ok.stop(true,true).fadeIn(150);
+          $ok.find('.close').off('click').on('click', function(){ $ok.fadeOut(150); });
+        }
+
+        var redirectTo = (data && data.redirect) ? data.redirect : '@Url.Action("Index","Habitaciones")';
+
+        setTimeout(function(){
+          window.location.href = redirectTo;
+        }, 900);
+
+      } catch (err) {
+        console.error(err);
+        showErr('Error de red. Intenta nuevamente.');
+        busy(false);
+      }
+    }
+
+    $btn.on('click', doLogin);
+    $u.add($p).on('keydown', function(e){ if (e.key === 'Enter') doLogin(); });
+  })();
+    </script>
+
+</body>
+</html>

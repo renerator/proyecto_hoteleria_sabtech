@@ -33,8 +33,13 @@ namespace Front_Hoteleria.Controllers
         }
 
         [HttpGet]
-        public ActionResult Index() => View();
+        public ActionResult Index()
+        {
+            if (!(Session["Token"] is string tok) || string.IsNullOrWhiteSpace(tok))
+                return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
 
+            return View();
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> TablaPartial(int? vigencia, string nombre, bool? vip, int? capacidadMin)
