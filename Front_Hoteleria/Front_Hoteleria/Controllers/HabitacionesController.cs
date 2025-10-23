@@ -1,7 +1,7 @@
-﻿using Front_Hoteleria.Dto.Habitacion;
-using Front_Hoteleria.Services.Habitacion;
+﻿using Front_Hoteleria.Dto.adm.Habitacion;
+using Front_Hoteleria.Services.adm.Habitacion;
 using Front_Hoteleria.Services.HabitacionInsumo;
-using Front_Hoteleria.ViewModels.Habitacion;
+using Front_Hoteleria.Models.Habitacion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -46,10 +46,45 @@ namespace Front_Hoteleria.Controllers
         [HttpGet]
         public ActionResult Index()
         {
+            // Verifica si existe token válido en sesión
             if (!(Session["Token"] is string tok) || string.IsNullOrWhiteSpace(tok))
+            {
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
+            }
 
-            return View();
+            try
+            {
+                var perfil = Session["IdPerfil"];
+                if (perfil == null)
+                {
+                    return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
+                }
+
+                // Suponiendo que Usuario tiene una propiedad IdPerfil o Rol
+                // Ejemplo: Rol = "Administrador", "Huesped", "Personal"
+                switch (perfil)
+                {
+                    case 1:
+                        // Redirige a la vista de administrador
+                        return View("~/Views/adm/Habitaciones/Index.cshtml");
+
+                    case 2:
+                        // Redirige a la vista específica del huésped
+                        return View("~/Views/Huesped/Reservas/Index.cshtml");
+
+
+
+                    default:
+                        // Cualquier otro caso no autorizado
+                        return RedirectToAction("Login", "Account");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log opcional
+                System.Diagnostics.Trace.TraceError($"Error en Index: {ex}");
+                return RedirectToAction("Login", "Account");
+            }
         }
 
         // ===================== LISTADO HABITACIONES =====================
@@ -75,7 +110,7 @@ namespace Front_Hoteleria.Controllers
                 if (capacidadMin.HasValue)
                     data = data.Where(x => x.Capacidad >= capacidadMin.Value).ToList();
 
-                return PartialView("_TablaHabitaciones", data);
+                return PartialView("~/Views/adm/Habitaciones/_TablaHabitaciones.cshtml", data);
             }
             catch (HttpRequestException ex)
             {

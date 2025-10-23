@@ -287,9 +287,9 @@ namespace DemoBackend.Controllers
         // -------- DASHBOARD --------
         // Devuelve KPIs del dashboard (nuevas, servicios, checkin, checkout, pendientes, confirmadas, rechazadas, realizadas)
         [HttpGet("dashboardReservas")]
-        public IActionResult Dashboard([FromQuery] DateTime? desde, [FromQuery] DateTime? hasta)
+        public IActionResult Dashboard([FromQuery] DateTime? desde, [FromQuery] DateTime? hasta, [FromQuery] int idHabitacion, int idTipoReserva )
         {
-            var data = _reservaService.ObtenerDashboard(desde, hasta);
+            var data = _reservaService.ObtenerDashboard(desde, hasta, idHabitacion, idTipoReserva);
 
             // Evitar caché para “tiempo real”
             Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, proxy-revalidate";
@@ -318,6 +318,62 @@ namespace DemoBackend.Controllers
             }
         }
 
+        /// <summary>
+        /// Servicio que retorna el listado de Reservas según estado
+        /// </summary>Trabajador
+        /// <returns>lista Reservas</returns>
+        /// <response code="204">No encuentra datos</response>
+        /// <response code="401">No autorizado</response>
+        /// <response code="403">Acceso denegado</response>
+        /// <response code="500">Error interno</response>
+        [HttpGet("ReservasTrabajadorDisponibles")]
+
+       
+       
+
+[HttpGet]
+    public ActionResult<List<ReservaTrabajadorDto>> ReservasTrabajadorDisponibles(
+    [FromQuery] int? idReserva,
+    [FromQuery] int? idHabitacion,
+    [FromQuery] int? idTrabajador,
+    [FromQuery] DateTime? FechaDesde,
+    [FromQuery] DateTime? FechaHasta,
+    [FromQuery] int? idEstadoReserva,
+    [FromQuery] int? idtiporeserva)
+    {
+        _logger.LogInformation("ReservasTrabajadorDisponibles : inicio.");
+
+        try
+        {
+            var filtro = new ReservaTrabajadorDto
+            {
+                IdReserva = idReserva ?? 0,
+                IdHabitacion = idHabitacion ?? 0,
+                IdTrabajador = idTrabajador ?? 0,
+                FechaDesde = FechaDesde,
+                FechaHasta = FechaHasta,
+                IdEstadoReserva = idEstadoReserva ?? 0, // si 0 significa “no filtrar”, tu servicio debe enviarlo como DBNull
+                IdTipoReserva = idtiporeserva ?? 0
+            };
+
+            var reservas = _reservaService.GetListaReservaTrabajador(filtro);
+
+            if (reservas == null || reservas.Count == 0)
+            {
+                _logger.LogInformation("ReservasTrabajadorDisponibles : sin resultados.");
+                return new NoContentResult();
+            }
+
+            _logger.LogInformation($"ReservasTrabajadorDisponibles : {reservas.Count} resultado(s).");
+            return Ok(reservas);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "ReservasTrabajadorDisponibles : error.");
+            return StatusCode(500, e.Message);
+        }
     }
+
+}
 }
 

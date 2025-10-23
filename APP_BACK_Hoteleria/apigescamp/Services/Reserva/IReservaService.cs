@@ -1,6 +1,7 @@
 ﻿using DemoBackend.Dto.BitacoraReserva;
 using DemoBackend.Dto.Mantenedores;
 using DemoBackend.Dto.Reserva;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 
@@ -17,9 +18,11 @@ namespace DemoBackend.Services.Reserva
 
         List<ReservaDto> BuscaReservas(ReservaDto reserva);
 
-        ReservaDashboardDto ObtenerDashboard(DateTime? desde, DateTime? hasta);
+        ReservaDashboardDto ObtenerDashboard(DateTime? desde, DateTime? hasta, int idHabitacion, int idTipoReserva);
 
         bool CrearBitacoraReserva(BitacoraReservaDto dto);
+
+        List<ReservaTrabajadorDto> GetListaReservaTrabajador(ReservaTrabajadorDto ReservaTrabajador);
     }
 }
 

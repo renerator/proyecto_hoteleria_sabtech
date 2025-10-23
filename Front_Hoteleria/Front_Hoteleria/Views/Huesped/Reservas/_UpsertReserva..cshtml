@@ -1,0 +1,49 @@
+﻿@model Front_Hoteleria.ViewModels.Huesped.Reserva.ReservaNuevaVm
+@using (Html.BeginForm("Nueva", "ReservasHuesped", FormMethod.Post, new { id = "frmUpsert" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-header">
+        <h4 class="modal-title"><i class="fa fa-plus"></i> Nueva Reserva</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label>Habitación</label>
+            <input class="form-control" name="IdHabitacion" value="@Model.IdHabitacion" placeholder="Ej: 101" />
+        </div>
+        <div class="form-group">
+            <label>Fecha Desde</label>
+            <input class="form-control" name="FechaDesde" value="@Model.FechaDesde.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="form-group">
+            <label>Fecha Hasta</label>
+            <input class="form-control" name="FechaHasta" value="@Model.FechaHasta.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="form-group">
+            <label>Comentarios</label>
+            <textarea class="form-control" name="Comentarios" rows="3">@Model.Comentarios</textarea>
+        </div>
+        <div id="upsertMsg" class="text-danger" style="display:none"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Guardar</button>
+    </div>
+}
+
+<script>
+    (function () {
+        var $f = $('#frmUpsert'), $msg = $('#upsertMsg');
+        $f.on('submit', function (e) {
+            e.preventDefault(); $msg.hide().text('');
+            $.ajax({
+                url: $f.attr('action'),
+                method: 'POST',
+                data: $f.serialize(),
+                headers: { 'RequestVerificationToken': $f.find('input[name="__RequestVerificationToken"]').val() },
+                success: function () { $('#modalUpsert').modal('hide'); $('#btnBuscar').click(); },
+                error: function (x) { $msg.text(x.responseText || 'No se pudo guardar.').show(); }
+            });
+        });
+    })();
+</script>

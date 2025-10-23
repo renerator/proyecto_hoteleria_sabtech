@@ -1,4 +1,4 @@
-﻿using Front_Hoteleria.Dto.Habitacion;
+﻿using Front_Hoteleria.Dto.adm.Habitacion;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

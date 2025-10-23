@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Front_Hoteleria.ViewModels.Huesped.Reserva.ReservaFilaVm>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Fecha Desde</th>
+            <th>Fecha Hasta</th>
+            <th>Estado</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.Codigo</td>
+                <td>@r.Nombre</td>
+                <td>@r.Apellido</td>
+                <td>@r.FechaDesde.ToString("yyyy-MM-dd")</td>
+                <td>@r.FechaHasta.ToString("yyyy-MM-dd")</td>
+                <td><span class="label label-default">@r.EstadoTxt</span></td>
+                <td class="text-right">
+                    @using (Html.BeginForm("Cancelar", "ReservasHuesped", FormMethod.Post, new { @class = "inline" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@r.IdReserva" />
+                        <button class="btn btn-danger btn-xs" title="Cancelar" onclick="return confirm('¿Cancelar la reserva?')">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

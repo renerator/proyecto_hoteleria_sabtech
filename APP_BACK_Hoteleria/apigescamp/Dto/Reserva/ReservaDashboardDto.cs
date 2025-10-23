@@ -5,15 +5,11 @@ namespace DemoBackend.Dto.Reserva
 {
     public class ReservaDashboardDto
     {
-        public int? NuevasReservas { get; set; }
-        public int? Servicios { get; set; }
-        public int? CheckIn { get; set; }
-        public int? CheckOut { get; set; }
-
-        // Desglose por estado (también nullable)
-        public int? Pendientes { get; set; }
-        public int? Confirmadas { get; set; }
-        public int? Rechazadas { get; set; }
-        public int? Realizadas { get; set; }
+        public int? TotalConfirmadas { get; set; }
+        public int? TotalRechazadas { get; set; }
+        public int? TotalServicios { get; set; }
+        
+        public int? NuevasHoy { get; set; }
+        
     }
 }

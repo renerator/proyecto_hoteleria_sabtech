@@ -32,6 +32,7 @@ namespace DemoBackend.Models
         public virtual DbSet<ReservaModels> ListaReservas { get; set; }
         public virtual DbSet<HabitacionInsumoModels> ListaHabitacionInsumo { get; set; }
         public virtual DbSet<ReservaDashboardKPI> Dashboard { get; set; }
+        public virtual DbSet<ReservaDashboardKPI> ReservaTrabajador { get; set; }
         public virtual DbSet<HabitacionDashboardModels> DashboardHabitacion { get; set; }
 
         public virtual DbSet<SolicitudServicioModels> SolicitudServicio { get; set; }
@@ -50,6 +51,12 @@ namespace DemoBackend.Models
                 eb.HasNoKey();     // <- clave
                 eb.ToView(null);   // <- no está mapeado a vista/tabla
             });
+            modelBuilder.Entity<ReservaTrabajadorModels>(eb =>
+            {
+                eb.HasNoKey();     // <- clave
+                eb.ToView(null);   // <- no está mapeado a vista/tabla
+            });
+           
             // ...tus otras entidades
         }
 

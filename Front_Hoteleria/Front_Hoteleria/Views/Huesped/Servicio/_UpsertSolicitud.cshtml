@@ -1,0 +1,70 @@
+﻿@model Front_Hoteleria.ViewModels.Huesped.Servicio.SolicitudServicioVm
+
+@using (Html.BeginForm("UpsertSolicitudServicio", "Servicios", FormMethod.Post, new { id = "frmUpsertSolicitud", autocomplete = "off" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(m => m.TipoServicioId)
+                @Html.DropDownListFor(m => m.TipoServicioId,
+                    (Model?.Tipos ?? Enumerable.Empty<SelectListItem>()),
+                    "Seleccione un tipo de servicio",
+                    new { @class = "form-control", id = "TipoServicioId" })
+                @Html.ValidationMessageFor(m => m.TipoServicioId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(m => m.PrioridadId)
+                @Html.DropDownListFor(m => m.PrioridadId,
+                    (Model?.Prioridades ?? Enumerable.Empty<SelectListItem>()),
+                    "Seleccione prioridad",
+                    new { @class = "form-control", id = "PrioridadId" })
+                @Html.ValidationMessageFor(m => m.PrioridadId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Descripcion)
+        @Html.TextAreaFor(m => m.Descripcion, new { @class = "form-control", id = "Descripcion", rows = 4, placeholder = "Describa detalladamente el servicio que necesita..." })
+        @Html.ValidationMessageFor(m => m.Descripcion, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(m => m.HoraPreferida)
+                @Html.TextBoxFor(m => m.HoraPreferida, new { @class = "form-control", type = "time", placeholder = "--:--" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(m => m.MetodoContactoId)
+                @Html.DropDownListFor(m => m.MetodoContactoId,
+                    (Model?.Metodos ?? Enumerable.Empty<SelectListItem>()),
+                    null,
+                    new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.MetodoContactoId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.NotasAdicionales)
+        @Html.TextAreaFor(m => m.NotasAdicionales, new { @class = "form-control", rows = 3, placeholder = "Información adicional que pueda ser útil..." })
+    </div>
+
+    <div class="text-left">
+        <button type="button" class="btn btn-info js-quick" data-tipo="1">Limpieza</button>
+        <button type="button" class="btn btn-warning js-quick" data-tipo="2">Reposición</button>
+        <button type="button" class="btn btn-danger js-quick" data-tipo="3">Reparación</button>
+
+        <button type="submit" class="btn btn-primary pull-right">
+            <i class="fa fa-paper-plane"></i> Enviar Solicitud
+        </button>
+    </div>
+}

@@ -1,5 +1,5 @@
 ﻿
-using Front_Hoteleria.Dto.Habitacion;
+using Front_Hoteleria.Dto.adm.Habitacion;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

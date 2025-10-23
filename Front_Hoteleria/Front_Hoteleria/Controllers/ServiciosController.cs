@@ -1,4 +1,4 @@
-using Front_Hoteleria.Dto.Reserva;
+using Front_Hoteleria.Dto.adm.Reserva;
 using Front_Hoteleria.Dto.Servicio;
 using Front_Hoteleria.Services.Servicio;
 using System;
@@ -39,12 +39,43 @@ namespace Front_Hoteleria.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            if (!(Session["Token"] is string tok) || string.IsNullOrWhiteSpace(tok))
+            // 1) Token en sesión
+            var tok = Session["Token"] as string;
+            if (string.IsNullOrWhiteSpace(tok))
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
 
-            return View();
-        }
+            try
+            {
+                // 2) IdPerfil seguro
+                int idPerfil = 0;
+                var rawPerfil = Session["IdPerfil"];
+                if (rawPerfil == null || !int.TryParse(rawPerfil.ToString(), out idPerfil))
+                    return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
 
+                // 3) Elegir la vista según perfil
+                switch (idPerfil)
+                {
+                    case 1: // Administrador
+                            // Esta acción ya es Index, así que devolvemos la vista directamente para evitar loops
+                        return View("~/Views/Servicios/Index.cshtml");
+
+                    case 2: // Huésped
+                            // Vista de solicitud del huésped
+                        return View("~/Views/Huesped/Servicio/Index.cshtml");
+
+                    case 3: // Personal (si la creas)
+                        return View("~/Views/Servicios/Gestionar.cshtml");
+
+                    default:
+                        return new HttpStatusCodeResult(403); // Rol desconocido
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[ServiciosController.Index] {ex}");
+                return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
+            }
+        }
         // =================== PARCIALES ===================
 
         // Dashboard superior (KPIs + gráfico)

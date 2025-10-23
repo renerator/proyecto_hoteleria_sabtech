@@ -129,39 +129,42 @@
     <Compile Include="Controllers\MenutController.cs" />
     <Compile Include="Controllers\ReservasController.cs" />
     <Compile Include="Controllers\ServiciosController.cs" />
-    <Compile Include="Dto\Habitacion\HabitacionDashboardDto.cs" />
-    <Compile Include="Dto\Habitacion\HabitacionDto.cs" />
-    <Compile Include="Dto\Reserva\ReservaDashboardDto.cs" />
-    <Compile Include="Dto\Reserva\ReservaDto.cs" />
-    <Compile Include="Dto\Servicio\ServicioDashboardDto.cs" />
-    <Compile Include="Dto\Servicio\ServicioDto.cs" />
+    <Compile Include="Dto\adm\Habitacion\HabitacionDashboardDto.cs" />
+    <Compile Include="Dto\adm\Habitacion\HabitacionDto.cs" />
+    <Compile Include="Dto\adm\Reserva\ReservaTrabajadorDto.cs" />
+    <Compile Include="Dto\adm\Reserva\ReservaDashboardDto.cs" />
+    <Compile Include="Dto\adm\Reserva\ReservaDto.cs" />
+    <Compile Include="Dto\adm\Servicio\ServicioDashboardDto.cs" />
+    <Compile Include="Dto\adm\Servicio\ServicioDto.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helper\MenuHelper.cs" />
     <Compile Include="Dto\FuncionalidadDTO.cs" />
-    <Compile Include="ViewModels\Habitacion\HabitacionBuscarVm.cs" />
+    <Compile Include="Models\adm\Habitacion\HabitacionBuscarVm.cs" />
     <Compile Include="Services\HabitacionInsumo\HabitacionInsumoService.cs" />
     <Compile Include="Services\HabitacionInsumo\IHabitacionInsumoService.cs" />
-    <Compile Include="ViewModels\Habitacion\HabitacionModels.cs" />
-    <Compile Include="Dto\MenuItem.cs" />
-    <Compile Include="ViewModels\Habitacion\FiltroInventarioVm.cs" />
-    <Compile Include="ViewModels\Habitacion\InventarioFilaVm.cs" />
-    <Compile Include="ViewModels\Reservas\ReservaModels.cs" />
-    <Compile Include="ViewModels\Servicios\ServicioModels.cs" />
+    <Compile Include="Models\adm\Habitacion\HabitacionModels.cs" />
+    <Compile Include="Dto\MenuDTO.cs" />
+    <Compile Include="Models\adm\Habitacion\FiltroInventarioVm.cs" />
+    <Compile Include="Models\adm\Habitacion\InventarioFilaVm.cs" />
+    <Compile Include="Models\Huesped\Reserva\ReservaNuevaVm..cs" />
+    <Compile Include="Models\Huesped\Reserva\ReservaFilaVm.cs" />
+    <Compile Include="Models\Huesped\Reserva\ReservaFiltroVm.cs" />
+    <Compile Include="Models\Huesped\Servicio\SolicitudServicioVm.cs" />
+    <Compile Include="Models\adm\Servicios\ServicioModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Api\HotelApiClient.cs" />
     <Compile Include="Services\Api\IHotelApiClient.cs.cs" />
-    <Compile Include="Services\Habitacion\ApiProxy.cs" />
-    <Compile Include="Services\Habitacion\HabitacionService.cs" />
-    <Compile Include="Services\Habitacion\IHabitacionService.cs" />
+    <Compile Include="Services\adm\Habitacion\ApiProxy.cs" />
+    <Compile Include="Services\adm\Habitacion\HabitacionService.cs" />
+    <Compile Include="Services\adm\Habitacion\IHabitacionService.cs" />
     <Compile Include="Services\MenuService.cs" />
-    <Compile Include="Services\Reservas\IReservaService.cs" />
-    <Compile Include="Services\Reservas\ReservaService.cs" />
-    <Compile Include="Services\Servicio\IServicioService.cs" />
-    <Compile Include="Services\Servicio\ServicioService.cs" />
-    <Compile Include="ViewModels\Reservas\ReservaDashboardVm.cs" />
-    <Compile Include="ViewModels\Servicios\ServicioDashboardVm.cs" />
+    <Compile Include="Services\adm\Reservas\IReservaService.cs" />
+    <Compile Include="Services\adm\Reservas\ReservaService.cs" />
+    <Compile Include="Services\adm\Servicio\IServicioService.cs" />
+    <Compile Include="Services\adm\Servicio\ServicioService.cs" />
+    <Compile Include="Models\adm\Servicios\ServicioDashboardVm.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\bootstrap-progressbar-3.3.4.min.css" />
@@ -4529,19 +4532,19 @@
     <Content Include="Scripts\vendors\validator\README.md" />
     <Content Include="Scripts\vendors\validator\validator.jquery.json" />
     <Content Include="Views\Account\_LoginModal.cshtml" />
-    <Content Include="Views\Habitaciones\Index.cshtml" />
-    <Content Include="Views\Habitaciones\_TablaHabitaciones.cshtml" />
-    <Content Include="Views\Habitaciones\_UpsertHabitacion.cshtml" />
-    <Content Include="Views\Habitaciones\_DashboardHabitacion.cshtml" />
-    <Content Include="Views\Reservas\Index.cshtml" />
-    <Content Include="Views\Reservas\_DashboardReserva.cshtml" />
-    <Content Include="Views\Reservas\_TablaReserva.cshtml" />
-    <Content Include="Views\Reservas\_UpsertReserva.cshtml" />
-    <Content Include="Views\Servicios\Index.cshtml" />
-    <Content Include="Views\Servicios\_DashboardServicio.cshtml" />
-    <Content Include="Views\Servicios\_TablaServicio.cshtml" />
-    <Content Include="Views\Servicios\_UpsertServicio.cshtml" />
-    <Content Include="Views\Habitaciones\_TablaInventario.cshtml" />
+    <Content Include="Views\adm\Habitaciones\Index.cshtml" />
+    <Content Include="Views\adm\Habitaciones\_TablaHabitaciones.cshtml" />
+    <Content Include="Views\adm\Habitaciones\_UpsertHabitacion.cshtml" />
+    <Content Include="Views\adm\Habitaciones\_DashboardHabitacion.cshtml" />
+    <Content Include="Views\adm\Reservas\Index.cshtml" />
+    <Content Include="Views\adm\Reservas\_DashboardReserva.cshtml" />
+    <Content Include="Views\adm\Reservas\_TablaReserva.cshtml" />
+    <Content Include="Views\adm\Reservas\_UpsertReserva.cshtml" />
+    <Content Include="Views\adm\Servicios\Index.cshtml" />
+    <Content Include="Views\adm\Servicios\_DashboardServicio.cshtml" />
+    <Content Include="Views\adm\Servicios\_TablaServicio.cshtml" />
+    <Content Include="Views\adm\Servicios\_UpsertServicio.cshtml" />
+    <Content Include="Views\adm\Habitaciones\_TablaInventario.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -4549,9 +4552,14 @@
   <ItemGroup>
     <None Include="packages.config" />
     <Content Include="Views\Shared\_MenuPartial.cshtml" />
-    <Content Include="Views\Habitaciones\_TablaReparaciones.cshtml" />
-    <Content Include="Views\Servicios\_PanelesServicio.cshtml" />
+    <Content Include="Views\adm\Habitaciones\_TablaReparaciones.cshtml" />
+    <Content Include="Views\adm\Servicios\_PanelesServicio.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Huesped\Reservas\Index.cshtml" />
+    <Content Include="Views\Huesped\Reservas\_TablaMisReservas.cshtml" />
+    <Content Include="Views\Huesped\Reservas\_UpsertReserva..cshtml" />
+    <Content Include="Views\Huesped\Servicio\Index.cshtml" />
+    <Content Include="Views\Huesped\Servicio\_UpsertSolicitud.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\vendors\devbridge-autocomplete\src\jquery.autocomplete.d.ts" />

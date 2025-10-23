@@ -1,0 +1,28 @@
+﻿@model Front_Hoteleria.Dto.adm.Reserva.ReservaDashboardDto
+
+<div class="row">
+    <div class="col-sm-3">
+        <div class="well text-center">
+            <h4><i class="fa fa-check-circle"></i> Confirmadas</h4>
+            <div style="font-size:28px;font-weight:700">@((Model?.TotalConfirmadas ?? 0).ToString("N0"))</div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="well text-center">
+            <h4><i class="fa fa-times-circle"></i> Rechazadas</h4>
+            <div style="font-size:28px;font-weight:700">@((Model?.TotalRechazadas ?? 0).ToString("N0"))</div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="well text-center">
+            <h4><i class="fa fa-wrench"></i> Total Servicios</h4>
+            <div style="font-size:28px;font-weight:700">@((Model?.TotalServicios ?? 0).ToString("N0"))</div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="well text-center">
+            <h4><i class="fa fa-sun-o"></i> Nuevas Hoy</h4>
+            <div style="font-size:28px;font-weight:700">@((Model?.NuevasHoys ?? 0).ToString("N0"))</div>
+        </div>
+    </div>
+</div>

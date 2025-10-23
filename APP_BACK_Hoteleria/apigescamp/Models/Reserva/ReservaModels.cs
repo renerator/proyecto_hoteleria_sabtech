@@ -36,6 +36,9 @@ namespace DemoBackend.Models.Reserva
         public int IdEstadoReserva { get; set; }
         [Column("MotivoReserva")]
         public string MotivoReserva { get; set; }
+
+        [Column("Totales")]
+        public int? Totales { get; set; }
     }
 }
 

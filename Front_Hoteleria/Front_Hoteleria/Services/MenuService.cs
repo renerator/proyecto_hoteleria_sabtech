@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using Front_Hoteleria.Dto;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Configuration;
 using System.Web;
-using Front_Hoteleria.Models;
+using System.Web.UI.WebControls;
 
 namespace Front_Hoteleria.Services
 {
@@ -19,7 +21,7 @@ namespace Front_Hoteleria.Services
             _http = new HttpClient();
         }
 
-        public async Task<List<MenuItem>> ObtenerMenuAsync(int idUsuario, int idPerfil)
+        public async Task<List<MenuDTO>> ObtenerMenuAsync(int idUsuario, int idPerfil)
         {
             var baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
             var endpoint = ConfigurationManager.AppSettings["ApiMenuEndpoint"];
@@ -28,59 +30,87 @@ namespace Front_Hoteleria.Services
             var request = new HttpRequestMessage(HttpMethod.Get, url);
 
             // Leer token de la sesión
-            var session = HttpContext.Current?.Session;
-            var token = session != null ? session["Token"] as string : null;
-
-            
+            var token = HttpContext.Current?.Session?["Token"] as string;
             if (!string.IsNullOrWhiteSpace(token))
-            {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
 
             var response = await _http.SendAsync(request).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
-            {
-                return new List<MenuItem>();
-            }
+                return new List<MenuDTO>();
 
             var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var funcionalidades = JsonConvert.DeserializeObject<List<FuncionalidadDto>>(json)
                                   ?? new List<FuncionalidadDto>();
 
-            // 1
+            // separar menús y hojas
             var menus = funcionalidades.Where(f => f.esMenu == 1).ToList();
             var hijos = funcionalidades.Where(f => f.esMenu == 0).ToList();
 
-            var resultado = new List<MenuItem>();
+            var resultado = new List<MenuDTO>();
 
-            
-            foreach (var menu in menus)
+            // 🟡 Caso especial: perfil huésped sin menús
+            if (menus.Count == 0)
             {
-                var padre = new MenuItem
+                // crea un contenedor “Huésped”
+                var padre = new MenuDTO
                 {
-                    Titulo = menu.descripcion,
-                    Icono = MapIcono(menu.descripcion)
+                    Titulo = "Huésped",
+                    Icono = "fa fa-user"
                 };
 
-              
+                // todos los hijos del perfil huésped
                 var subItems = hijos
-                    .Where(h => h.idTipoFuncionalidad == menu.idTipoFuncionalidad)
+                    .Where(h => string.Equals(h.Perfil, "Huesped", StringComparison.OrdinalIgnoreCase))
                     .OrderBy(h => h.descripcion);
 
                 foreach (var hijo in subItems)
                 {
-                    padre.SubMenu.Add(new MenuItem
+                    padre.SubMenu.Add(new MenuDTO
                     {
                         Titulo = hijo.descripcion,
-                        Url = hijo.pagina
+                        Url = hijo.pagina,
+                        Icono = MapIcono(hijo.descripcion)
                     });
                 }
 
-                resultado.Add(padre);
+                // si hay algo que mostrar
+                if (padre.SubMenu.Count > 0)
+                    resultado.Add(padre);
+            }
+            else
+            {
+                // 🟢 Caso normal: perfil con menús definidos
+                foreach (var menu in menus)
+                {
+                    var padre = new MenuDTO
+                    {
+                        Titulo = menu.descripcion,
+                        Icono = MapIcono(menu.descripcion)
+                    };
+
+                    var subItems = hijos
+                        .Where(h => h.idPadre == menu.idPadre) // relación correcta padre→hijo
+                        .OrderBy(h => h.descripcion);
+
+                    foreach (var hijo in subItems)
+                    {
+                        padre.SubMenu.Add(new MenuDTO
+                        {
+                            Titulo = hijo.descripcion,
+                            Url = hijo.pagina,
+                            Icono = MapIcono(hijo.descripcion)
+                        });
+                    }
+
+                    // agrega solo si tiene hijos
+                    //if (padre.SubMenu.Count > 0)
+                        resultado.Add(padre);
+                }
             }
 
             return resultado;
         }
+
 
 
 

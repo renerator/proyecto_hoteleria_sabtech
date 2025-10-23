@@ -1,5 +1,5 @@
-﻿using Front_Hoteleria.Dto.Habitacion;
-using Front_Hoteleria.ViewModels.Habitacion;
+﻿using Front_Hoteleria.Dto.adm.Habitacion;
+using Front_Hoteleria.Models.Habitacion;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;

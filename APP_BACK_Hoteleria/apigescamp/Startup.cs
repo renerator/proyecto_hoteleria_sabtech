@@ -81,6 +81,7 @@ namespace DemoBackend
                 services.AddTransient<IHabitacionInsumoService, HabitacionInsumoService>();
                 services.AddTransient<ITrabajadorService, TrabajadorService>();
                 services.AddTransient<IOrdenTrabajoService, OrdenTrabajoService>();
+         
                 // === Mantenedores ===
 
                 services.AddTransient<IBodegaService, BodegaService>();

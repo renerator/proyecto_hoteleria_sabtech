@@ -16,15 +16,18 @@ namespace DemoBackend.Services
     {
         private readonly IGenericRepositoryEntity<ReservaModels> _listaReserva;
         private readonly IGenericRepositoryEntity<ReservaDashboardKPI> _listaReservaDashboard;
+        private readonly IGenericRepositoryEntity<ReservaTrabajadorModels> _listaReservaTrabajador;
         private readonly IMapper _mapper;
 
         public ReservaService(
             IGenericRepositoryEntity<ReservaModels> listaReserva,
             IGenericRepositoryEntity<ReservaDashboardKPI> listaReservaDashboard,
+            IGenericRepositoryEntity<ReservaTrabajadorModels> listaReservaTrabajador,
             IMapper mapper)
         {
             _listaReserva = listaReserva;
             _listaReservaDashboard = listaReservaDashboard;
+            _listaReservaTrabajador = listaReservaTrabajador;
             _mapper = mapper;
         }
         public bool CrearBitacoraReserva(BitacoraReservaDto dto)
@@ -159,8 +162,8 @@ namespace DemoBackend.Services
         }
 
         #endregion
-   
-    public List<ReservaDto> BuscaReservas(ReservaDto reserva)
+
+        public List<ReservaDto> BuscaReservas(ReservaDto reserva)
         {
             // Stored procedure que permite filtrar por múltiples campos
             string sql = "HOT_BUSCA_Reserva @idReserva, @idHabitacion, @idTrabajador, @FechaDesde, @FechaHasta, @QuiereTransporte, @FechaCheckIN, @FechaCheckOut, @idEstadoReserva, @MotivoReserva";
@@ -182,17 +185,19 @@ namespace DemoBackend.Services
             return _mapper.Map<List<ReservaDto>>(lista);
         }
 
-        public ReservaDashboardDto ObtenerDashboard(DateTime? desde, DateTime? hasta)
+        public ReservaDashboardDto ObtenerDashboard(DateTime? desde, DateTime? hasta, int idHabitacion, int idTipoReserva)
         {
-            var hoy = DateTime.Today;
-            var d = (desde ?? hoy).Date;
-            var h = (hasta ?? hoy).Date;
+            //var hoy = DateTime.Today;
+            //var d = (desde ?? hoy).Date;
+            //var h = (hasta ?? hoy).Date;
 
             // Nombre del SP correcto
-            string sql = "HOT_DASH_TotalesYEstados @Desde, @Hasta";
-            var parametros = new SqlParameter[2];
-            parametros[0] = new SqlParameter("@Desde", d);
-            parametros[1] = new SqlParameter("@Hasta", h);
+            string sql = "HOT_DASH_TotalesYEstados @Desde, @Hasta,@idHabitacion, @idTipoReserva";
+            var parametros = new SqlParameter[4];
+            parametros[0] = new SqlParameter("@Desde", (object?)desde ?? DBNull.Value);
+            parametros[1] = new SqlParameter("@Hasta", (object?)hasta ?? DBNull.Value);
+            parametros[2] = new SqlParameter("@idHabitacion", idHabitacion);
+            parametros[3] = new SqlParameter("@idTipoReserva", idTipoReserva);
 
             var dto = new ReservaDashboardDto();
 
@@ -201,15 +206,12 @@ namespace DemoBackend.Services
                 var kpiRow = _listaReservaDashboard.GetStoreProcedure(sql, parametros).FirstOrDefault();
                 if (kpiRow != null)
                 {
-                    dto.NuevasReservas = kpiRow.NuevasReservas;
-                    dto.Servicios = kpiRow.Servicios;
-                    dto.CheckIn = kpiRow.CheckIn;
-                    dto.CheckOut = kpiRow.CheckOut;
+                    dto.TotalConfirmadas = kpiRow.TotalConfirmadas;
+                    dto.TotalRechazadas= kpiRow.TotalRechazadas;
+                    dto.TotalServicios = kpiRow.TotalServicios;
+                    dto.NuevasHoy = kpiRow.NuevasHoy;
 
-                    dto.Pendientes = kpiRow.Pendientes;
-                    dto.Confirmadas = kpiRow.Confirmadas;
-                    dto.Rechazadas = kpiRow.Rechazadas;
-                    dto.Realizadas = kpiRow.Realizadas;
+                    
                 }
 
 
@@ -224,9 +226,56 @@ namespace DemoBackend.Services
         }
 
 
+        public List<ReservaTrabajadorDto> GetListaReservaTrabajador(ReservaTrabajadorDto filtro)
+        {
+            // Evita NRE y permite filtros vacíos
+            filtro ??= new ReservaTrabajadorDto();
+
+            const string sql = "LISTADO_ReservasTrabajador @FechaDesde, @FechaHasta, @idEstadoReserva, @idTipoReserva";
+
+            var parametros = new SqlParameter[4];
+            {
+                parametros[0] = new SqlParameter("@FechaDesde", (object?)filtro.FechaDesde ?? DBNull.Value);
+                parametros[1] = new SqlParameter("@FechaHasta", (object?)filtro.FechaHasta ?? DBNull.Value);
+                // Si 0 significa “no filtrar”, lo enviamos como NULL al SP
+                parametros[2] = new SqlParameter("@idEstadoReserva", filtro.IdEstadoReserva);
+                parametros[3] = new SqlParameter("@idTipoReserva", filtro.IdTipoReserva);
 
 
+                try
+                {
+                    var lista = _listaReservaTrabajador.GetStoreProcedure(sql, parametros);
+
+                    // Si AutoMapper no tiene el mapeo apropiado, lanzará excepción (capturada abajo)
+                    var result = _mapper.Map<List<ReservaTrabajadorDto>>(lista);
+
+                    return result ?? new List<ReservaTrabajadorDto>();
+                }
+                catch (AutoMapperMappingException amex)
+                {
+                    Console.WriteLine($"[GetListaReservaTrabajador] Error de mapeo: {amex.Message}");
+                    if (amex.InnerException != null)
+                        Console.WriteLine($"[GetListaReservaTrabajador] Inner: {amex.InnerException.Message}");
+                    return new List<ReservaTrabajadorDto>();
+                }
+                catch (SqlException sqlex)
+                {
+                    Console.WriteLine($"[GetListaReservaTrabajador] SQL ({sqlex.Number}): {sqlex.Message}");
+                    return new List<ReservaTrabajadorDto>();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[GetListaReservaTrabajador] Error inesperado: {ex}");
+                    return new List<ReservaTrabajadorDto>();
+                }
+
+
+
+            }
+        }
     }
+
+
 
 
 
