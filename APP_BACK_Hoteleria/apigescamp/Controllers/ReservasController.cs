@@ -331,7 +331,7 @@ namespace DemoBackend.Controllers
        
        
 
-[HttpGet]
+    [HttpGet]
     public ActionResult<List<ReservaTrabajadorDto>> ReservasTrabajadorDisponibles(
     [FromQuery] int? idReserva,
     [FromQuery] int? idHabitacion,
@@ -374,6 +374,37 @@ namespace DemoBackend.Controllers
         }
     }
 
-}
+        // POST: api/Reservas/CreaReservaTrabajador
+        [HttpPost("CreaReservaTrabajador")]
+        public ActionResult<object> CreaReservaTrabajador([FromBody] ReservaTrabajadorDto dto)
+        {
+            _logger.LogInformation("CreaReservaTrabajador : inicio.");
+
+            if (dto == null) return BadRequest("Payload vacío.");
+
+            // Validación mínima para INSERT
+            if ((dto.IdHabitacion <= 0 || dto.IdTrabajador <= 0))
+                return BadRequest("IdHabitacion e IdTrabajador son obligatorios al crear.");
+
+            try
+            {
+                var idGenerado = _reservaService.CreaReservaTrabajador(dto);
+                if (idGenerado <= 0)
+                {
+                    _logger.LogWarning("CreaReservaTrabajador : operación no realizada.");
+                    return StatusCode(500, "No se pudo crear/editar la reserva.");
+                }
+
+                _logger.LogInformation("CreaReservaTrabajador : ok (IdReserva={Id}).", idGenerado);
+                return Ok(new { idReserva = idGenerado });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "CreaReservaTrabajador : error.");
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+    }
 }
 

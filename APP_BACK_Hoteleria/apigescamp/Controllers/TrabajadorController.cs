@@ -1,7 +1,9 @@
-﻿using DemoBackend.Dto.Trabajador;
+﻿using DemoBackend.Dto.Insumos;
+using DemoBackend.Dto.Trabajador;
 using DemoBackend.Services.Trabajador;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -61,6 +63,41 @@ namespace DemoBackend.Controllers
         /// <response code="401">No autorizado</response>
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
+        /// 
+
+        [HttpGet("BuscarTrabajadorPorRut")]
+        public ActionResult<TrabajadorDto> BuscarTrabajadorRut([FromQuery] string? rut)
+        {
+            _logger.LogInformation("BuscarTrabajadorRut : inicio. Rut={rut}", rut);
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(rut))
+                    return BadRequest("Debe indicar el RUT.");
+
+                var dto = _trabajadorService.GetTrabajadorRut(rut);
+                if (dto == null)
+                {
+                    _logger.LogInformation("BuscarTrabajadorRut : no encontrado.");
+                    // Puedes usar NotFound() si lo prefieres
+                    return new NoContentResult();
+                }
+
+                _logger.LogInformation("BuscarTrabajadorRut : encontrado idTrabajador={Id}", dto.IdUsuario);
+                return Ok(dto);
+            }
+            catch (SqlException sqlex)
+            {
+                _logger.LogError(sqlex, "BuscarTrabajadorRut : error SQL.");
+                return StatusCode(500, "Error de base de datos al buscar el trabajador.");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "BuscarTrabajadorRut : error.");
+                return StatusCode(500, e.Message);
+            }
+        }
+
         [HttpPost("CrearUsuario")]
         public ActionResult CrearTrabajador(TrabajadorDto trabajadorDto)
         {

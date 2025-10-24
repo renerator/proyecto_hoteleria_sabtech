@@ -14,5 +14,7 @@ namespace DemoBackend.Services.Trabajador
 
         List<TrabajadorDto> VerificaTrabajadorPorNombre(TrabajadorDto trabajador);
         List<TrabajadorDto> VerificaTrabajadorPorId(TrabajadorDto trabajador);
+
+        TrabajadorDto GetTrabajadorRut(string rut);
     }
 }

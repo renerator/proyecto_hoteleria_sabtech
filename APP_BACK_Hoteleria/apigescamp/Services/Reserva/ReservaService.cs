@@ -8,6 +8,7 @@ using DemoBackend.Services.Reserva;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace DemoBackend.Services
@@ -207,11 +208,11 @@ namespace DemoBackend.Services
                 if (kpiRow != null)
                 {
                     dto.TotalConfirmadas = kpiRow.TotalConfirmadas;
-                    dto.TotalRechazadas= kpiRow.TotalRechazadas;
+                    dto.TotalRechazadas = kpiRow.TotalRechazadas;
                     dto.TotalServicios = kpiRow.TotalServicios;
                     dto.NuevasHoy = kpiRow.NuevasHoy;
 
-                    
+
                 }
 
 
@@ -224,6 +225,9 @@ namespace DemoBackend.Services
 
             return dto;
         }
+
+
+
 
 
         public List<ReservaTrabajadorDto> GetListaReservaTrabajador(ReservaTrabajadorDto filtro)
@@ -273,10 +277,75 @@ namespace DemoBackend.Services
 
             }
         }
+
+
+
+        public int CreaReservaTrabajador(ReservaTrabajadorDto dto)
+        {
+            if (dto == null) return 0;
+
+            // Si no envían estado, por defecto 1=Ingresada
+            if (dto.IdEstadoReserva <= 0) dto.IdEstadoReserva = 1;
+
+            const string sql = "hot_Crea_Upd_Reserva @IdReserva OUTPUT, @idHabitacion, @idTrabajador, " +
+                               "@FechaDesde, @FechaHasta, @QuiereTransporte, @FechaCheckIN, @FechaCheckOut, " +
+                               "@idEstadoReserva, @MotivoReserva, @Totales";
+
+            var parametros = new SqlParameter[11];
+            parametros[0] = new SqlParameter("@IdReserva", SqlDbType.Int)
+            {
+                Direction = ParameterDirection.InputOutput,
+                Value = (dto.IdReserva > 0 ? dto.IdReserva : 0)
+            };
+            parametros[1] = new SqlParameter("@idHabitacion", dto.IdHabitacion);
+            parametros[2] = new SqlParameter("@idTrabajador", dto.IdTrabajador);
+            parametros[3] = new SqlParameter("@FechaDesde", (object?)dto.FechaDesde ?? DBNull.Value);
+            parametros[4] = new SqlParameter("@FechaHasta", (object?)dto.FechaHasta ?? DBNull.Value);
+            parametros[5] = new SqlParameter("@QuiereTransporte", (object?)dto.QuiereTransporte ?? DBNull.Value);
+            parametros[6] = new SqlParameter("@FechaCheckIN", (object?)dto.FechaCheckIN ?? DBNull.Value);
+            parametros[7] = new SqlParameter("@FechaCheckOut", (object?)dto.FechaCheckOut ?? DBNull.Value);
+            parametros[8] = new SqlParameter("@idEstadoReserva", dto.IdEstadoReserva);
+            parametros[9] = new SqlParameter("@MotivoReserva", (object?)dto.MotivoReserva ?? DBNull.Value);
+            parametros[10] = new SqlParameter("@Totales", (object?)dto.Totales ?? DBNull.Value);
+
+            try
+            {
+
+                if (dto.IdReserva == 0)
+                {
+                    _listaReservaTrabajador.InsertProcedure(sql, parametros);
+
+                    var val = parametros[0].Value;
+                    int idReserva = 0;
+                    if (val != null && val != DBNull.Value)
+                        idReserva = Convert.ToInt32(val);
+
+                    return idReserva; // >0 OK
+                }
+                else{
+                    
+                    _listaReserva.ExecuteProcedure(sql, parametros);
+
+                    return 0; // >0 OK
+
+                }
+                // Ejecuta el SP; si tu repositorio NO propaga OUTPUT, cambia a ADO.NET plano.
+                
+            }
+            catch (SqlException sqlex)
+            {
+                Console.WriteLine($"[CreaReservaTrabajador] SQL ({sqlex.Number}): {sqlex.Message}");
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[CreaReservaTrabajador] Error: {ex}");
+                return 0;
+            }
+        }
+
+
+
     }
-
-
-
-
 
 }

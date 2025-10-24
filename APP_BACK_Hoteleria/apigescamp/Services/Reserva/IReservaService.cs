@@ -23,6 +23,13 @@ namespace DemoBackend.Services.Reserva
         bool CrearBitacoraReserva(BitacoraReservaDto dto);
 
         List<ReservaTrabajadorDto> GetListaReservaTrabajador(ReservaTrabajadorDto ReservaTrabajador);
+        /// <summary>
+        /// Inserta o actualiza (upsert) una reserva de trabajador.
+        /// Devuelve el IdReserva afectado/generado. 0 si falla.
+        /// </summary>
+        int CreaReservaTrabajador(ReservaTrabajadorDto dto);
+
+
     }
 }
 

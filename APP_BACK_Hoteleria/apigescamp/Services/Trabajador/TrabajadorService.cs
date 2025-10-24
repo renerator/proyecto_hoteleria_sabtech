@@ -5,8 +5,10 @@ using DemoBackend.RepositoryGes;
 using DemoBackend.Services.Habitacion;
 using DemoBackend.Services.Trabajador;    // <- contiene la interfaz ITrabajadorService
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using static DemoBackend.Models.Trabajador.TrabajadorModels;
 
 namespace DemoBackend.Services
@@ -15,13 +17,15 @@ namespace DemoBackend.Services
     {
         private readonly IGenericRepositoryEntity<TrabajadorModels> _repoTrabajador;
         private readonly IMapper _mapper;
+        private readonly ILogger<TrabajadorService> _logger;
 
         public TrabajadorService(
             IGenericRepositoryEntity<TrabajadorModels> repoTrabajador,
-            IMapper mapper)
+            IMapper mapper, ILogger<TrabajadorService> logger)
         {
             _repoTrabajador = repoTrabajador;
             _mapper = mapper;
+            _logger = logger;
         }
 
         #region Trabajador (CRUD + verificaciones + listados)
@@ -149,6 +153,36 @@ namespace DemoBackend.Services
             return _mapper.Map<List<TrabajadorDto>>(lista);
         }
 
+        public TrabajadorDto GetTrabajadorRut(string rut)
+        {
+            if (string.IsNullOrWhiteSpace(rut)) return null;
+
+            const string sql = "TRA_LIST_Trabajador_RUT @Rut";
+            var p = new SqlParameter[1];
+            p[0] = new SqlParameter("@Rut", rut);
+
+            try
+            {
+                var lista = _repoTrabajador.GetStoreProcedure(sql, p); // devuelve entidades
+                var entity = lista?.FirstOrDefault();
+                return _mapper.Map<TrabajadorDto>(entity);
+            }
+            catch (AutoMapperMappingException amex)
+            {
+                _logger.LogError(amex, "[GetTrabajadorRut] Error de mapeo.");
+                return null;
+            }
+            catch (SqlException sqlex)
+            {
+                _logger.LogError(sqlex, "[GetTrabajadorRut] Error SQL ({Number})", sqlex.Number);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[GetTrabajadorRut] Error inesperado.");
+                return null;
+            }
+        }
         // VERIFICA POR "NOMBRE" (puedes validar por DNI si es único)
         public List<TrabajadorDto> VerificaTrabajadorPorNombre(TrabajadorDto trabajador)
         {

@@ -5,8 +5,8 @@
 
 <!-- ====== CSS (VENDORS LOCALES) ====== -->
 <link href="~/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />  @* CDN como en la maqueta *@
-<link href="~/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />                               @* Fallback local *@
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<link href="~/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
 <link href="~/vendors/nprogress/nprogress.css" rel="stylesheet" />
 <link href="~/vendors/iCheck/skins/flat/green.css" rel="stylesheet" />
 <link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
@@ -21,99 +21,16 @@
 <link href="~/build/css/custom.min.css" rel="stylesheet" />
 
 <style>
-    .reservations-stats, .chart-container, .top-services, .reservations-table {
+    .reservations-stats, .top-services, .reservations-table {
         background: #fff;
         border: 1px solid #e5e5e5;
         border-radius: 4px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1)
     }
 
-    .reservations-stats, .chart-container, .top-services {
+    .reservations-stats, .top-services {
         padding: 25px;
         margin-bottom: 30px
-    }
-
-    .stats-item {
-        text-align: center;
-        padding: 15px
-    }
-
-    .stats-number {
-        font-size: 2.2rem;
-        font-weight: 700;
-        color: #2c3e50;
-        margin-bottom: 5px
-    }
-
-    .stats-label {
-        color: #7f8c8d;
-        font-size: .9rem;
-        text-transform: uppercase;
-        letter-spacing: .5px
-    }
-
-    .chart-title {
-        color: #2c3e50;
-        margin-bottom: 20px;
-        font-weight: 600;
-        font-size: 1.2rem
-    }
-
-    .service-item {
-        display: flex;
-        align-items: center;
-        padding: 15px 0;
-        border-bottom: 1px solid #eee
-    }
-
-        .service-item:last-child {
-            border-bottom: none
-        }
-
-    .service-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #34495e;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        font-weight: 700;
-        margin-right: 15px;
-        font-size: .9rem
-    }
-
-    .service-info {
-        flex: 1
-    }
-
-    .service-name {
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 5px;
-        font-size: .95rem
-    }
-
-    .service-role {
-        color: #7f8c8d;
-        font-size: .85rem
-    }
-
-    .service-stats {
-        text-align: right
-    }
-
-    .service-number {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: #2c3e50
-    }
-
-    .service-today {
-        color: #27ae60;
-        font-size: .85rem;
-        font-weight: 500
     }
 
     .table-header {
@@ -128,60 +45,6 @@
             font-size: 1.3rem;
             color: #2c3e50
         }
-
-    .action-buttons {
-        background: #f8f9fa;
-        border: 1px solid #e5e5e5;
-        border-radius: 4px;
-        padding: 20px;
-        margin-bottom: 30px
-    }
-
-    .action-btn {
-        margin: 5px;
-        padding: 8px 16px;
-        border-radius: 4px;
-        font-weight: 500
-    }
-
-    .status-badge {
-        padding: 4px 8px;
-        border-radius: 3px;
-        font-size: .8rem;
-        font-weight: 500
-    }
-
-    .status-confirmed {
-        background: #d4edda;
-        color: #155724
-    }
-
-    .status-pending {
-        background: #fff3cd;
-        color: #856404
-    }
-
-    .status-cancelled {
-        background: #f8d7da;
-        color: #721c24
-    }
-
-    .status-checked-in {
-        background: #cce5ff;
-        color: #004085
-    }
-
-    .status-checked-out {
-        background: #e2e3e5;
-        color: #383d41
-    }
-
-    .btn-action {
-        padding: 4px 8px;
-        margin: 1px;
-        border-radius: 3px;
-        font-size: .75rem
-    }
 
     .filter-panel {
         background: #f8f9fa;
@@ -204,28 +67,10 @@
         padding: 8px;
         width: 100%
     }
-
-    .stats-mini {
-        text-align: center;
-        padding: 15px;
-        background: #f8f9fa;
-        border: 1px solid #e5e5e5;
-        border-radius: 4px;
-        margin: 5px 0
-    }
-
-    .stats-number-mini {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #2c3e50;
-        margin-bottom: 5px
-    }
-
-    .stats-label-mini {
-        font-size: .8rem;
-        color: #7f8c8d;
-        text-transform: uppercase;
-        letter-spacing: .5px
+    /* Contenedor simple para el dashboard de KPIs */
+    .kpi-container {
+        padding: 25px;
+        border-top: 1px solid #e5e5e5
     }
 </style>
 
@@ -250,7 +95,6 @@
 
         <div class="clearfix"></div>
 
-        <!-- ======= CABECERA + KPIs ======= -->
         <div class="row">
             <div class="col-md-12">
                 <div class="reservations-table">
@@ -268,33 +112,12 @@
                                 </button>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- KPIs encabezado (valores desde DashboardJson) -->
-                        <div class="row" style="margin-top:20px">
-                            <div class="col-md-3">
-                                <div class="stats-mini">
-                                    <div class="stats-number-mini" id="totalReservations">0</div>
-                                    <div class="stats-label-mini">Total Confirmadas</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stats-mini">
-                                    <div class="stats-number-mini" id="rejectedReservations">0</div>
-                                    <div class="stats-label-mini">Total Rechazadas</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stats-mini">
-                                    <div class="stats-number-mini" id="totalServices">0</div>
-                                    <div class="stats-label-mini">Total Servicios</div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="stats-mini">
-                                    <div class="stats-number-mini" id="todayReservations">0</div>
-                                    <div class="stats-label-mini">Nuevas Hoy</div>
-                                </div>
-                            </div>
+                    <!-- ====== DASHBOARD (PARCIAL CON 4 KPIs) ====== -->
+                    <div class="kpi-container">
+                        <div id="dashContainerReserva">
+                            <div class="text-muted">Cargando dashboard…</div>
                         </div>
                     </div>
 
@@ -310,14 +133,13 @@
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Estado:</label>
-                                    <!-- SUGERENCIA: reemplaza los values por los IDs reales de tu catálogo -->
                                     <select class="form-control" id="statusFilter">
                                         <option value="">Todos los estados</option>
                                         <option value="1">Pendiente</option>
                                         <option value="2">Confirmada</option>
-                                        <option value="3">Rechazada</option>
-                                        <option value="4">Check In</option>
-                                        <option value="5">Check Out</option>
+                                        <option value="4">Rechazada</option>
+                                        <option value="5">Check In</option>
+                                        <option value="6">Check Out</option>
                                     </select>
                                 </div>
                             </div>
@@ -337,7 +159,6 @@
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Tipo:</label>
-                                    <!-- SUGERENCIA: reemplaza los values por los IDs reales -->
                                     <select class="form-control" id="typeFilter">
                                         <option value="">Todos los tipos</option>
                                         <option value="1">Individual</option>
@@ -358,14 +179,6 @@
                                     </button>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- ====== DASHBOARD (PARCIAL) ====== -->
-                    <div class="chart-container" style="margin:0;border-radius:0;border-top:1px solid #e5e5e5">
-                        <div class="chart-title"><i class="fa fa-line-chart"></i> Progreso Semanal</div>
-                        <div id="dashContainerReserva">
-                            <div class="text-muted">Cargando dashboard…</div>
                         </div>
                     </div>
 
@@ -402,6 +215,7 @@
     <script src="~/vendors/fastclick/lib/fastclick.js"></script>
     <script src="~/vendors/nprogress/nprogress.js"></script>
     <script src="~/vendors/iCheck/icheck.min.js"></script>
+
     <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
     <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
     <script src="~/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
@@ -413,49 +227,69 @@
     <script src="~/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
     <script src="~/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
     <script src="~/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+
     <script src="~/vendors/jszip/dist/jszip.min.js"></script>
     <script src="~/vendors/pdfmake/build/pdfmake.min.js"></script>
     <script src="~/vendors/pdfmake/build/vfs_fonts.js"></script>
+
     <script src="~/vendors/pnotify/dist/pnotify.js"></script>
     <script src="~/vendors/pnotify/dist/pnotify.buttons.js"></script>
     <script src="~/vendors/pnotify/dist/pnotify.nonblock.js"></script>
+
     <script src="~/vendors/moment/min/moment.min.js"></script>
     <script src="~/vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+    <!-- ¡OJO! Se eliminó Chart.js porque ya no se usa el “proceso semanal” -->
+
     <script src="~/build/js/custom.min.js"></script>
 
     <script>
-    // ===== ENDPOINTS (solo el parcial de dashboard, SIN params) =====
+    // ===== ENDPOINTS =====
     const urlTablaReserva  = '@Url.Action("TablaPartial","Reservas")';
-    const urlDashboardView = '@Url.Action("Dashboard","Reservas")'; // ← sin parámetros
+    const urlDashboardView = '@Url.Action("Dashboard","Reservas")';
     const urlUpsertReserva = '@Url.Action("Upsert","Reservas")';
     const urlEliminar      = '@Url.Action("Eliminar","Reservas")';
 
     function token(){ return $('input[name="__RequestVerificationToken"]').first().val(); }
     if (window.PNotify) { PNotify.prototype.options.styling = "bootstrap3"; }
 
-    // DateRange solo para la tabla (si lo usas)
+    // ===== DATE RANGE para la tabla =====
     $('#dateRange').daterangepicker({
       startDate: moment().startOf('month'),
       endDate: moment().endOf('day'),
       locale:{ format:'DD/MM/YYYY', applyLabel:'Aplicar', cancelLabel:'Cancelar' }
     });
 
-    // ===== DASHBOARD (solo carga del parcial) =====
+    // ===== DASHBOARD (carga del parcial con manejo de error) =====
     function cargarDashboardView(){
-      $('#dashContainerReserva').load(urlDashboardView, function(resp, status){
-        if(status!=='success'){
-          $('#dashContainerReserva').html('<div class="text-danger">No se pudo cargar el dashboard.</div>');
+      $('#dashContainerReserva').html('<div class="text-muted">Cargando dashboard…</div>');
+      $('#dashContainerReserva').load(urlDashboardView, function(responseText, textStatus, xhr){
+        if (textStatus === 'error' || (xhr && xhr.status >= 400)) {
+          const code = (xhr && xhr.status) ? ` (${xhr.status})` : '';
+          const msg  = (xhr && xhr.statusText) ? xhr.statusText : 'Error';
+          const body = (xhr && xhr.responseText) ? $('<div>').text(xhr.responseText).html() : '';
+          $('#dashContainerReserva').html(
+            `<div class="text-danger">
+               <strong>No se pudo cargar el dashboard${code}:</strong> ${msg}<br/>
+               <small>${body}</small><br/>
+               <button type="button" class="btn btn-link p-0" id="retryDashboardBtn">Reintentar</button>
+             </div>`
+          );
+          if (window.PNotify) {
+            new PNotify({ title:'Dashboard', text:`Error${code}: ${msg}`, type:'error', styling:'bootstrap3' });
+          }
         }
       });
     }
+    $(document).on('click', '#retryDashboardBtn', function(){ cargarDashboardView(); });
 
-    // ===== TABLA (tu lógica existente) =====
+    // ===== TABLA =====
     function initDataTable(){
       const $t = $('#tablaReservas').length ? $('#tablaReservas') : $('#reservationsTable');
       if(!$t.length) return;
       $t.DataTable({
-        destroy:true, responsive:true, pageLength:25,
-        order:[[0,'desc']], columnDefs:[{ orderable:false, targets:8 }],
+        destroy:true, responsive:true, pageLength:25, order:[[0,'desc']],
+        columnDefs:[{ orderable:false, targets:8 }],
         language:{
           sProcessing:"Procesando...", sLengthMenu:"Mostrar _MENU_ registros", sZeroRecords:"No se encontraron resultados",
           sEmptyTable:"Ningún dato disponible en esta tabla", sInfo:"Mostrando _START_ a _END_ de _TOTAL_",
@@ -487,7 +321,7 @@
       });
     }
 
-    // Botones
+    // ===== BOTONES =====
     $('#refreshDataBtn').on('click', function(){
       cargarDashboardView();
       cargarTabla();
@@ -498,11 +332,37 @@
       $('#modalUpsertReserva').modal('show');
       $('#upsertReservaBody').html('<div class="text-muted">Cargando…</div>').load(urlUpsertReserva);
     });
+        // Manejo del submit del form dentro del modal (delegado)
+        $('#upsertReservaBody').on('submit', '#formCrearReserva', function (e) {
+            e.preventDefault();
+            var $form = $(this);
+            var data = $form.serialize();
 
-    // INIT
+            $.ajax({
+                url: $form.attr('action'),
+                type: 'POST',
+                data: data
+            })
+                .done(function (r) {
+                    if (r && r.ok) {
+                        $('#modalUpsertReserva').modal('hide');
+                        // refresca tabla
+                        if (typeof cargarTabla === 'function') cargarTabla();
+                        if (window.PNotify) new PNotify({ title: 'Reserva', text: 'Reserva creada correctamente', type: 'success', styling: 'bootstrap3' });
+                    } else {
+                        // si el server devolvió el parcial con validaciones, vuelves a renderizar
+                        $('#upsertReservaBody').html(r);
+                    }
+                })
+                .fail(function (xhr) {
+                    var msg = xhr.responseText || 'No se pudo crear la reserva';
+                    if (window.PNotify) new PNotify({ title: 'Error', text: msg, type: 'error', styling: 'bootstrap3' });
+                });
+        });
+    // ===== INIT =====
     $(function(){
-      cargarDashboardView(); // ← solo parcial, sin parámetros
-      cargarTabla();
+      cargarDashboardView(); // solo el parcial de KPIs
+      cargarTabla();         // la tabla con el rango inicial
     });
     </script>
 }

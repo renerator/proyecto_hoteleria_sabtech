@@ -247,10 +247,33 @@ public async Task<List<ReservaTrabajadorDto>> ReservasDisponiblesTrabajadorAsync
             return new List<ReservaTrabajadorDto>();
         }
     }
+        public async Task<bool> CrearReservaTrabajadorAsync(ReservaTrabajadorDto dto, string bearer = null)
+        {
+            try
+            {
+                SetBearer(bearer);
+
+                // Ajusta la ruta si tu API usa otra: p.ej. "/api/Reservas/CrearReserva"
+                var url = "/api/Reservas/CreaReservaTrabajador";
+
+                var payload = JsonConvert.SerializeObject(dto);
+                using (var content = new StringContent(payload, Encoding.UTF8, "application/json"))
+                using (var resp = await _http.PostAsync(url, content))
+                {
+                    if (resp.StatusCode == HttpStatusCode.NoContent) return true;
+                    if (!resp.IsSuccessStatusCode) return false;
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError($"[CrearReservaAsync] {ex}");
+                return false;
+            }
+        }
 
 
-
-    // Si más adelante usas bitácora:
-    // public async Task<bool> CrearBitacoraReservaAsync(BitacoraReservaDto dto, string bearer = null) { ... }
-}
+        // Si más adelante usas bitácora:
+        // public async Task<bool> CrearBitacoraReservaAsync(BitacoraReservaDto dto, string bearer = null) { ... }
+    }
 }

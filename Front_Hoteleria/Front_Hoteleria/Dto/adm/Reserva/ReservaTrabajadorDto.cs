@@ -25,10 +25,11 @@ namespace Front_Hoteleria.Dto.adm.Reserva
         public int IdTipoReserva { get; set; }
         public string EstadoReserva { get; set; }
         public int Totales { get; set; }
-
-
         public string MotivoReserva { get; set; }
+        public string dniTrabajador { get; set; }
 
+        public string Telefono { get; set; }
+        public string Correo { get; set; }
 
 
     }

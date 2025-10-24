@@ -4,6 +4,7 @@
     <thead>
         <tr>
             <th>ID</th>
+            <th>Rut</th>
             <th>Nombre</th>
             <th>Apellido</th>
             <th>Fecha Desde</th>
@@ -20,14 +21,16 @@
             foreach (var item in Model)
             {
                 <tr>
+
                     <td>@item.IdReserva</td>
+                    <td>@item.dniTrabajador"</td>
                     <td>@item.Nombres</td>
                     <td>@item.Apellidos</td>
 
 
                     <td>@(item.FechaDesde?.ToString("dd/MM/yyyy"))</td>
                     <td>@(item.FechaHasta?.ToString("dd/MM/yyyy"))</td>
-                     <td>@item.Habitacion</td> 
+                    <td>@item.Habitacion</td>
                     <td>@item.EstadoReserva</td>
                     <td>@item.Totales</td>
 

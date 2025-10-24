@@ -6,7 +6,7 @@ namespace DemoBackend.Models.Reserva
     {
         public int IdReserva { get; set; }
         public int IdHabitacion { get; set; }
-
+       
         public string Nombres { get; set; }
         public string Apellidos { get; set; }
 
@@ -25,5 +25,8 @@ namespace DemoBackend.Models.Reserva
         public int Totales { get; set; }
 
         public string MotivoReserva { get; set; }
+        public string dniTrabajador { get; set; }
+        public string Telefono{ get; set; }
+        public string Correo { get; set; }
     }
 }

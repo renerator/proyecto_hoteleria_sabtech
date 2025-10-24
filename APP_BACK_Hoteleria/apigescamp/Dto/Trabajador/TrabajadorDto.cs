@@ -15,5 +15,9 @@ namespace DemoBackend.Dto.Trabajador
         public bool VIP { get; set; }
         public bool EsAdmin { get; set; }
         public bool Estado { get; set; }
+        public string Telefono { get; set; }
+       
+
+
     }
 }

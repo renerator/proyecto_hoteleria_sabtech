@@ -92,27 +92,72 @@ public async Task<ActionResult> TablaPartial(
             return new HttpStatusCodeResult(500, "Error al cargar reservas");
         }
     }
-
-
-        // -------------------------------
-        //  UPSERT (Modal)
-        // -------------------------------
         [HttpGet]
-        public async Task<ActionResult> Upsert(int? id)
+        public async Task<ActionResult> Upsert()
         {
             var token = GetBearer();
             if (string.IsNullOrWhiteSpace(token))
-                return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized);
+                return new HttpStatusCodeResult(401);
 
-            var dto = new ReservaDto();
-            if (id.HasValue)
+            // Rellena combos (ajusta a tu servicio)
+            ViewBag.Habitaciones = new SelectList(new[]
+                {
+        new { Id = 1, Nombre = "Individual" },
+        new { Id = 2, Nombre = "Grupal" },
+        new { Id = 3, Nombre = "Corporativa" }
+    }, "Id", "Nombre");
+            ViewBag.TiposReserva = new SelectList(new[]
             {
-                var lista = await _api.ReservasDisponiblesAsync(1, token);
-                dto = lista.FirstOrDefault(x => x.IdHabitacion == id.Value) ?? new ReservaDto();
-            }
+        new { Id = 1, Nombre = "Individual" },
+        new { Id = 2, Nombre = "Grupal" },
+        new { Id = 3, Nombre = "Corporativa" }
+    }, "Id", "Nombre");
 
-            return PartialView("_UpsertReserva", dto);
+            ViewBag.IdTrabajador = Session["IdTrabajador"];
+
+            var model = new Front_Hoteleria.Dto.adm.Reserva.ReservaTrabajadorDto
+            {
+                FechaDesde = DateTime.Today,
+                FechaHasta = DateTime.Today.AddDays(1),
+                IdEstadoReserva = 1
+            };
+
+            return PartialView("~/Views/adm/Reservas/_UpsertReserva.cshtml", model);
         }
+
+
+        // ReservasController
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> CrearReserva(Front_Hoteleria.Dto.adm.Reserva.ReservaTrabajadorDto dto)
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada");
+
+                // saneos mínimos
+                if (dto == null) return new HttpStatusCodeResult(400, "Datos inválidos");
+                if (dto.IdHabitacion <= 0  || !dto.FechaDesde.HasValue || !dto.FechaHasta.HasValue)
+                    return new HttpStatusCodeResult(400, "Campos obligatorios faltantes");
+
+                if (dto.IdEstadoReserva == 0) dto.IdEstadoReserva = 1; // Ingresada
+
+                var ok = await _api.CrearReservaTrabajadorAsync(dto, token);
+                if (!ok) return new HttpStatusCodeResult(500, "No se pudo crear la reserva.");
+
+                // Respuesta para manejar por JS
+                return Json(new { ok = true });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError($"[CrearReserva] {ex}");
+                return new HttpStatusCodeResult(500, "Error al crear la reserva.");
+            }
+        }
+
         // ===== DASHBOARD VIEW (PARCIAL) =====
         // SIN parámetros de fecha
         [HttpGet]

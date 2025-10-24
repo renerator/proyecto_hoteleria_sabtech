@@ -165,6 +165,7 @@
     <Compile Include="Services\adm\Servicio\IServicioService.cs" />
     <Compile Include="Services\adm\Servicio\ServicioService.cs" />
     <Compile Include="Models\adm\Servicios\ServicioDashboardVm.cs" />
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\css\bootstrap-progressbar-3.3.4.min.css" />

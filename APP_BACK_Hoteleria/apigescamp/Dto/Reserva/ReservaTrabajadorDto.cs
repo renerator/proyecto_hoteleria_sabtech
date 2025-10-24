@@ -26,5 +26,9 @@ namespace DemoBackend.Dto.Reserva
 
        
         public string MotivoReserva { get; set; }
+        public string dniTrabajador { get; set; }
+
+        public string Telefono { get; set; }
+        public string Correo { get; set; }
     }
 }

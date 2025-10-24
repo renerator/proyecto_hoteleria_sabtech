@@ -46,6 +46,14 @@ namespace DemoBackend.Models.Trabajador
 
         [Column("Estado")]
         public bool Estado { get; set; }
+
+
+        [Column("Telefono")]
+        [StringLength(10)]
+        public string Telefono { get; set; }
+       
+
+        
     }
 }
 

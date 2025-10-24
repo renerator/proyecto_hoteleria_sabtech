@@ -28,6 +28,8 @@ namespace Front_Hoteleria.Services.Reservas
         Task<List<ReservaDto>> BuscarReservasAsync(string criterio, string bearer = null);
 
         Task<List<ReservaTrabajadorDto>> ReservasDisponiblesTrabajadorAsync(ReservaTrabajadorDto ResevaTrabajador,string bearer = null);
+        // Front_Hoteleria.Services.Reservas.IReservaService
+        Task<bool> CrearReservaTrabajadorAsync(ReservaTrabajadorDto dto, string bearer = null);
 
         // Si luego necesitas bitácora:
         // Task<bool> CrearBitacoraReservaAsync(BitacoraReservaDto dto, string bearer = null);
