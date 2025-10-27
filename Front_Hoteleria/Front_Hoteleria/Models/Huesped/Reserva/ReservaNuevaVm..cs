@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Front_Hoteleria.ViewModels.Huesped.Reserva
+namespace Front_Hoteleria.Model.Huesped.Reserva
 {
     public class ReservaNuevaVm
     {

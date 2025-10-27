@@ -1,4 +1,4 @@
-﻿using Front_Hoteleria.Dto.adm.Habitacion;
+﻿using Front_Hoteleria.Model.Habitacion;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,10 +14,10 @@ namespace Front_Hoteleria.Services.Api
 {
     public interface IHotelApiClient
     {
-        Task<List<HabitacionDto>> HabitacionesDisponiblesAsync(int vigencia, string bearer = null);
-        Task<bool> CrearHabitacionAsync(HabitacionDto dto, string bearer = null);
-        Task<bool> ConfirmarHabitacionAsync(HabitacionDto dto, string bearer = null);
-        Task<bool> ModificarHabitacionAsync(HabitacionDto dto, string bearer = null);
+        Task<List<HabitacionModel>> HabitacionesDisponiblesAsync(int vigencia, string bearer = null);
+        Task<bool> CrearHabitacionAsync(HabitacionModel dto, string bearer = null);
+        Task<bool> ConfirmarHabitacionAsync(HabitacionModel dto, string bearer = null);
+        Task<bool> ModificarHabitacionAsync(HabitacionModel dto, string bearer = null);
         Task<bool> EliminarHabitacionAsync(int idHabitacion, string bearer = null);
     }
 
@@ -48,7 +48,7 @@ namespace Front_Hoteleria.Services.Api
                 _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
         }
 
-        public async Task<List<HabitacionDto>> HabitacionesDisponiblesAsync(int vigencia, string bearer = null)
+        public async Task<List<HabitacionModel>> HabitacionesDisponiblesAsync(int vigencia, string bearer = null)
         {
             SetBearer(bearer);
 
@@ -57,17 +57,17 @@ namespace Front_Hoteleria.Services.Api
             using (var resp = await _http.GetAsync(url))
             {
                 if (resp.StatusCode == System.Net.HttpStatusCode.NoContent)
-                    return new List<HabitacionDto>();
+                    return new List<HabitacionModel>();
 
                 resp.EnsureSuccessStatusCode();
                 var json = await resp.Content.ReadAsStringAsync();
 
-                return JsonConvert.DeserializeObject<List<HabitacionDto>>(json)
-                       ?? new List<HabitacionDto>();
+                return JsonConvert.DeserializeObject<List<HabitacionModel>>(json)
+                       ?? new List<HabitacionModel>();
             }
         }
 
-        public async Task<HabitacionDashboardDto> DashboardHabitacionAsync(
+        public async Task<HabitacionDashboardModel> DashboardHabitacionAsync(
          DateTime? desde, DateTime? hasta, string bearer = null)
         {
             SetBearer(bearer);
@@ -83,17 +83,17 @@ namespace Front_Hoteleria.Services.Api
             using (var resp = await _http.GetAsync(url))
             {
                 if (resp.StatusCode == System.Net.HttpStatusCode.NoContent)
-                    return new HabitacionDashboardDto();
+                    return new HabitacionDashboardModel();
 
                 resp.EnsureSuccessStatusCode();
                 var json = await resp.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<HabitacionDashboardDto>(json)
-                       ?? new HabitacionDashboardDto();
+                return JsonConvert.DeserializeObject<HabitacionDashboardModel>(json)
+                       ?? new HabitacionDashboardModel();
             }
         }
 
 
-        public async Task<bool> CrearHabitacionAsync(HabitacionDto dto, string bearer = null)
+        public async Task<bool> CrearHabitacionAsync(HabitacionModel dto, string bearer = null)
         {
             SetBearer(bearer);
 
@@ -105,7 +105,7 @@ namespace Front_Hoteleria.Services.Api
             }
         }
        
-        public async Task<bool> ConfirmarHabitacionAsync(HabitacionDto dto, string bearer = null)
+        public async Task<bool> ConfirmarHabitacionAsync(HabitacionModel dto, string bearer = null)
         {
             SetBearer(bearer);
 
@@ -117,7 +117,7 @@ namespace Front_Hoteleria.Services.Api
             }
         }
 
-        public async Task<bool> ModificarHabitacionAsync(HabitacionDto dto, string bearer = null)
+        public async Task<bool> ModificarHabitacionAsync(HabitacionModel dto, string bearer = null)
         {
             SetBearer(bearer);
 

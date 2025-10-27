@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
-namespace Front_Hoteleria.ViewModels.Huesped.Servicio
+namespace Front_Hoteleria.Model.Huesped.Servicio
 {
     public class SolicitudServicioVm
     {

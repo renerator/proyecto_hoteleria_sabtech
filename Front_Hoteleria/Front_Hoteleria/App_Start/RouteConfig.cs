@@ -28,7 +28,47 @@ namespace Front_Hoteleria
                 url: "Servicios",
                 defaults: new { controller = "Servicios", action = "Index" }
             );
+            routes.MapRoute(
+            name: "PanelPrincipalRoot",
+            url: "PanelPrincipal",
+            defaults: new { controller = "PanelPrincipal", action = "Index" }
+           );
 
+            routes.MapRoute(
+            name: "ServicioDisponiblesPrincipalRoot",
+            url: "ServiciosDisponibles",
+            defaults: new { controller = "ServiciosDisponibles", action = "Index" }
+           );
+            routes.MapRoute(
+           name: "ContratosRoot",
+           url: "Contratos",
+           defaults: new { controller = "Contratos", action = "Index" }
+            );
+            routes.MapRoute(
+           name: "DotacionesRoot",
+           url: "Dotaciones",
+           defaults: new { controller = "Dotaciones", action = "Index" }
+            );
+            routes.MapRoute(
+          name: "ReservasHuespedRoot",
+          url: "ReservasHuesped",
+          defaults: new { controller = "ReservasHuesped", action = "Index" }
+           );
+            routes.MapRoute(
+          name: "ReclamosHuespedRoot",
+          url: "ReclamosHuesped",
+          defaults: new { controller = "ReclamosHuesped", action = "Index" }
+           );
+            routes.MapRoute(
+         name: "ServiciosHuespedRoot",
+         url: "ServiciosHuesped",
+         defaults: new { controller = "ServiciosHuesped", action = "Index" }
+          );
+                   routes.MapRoute(
+         name: "HabitacionesPlataformaRoot",
+         url: "HabitacionesPlataforma",
+         defaults: new { controller = "HabitacionesPlataforma", action = "Index" }
+          );
             // Ruta por defecto (si no hay login, manda a Account/Login)
             routes.MapRoute(
                 name: "Default",

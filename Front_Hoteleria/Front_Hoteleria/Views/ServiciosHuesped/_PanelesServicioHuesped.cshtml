@@ -1,0 +1,116 @@
+﻿<div class="row">
+    <!-- Panel: Top Servicios -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="x_panel fixed_height_320">
+            <div class="x_title">
+                <h2>Servicios <small>En Gestión</small></h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <h4>Top Servicios</h4>
+
+                <div class="widget_summary">
+                    <div class="w_left w_25"><span>Lavandería</span></div>
+                    <div class="w_center w_55">
+                        <div class="progress"><div class="progress-bar bg-green" style="width:66%"></div></div>
+                    </div>
+                    <div class="w_right w_20"><span>123k</span></div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="widget_summary">
+                    <div class="w_left w_25"><span>Limpieza</span></div>
+                    <div class="w_center w_55">
+                        <div class="progress"><div class="progress-bar bg-green" style="width:45%"></div></div>
+                    </div>
+                    <div class="w_right w_20"><span>53k</span></div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="widget_summary">
+                    <div class="w_left w_25"><span>Solicitud WiFi</span></div>
+                    <div class="w_center w_55">
+                        <div class="progress"><div class="progress-bar bg-green" style="width:25%"></div></div>
+                    </div>
+                    <div class="w_right w_20"><span>23k</span></div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="widget_summary">
+                    <div class="w_left w_25"><span>Comida</span></div>
+                    <div class="w_center w_55">
+                        <div class="progress"><div class="progress-bar bg-green" style="width:5%"></div></div>
+                    </div>
+                    <div class="w_right w_20"><span>3k</span></div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="widget_summary">
+                    <div class="w_left w_25"><span>Servicios Menores</span></div>
+                    <div class="w_center w_55">
+                        <div class="progress"><div class="progress-bar bg-green" style="width:2%"></div></div>
+                    </div>
+                    <div class="w_right w_20"><span>1k</span></div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel: Top Huéspedes -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="x_panel fixed_height_320">
+            <div class="x_title">
+                <h2>Top Huéspedes <small>En Alojamiento</small></h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <table class="table" style="margin-bottom:0">
+                    <thead>
+                        <tr><th>Huésped</th><th>Solicitudes</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><i class="fa fa-square text-primary"></i> Jhon Smith</td><td>30%</td></tr>
+                        <tr><td><i class="fa fa-square text-success"></i> Andrea Carrasco</td><td>10%</td></tr>
+                        <tr><td><i class="fa fa-square text-purple"></i> Juan Perez</td><td>20%</td></tr>
+                        <tr><td><i class="fa fa-square text-info"></i> Alejandro Covarrubias</td><td>15%</td></tr>
+                        <tr><td><i class="fa fa-square text-danger"></i> Maria Cornejo</td><td>30%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel: Resumen + Gauge -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="x_panel fixed_height_320">
+            <div class="x_title">
+                <h2>Servicios <small>resumen</small></h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <ul class="list-unstyled">
+                    <li><i class="fa fa-line-chart"></i> Ingresados</li>
+                    <li><i class="fa fa-thumbs-up"></i> Atendidos</li>
+                    <li><i class="fa fa-calendar-o"></i> En gestión</li>
+                </ul>
+                <div class="text-center" style="margin-top:14px">
+                    <canvas id="gaugeServicios" width="160" height="100"></canvas>
+                    <div style="margin-top:4px">
+                        <span class="text-muted">Servicios Completados</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="@Url.Content("~/vendors/gauge.js/dist/gauge.min.js")"></script>
+<script>
+    (function () {
+        var canvas = document.getElementById('gaugeServicios');
+        if (!canvas || typeof Gauge === 'undefined') return;
+        var g = new Gauge(canvas).setOptions({ lines: 12, angle: 0, lineWidth: 0.2 });
+        g.maxValue = 100; g.setMinValue(0); g.set(32);
+    })();
+</script>

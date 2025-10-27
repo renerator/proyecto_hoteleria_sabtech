@@ -1,0 +1,38 @@
+﻿@@model IEnumerable<Front_Hoteleria.ViewModels.InventarioFilaVm>
+
+    <table id="tablaReparaciones" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Habitación</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Prioridad</th>
+                <th>Estado</th>
+                <th>Técnico</th>
+                <th>Tiempo</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @* filas *@
+            <tr data-estado="en-progreso">
+                <td>REP-001</td>
+                <td>2024-01-15</td>
+                <td>101</td>
+                <td><span class="tag tag-blue">Plomería</span></td>
+                <td>Fuga en grifo del baño</td>
+                <td><span class="tag tag-red">Urgente</span></td>
+                <td><span class="tag tag-orange">En Progreso</span></td>
+                <td>Carlos Rodríguez</td>
+                <td>2h 30m</td>
+                <td class="table-actions">
+                    <button class="btn btn-info btn-xs"><i class="fa fa-eye"></i></button>
+                    <button class="btn btn-success btn-xs"><i class="fa fa-pencil"></i></button>
+                    <button class="btn btn-warning btn-xs"><i class="fa fa-user"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+

@@ -1,0 +1,78 @@
+﻿@* No necesita modelo por ahora (maqueta) *@
+<div class="col-md-3">
+    <div class="dashboard-card">
+        <i class="fa fa-calendar-check-o"></i>
+        <h3 id="totalReservations">179</h3>
+        <p>Nuevas Reservas ingresadas</p>
+        <div style="position:absolute;bottom:12px;left:20px;right:20px;height:40px">
+            <canvas id="reservationsMiniChart"></canvas>
+        </div>
+    </div>
+</div>
+<div class="col-md-3">
+    <div class="dashboard-card">
+        <i class="fa fa-comments"></i>
+        <h3 id="totalServices">180</h3>
+        <p>Servicios</p>
+        <div style="position:absolute;bottom:12px;left:20px;right:20px;height:40px">
+            <canvas id="servicesMiniChart"></canvas>
+        </div>
+    </div>
+</div>
+<div class="col-md-3">
+    <div class="dashboard-card">
+        <i class="fa fa-sign-in"></i>
+        <h3 id="checkIns">675</h3>
+        <p>New Check In</p>
+        <div style="position:absolute;bottom:12px;left:20px;right:20px;height:40px">
+            <canvas id="checkinMiniChart"></canvas>
+        </div>
+    </div>
+</div>
+<div class="col-md-3">
+    <div class="dashboard-card">
+        <i class="fa fa-sign-out"></i>
+        <h3 id="checkOuts">375</h3>
+        <p>Check Out</p>
+        <div style="position:absolute;bottom:12px;left:20px;right:20px;height:40px">
+            <canvas id="checkoutMiniChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <div style="background:#fff;border:1px solid #e5e5e5;border-radius:4px;padding:20px;margin-bottom:30px;box-shadow:0 1px 3px rgba(0,0,0,.1)">
+        <h4 style="color:#2c3e50;font-weight:600;margin:0 0 20px 0">Reservas x Fecha - Progreso Semanal</h4>
+        <!-- gráfico CSS “maqueta” -->
+        <div style="display:flex;height:200px;position:relative;margin-top:10px">
+            <div style="display:flex;flex-direction:column;justify-content:space-between;width:40px;height:100%;font-size:12px;color:#7f8c8d;text-align:right;padding-right:10px">
+                <span>120</span><span>100</span><span>80</span><span>60</span><span>40</span><span>20</span><span>0</span>
+            </div>
+            <div style="flex:1;position:relative;background:linear-gradient(to top, rgba(39,174,96,.1) 0%, rgba(39,174,96,.05) 100%);border-left:1px solid #e5e5e5;border-bottom:1px solid #e5e5e5;margin-left:10px">
+                <div style="position:absolute;left:10%;bottom:40%;width:8px;height:8px;background:#27ae60;border:2px solid #fff;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,.2)"></div>
+                <div style="position:absolute;left:30%;bottom:60%;width:8px;height:8px;background:#27ae60;border:2px solid #fff;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,.2)"></div>
+                <div style="position:absolute;left:50%;bottom:80%;width:8px;height:8px;background:#27ae60;border:2px solid #fff;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,.2)"></div>
+                <div style="position:absolute;left:70%;bottom:90%;width:8px;height:8px;background:#27ae60;border:2px solid #fff;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,.2)"></div>
+                <div style="position:absolute;left:90%;bottom:70%;width:8px;height:8px;background:#27ae60;border:2px solid #fff;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,.2)"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Mini charts (Chart.js ya viene en Index)
+    (function(){
+        function mini(id,data,color){
+            var c=document.getElementById(id); if(!c) return;
+            new Chart(c.getContext('2d'),{
+                type:'line',
+                data:{labels:['','','','','','',''],datasets:[{data:data,borderColor:color,backgroundColor:color+'20',borderWidth:2,fill:true,tension:.4,pointRadius:0}]},
+                options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}
+            });
+        }
+        mini('reservationsMiniChart',[45,67,89,102,78,95,120],'#27ae60');
+        mini('servicesMiniChart',[120,135,150,145,160,175,180],'#3498db');
+        mini('checkinMiniChart',[600,620,640,650,660,670,675],'#f39c12');
+        mini('checkoutMiniChart',[350,360,365,370,372,374,375],'#e74c3c');
+    })();
+</script>

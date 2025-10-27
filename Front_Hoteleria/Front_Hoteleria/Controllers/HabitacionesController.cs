@@ -1,5 +1,5 @@
-﻿using Front_Hoteleria.Dto.adm.Habitacion;
-using Front_Hoteleria.Services.adm.Habitacion;
+﻿using Front_Hoteleria.Model.Habitacion;
+using Front_Hoteleria.Services.Habitacion;
 using Front_Hoteleria.Services.HabitacionInsumo;
 using Front_Hoteleria.Models.Habitacion;
 using System;
@@ -66,7 +66,7 @@ namespace Front_Hoteleria.Controllers
                 {
                     case 1:
                         // Redirige a la vista de administrador
-                        return View("~/Views/adm/Habitaciones/Index.cshtml");
+                        return View("~/Views/Habitaciones/Index.cshtml");
 
                     case 2:
                         // Redirige a la vista específica del huésped
@@ -110,7 +110,7 @@ namespace Front_Hoteleria.Controllers
                 if (capacidadMin.HasValue)
                     data = data.Where(x => x.Capacidad >= capacidadMin.Value).ToList();
 
-                return PartialView("~/Views/adm/Habitaciones/_TablaHabitaciones.cshtml", data);
+                return PartialView("~/Views/Habitaciones/_TablaHabitaciones.cshtml", data);
             }
             catch (HttpRequestException ex)
             {
@@ -139,7 +139,7 @@ namespace Front_Hoteleria.Controllers
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
 
-                var dto = await _api.DashboardHabitacionAsync(token) ?? new HabitacionDashboardDto();
+                var dto = await _api.DashboardHabitacionAsync(token) ?? new HabitacionDashboardModel();
 
                 // Usamos ruta absoluta para evitar problemas de resolución del partial
                 return PartialView("~/Views/Habitaciones/_DashboardHabitacion.cshtml", dto);
@@ -221,7 +221,7 @@ namespace Front_Hoteleria.Controllers
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
 
-                var dto = new HabitacionDto { Capacidad = 1, IdEstado = 1 };
+                var dto = new HabitacionModel { Capacidad = 1, IdEstado = 1 };
 
                 if (id.HasValue)
                 {
@@ -251,7 +251,7 @@ namespace Front_Hoteleria.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Upsert(HabitacionDto dto)
+        public async Task<ActionResult> Upsert(HabitacionModel dto)
         {
             try
             {

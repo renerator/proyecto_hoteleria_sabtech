@@ -5,7 +5,6 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
-using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -15,21 +14,49 @@ namespace Front_Hoteleria.Controllers
 {
     public class AccountController : Controller
     {
-        // ========= Login (página) =========
+        // ===== Helpers de sesión/perfil =====
+        private int? GetIdPerfil()
+        {
+            var raw = Session["IdPerfil"];
+            if (raw == null) return null;
+            if (raw is int i) return i;
+
+            int parsed;
+            return int.TryParse(raw.ToString(), out parsed) ? (int?)parsed : null;
+        }
+
+        private string GetRedirectUrlByProfile(int? idPerfil)
+        {
+            switch (idPerfil)
+            {
+                case 1: return Url.Action("Index", "Reservas");          // Admin
+                case 2: return Url.Action("Index", "ReservasHuesped");   // Huésped
+                case 3: return Url.Action("Index", "ServiciosPersonal");         // Personal
+                case 4: return Url.Action("Index", "HabitacionesPlataforma");      // Plataforma
+                default: return Url.Action("Index", "Home");
+            }
+        }
+
+        // ===== GET Login =====
         [HttpGet]
         public ActionResult Login(string returnUrl = null)
         {
-            // si ya estás logueado, manda a Habitaciones o al returnUrl
-            if (Session["Token"] is string tok && !string.IsNullOrWhiteSpace(tok))
-                return Redirect(string.IsNullOrWhiteSpace(returnUrl)
-                    ? Url.Action("Index", "Habitaciones")
-                    : returnUrl);
+            // Si ya estás autenticado, deriva según perfil o respeta returnUrl local
+            var token = Session["Token"] as string;
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+
+                var idPerfil = GetIdPerfil();
+                return Redirect(GetRedirectUrlByProfile(idPerfil));
+            }
 
             ViewBag.ReturnUrl = returnUrl;
-            return View(); // Views/Account/Login.cshtml (Layout = null)
+            return View();
         }
 
-        // POST tradicional (no Ajax) desde la página de login
+        // ===== POST Login (no Ajax) =====
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(string usuario, string password, bool? recordar, string returnUrl = null)
         {
@@ -44,64 +71,55 @@ namespace Front_Hoteleria.Controllers
             // Guardar sesión y cookies
             GuardarSesionYCookies(result.Token, usuario, result.IdUser, result.IdPerfil, recordar == true);
 
-            // redirige
+            // Redirigir
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
-            return RedirectToAction("Index", "Habitaciones");
+            return Redirect(GetRedirectUrlByProfile(result.IdPerfil));
         }
 
-        // ========= Login por Ajax (si también ) =========
-       // Usings recomendados para este controlador
-
-
-[HttpPost]
-    // [ValidateAntiForgeryToken] // <- Si usas antiforgery, descomenta esto
-    public async Task<JsonResult> DoLogin(string usuario, string password, bool? recordar, string returnUrl = null)
-    {
-        try
+        // ===== POST Login Ajax =====
+        [HttpPost]
+        // [ValidateAntiForgeryToken] // Si usas antiforgery vía Ajax, habilítalo
+        public async Task<JsonResult> DoLogin(string usuario, string password, bool? recordar, string returnUrl = null)
         {
-            if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(password))
-                return Json(new { ok = false, message = "Ingrese usuario y contraseña." });
-
-            usuario = usuario.Trim();
-            password = password.Trim();
-
-            // Llamada a tu servicio de autenticación
-            var result = await AutenticarContraApi(usuario, password);
-
-            if (!result.Ok)
-                return Json(new { ok = false, message = result.Message });
-
-            // Guarda sesión y cookies como ya lo hacías
-            GuardarSesionYCookies(result.Token, usuario, result.IdUser, result.IdPerfil, recordar == true);
-
-            var destinoValido = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl);
-            return Json(new
+            try
             {
-                ok = true,
-                redirect = destinoValido
-                            ? returnUrl
-                            : Url.Action("Index", "Habitaciones")
-            });
-        }
-        catch (OperationCanceledException oce)
-        {
-            Trace.TraceError($"[DoLogin] Timeout/operación cancelada: {oce}");
-            Response.StatusCode = (int)HttpStatusCode.RequestTimeout;
-            return Json(new { ok = false, message = "La solicitud tardó demasiado. Intente nuevamente." });
-        }
-        catch (Exception ex)
-        {
-            Trace.TraceError($"[DoLogin] Error inesperado: {ex}");
-            Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            return Json(new { ok = false, message = "Ocurrió un error al iniciar sesión. Intente nuevamente." });
-        }
-    }
+                if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(password))
+                    return Json(new { ok = false, message = "Ingrese usuario y contraseña." });
 
+                usuario = usuario.Trim();
+                password = password.Trim();
 
-    // ========= Logout =========
-    [HttpGet]
+                var result = await AutenticarContraApi(usuario, password);
+                if (!result.Ok)
+                    return Json(new { ok = false, message = result.Message });
+
+                // Guarda sesión y cookies
+                GuardarSesionYCookies(result.Token, usuario, result.IdUser, result.IdPerfil, recordar == true);
+
+                var redirect = (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                               ? returnUrl
+                               : GetRedirectUrlByProfile(result.IdPerfil);
+
+                return Json(new { ok = true, redirect });
+            }
+            catch (OperationCanceledException oce)
+            {
+                Trace.TraceError($"[DoLogin] Timeout/operación cancelada: {oce}");
+                Response.StatusCode = (int)HttpStatusCode.RequestTimeout;
+                return Json(new { ok = false, message = "La solicitud tardó demasiado. Intente nuevamente." });
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[DoLogin] Error inesperado: {ex}");
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return Json(new { ok = false, message = "Ocurrió un error al iniciar sesión. Intente nuevamente." });
+            }
+        }
+
+        // ===== Logout =====
+        [HttpGet]
         public ActionResult Logout()
         {
             LimpiarSesionYCookies();
@@ -115,11 +133,11 @@ namespace Front_Hoteleria.Controllers
             return RedirectToAction("Login", "Account");
         }
 
-        // ========= Helpers =========
+        // ===== Comunicación con API de autenticación =====
         private async Task<(bool Ok, string Message, string Token, int IdUser, int IdPerfil)> AutenticarContraApi(string usuario, string password)
         {
             var apiBase = ConfigurationManager.AppSettings["ApiBaseUrl"];
-            var apiLogin = ConfigurationManager.AppSettings["ApiLoginEndpoint"]; // ej: "/auth/login"
+            var apiLogin = ConfigurationManager.AppSettings["ApiLoginEndpoint"]; // p.ej. "/api/v1/Autenticacion/Login"
             if (string.IsNullOrWhiteSpace(apiBase))
                 return (false, "ApiBaseUrl no está configurado.", null, 0, 0);
 
@@ -131,13 +149,14 @@ namespace Front_Hoteleria.Controllers
                 {
                     var payload = new { id = 0, username = usuario, password = password };
                     var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+
                     var resp = await client.PostAsync(url, content);
                     if (!resp.IsSuccessStatusCode)
                         return (false, "Credenciales inválidas o API no disponible.", null, 0, 0);
 
                     var respText = await resp.Content.ReadAsStringAsync();
 
-                    // parse robusto
+                    // Parse robusto
                     var jo = JObject.Parse(respText);
                     var token = (string)(jo["token"] ?? jo["access_token"] ?? jo["jwt"] ?? jo["Token"]);
                     if (string.IsNullOrWhiteSpace(token))
@@ -155,20 +174,22 @@ namespace Front_Hoteleria.Controllers
                 }
                 catch (Exception ex)
                 {
+                    Trace.TraceError($"[AutenticarContraApi] Error: {ex}");
                     return (false, "No se pudo contactar la API.", null, 0, 0);
                 }
             }
         }
 
+        // ===== Manejo de sesión/cookies =====
         private void GuardarSesionYCookies(string token, string usuario, int idUser, int idPerfil, bool recordar)
         {
-            // sesión
+            // Sesión
             Session["Token"] = token;
             Session["Usuario"] = usuario;
             Session["IdUsuario"] = idUser;
             Session["IdPerfil"] = idPerfil;
 
-            // cookies (1 hora; si 'recordar', 7 días)
+            // Cookies (1 hora; si 'recordar', 7 días)
             var exp = DateTime.Now.AddHours(1);
             if (recordar) exp = DateTime.Now.AddDays(7);
 

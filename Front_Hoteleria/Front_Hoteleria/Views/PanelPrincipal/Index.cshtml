@@ -1,0 +1,311 @@
+﻿@{
+    ViewBag.Title = "Dashboard Administrador | Sabtech Group";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .dashboard-card {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 4px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,.08);
+        min-height: 120px;
+        position: relative
+    }
+
+        .dashboard-card h3 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #2c3e50
+        }
+
+        .dashboard-card p {
+            color: #7f8c8d;
+            margin: 0;
+            font-weight: 500
+        }
+
+        .dashboard-card i {
+            font-size: 2.4rem;
+            color: #3498db;
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            opacity: .85
+        }
+
+    .real-time-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: #27ae60;
+        border-radius: 50%;
+        margin-right: 8px;
+        animation: pulse 2s infinite
+    }
+
+    @@keyframes pulse {
+        0% {
+            opacity: 1
+        }
+
+        50% {
+            opacity: .5
+        }
+
+        100% {
+            opacity: 1
+        }
+    }
+
+    .reservations-table {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 4px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,.08)
+    }
+
+    .table-header {
+        background: #34495e;
+        color: #fff;
+        padding: 20px
+    }
+
+        .table-header h4 {
+            margin: 0;
+            font-weight: 600
+        }
+
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: .8rem;
+        font-weight: 500
+    }
+
+    .status-confirmed {
+        background: #d4edda;
+        color: #155724
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404
+    }
+
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24
+    }
+
+    .status-checked-in {
+        background: #cce5ff;
+        color: #004085
+    }
+
+    .status-checked-out {
+        background: #e2e3e5;
+        color: #383d41
+    }
+
+    /* contenedor del gráfico */
+    .chart-container {
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 4px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 1px 3px rgba(0,0,0,.08);
+        height: 320px
+    }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 240px !important
+        }
+</style>
+
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3><span class="real-time-indicator"></span>Dashboard Administrador</h3>
+                <small>Control operativo en tiempo real</small>
+            </div>
+            <div class="title_right">
+                <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Buscar reserva...">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Go!</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+
+        <!-- ===== PARCIAL: TARJETAS + GRÁFICO ===== -->
+        <div id="dashAdmContainer" class="row">
+            <div class="col-md-12"><div class="text-muted">Cargando dashboard…</div></div>
+        </div>
+
+        <!-- ===== PANEL DE ACCIONES (coincide con maqueta) ===== -->
+        <div class="row">
+            <div class="col-md-12">
+                <div style="background:#f8f9fa;border:1px solid #e5e5e5;border-radius:4px;padding:20px;margin-bottom:30px">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="button" id="btnNuevaAdm" class="btn btn-success">
+                                <i class="fa fa-plus"></i> Crear Nueva Reserva
+                            </button>
+                            <button type="button" id="btnRefrescarAdm" class="btn btn-info">
+                                <i class="fa fa-refresh"></i> Actualizar Datos
+                            </button>
+                            <button type="button" id="btnExportarAdm" class="btn btn-warning">
+                                <i class="fa fa-download"></i> Exportar Reporte
+                            </button>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <button type="button" id="btnVerTodoAdm" class="btn btn-primary">
+                                <i class="fa fa-list"></i> Ver Todas las Reservas
+                            </button>
+                            <button type="button" id="btnConfigAdm" class="btn btn-default">
+                                <i class="fa fa-cog"></i> Configuración
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== PARCIAL: TABLA ===== -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="reservations-table">
+                    <div class="table-header">
+                        <h4><i class="fa fa-list"></i> Reservas Listado de Reservas en Línea</h4>
+                    </div>
+                    <div style="padding:20px" id="tablaAdmContainer">
+                        <div class="text-muted">Cargando reservas…</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal NUEVA RESERVA -->
+<div class="modal fade" id="modalUpsertAdm" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title">Nueva Reserva</h4>
+            </div>
+            <div class="modal-body" id="upsertAdmBody">
+                <div class="text-muted">Cargando…</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <!-- Chart.js solo para el gráfico del dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+    // Endpoints del controlador PanelPrincipal
+    const urlDashAdm   = '@Url.Action("Dashboard","PanelPrincipal")';
+    const urlTablaAdm  = '@Url.Action("Tabla","PanelPrincipal")';
+    const urlUpsertAdm = '@Url.Action("Upsert","PanelPrincipal")';
+
+
+    function token() { return $('input[name="__RequestVerificationToken"]').first().val(); }
+    if (window.PNotify) { PNotify.prototype.options.styling = "bootstrap3"; }
+
+    function cargarDashboardAdm(){
+      $('#dashAdmContainer').load(urlDashAdm, function(){
+        // Si el parcial trae un <canvas id="reservationsChart"> lo inicializamos aquí
+        const c = document.getElementById('reservationsChart');
+        if(!c) return;
+        const ctx = c.getContext('2d');
+        const gradient = ctx.createLinearGradient(0,0,0,c.height);
+        gradient.addColorStop(0,'rgba(39,174,96,.25)');
+        gradient.addColorStop(1,'rgba(39,174,96,0)');
+
+        new Chart(ctx,{
+          type:'line',
+          data:{
+            labels:['18/10/25','24/10/25','30/10/25','01/11/25','05/11/25'],
+            datasets:[{
+              data:[45,67,89,102,78],
+              borderColor:'#27ae60',
+              backgroundColor:gradient,
+              borderWidth:3,
+              tension:.4,
+              pointRadius:4,
+              pointBackgroundColor:'#27ae60'
+            }]
+          },
+          options:{
+            responsive:true, maintainAspectRatio:false,
+            plugins:{ legend:{display:false} },
+            scales:{ y:{ beginAtZero:true, ticks:{ stepSize:20 } } }
+          }
+        });
+      });
+    }
+
+    function cargarTablaAdm(){
+      $('#tablaAdmContainer').load(urlTablaAdm, function(){
+        var $t = $('#tablaDashAdm');
+        if ($t.length) {
+          $t.DataTable({
+            destroy:true, responsive:true, pageLength:10, order:[[0,'desc']],
+            language:{
+              sProcessing:"Procesando...", sLengthMenu:"Mostrar _MENU_",
+              sZeroRecords:"Sin resultados", sEmptyTable:"Sin datos",
+              sInfo:"_START_ - _END_ de _TOTAL_", sSearch:"Buscar:",
+              oPaginate:{ sFirst:"Primero", sLast:"Último", sNext:"Siguiente", sPrevious:"Anterior" }
+            }
+          });
+        }
+      });
+    }
+
+    // Botones
+    $('#btnNuevaAdm').on('click', function(){
+      $('#modalUpsertAdm').modal('show');
+      $('#upsertAdmBody').load(urlUpsertAdm);
+    });
+
+    $('#btnRefrescarAdm').on('click', function(){
+      cargarDashboardAdm(); cargarTablaAdm();
+      if (window.PNotify) new PNotify({title:'Datos actualizados', text:'Información recargada.', type:'success'});
+    });
+
+    $('#btnExportarAdm').on('click', function(){
+      if (window.PNotify) new PNotify({title:'Exportar', text:'Ejemplo de exportación listo.', type:'info'});
+    });
+
+    $('#btnVerTodoAdm').on('click', function(){
+      $('html,body').animate({scrollTop: $('#tablaAdmContainer').offset().top - 70}, 400);
+    });
+
+    $('#btnConfigAdm').on('click', function(){
+      if (window.PNotify) new PNotify({title:'Configuración', text:'Próximamente…', type:'info'});
+    });
+
+    // Init
+    $(function(){
+      cargarDashboardAdm();
+      cargarTablaAdm();
+    });
+    </script>
+}

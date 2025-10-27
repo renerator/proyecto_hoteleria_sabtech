@@ -1,0 +1,86 @@
+﻿@model  Front_Hoteleria.Dto.Habitacion.HabitacionModel
+
+@using (Html.BeginForm("Upsert", "Habitaciones", FormMethod.Post, new { id = "frmUpsert", @class = "form-horizontal form-label-left" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.IdHabitacion)
+
+    <div class="form-group">
+        <label class="control-label col-md-3">Área</label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(m => m.NombreHabitacion, new { @class = "form-control", required = "required" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-3">Ala</label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(m => m.Ala, new { @class = "form-control", required = "required" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-3">Pasillo</label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(m => m.Pasillo, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-3">Nro Habitación</label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(m => m.NombreHabitacion, new { @class = "form-control", required = "required" })
+        </div>
+    </div>
+
+    @*<div class="form-group">
+        <label class="control-label col-md-3">Disponible</label>
+        <div class="col-md-6">
+            <div class="checkbox">
+                <label>@Html.CheckBoxFor(m => m.Motivo) Sí</label>
+            </div>
+        </div>
+    </div>*@
+
+    <div class="form-group">
+        <label class="control-label col-md-3">Capacidad</label>
+        <div class="col-md-6">
+            @Html.TextBoxFor(m => m.Capacidad, new { @class = "form-control", type = "number", min = "1", required = "required" })
+        </div>
+    </div>
+
+    <div class="ln_solid"></div>
+    <div class="form-group">
+        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+            <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+            <button class="btn btn-warning" type="reset">Borrar datos</button>
+            <button type="submit" class="btn btn-success">Guardar</button>
+        </div>
+    </div>
+}
+
+<script>
+  // submit AJAX del upsert
+  $('#frmUpsert').on('submit', function (e) {
+    e.preventDefault();
+    var $f = $(this);
+    $.ajax({
+      url: '@Url.Action("Upsert","Habitaciones")',
+      type: 'POST',
+      data: $f.serialize(),
+      headers: { 'RequestVerificationToken': $f.find('input[name="__RequestVerificationToken"]').val() },
+      success: function () {
+        new PNotify({ title: 'Guardar', text: 'Habitación guardada.', type: 'success', styling: 'bootstrap3' });
+        $('#modalUpsert').modal('hide');
+        // recargar tabla
+        $('#tablaContainer').html('<div class="text-muted">Actualizando…</div>');
+        // reutiliza la función en Index
+        if (window.cargarTabla) window.cargarTabla();
+      },
+      error: function (xhr) {
+        new PNotify({ title: 'Error', text: xhr.responseText || 'No se pudo guardar.', type: 'error', styling: 'bootstrap3' });
+      }
+    });
+  });
+</script>
+
