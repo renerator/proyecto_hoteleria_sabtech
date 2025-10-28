@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -83,6 +84,38 @@ namespace Front_Hoteleria.Services.Reservas
             }
         }
 
+        public async Task<ReservaDashboardPanelPrincipalModel> DashboardReservasPanelPrincipalAsync(DateTime? desde, DateTime? hasta, string bearer = null)
+        {
+            try
+            {
+
+                SetBearer(bearer);
+                var url = "api/Reservas/dashboardReservasPanelPrincipal";
+                if (desde.HasValue || hasta.HasValue)
+                {
+                    var qs = new List<string>(2);
+                    if (desde.HasValue)
+                        qs.Add("desde=" + Uri.EscapeDataString(desde.Value.ToString("o", CultureInfo.InvariantCulture)));
+                    if (hasta.HasValue)
+                        qs.Add("hasta=" + Uri.EscapeDataString(hasta.Value.ToString("o", CultureInfo.InvariantCulture)));
+
+                    url += "?" + string.Join("&", qs);
+                }
+                using (var resp = await _http.GetAsync(url))
+                {
+                    if ((int)resp.StatusCode == 204) return new ReservaDashboardPanelPrincipalModel();
+                    resp.EnsureSuccessStatusCode();
+                    var json = await resp.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<ReservaDashboardPanelPrincipalModel > (json) ?? new ReservaDashboardPanelPrincipalModel();
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[DashboardReservasAsync] {ex}");
+                return new ReservaDashboardPanelPrincipalModel();
+            }
+        }
+
         // POST /api/Reservas/SolicitaReserva
         public async Task<bool> CrearReservaAsync(ReservaModel dto, string bearer = null)
         {
@@ -143,7 +176,7 @@ namespace Front_Hoteleria.Services.Reservas
             try
             {
                 SetBearer(bearer);
-                 var resp = await _http.DeleteAsync($"/api/Reservas/EliminaReserva?idReserva={idReserva}");
+                var resp = await _http.DeleteAsync($"/api/Reservas/EliminaReserva?idReserva={idReserva}");
                 if (resp.IsSuccessStatusCode) return true;
 
                 var error = await resp.Content.ReadAsStringAsync();
@@ -186,7 +219,7 @@ public async Task<List<ReservaTrabajadorModel>> ReservasDisponiblesTrabajadorAsy
     {
         try
         {
-            SetBearer(bearer);
+          
 
             reservaTrabajador = new ReservaTrabajadorModel();
 
@@ -250,8 +283,7 @@ public async Task<List<ReservaTrabajadorModel>> ReservasDisponiblesTrabajadorAsy
         public async Task<bool> CrearReservaTrabajadorAsync(ReservaTrabajadorModel dto, string bearer = null)
         {
             try
-            {
-                SetBearer(bearer);
+            { 
 
                 // Ajusta la ruta si tu API usa otra: p.ej. "/api/Reservas/CrearReserva"
                 var url = "/api/Reservas/CreaReservaTrabajador";

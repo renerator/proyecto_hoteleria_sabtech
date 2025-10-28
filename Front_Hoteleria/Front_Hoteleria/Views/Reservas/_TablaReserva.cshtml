@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<Front_Hoteleria.Model.Reserva.ReservaTrabajadorModel>
+@using System.Globalization
 
-<table id="tablaReservas" class="table table-striped table-bordered" style="width:100%">
+<table id="tablaDashAdm" class="table table-striped table-bordered" style="width:100%">
     <thead>
         <tr>
             <th>ID</th>
@@ -18,39 +19,48 @@
     <tbody>
         @if (Model != null && Model.Any())
         {
+            var cl = new CultureInfo("es-CL");
             foreach (var item in Model)
             {
-                <tr>
+                var estadoCss = item.IdEstadoReserva == 1 ? "status-confirmed"
+                            : item.IdEstadoReserva == 2 ? "status-pending"
+                            : item.IdEstadoReserva == 3 ? "status-cancelled"
+                            : "status-checked-in";
 
+                <tr>
                     <td>@item.IdReserva</td>
-                    <td>@item.dniTrabajador"</td>
+                    <td>
+                        @(
+                  (item.dniTrabajador)
+
+                /* por si tu modelo usa RutTrabajador */
+                    )
+                    </td>
                     <td>@item.Nombres</td>
                     <td>@item.Apellidos</td>
-
-
                     <td>@(item.FechaDesde?.ToString("dd/MM/yyyy"))</td>
                     <td>@(item.FechaHasta?.ToString("dd/MM/yyyy"))</td>
                     <td>@item.Habitacion</td>
-                    <td>@item.EstadoReserva</td>
-                    <td>@item.Totales</td>
-
-                    <td>—</td>  @* Placeholder si no viene Total *@
                     <td>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-info btn-sm btn-res-editar" data-id="@item.IdReserva">
-                                <i class="fa fa-pencil"></i>
-                            </button>
-                            <button type="button" class="btn btn-danger btn-sm btn-res-eliminar" data-id="@item.IdReserva">
-                                <i class="fa fa-trash"></i>
-                            </button>
-                        </div>
+                        <span class="status-badge @estadoCss">
+                            @( !string.IsNullOrWhiteSpace(item.EstadoReserva) ? item.EstadoReserva : item.IdEstadoReserva.ToString() )
+                        </span>
+                    </td>
+                    <td>@String.Format("${0:N2}", @item.Totales)</td>
+                    <td class="text-center">
+                        <button class="btn btn-success btn-xs" title="Confirmar" data-id="@item.IdReserva"><i class="fa fa-check"></i></button>
+                        <button class="btn btn-info btn-xs" title="Ver Detalle" data-id="@item.IdReserva"><i class="fa fa-eye"></i></button>
+                        <button class="btn btn-warning btn-xs" title="Editar" data-id="@item.IdReserva"><i class="fa fa-pencil"></i></button>
+                        <button class="btn btn-danger btn-xs" title="Eliminar" data-id="@item.IdReserva"><i class="fa fa-times"></i></button>
                     </td>
                 </tr>
             }
         }
         else
         {
-            <tr><td colspan="9" class="text-center text-muted">No se encontraron reservas.</td></tr>
+            <tr>
+                <td colspan="10" class="text-center text-muted">No se encontraron reservas.</td>
+            </tr>
         }
     </tbody>
 </table>

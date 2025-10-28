@@ -17,6 +17,7 @@ namespace DemoBackend.Services
     {
         private readonly IGenericRepositoryEntity<ReservaModels> _listaReserva;
         private readonly IGenericRepositoryEntity<ReservaDashboardKPI> _listaReservaDashboard;
+        private readonly IGenericRepositoryEntity<ReservaDashboardPanelPrincipalModel> _listaReservaDashboardPanelPrincipal;
         private readonly IGenericRepositoryEntity<ReservaTrabajadorModels> _listaReservaTrabajador;
         private readonly IMapper _mapper;
 
@@ -24,11 +25,14 @@ namespace DemoBackend.Services
             IGenericRepositoryEntity<ReservaModels> listaReserva,
             IGenericRepositoryEntity<ReservaDashboardKPI> listaReservaDashboard,
             IGenericRepositoryEntity<ReservaTrabajadorModels> listaReservaTrabajador,
+             IGenericRepositoryEntity<ReservaDashboardPanelPrincipalModel> listaReservaDashboardPanelPrincipal,
             IMapper mapper)
         {
             _listaReserva = listaReserva;
             _listaReservaDashboard = listaReservaDashboard;
             _listaReservaTrabajador = listaReservaTrabajador;
+            _listaReservaDashboardPanelPrincipal = listaReservaDashboardPanelPrincipal;
+
             _mapper = mapper;
         }
         public bool CrearBitacoraReserva(BitacoraReservaDto dto)
@@ -211,6 +215,45 @@ namespace DemoBackend.Services
                     dto.TotalRechazadas = kpiRow.TotalRechazadas;
                     dto.TotalServicios = kpiRow.TotalServicios;
                     dto.NuevasHoy = kpiRow.NuevasHoy;
+
+
+                }
+
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en ObtenerDashboard: {ex.Message}");
+            }
+
+            return dto;
+        }
+        public ReservaDashboardPanelPrincipaDto ObtenerDashboardPanelPrincipal(DateTime? desde, DateTime? hasta)
+        {
+                       
+
+            var dto = new ReservaDashboardPanelPrincipaDto();
+
+            try
+            {
+                string sql = "HOT_DASH_PANELPRINCIPAL @Desde, @Hasta";
+                var parametros = new SqlParameter[2];
+                parametros[0] = new SqlParameter("@Desde", (object?)desde ?? DBNull.Value);
+                parametros[1] = new SqlParameter("@Hasta", (object?)hasta ?? DBNull.Value);
+                var kpiRow = _listaReservaDashboardPanelPrincipal.GetStoreProcedure(sql, parametros).FirstOrDefault();
+                if (kpiRow != null)
+                {
+                    dto.NuevasReservas = kpiRow.NuevasReservas;
+                    dto.Checkin = kpiRow.Checkin;
+                    dto.Checkout = kpiRow.Checkout;
+                    dto.Servicios = kpiRow.Servicios;
+                   
+                   
+                    dto.Labels = kpiRow.Labels;
+                    dto.Values= kpiRow.Values;
+
+
 
 
                 }

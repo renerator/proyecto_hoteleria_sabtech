@@ -112,21 +112,26 @@
         color: #383d41
     }
 
-    /* contenedor del gráfico */
+    /* Gráfico */
     .chart-container {
         background: #fff;
         border: 1px solid #e5e5e5;
         border-radius: 4px;
         padding: 20px;
         margin-bottom: 30px;
-        box-shadow: 0 1px 3px rgba(0,0,0,.08);
-        height: 320px
+        box-shadow: 0 1px 3px rgba(0,0,0,.08)
     }
 
-        .chart-container canvas {
-            width: 100% !important;
-            height: 240px !important
-        }
+    .chart-wrapper {
+        position: relative;
+        height: 240px;
+        width: 100%
+    }
+
+    .chart-container canvas {
+        width: 100% !important;
+        height: 240px !important
+    }
 </style>
 
 <div class="right_col" role="main">
@@ -150,12 +155,14 @@
 
         <div class="clearfix"></div>
 
+
+
         <!-- ===== PARCIAL: TARJETAS + GRÁFICO ===== -->
         <div id="dashAdmContainer" class="row">
             <div class="col-md-12"><div class="text-muted">Cargando dashboard…</div></div>
         </div>
-
-        <!-- ===== PANEL DE ACCIONES (coincide con maqueta) ===== -->
+        
+        <!-- ===== PANEL DE ACCIONES ===== -->
         <div class="row">
             <div class="col-md-12">
                 <div style="background:#f8f9fa;border:1px solid #e5e5e5;border-radius:4px;padding:20px;margin-bottom:30px">
@@ -216,96 +223,67 @@
 </div>
 
 @section Scripts{
-    <!-- Chart.js solo para el gráfico del dashboard -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    
     <script>
     // Endpoints del controlador PanelPrincipal
     const urlDashAdm   = '@Url.Action("Dashboard","PanelPrincipal")';
     const urlTablaAdm  = '@Url.Action("Tabla","PanelPrincipal")';
     const urlUpsertAdm = '@Url.Action("Upsert","PanelPrincipal")';
 
-
-    function token() { return $('input[name="__RequestVerificationToken"]').first().val(); }
+    function token(){ return $('input[name="__RequestVerificationToken"]').first().val(); }
     if (window.PNotify) { PNotify.prototype.options.styling = "bootstrap3"; }
 
-    function cargarDashboardAdm(){
-      $('#dashAdmContainer').load(urlDashAdm, function(){
-        // Si el parcial trae un <canvas id="reservationsChart"> lo inicializamos aquí
-        const c = document.getElementById('reservationsChart');
-        if(!c) return;
-        const ctx = c.getContext('2d');
-        const gradient = ctx.createLinearGradient(0,0,0,c.height);
-        gradient.addColorStop(0,'rgba(39,174,96,.25)');
-        gradient.addColorStop(1,'rgba(39,174,96,0)');
+   
 
-        new Chart(ctx,{
-          type:'line',
-          data:{
-            labels:['18/10/25','24/10/25','30/10/25','01/11/25','05/11/25'],
-            datasets:[{
-              data:[45,67,89,102,78],
-              borderColor:'#27ae60',
-              backgroundColor:gradient,
-              borderWidth:3,
-              tension:.4,
-              pointRadius:4,
-              pointBackgroundColor:'#27ae60'
-            }]
-          },
-          options:{
-            responsive:true, maintainAspectRatio:false,
-            plugins:{ legend:{display:false} },
-            scales:{ y:{ beginAtZero:true, ticks:{ stepSize:20 } } }
-          }
+
+
+
+    function cargarDashboardAdm(){
+        $('#dashAdmContainer').load(urlDashAdm, function (){ // Gráfico principal (solo si existe el canvas y Chart.js está cargado)
+            
         });
-      });
     }
 
     function cargarTablaAdm(){
-      $('#tablaAdmContainer').load(urlTablaAdm, function(){
-        var $t = $('#tablaDashAdm');
-        if ($t.length) {
-          $t.DataTable({
-            destroy:true, responsive:true, pageLength:10, order:[[0,'desc']],
-            language:{
-              sProcessing:"Procesando...", sLengthMenu:"Mostrar _MENU_",
-              sZeroRecords:"Sin resultados", sEmptyTable:"Sin datos",
-              sInfo:"_START_ - _END_ de _TOTAL_", sSearch:"Buscar:",
-              oPaginate:{ sFirst:"Primero", sLast:"Último", sNext:"Siguiente", sPrevious:"Anterior" }
+        $('#tablaAdmContainer').load(urlTablaAdm, function(){
+            var $t = $('#tablaDashAdm');
+            if ($t.length){
+                $t.DataTable({
+                    destroy:true, responsive:true, pageLength:10, order:[[0,'desc']],
+                    language:{
+                        sProcessing:"Procesando...", sLengthMenu:"Mostrar _MENU_",
+                        sZeroRecords:"Sin resultados", sEmptyTable:"Sin datos",
+                        sInfo:"_START_ - _END_ de _TOTAL_", sSearch:"Buscar:",
+                        oPaginate:{ sFirst:"Primero", sLast:"Último", sNext:"Siguiente", sPrevious:"Anterior" }
+                    }
+                });
             }
-          });
-        }
-      });
+        });
     }
 
     // Botones
     $('#btnNuevaAdm').on('click', function(){
-      $('#modalUpsertAdm').modal('show');
-      $('#upsertAdmBody').load(urlUpsertAdm);
+        $('#modalUpsertAdm').modal('show');
+        $('#upsertAdmBody').load(urlUpsertAdm);
     });
-
     $('#btnRefrescarAdm').on('click', function(){
-      cargarDashboardAdm(); cargarTablaAdm();
-      if (window.PNotify) new PNotify({title:'Datos actualizados', text:'Información recargada.', type:'success'});
+        cargarDashboardAdm(); cargarTablaAdm();
+        if (window.PNotify) new PNotify({title:'Datos actualizados', text:'Información recargada.', type:'success'});
     });
-
     $('#btnExportarAdm').on('click', function(){
-      if (window.PNotify) new PNotify({title:'Exportar', text:'Ejemplo de exportación listo.', type:'info'});
+        if (window.PNotify) new PNotify({title:'Exportar', text:'Ejemplo de exportación listo.', type:'info'});
     });
-
     $('#btnVerTodoAdm').on('click', function(){
-      $('html,body').animate({scrollTop: $('#tablaAdmContainer').offset().top - 70}, 400);
+        $('html,body').animate({scrollTop: $('#tablaAdmContainer').offset().top - 70}, 400);
     });
-
     $('#btnConfigAdm').on('click', function(){
-      if (window.PNotify) new PNotify({title:'Configuración', text:'Próximamente…', type:'info'});
+        if (window.PNotify) new PNotify({title:'Configuración', text:'Próximamente…', type:'info'});
     });
 
     // Init
     $(function(){
-      cargarDashboardAdm();
-      cargarTablaAdm();
+        cargarDashboardAdm();
+        cargarTablaAdm();
     });
     </script>
 }

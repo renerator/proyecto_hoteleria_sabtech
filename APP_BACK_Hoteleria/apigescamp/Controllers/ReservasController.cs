@@ -322,7 +322,32 @@ namespace DemoBackend.Controllers
         /// Servicio que retorna el listado de Reservas según estado
         /// </summary>Trabajador
         /// <returns>lista Reservas</returns>
-        /// <response code="204">No encuentra datos</response>
+        /// <// -------- DASHBOARD --------
+        // Devuelve KPIs del dashboard (nuevas, servicios, checkin, checkout, pendientes, confirmadas, rechazadas, realizadas)
+        [HttpGet("dashboardReservasPanelPrincipal")]
+        public IActionResult DashboardPanelPrincipal([FromQuery] DateTime? desde, [FromQuery] DateTime? hasta)
+        {
+
+            try
+            {
+                var data = _reservaService.ObtenerDashboardPanelPrincipal(desde, hasta);
+
+                // Evitar caché para “tiempo real”
+                Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, proxy-revalidate";
+                Response.Headers["Pragma"] = "no-cache";
+                Response.Headers["Expires"] = "0";
+                _logger.LogInformation($"DashboardPanelPrincipal :  resultado(s).");
+                return Ok(data);
+            }
+            catch (Exception e)
+            {
+
+                _logger.LogError(e, "DashboardPanelPrincipal : error.");
+                return StatusCode(500, e.Message);
+            }
+            
+        }
+        //code="204">No encuentra datos</response>
         /// <response code="401">No autorizado</response>
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>

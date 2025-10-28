@@ -1,32 +1,21 @@
 ﻿using Front_Hoteleria.Model.Reserva;
-using Front_Hoteleria.Services.PanelPrincipal;
+using Front_Hoteleria.Services.Reservas;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Security.Cryptography;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
-
 
 namespace Front_Hoteleria.Controllers
 {
-   
-
     public class PanelPrincipalController : Controller
     {
-        private readonly IPanelPrincipalService _api;
+        private readonly IReservaService _api;
 
-        public PanelPrincipalController() : this(new PanelPrincipalService()) { }
-        public PanelPrincipalController (IPanelPrincipalService api) { _api = api; }
+        public PanelPrincipalController() : this(new ReservaService()) { }
+        public PanelPrincipalController(IReservaService api) { _api = api; }
 
-        // -------------------------------
-        //  TOKEN & PERFIL
-        // -------------------------------
         private string GetBearer()
         {
             try
@@ -41,35 +30,60 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
-
         [HttpGet]
         public ActionResult Index()
         {
-
-            if (!(Session["Token"] is string tok) || string.IsNullOrWhiteSpace(tok))
+            var tok = Session["Token"] as string;
+            if (string.IsNullOrWhiteSpace(tok))
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
 
-            var perfil = Session["IdPerfil"];
-            if (perfil == null)
+            if (Session["IdPerfil"] == null)
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-
 
             return View("~/Views/PanelPrincipal/Index.cshtml");
-            
         }
 
-        // Parcial: tarjetas + gráfico (maqueta)
-        [HttpGet, Route("Dashboard")]
-        public PartialViewResult Dashboard()
+        // ===== PARCIAL DASHBOARD (respeta las 00:00 y 23:59)
+        [HttpGet]
+        public async Task<ActionResult> Dashboard(DateTime? fechaDesde = null, DateTime? fechaHasta = null)
         {
-            return PartialView("~/Views/PanelPrincipal/_DashboardAdm.cshtml");
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
+
+                //var baseDesde = (fechaDesde ?? DateTime.Today).Date;
+                //var baseHasta = (fechaHasta ?? DateTime.Today).Date;
+                //var desde = new DateTime(baseDesde.Year, baseDesde.Month, baseDesde.Day, 0, 0, 0);
+                //var hasta = new DateTime(baseHasta.Year, baseHasta.Month, baseHasta.Day, 23, 59, 0);
+                //desde = null;
+                //hasta = null;
+                var dto = await _api.DashboardReservasPanelPrincipalAsync(fechaDesde, fechaHasta, token)
+                          ?? new ReservaDashboardPanelPrincipalModel();
+
+                return PartialView("~/Views/PanelPrincipal/_DashboardAdm.cshtml", dto);
+            }
+            catch (HttpRequestException ex)
+            {
+                Trace.TraceError($"[Dashboard] HTTP: {ex}");
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadGateway, "No se pudo comunicar con la API de dashboard.");
+            }
+            catch (TaskCanceledException ex)
+            {
+                Trace.TraceError($"[Dashboard] Timeout: {ex}");
+                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta de dashboard excedió el tiempo de espera.");
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[Dashboard] Error: {ex}");
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al cargar el dashboard.");
+            }
         }
-        [HttpGet, Route("Tabla")]
-        public async Task<ActionResult> TablaPartial(
-            DateTime? fechaDesde,
-            DateTime? fechaHasta,
-            int? idEstadoReserva,
-            int? idtiporeserva)
+
+        // ===== PARCIAL TABLA (nombre esperado por tu Index.js: "Tabla")
+        [HttpGet]
+        public async Task<ActionResult> Tabla(DateTime? fechaDesde, DateTime? fechaHasta, int? idEstadoReserva, int? idTipoReserva)
         {
             try
             {
@@ -81,30 +95,28 @@ namespace Front_Hoteleria.Controllers
                 {
                     FechaDesde = fechaDesde,
                     FechaHasta = fechaHasta,
-                    IdEstadoReserva = idEstadoReserva ?? 0, // 0 = no filtra (según tu SP)
-                    IdTipoReserva = idtiporeserva ?? 0
+                    IdEstadoReserva = idEstadoReserva ?? 0,
+                    IdTipoReserva = idTipoReserva ?? 0
                 };
 
-                var data = await _api.ReservasDisponiblesTrabajadorAsync(filtro, token);
+                var data = await _api.ReservasDisponiblesTrabajadorAsync(filtro, token)
+                           ?? new System.Collections.Generic.List<ReservaTrabajadorModel>();
 
-                // TIP: el partial debe estar tipado a List<ReservaTrabajadorModel>
-                return PartialView("~/Views/PanelPrincipal/_UpsertDashAdm.cshtml", data);
+                // Vista correcta en /Views/PanelPrincipal
+                return PartialView("~/Views/PanelPrincipal/_TablaDashAdm.cshtml", data);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError($"[TablaReserva] {ex}");
+                Trace.TraceError($"[Tabla] {ex}");
                 return new HttpStatusCodeResult(500, "Error al cargar reservas");
             }
         }
-        // Parcial: tabla de reservas (maqueta)
-        
 
-        // Parcial: cuerpo de modal "Nueva Reserva" (maqueta)
-        [HttpGet, Route("Upsert")]
+        // ===== PARCIAL MODAL
+        [HttpGet]
         public PartialViewResult Upsert()
         {
             return PartialView("~/Views/PanelPrincipal/_UpsertDashAdm.cshtml");
         }
     }
 }
-

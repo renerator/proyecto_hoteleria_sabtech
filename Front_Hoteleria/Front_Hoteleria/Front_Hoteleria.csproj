@@ -146,6 +146,7 @@
     <Compile Include="Model\Habitacion\HabitacionModel.cs" />
     <Compile Include="Model\Inventario\InventarioModel.cs" />
     <Compile Include="Model\Inventario\InventarioDashboardModel.cs" />
+    <Compile Include="Model\Reserva\ReservaDashboardPanelPrincipalModel.cs" />
     <Compile Include="Model\Reserva\ReservaTrabajadorDto.cs" />
     <Compile Include="Model\Reserva\ReservaDashboardModel.cs" />
     <Compile Include="Model\Reserva\ReservaModel.cs" />

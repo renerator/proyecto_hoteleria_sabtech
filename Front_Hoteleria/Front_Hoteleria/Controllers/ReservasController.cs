@@ -1,5 +1,7 @@
 using Front_Hoteleria.Model.Reserva;
+using Front_Hoteleria.Model.Habitacion;
 using Front_Hoteleria.Services.Reservas;
+using Front_Hoteleria.Services.Habitacion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,10 +19,17 @@ namespace Front_Hoteleria.Controllers
     public class ReservasController : Controller
     {
         private readonly IReservaService _api;
+        private readonly IHabitacionService _apihabitacion;
 
-        public ReservasController() : this(new ReservaService()) { }
-        public ReservasController(IReservaService api) { _api = api; }
+        // Si no usas un contenedor de DI, este ctor asegura que NUNCA sean null
+        public ReservasController() : this(new ReservaService(), new HabitacionService()) { }
 
+        // ÚNICO ctor de inyección usado por MVC/DI
+        public ReservasController(IReservaService api, IHabitacionService apihabitacion)
+        {
+            _api = api ?? throw new ArgumentNullException(nameof(api));
+            _apihabitacion = apihabitacion ?? throw new ArgumentNullException(nameof(apihabitacion));
+        }
         // -------------------------------
         //  TOKEN & PERFIL
         // -------------------------------
@@ -53,6 +62,9 @@ namespace Front_Hoteleria.Controllers
 
             switch (perfil)
             {
+
+
+
                 case 1: return View("~/Views/Reservas/Index.cshtml");
                 case 2: return View("~/Views/Huesped/Reservas/Index.cshtml");
                 default: return RedirectToAction("Login", "Account");
@@ -61,7 +73,7 @@ namespace Front_Hoteleria.Controllers
 
 
 
-public async Task<ActionResult> TablaPartial(
+   public async Task<ActionResult> TablaPartial(
     DateTime? fechaDesde,
     DateTime? fechaHasta,
     int? idEstadoReserva,
@@ -91,7 +103,7 @@ public async Task<ActionResult> TablaPartial(
             System.Diagnostics.Trace.TraceError($"[TablaReserva] {ex}");
             return new HttpStatusCodeResult(500, "Error al cargar reservas");
         }
-    }
+       }
         [HttpGet]
         public async Task<ActionResult> Upsert()
         {
@@ -127,6 +139,45 @@ public async Task<ActionResult> TablaPartial(
 
 
         // ReservasController
+        // PanelPrincipalController (o el que corresponda)
+        [HttpGet]
+        public async Task<ActionResult> HabitacionesCombo()
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult(401, "Sesión expirada");
+
+                // Llama a tu API de habitaciones
+                var list = await _apihabitacion.HabitacionesDisponiblesAsync(1, token)
+                           ?? new List<Front_Hoteleria.Model.Habitacion.HabitacionModel>();
+
+                // Normaliza textos: si no hay nombre, usa el Id con padding D4
+                var data = list.Select(h =>
+                {
+                    var display = string.IsNullOrWhiteSpace(h.NombreHabitacion)
+                        ? h.IdHabitacion.ToString("D4")
+                        : h.NombreHabitacion.Trim();
+
+                    return new
+                    {
+                        id = h.IdHabitacion,
+                        value = display,                  // <- lo que coincide con la columna "Habitación"
+                        text = $"Habitación {display}"   // <- lo que verá el usuario en el combo
+                    };
+                });
+
+                return Json(new { ok = true, data }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError($"[HabitacionesCombo] {ex}");
+                return Json(new { ok = false, message = "No se pudieron cargar las habitaciones." },
+                            JsonRequestBehavior.AllowGet);
+            }
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

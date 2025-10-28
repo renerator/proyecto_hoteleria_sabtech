@@ -84,7 +84,7 @@ public async Task<ActionResult> TablaPartial(
             var data = await _api.ReservasDisponiblesTrabajadorAsync(filtro, token);
 
             // TIP: el partial debe estar tipado a List<ReservaTrabajadorModel>
-            return PartialView("~/Views/Reservas/_TablaReserva.cshtml", data);
+            return PartialView("~/Views/Reservas/_TablaDotaciones.cshtml", data);
         }
         catch (Exception ex)
         {
@@ -122,7 +122,7 @@ public async Task<ActionResult> TablaPartial(
                 IdEstadoReserva = 1
             };
 
-            return PartialView("~/Views/Reservas/_UpsertReserva.cshtml", model);
+            return PartialView("~/Views/Reservas/_UpsertDotaciones.cshtml", model);
         }
 
 
@@ -176,7 +176,7 @@ public async Task<ActionResult> TablaPartial(
                           ?? new ReservaDashboardModel();
 
                 // Devuelve el parcial fuertemente tipado con el DTO
-                return PartialView("~/Views/Reservas/_DashboardReserva.cshtml", dto);
+                return PartialView("~/Views/Reservas/_DashboardDotaciones.cshtml", dto);
                 
             }
             catch (HttpRequestException ex)

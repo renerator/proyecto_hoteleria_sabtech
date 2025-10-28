@@ -1,9 +1,11 @@
 ﻿using DemoBackend.Dto.BitacoraReserva;
 using DemoBackend.Dto.Mantenedores;
 using DemoBackend.Dto.Reserva;
+using DemoBackend.Models.Reserva;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DemoBackend.Services.Reserva
 {
@@ -28,6 +30,8 @@ namespace DemoBackend.Services.Reserva
         /// Devuelve el IdReserva afectado/generado. 0 si falla.
         /// </summary>
         int CreaReservaTrabajador(ReservaTrabajadorDto dto);
+
+        ReservaDashboardPanelPrincipaDto ObtenerDashboardPanelPrincipal(DateTime? desde, DateTime? hasta);
 
 
     }

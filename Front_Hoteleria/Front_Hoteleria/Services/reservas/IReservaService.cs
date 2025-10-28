@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Front_Hoteleria.Model.Reserva;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Front_Hoteleria.Model.Reserva;
 
 namespace Front_Hoteleria.Services.Reservas
 {
@@ -33,5 +34,7 @@ namespace Front_Hoteleria.Services.Reservas
 
         // Si luego necesitas bitácora:
         // Task<bool> CrearBitacoraReservaAsync(BitacoraReservaDto dto, string bearer = null);
+
+        Task<ReservaDashboardPanelPrincipalModel> DashboardReservasPanelPrincipalAsync(DateTime? desde, DateTime? hasta, string bearer = null);
     }
 }
