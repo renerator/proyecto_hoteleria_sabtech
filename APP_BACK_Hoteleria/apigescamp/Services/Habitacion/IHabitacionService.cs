@@ -1,7 +1,7 @@
 ﻿
-using DemoBackend.Dto.Habitacion;
-
 using DemoBackend.Dto.BitacoraHabitacion;
+using DemoBackend.Dto.Habitacion;
+using DemoBackend.Dto.TipoHabitacion;
 using System;
 using System.Collections.Generic;
 
@@ -21,5 +21,6 @@ namespace DemoBackend.Services.Habitacion
         public HabitacionDashboardDto ObtenerDashboardHabitacion();
 
         bool CrearBitacoraHabitacion(BitacoraHabitacionDto dto);
+        List<TipoHabitacionDto> GetListaTipoHabitacion();
     }
 }

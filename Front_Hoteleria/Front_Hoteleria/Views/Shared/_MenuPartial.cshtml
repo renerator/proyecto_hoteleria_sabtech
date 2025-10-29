@@ -1,26 +1,30 @@
-﻿@model List<Front_Hoteleria.Model.MenuDTO>
+﻿@using System.Linq
+@model List<Front_Hoteleria.Dto.MenuDTO>
 
 <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
     <div class="menu_section">
         <h3>Menú Usuario</h3>
         <ul class="nav side-menu">
-            @foreach (var item in Model)
+            @foreach (var item in (Model ?? new List<Front_Hoteleria.Dto.MenuDTO>()))
             {
-                <li>
-                    <a>
-                        <i class="@item.Icono"></i> @item.Titulo
-                        @if (item.TieneHijos)
+                var hijos = item.SubMenu ?? Enumerable.Empty<Front_Hoteleria.Dto.MenuDTO>();
+                var tieneHijos = hijos.Any();
+
+                <li class="@(tieneHijos ? "has-children" : null)">
+                    <a href="@(tieneHijos ? "javascript:;" : (item.Url ?? "#"))" title="@(item.Url ?? "")">
+                        <i class="@item.Icono"></i> @(item.Titulo ?? "")
+                        @if (tieneHijos)
                         {<span class="fa fa-chevron-down"></span>}
                     </a>
 
-                    @if (item.TieneHijos)
+                    @if (tieneHijos)
                     {
                         <ul class="nav child_menu">
-                            @foreach (var sub in item.SubMenu)
+                            @foreach (var sub in hijos)
                             {
                                 <li>
-                                    <a href="@sub.Url" title="@sub.Url">
-                                         @sub.Titulo
+                                    <a href="@(sub.Url ?? "#")" title="@(sub.Url ?? "")">
+                                        @(sub.Titulo ?? "")
                                     </a>
                                 </li>
                             }
@@ -31,4 +35,5 @@
         </ul>
     </div>
 </div>
+
 

@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
-
-using DemoBackend.Dto.Habitacion;
 using DemoBackend.Dto.BitacoraHabitacion;
-
+using DemoBackend.Dto.Habitacion;
+using DemoBackend.Dto.TipoHabitacion;
 using DemoBackend.Dto.Reserva;
+using DemoBackend.Models.TipoHabitacion;
 using DemoBackend.Models.Habitacion;
 using DemoBackend.Models.Reserva;
 using DemoBackend.RepositoryGes;
 using DemoBackend.Services.Habitacion;
-
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -20,13 +19,16 @@ namespace DemoBackend.Services
     {
         private readonly IGenericRepositoryEntity<HabitacionModels> _listaHabitacion;
         private readonly IGenericRepositoryEntity<HabitacionDashboardModels> _listaHabitacionDashboard;
+        private readonly IGenericRepositoryEntity<TipoHabitacionModels> _listaTipoHabitacion;
         private readonly IMapper _mapper;
 
         public HabitacionService(
             IGenericRepositoryEntity<HabitacionModels> listaHabitacion,
             IGenericRepositoryEntity<HabitacionDashboardModels> listaReservaDashboard,
-            IMapper mapper)
+            IGenericRepositoryEntity<TipoHabitacionModels> listaTipoHabitacion,
+        IMapper mapper)
         {
+            _listaTipoHabitacion = listaTipoHabitacion;
             _listaHabitacion = listaHabitacion;
             _listaHabitacionDashboard = listaReservaDashboard;
             _mapper = mapper;
@@ -35,15 +37,16 @@ namespace DemoBackend.Services
         #region Habitacion
         public bool CrearHabitacion(HabitacionDto habitacion)
         {
-            string sql = "MAN_CRE_Habitacion @idArea,@NombreHabitacion,@Capacidad,@VIP,@idEstado,@idEmpresa,@Motivo";
-            var parametros = new SqlParameter[7];
+            string sql = "MAN_CRE_Habitacion @idArea,@NombreHabitacion,@Capacidad,@VIP,@idEstado,@idEmpresa,@Motivo,@idTipoHabitacion";
+            var parametros = new SqlParameter[8];
             parametros[0] = new SqlParameter("@idArea", habitacion.IdArea);
             parametros[1] = new SqlParameter("@NombreHabitacion", habitacion.NombreHabitacion);
             parametros[2] = new SqlParameter("@Capacidad", habitacion.Capacidad);
             parametros[3] = new SqlParameter("@VIP", habitacion.VIP);
             parametros[4] = new SqlParameter("@idEstado", habitacion.IdEstado);
-            parametros[5] = new SqlParameter("@idEmpresa", habitacion.IdEmpresa);
+            parametros[5] = new SqlParameter("@idEmpresa", habitacion.IdEmpresa); 
             parametros[6] = new SqlParameter("@Motivo", (object?)habitacion.Motivo ?? DBNull.Value);
+            parametros[7] = new SqlParameter("@Motivo", (object?)habitacion.IdTipoHabitacion ?? DBNull.Value);
 
             try
             {
@@ -59,8 +62,8 @@ namespace DemoBackend.Services
 
         public bool ModificarHabitacion(HabitacionDto habitacion)
         {
-            string sql = "MAN_UPD_Habitacion @idHabitacion,@idArea,@NombreHabitacion,@Capacidad,@VIP,@idEstado,@idEmpresa,@Motivo";
-            var parametros = new SqlParameter[8];
+            string sql = "MAN_UPD_Habitacion @idHabitacion,@idArea,@NombreHabitacion,@Capacidad,@VIP,@idEstado,@idEmpresa,@Motivo,@idTipoHabitacion";
+            var parametros = new SqlParameter[9];
             parametros[0] = new SqlParameter("@idHabitacion", habitacion.IdHabitacion);
             parametros[1] = new SqlParameter("@idArea", habitacion.IdArea);
             parametros[2] = new SqlParameter("@NombreHabitacion", habitacion.NombreHabitacion);
@@ -69,7 +72,7 @@ namespace DemoBackend.Services
             parametros[5] = new SqlParameter("@idEstado", habitacion.IdEstado);
             parametros[6] = new SqlParameter("@idEmpresa", habitacion.IdEmpresa);
             parametros[7] = new SqlParameter("@Motivo", (object?)habitacion.Motivo ?? DBNull.Value);
-
+            parametros[8] = new SqlParameter("@Motivo", (object?)habitacion.IdTipoHabitacion ?? DBNull.Value);
             try
             {
                 _listaHabitacion.ExecuteProcedure(sql, parametros);
@@ -198,6 +201,34 @@ namespace DemoBackend.Services
                 return false;
             }
         }
+
+        // === SIN PARÁMETROS, MISMO ESTILO QUE GetListaMenu ===
+        public List<TipoHabitacionDto> GetListaTipoHabitacion()
+        {
+            const string sql = "HOT_TIPO_HAB_LISTAR";
+            var respuesta = new List<TipoHabitacionDto>();
+
+            try
+            {
+                // Sin parámetros
+                var lista = _listaTipoHabitacion.GetStoreProcedure(sql, Array.Empty<SqlParameter>());
+
+                if (lista == null || !lista.Any())
+                    return respuesta;
+
+                // Si el repo retorna entidades, mapeamos a DTO
+                return _mapper.Map<List<TipoHabitacionDto>>(lista);
+
+                // Si tu repo ya retorna DTO, usa:
+                // return lista.Cast<TipoHabitacionDto>().ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return respuesta; // vacío ante error
+            }
+        }
+
 
         #endregion
     }

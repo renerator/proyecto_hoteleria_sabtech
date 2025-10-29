@@ -1,5 +1,5 @@
 ﻿
-@model Front_Hoteleria.Model.Reserva.ReservaTrabajadorModel
+@Model Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
 @using System.Web.Mvc
 
 @{
@@ -8,7 +8,7 @@
     var tipos = ViewBag.TiposReserva as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
     var idTrabajador = (ViewBag.IdTrabajador as int?) ?? 0;
 
-    // Defaults SOLO para la UI (sin tocar Model)
+    // Defaults SOLO para la UI (sin tocar Dto)
     var fechaDesde = Model?.FechaDesde ?? DateTime.Today;
     var fechaHasta = Model?.FechaHasta ?? DateTime.Today.AddDays(1);
     var fechaDesdeStr = fechaDesde.ToString("yyyy-MM-dd");
@@ -31,7 +31,7 @@
         <div class="col-sm-6">
             <div class="form-group">
                 <label>Rut *</label>
-                @Html.TextBoxFor(m => m.dniTrabajador, new { @class = "form-control", required = "required", placeholder = "Rut" })
+                @Html.TextBoxFor(m => Model.dniTrabajador, new { @class = "form-control", required = "required", placeholder = "Rut" })
             </div>
         </div>
         <div class="col-sm-6">

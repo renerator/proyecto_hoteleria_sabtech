@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Front_Hoteleria.Model.Reserva
+namespace Front_Hoteleria.Dto.Reserva
 {
-    public class ReservaDashboardPanelPrincipalModel
+    public class ReservaDashboardPanelPrincipalDto
     {
         public int? NuevasReservas { get; set; }
         public int? Servicios { get; set; }

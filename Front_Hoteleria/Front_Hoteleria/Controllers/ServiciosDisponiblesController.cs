@@ -1,5 +1,5 @@
-﻿using Front_Hoteleria.Model.Reserva;
-using Front_Hoteleria.Model.Servicio;
+﻿using Front_Hoteleria.Dto.Reserva;
+using Front_Hoteleria.Dto.Servicio;
 using Front_Hoteleria.Services.ServiciosDisponibles;
 using System;
 using System.Collections.Generic;
@@ -82,7 +82,7 @@ namespace Front_Hoteleria.Controllers
         public async Task<ActionResult> DashboardServicio(DateTime? desde, DateTime? hasta)
         {
             // 1) DTO con valores por defecto (mock) para que SIEMPRE haya contenido
-            var dto = new ServicioDashboardModel
+            var dto = new ServicioDashboardDto
             {
                 TotalServicios = 231_809,
                 TotalDesayunos = 897,
@@ -126,11 +126,11 @@ namespace Front_Hoteleria.Controllers
         public async Task<ActionResult> TablaServicio(int? vigencia, string nombre)
         {
             // mock inicial para que SIEMPRE muestre filas
-            var data = new List<ServicioModel>
+            var data = new List<ServicioDto>
             {
-                new ServicioModel{ IdServicio=1, NumeroHabitacion="0005", NombreServicio="Limpieza",  Fecha=DateTime.Today, Hora="10:00", Prioridad="Alta" },
-                new ServicioModel{ IdServicio=2, NumeroHabitacion="0008", NombreServicio="Mantenimiento", Fecha=DateTime.Today, Hora="14:30", Prioridad="Urgente" },
-                new ServicioModel{ IdServicio=3, NumeroHabitacion="0012", NombreServicio="WiFi",       Fecha=DateTime.Today, Hora="16:45", Prioridad="Normal" }
+                new ServicioDto{ IdServicio=1, NumeroHabitacion="0005", NombreServicio="Limpieza",  Fecha=DateTime.Today, Hora="10:00", Prioridad="Alta" },
+                new ServicioDto{ IdServicio=2, NumeroHabitacion="0008", NombreServicio="Mantenimiento", Fecha=DateTime.Today, Hora="14:30", Prioridad="Urgente" },
+                new ServicioDto{ IdServicio=3, NumeroHabitacion="0012", NombreServicio="WiFi",       Fecha=DateTime.Today, Hora="16:45", Prioridad="Normal" }
             };
 
             try
@@ -164,7 +164,7 @@ namespace Front_Hoteleria.Controllers
         [HttpGet]
         public async Task<ActionResult> UpsertServicio(int? id)
         {
-            var dto = new ServicioModel();
+            var dto = new ServicioDto();
 
             try
             {
@@ -187,7 +187,7 @@ namespace Front_Hoteleria.Controllers
         // Upsert POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> UpsertServicio(ServicioModel dto)
+        public async Task<ActionResult> UpsertServicio(ServicioDto dto)
         {
             try
             {
@@ -253,7 +253,7 @@ namespace Front_Hoteleria.Controllers
             => TablaServicio(vigencia, nombre);
 
         [HttpGet] public Task<ActionResult> Upsert(int? id) => UpsertServicio(id);
-        [HttpPost][ValidateAntiForgeryToken] public Task<ActionResult> Upsert(ServicioModel dto) => UpsertServicio(dto);
+        [HttpPost][ValidateAntiForgeryToken] public Task<ActionResult> Upsert(ServicioDto dto) => UpsertServicio(dto);
 
         [HttpPost]
         [ValidateAntiForgeryToken]

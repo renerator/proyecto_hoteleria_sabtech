@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Front_Hoteleria.Model.Servicio
+namespace Front_Hoteleria.Dto.ServiciosDisponibles
 {
-    public class ServicioDashboardModel
+    public class ServicioDisponibleDashboardDto
     {
 
       

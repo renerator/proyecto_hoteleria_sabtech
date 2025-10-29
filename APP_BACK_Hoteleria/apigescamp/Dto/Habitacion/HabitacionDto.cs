@@ -15,5 +15,7 @@ namespace DemoBackend.Dto.Habitacion
         public int IdEstado { get; set; }
         public int IdEmpresa { get; set; }
         public string Motivo { get; set; }
+
+        public int IdTipoHabitacion { get; set; }
     }
 }

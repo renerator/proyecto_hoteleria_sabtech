@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Front_Hoteleria.Model.Reserva
+namespace Front_Hoteleria.Dto.Inventario
 {
-    public class ReservaModel
+    public class InventarioDto
     {
 
         public int IdReserva { get; set; }

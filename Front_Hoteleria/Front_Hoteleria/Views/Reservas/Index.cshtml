@@ -133,20 +133,16 @@
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Estado:</label>
-                                    <select class="form-control" id="statusFilter">
+                                    <select class="form-control" id="EstadosFilter">
                                         <option value="">Todos los estados</option>
-                                        <option value="1">Pendiente</option>
-                                        <option value="2">Confirmada</option>
-                                        <option value="4">Rechazada</option>
-                                        <option value="5">Check In</option>
-                                        <option value="6">Check Out</option>
+
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Habitación:</label>
-                                    <select class="form-control" id="roomFilter">
+                                    <select class="form-control" id="HabitacionesFilter">
                                         <option value="">Todas las habitaciones</option>
                                     </select>
                                 </div>
@@ -155,11 +151,9 @@
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label>Tipo:</label>
-                                    <select class="form-control" id="typeFilter">
+                                    <select class="form-control" id="TipoHabitacionFilter">
                                         <option value="">Todos los tipos</option>
-                                        <option value="1">Individual</option>
-                                        <option value="2">Grupal</option>
-                                        <option value="3">Corporativa</option>
+
                                     </select>
                                 </div>
                             </div>
@@ -210,7 +204,7 @@
 $(function () {
   // 0) Sanidad básica y logging
   if (!window.jQuery) { console.error('jQuery no está cargado'); return; }
-  var comboUrl = '@Url.Action("HabitacionesCombo","Reservas")';
+  var comboUrl = '@Url.Action("EstadoReservaCombo", "Reservas")';
   console.log('URL combo ->', comboUrl);
 
   // 1) Poblar combo con GET JSON
@@ -225,7 +219,7 @@ $(function () {
       console.warn('Respuesta no OK del combo');
       return;
     }
-    var $sel = $('#roomFilter');
+    var $sel = $('#EstadosFilter');
     $sel.find('option:not([value=""])').remove();
     resp.data.forEach(function (o) {
       $sel.append($('<option>').val(o.value).text(o.text).attr('data-id', o.id));
@@ -242,7 +236,7 @@ $(function () {
     ? $('#tablaDashAdm').DataTable()
     : null;
 
-  $('#roomFilter').on('change', function () {
+  $('#EstadosFilter').on('change', function () {
     if (!table) {
       // Si inicializas la tabla luego, puedes mover este código a un callback post-init
       console.warn('DataTable aún no está inicializada');
@@ -260,6 +254,112 @@ $(function () {
 });
     </script>
 
+    <script>
+$(function () {
+  // 0) Sanidad básica y logging
+  if (!window.jQuery) { console.error('jQuery no está cargado'); return; }
+  var comboUrl = '@Url.Action("TipoHabitacionesCombo", "Reservas")';
+  console.log('URL combo ->', comboUrl);
+
+  // 1) Poblar combo con GET JSON
+  $.ajax({
+    url: comboUrl,
+    type: 'GET',
+    dataType: 'json'
+  })
+  .done(function (resp) {
+    console.log('Resp combo', resp);
+    if (!resp || !resp.ok) {
+      console.warn('Respuesta no OK del combo');
+      return;
+    }
+      var $sel = $('#TipoHabitacionFilter');
+    $sel.find('option:not([value=""])').remove();
+    resp.data.forEach(function (o) {
+      $sel.append($('<option>').val(o.value).text(o.text).attr('data-id', o.id));
+    });
+  })
+  .fail(function (xhr, status, err) {
+    console.error('Fallo combo', status, xhr.status, xhr.responseText);
+    // Visualiza si es 401 o 404 para saber si fue auth o ruta:
+    // 401 => sesión/token; 404 => URL/Controller/Action
+  });
+
+  // 2) Filtro DataTable (columna "Habitación" == índice 6; ajusta si cambió)
+  var table = $.fn.dataTable.isDataTable('#tablaDashAdm')
+    ? $('#tablaDashAdm').DataTable()
+    : null;
+
+    $('#TipoHabitacionFilter').on('change', function () {
+    if (!table) {
+      // Si inicializas la tabla luego, puedes mover este código a un callback post-init
+      console.warn('DataTable aún no está inicializada');
+      return;
+    }
+    var val = this.value;
+    if (val) {
+      table.column(6)                               // índice de la columna "Habitación"
+           .search('^' + $.fn.dataTable.util.escapeRegex(val) + '$', true, false)
+           .draw();
+    } else {
+      table.column(6).search('').draw();
+    }
+  });
+});
+    </script>
+    <script>
+$(function () {
+  // 0) Sanidad básica y logging
+  if (!window.jQuery) { console.error('jQuery no está cargado'); return; }
+  var comboUrl = '@Url.Action("HabitacionesCombo","Reservas")';
+  console.log('URL combo ->', comboUrl);
+
+  // 1) Poblar combo con GET JSON
+  $.ajax({
+    url: comboUrl,
+    type: 'GET',
+    dataType: 'json'
+  })
+  .done(function (resp) {
+    console.log('Resp combo', resp);
+    if (!resp || !resp.ok) {
+      console.warn('Respuesta no OK del combo');
+      return;
+    }
+      var $sel = $('#HabitacionesFilter');
+    $sel.find('option:not([value=""])').remove();
+    resp.data.forEach(function (o) {
+      $sel.append($('<option>').val(o.value).text(o.text).attr('data-id', o.id));
+    });
+  })
+  .fail(function (xhr, status, err) {
+    console.error('Fallo combo', status, xhr.status, xhr.responseText);
+    // Visualiza si es 401 o 404 para saber si fue auth o ruta:
+    // 401 => sesión/token; 404 => URL/Controller/Action
+  });
+
+  // 2) Filtro DataTable (columna "Habitación" == índice 6; ajusta si cambió)
+  var table = $.fn.dataTable.isDataTable('#tablaDashAdm')
+    ? $('#tablaDashAdm').DataTable()
+    : null;
+
+    $('#HabitacionesFilter').on('change', function () {
+    if (!table) {
+      // Si inicializas la tabla luego, puedes mover este código a un callback post-init
+      console.warn('DataTable aún no está inicializada');
+      return;
+    }
+    var val = this.value;
+    if (val) {
+      table.column(6)                               // índice de la columna "Habitación"
+           .search('^' + $.fn.dataTable.util.escapeRegex(val) + '$', true, false)
+           .draw();
+    } else {
+      table.column(6).search('').draw();
+    }
+  });
+});
+    </script>
     <script>
     // ===== ENDPOINTS =====
     const urlTablaReserva  = '@Url.Action("TablaPartial","Reservas")';

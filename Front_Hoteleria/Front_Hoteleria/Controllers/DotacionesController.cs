@@ -1,4 +1,4 @@
-using Front_Hoteleria.Model.Reserva;
+using Front_Hoteleria.Dto.Reserva;
 using Front_Hoteleria.Services.Dotaciones;
 using System;
 using System.Collections.Generic;
@@ -73,7 +73,7 @@ public async Task<ActionResult> TablaPartial(
             if (string.IsNullOrWhiteSpace(token))
                 return new HttpStatusCodeResult(401, "Sesión expirada");
 
-            var filtro = new ReservaTrabajadorModel
+            var filtro = new ReservaTrabajadorDto
             {
                 FechaDesde = fechaDesde,
                 FechaHasta = fechaHasta,
@@ -83,7 +83,7 @@ public async Task<ActionResult> TablaPartial(
 
             var data = await _api.ReservasDisponiblesTrabajadorAsync(filtro, token);
 
-            // TIP: el partial debe estar tipado a List<ReservaTrabajadorModel>
+            // TIP: el partial debe estar tipado a List<ReservaTrabajadorDto>
             return PartialView("~/Views/Reservas/_TablaDotaciones.cshtml", data);
         }
         catch (Exception ex)
@@ -115,14 +115,14 @@ public async Task<ActionResult> TablaPartial(
 
             ViewBag.IdTrabajador = Session["IdTrabajador"];
 
-            var model = new Front_Hoteleria.Model.Reserva.ReservaTrabajadorModel
+            var Dto = new Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
             {
                 FechaDesde = DateTime.Today,
                 FechaHasta = DateTime.Today.AddDays(1),
                 IdEstadoReserva = 1
             };
 
-            return PartialView("~/Views/Reservas/_UpsertDotaciones.cshtml", model);
+            return PartialView("~/Views/Reservas/_UpsertDotaciones.cshtml", Dto);
         }
 
 
@@ -130,7 +130,7 @@ public async Task<ActionResult> TablaPartial(
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CrearReserva(Front_Hoteleria.Model.Reserva.ReservaTrabajadorModel dto)
+        public async Task<ActionResult> CrearReserva(Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto dto)
         {
             try
             {
@@ -171,9 +171,9 @@ public async Task<ActionResult> TablaPartial(
 
                 // Llama al servicio SIN parámetros de fecha (usa null, null)
 
-                var dto = new ReservaDashboardModel();
+                var dto = new ReservaDashboardDto();
                  dto = await _api.DashboardReservasAsync(token)
-                          ?? new ReservaDashboardModel();
+                          ?? new ReservaDashboardDto();
 
                 // Devuelve el parcial fuertemente tipado con el DTO
                 return PartialView("~/Views/Reservas/_DashboardDotaciones.cshtml", dto);

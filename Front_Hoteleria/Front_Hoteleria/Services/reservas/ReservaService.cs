@@ -1,4 +1,7 @@
-﻿using Front_Hoteleria.Model.Reserva;
+﻿using Front_Hoteleria.Dto.EstadoReserva;
+using Front_Hoteleria.Dto.Inventario;
+using Front_Hoteleria.Dto.Reserva;
+using Front_Hoteleria.Dto.TipoHabitacion;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -43,48 +46,48 @@ namespace Front_Hoteleria.Services.Reservas
         }
 
         // GET /api/Reservas/ReservasDisponibles?vigencia={vigencia}
-        public async Task<List<ReservaModel>> ReservasDisponiblesAsync(int vigencia, string bearer = null)
+        public async Task<List<ReservaDto>> ReservasDisponiblesAsync(int vigencia, string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
                 using (var resp = await _http.GetAsync($"/api/Reservas/ReservasDisponibles?vigencia={vigencia}"))
                 {
-                    if ((int)resp.StatusCode == 204) return new List<ReservaModel>();
+                    if ((int)resp.StatusCode == 204) return new List<ReservaDto>();
                     resp.EnsureSuccessStatusCode();
                     var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<ReservaModel>>(json) ?? new List<ReservaModel>();
+                    return JsonConvert.DeserializeObject<List<ReservaDto>>(json) ?? new List<ReservaDto>();
                 }
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[ReservasDisponiblesAsync] {ex}");
-                return new List<ReservaModel>();
+                return new List<ReservaDto>();
             }
         }
 
         // GET /api/Reservas/dashboardReservas
-        public async Task<ReservaDashboardModel> DashboardReservasAsync(string bearer = null)
+        public async Task<ReservaDashboardDto> DashboardReservasAsync(string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
                 using (var resp = await _http.GetAsync("/api/Reservas/dashboardReservas"))
                 {
-                    if ((int)resp.StatusCode == 204) return new ReservaDashboardModel();
+                    if ((int)resp.StatusCode == 204) return new ReservaDashboardDto();
                     resp.EnsureSuccessStatusCode();
                     var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<ReservaDashboardModel>(json) ?? new ReservaDashboardModel();
+                    return JsonConvert.DeserializeObject<ReservaDashboardDto>(json) ?? new ReservaDashboardDto();
                 }
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[DashboardReservasAsync] {ex}");
-                return new ReservaDashboardModel();
+                return new ReservaDashboardDto();
             }
         }
 
-        public async Task<ReservaDashboardPanelPrincipalModel> DashboardReservasPanelPrincipalAsync(DateTime? desde, DateTime? hasta, string bearer = null)
+        public async Task<ReservaDashboardPanelPrincipalDto> DashboardReservasPanelPrincipalAsync(DateTime? desde, DateTime? hasta, string bearer = null)
         {
             try
             {
@@ -103,21 +106,21 @@ namespace Front_Hoteleria.Services.Reservas
                 }
                 using (var resp = await _http.GetAsync(url))
                 {
-                    if ((int)resp.StatusCode == 204) return new ReservaDashboardPanelPrincipalModel();
+                    if ((int)resp.StatusCode == 204) return new ReservaDashboardPanelPrincipalDto();
                     resp.EnsureSuccessStatusCode();
                     var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<ReservaDashboardPanelPrincipalModel > (json) ?? new ReservaDashboardPanelPrincipalModel();
+                    return JsonConvert.DeserializeObject<ReservaDashboardPanelPrincipalDto > (json) ?? new ReservaDashboardPanelPrincipalDto();
                 }
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[DashboardReservasAsync] {ex}");
-                return new ReservaDashboardPanelPrincipalModel();
+                return new ReservaDashboardPanelPrincipalDto();
             }
         }
 
         // POST /api/Reservas/SolicitaReserva
-        public async Task<bool> CrearReservaAsync(ReservaModel dto, string bearer = null)
+        public async Task<bool> CrearReservaAsync(ReservaDto dto, string bearer = null)
         {
             try
             {
@@ -135,7 +138,7 @@ namespace Front_Hoteleria.Services.Reservas
         }
 
         // POST /api/Reservas/ConfirmarReserva
-        public async Task<bool> ConfirmarReservaAsync(ReservaModel dto, string bearer = null)
+        public async Task<bool> ConfirmarReservaAsync(ReservaDto dto, string bearer = null)
         {
             try
             {
@@ -153,7 +156,7 @@ namespace Front_Hoteleria.Services.Reservas
         }
 
         // PUT /api/Reservas/ModificaReserva
-        public async Task<bool> ModificarReservaAsync(ReservaModel dto, string bearer = null)
+        public async Task<bool> ModificarReservaAsync(ReservaDto dto, string bearer = null)
         {
             try
             {
@@ -191,23 +194,23 @@ namespace Front_Hoteleria.Services.Reservas
         }
 
         // GET /api/Reservas/BuscarReservas?criterio={texto}
-        public async Task<List<ReservaModel>> BuscarReservasAsync(string criterio, string bearer = null)
+        public async Task<List<ReservaDto>> BuscarReservasAsync(string criterio, string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
                 var url = $"/api/Reservas/BuscarReservas?criterio={Uri.EscapeDataString(criterio ?? string.Empty)}";
                  var resp = await _http.GetAsync(url);
-                if ((int)resp.StatusCode == 204) return new List<ReservaModel>();
+                if ((int)resp.StatusCode == 204) return new List<ReservaDto>();
 
                 resp.EnsureSuccessStatusCode();
                 var json = await resp.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<ReservaModel>>(json) ?? new List<ReservaModel>();
+                return JsonConvert.DeserializeObject<List<ReservaDto>>(json) ?? new List<ReservaDto>();
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[BuscarReservasAsync] {ex}");
-                return new List<ReservaModel>();
+                return new List<ReservaDto>();
             }
         }
 
@@ -215,13 +218,13 @@ namespace Front_Hoteleria.Services.Reservas
 
 
 
-public async Task<List<ReservaTrabajadorModel>> ReservasDisponiblesTrabajadorAsync(ReservaTrabajadorModel reservaTrabajador, string bearer = null)
+public async Task<List<ReservaTrabajadorDto>> ReservasDisponiblesTrabajadorAsync(ReservaTrabajadorDto reservaTrabajador, string bearer = null)
     {
         try
         {
           
 
-            reservaTrabajador = new ReservaTrabajadorModel();
+            reservaTrabajador = new ReservaTrabajadorDto();
 
             var basePath = "/api/Reservas/ReservasTrabajadorDisponibles";
             var sb = new StringBuilder(basePath);
@@ -255,32 +258,32 @@ public async Task<List<ReservaTrabajadorModel>> ReservasDisponiblesTrabajadorAsy
             using (var resp = await _http.GetAsync(url))
             {
                 if (resp.StatusCode == HttpStatusCode.NoContent)
-                    return new List<ReservaTrabajadorModel>();
+                    return new List<ReservaTrabajadorDto>();
 
                 resp.EnsureSuccessStatusCode();
 
                 var json = await resp.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<ReservaTrabajadorModel>>(json)
-                       ?? new List<ReservaTrabajadorModel>();
+                return JsonConvert.DeserializeObject<List<ReservaTrabajadorDto>>(json)
+                       ?? new List<ReservaTrabajadorDto>();
             }
         }
         catch (HttpRequestException httpEx)
         {
             Trace.TraceError($"[ReservasDisponiblesTrabajadorAsync] HTTP: {httpEx}");
-            return new List<ReservaTrabajadorModel>();
+            return new List<ReservaTrabajadorDto>();
         }
         catch (JsonException jsonEx)
         {
             Trace.TraceError($"[ReservasDisponiblesTrabajadorAsync] JSON: {jsonEx}");
-            return new List<ReservaTrabajadorModel>();
+            return new List<ReservaTrabajadorDto>();
         }
         catch (Exception ex)
         {
             Trace.TraceError($"[ReservasDisponiblesTrabajadorAsync] {ex}");
-            return new List<ReservaTrabajadorModel>();
+            return new List<ReservaTrabajadorDto>();
         }
     }
-        public async Task<bool> CrearReservaTrabajadorAsync(ReservaTrabajadorModel dto, string bearer = null)
+        public async Task<bool> CrearReservaTrabajadorAsync(ReservaTrabajadorDto dto, string bearer = null)
         {
             try
             { 
@@ -304,8 +307,42 @@ public async Task<List<ReservaTrabajadorModel>> ReservasDisponiblesTrabajadorAsy
             }
         }
 
+        public async Task<List<EstadoReservaDto>> GetListaEstadoReservas(string bearer = null)
+        {
+            try
+            {
+                SetBearer(bearer);
+                var url = "/api/Reservas/ListarEstadoReserva";
+        
+
+                using (var resp = await _http.GetAsync(url))
+                {
+                    if ((int)resp.StatusCode == 204) // NoContent
+                        return new List<EstadoReservaDto>();
+
+                    resp.EnsureSuccessStatusCode();
+                    var json = await resp.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<List<EstadoReservaDto>>(json) ?? new List<EstadoReservaDto>();
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Trace.TraceError($"[HabitacionesDisponiblesAsync] Error HTTP: {ex}");
+                return new List<EstadoReservaDto>();
+            }
+            catch (TaskCanceledException ex)
+            {
+                Trace.TraceError($"[HabitacionesDisponiblesAsync] Timeout: {ex}");
+                return new List<EstadoReservaDto>();
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[HabitacionesDisponiblesAsync] Error inesperado: {ex}");
+                return new List<EstadoReservaDto>();
+            }
+        }
 
         // Si más adelante usas bitácora:
-        // public async Task<bool> CrearBitacoraReservaAsync(BitacoraReservaModel dto, string bearer = null) { ... }
+        // public async Task<bool> CrearBitacoraReservaAsync(BitacoraReservaDto dto, string bearer = null) { ... }
     }
 }

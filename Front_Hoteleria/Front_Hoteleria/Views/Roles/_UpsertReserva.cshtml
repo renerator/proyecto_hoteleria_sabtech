@@ -1,5 +1,5 @@
 ﻿
-@model Front_Hoteleria.Model.Reserva.ReservaTrabajadorModel
+@Model Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
 @using System.Web.Mvc
 
 @{
@@ -8,14 +8,14 @@
     var tipos = ViewBag.TiposReserva as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
     var idTrabajador = (ViewBag.IdTrabajador as int?) ?? 0;
 
-    // Defaults SOLO para la UI (sin tocar Model)
+    // Defaults SOLO para la UI (sin tocar Dto)
     var fechaDesde = Model?.FechaDesde ?? DateTime.Today;
     var fechaHasta = Model?.FechaHasta ?? DateTime.Today.AddDays(1);
     var fechaDesdeStr = fechaDesde.ToString("yyyy-MM-dd");
     var fechaHastaStr = fechaHasta.ToString("yyyy-MM-dd");
 
     // 1 = Ingresada si viene vacío/0
-    var idEstadoEfectivo = (Model?.IdEstadoReserva ?? 0) == 0 ? 1 : Model.IdEstadoReserva;
+    var idEstadoEfectivo = (Model?.IdEstadoReserva ?? 0) == 0 ? 1 : Dto.IdEstadoReserva;
 }
 
 @using (Html.BeginForm("CrearReserva", "Reservas", FormMethod.Post,

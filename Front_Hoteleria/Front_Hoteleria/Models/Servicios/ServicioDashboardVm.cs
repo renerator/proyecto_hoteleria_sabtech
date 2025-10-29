@@ -1,4 +1,4 @@
-namespace Front_Hoteleria.Model.Servicios
+namespace Front_Hoteleria.Dto.Servicios
 {
     public class ServicioDashboardVm
     {

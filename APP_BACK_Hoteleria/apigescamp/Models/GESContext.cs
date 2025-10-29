@@ -7,10 +7,12 @@ using DemoBackend.Models.Insumos;
 using DemoBackend.Models.Mantenedores;
 using DemoBackend.Models.Menu;
 using DemoBackend.Models.Reserva;
+using DemoBackend.Models.EstadoReserva;
 using DemoBackend.Models.Servicio;
 using DemoBackend.Models.Trabajador;
 using DemoBackend.Models.SolicitudServicio;
 using DemoBackend.Models.OrdenTrabajo;
+using DemoBackend.Models.TipoHabitacion;
 using Microsoft.EntityFrameworkCore;
 
 namespace DemoBackend.Models
@@ -38,6 +40,8 @@ namespace DemoBackend.Models
         public virtual DbSet<HabitacionDashboardModels> DashboardHabitacion { get; set; }
 
         public virtual DbSet<SolicitudServicioModels> SolicitudServicio { get; set; }
+        public virtual DbSet<TipoHabitacionModels> TipoHabiatacion { get; set; }
+        public virtual DbSet<EstadoReservaModels> EstadoReserva { get; set; }
         public virtual DbSet<OrdenTrabajoModels> ListaOrdenTrabajo { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -48,6 +52,14 @@ namespace DemoBackend.Models
                 eb.HasNoKey();     // <- clave
                 eb.ToView(null);   // <- no está mapeado a vista/tabla
             });
+
+            modelBuilder.Entity<TipoHabitacionModels>(eb =>
+            {
+                eb.HasNoKey();     // <- clave
+                eb.ToView(null);   // <- no está mapeado a vista/tabla
+            });
+
+           
 
             modelBuilder.Entity<ReservaDashboardPanelPrincipalModel>(eb =>
             {

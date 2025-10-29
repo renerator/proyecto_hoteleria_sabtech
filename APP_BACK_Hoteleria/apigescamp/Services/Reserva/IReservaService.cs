@@ -1,6 +1,7 @@
 ﻿using DemoBackend.Dto.BitacoraReserva;
 using DemoBackend.Dto.Mantenedores;
 using DemoBackend.Dto.Reserva;
+using DemoBackend.Dto.EstadoReserva;
 using DemoBackend.Models.Reserva;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -33,7 +34,7 @@ namespace DemoBackend.Services.Reserva
 
         ReservaDashboardPanelPrincipaDto ObtenerDashboardPanelPrincipal(DateTime? desde, DateTime? hasta);
 
-
+        List<EstadoReservaDto> GetListaEstadoReserva();
     }
 }
 

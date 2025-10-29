@@ -1,4 +1,4 @@
-﻿using Front_Hoteleria.Model.Servicio;
+﻿using Front_Hoteleria.Dto.Servicio;
 using Front_Hoteleria.Services.ServiciosDisponibles;
 using Newtonsoft.Json;
 using System;
@@ -39,7 +39,7 @@ namespace Front_Hoteleria.Services.ServiciosDisponibles
                 _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
         }
 
-        public async Task<List<ServicioModel>> HabitacionesDisponiblesAsync(int vigencia, string bearer = null)
+        public async Task<List<ServicioDto>> HabitacionesDisponiblesAsync(int vigencia, string bearer = null)
         {
             try
             {
@@ -49,31 +49,31 @@ namespace Front_Hoteleria.Services.ServiciosDisponibles
                 using (var resp = await _http.GetAsync(url))
                 {
                     if ((int)resp.StatusCode == 204) // NoContent
-                        return new List<ServicioModel>();
+                        return new List<ServicioDto>();
 
                     resp.EnsureSuccessStatusCode();
                     var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<ServicioModel>>(json) ?? new List<ServicioModel>();
+                    return JsonConvert.DeserializeObject<List<ServicioDto>>(json) ?? new List<ServicioDto>();
                 }
             }
             catch (HttpRequestException ex)
             {
                 Trace.TraceError($"[HabitacionesDisponiblesAsync] Error HTTP: {ex}");
-                return new List<ServicioModel>();
+                return new List<ServicioDto>();
             }
             catch (TaskCanceledException ex)
             {
                 Trace.TraceError($"[HabitacionesDisponiblesAsync] Timeout: {ex}");
-                return new List<ServicioModel>();
+                return new List<ServicioDto>();
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[HabitacionesDisponiblesAsync] Error inesperado: {ex}");
-                return new List<ServicioModel>();
+                return new List<ServicioDto>();
             }
         }
 
-        public async Task<ServicioDashboardModel> DashboardHabitacionAsync(DateTime? desde, DateTime? hasta, string bearer = null)
+        public async Task<ServicioDashboardDto> DashboardHabitacionAsync(DateTime? desde, DateTime? hasta, string bearer = null)
         {
             try
             {
@@ -90,31 +90,31 @@ namespace Front_Hoteleria.Services.ServiciosDisponibles
                 using (var resp = await _http.GetAsync(url))
                 {
                     if ((int)resp.StatusCode == 204)
-                        return new ServicioDashboardModel();
+                        return new ServicioDashboardDto();
 
                     resp.EnsureSuccessStatusCode();
                     var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<ServicioDashboardModel>(json) ?? new ServicioDashboardModel();
+                    return JsonConvert.DeserializeObject<ServicioDashboardDto>(json) ?? new ServicioDashboardDto();
                 }
             }
             catch (HttpRequestException ex)
             {
                 Trace.TraceError($"[DashboardHabitacionAsync] Error HTTP: {ex}");
-                return new ServicioDashboardModel();
+                return new ServicioDashboardDto();
             }
             catch (TaskCanceledException ex)
             {
                 Trace.TraceError($"[DashboardHabitacionAsync] Timeout: {ex}");
-                return new ServicioDashboardModel();
+                return new ServicioDashboardDto();
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[DashboardHabitacionAsync] Error inesperado: {ex}");
-                return new ServicioDashboardModel();
+                return new ServicioDashboardDto();
             }
         }
 
-        public async Task<bool> CrearHabitacionAsync(ServicioModel dto, string bearer = null)
+        public async Task<bool> CrearHabitacionAsync(ServicioDto dto, string bearer = null)
         {
             try
             {
@@ -143,7 +143,7 @@ namespace Front_Hoteleria.Services.ServiciosDisponibles
             }
         }
 
-        public async Task<bool> ConfirmarHabitacionAsync(ServicioModel dto, string bearer = null)
+        public async Task<bool> ConfirmarHabitacionAsync(ServicioDto dto, string bearer = null)
         {
             try
             {
@@ -172,7 +172,7 @@ namespace Front_Hoteleria.Services.ServiciosDisponibles
             }
         }
 
-        public async Task<bool> ModificarHabitacionAsync(ServicioModel dto, string bearer = null)
+        public async Task<bool> ModificarHabitacionAsync(ServicioDto dto, string bearer = null)
         {
             try
             {

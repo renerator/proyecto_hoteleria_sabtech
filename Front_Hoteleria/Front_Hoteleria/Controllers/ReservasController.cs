@@ -1,5 +1,5 @@
-using Front_Hoteleria.Model.Reserva;
-using Front_Hoteleria.Model.Habitacion;
+using Front_Hoteleria.Dto.Reserva;
+using Front_Hoteleria.Dto.Habitacion;
 using Front_Hoteleria.Services.Reservas;
 using Front_Hoteleria.Services.Habitacion;
 using System;
@@ -85,7 +85,7 @@ namespace Front_Hoteleria.Controllers
             if (string.IsNullOrWhiteSpace(token))
                 return new HttpStatusCodeResult(401, "Sesión expirada");
 
-            var filtro = new ReservaTrabajadorModel
+            var filtro = new ReservaTrabajadorDto
             {
                 FechaDesde = fechaDesde,
                 FechaHasta = fechaHasta,
@@ -95,7 +95,7 @@ namespace Front_Hoteleria.Controllers
 
             var data = await _api.ReservasDisponiblesTrabajadorAsync(filtro, token);
 
-            // TIP: el partial debe estar tipado a List<ReservaTrabajadorModel>
+            // TIP: el partial debe estar tipado a List<ReservaTrabajadorDto>
             return PartialView("~/Views/Reservas/_TablaReserva.cshtml", data);
         }
         catch (Exception ex)
@@ -112,34 +112,29 @@ namespace Front_Hoteleria.Controllers
                 return new HttpStatusCodeResult(401);
 
             // Rellena combos (ajusta a tu servicio)
-            ViewBag.Habitaciones = new SelectList(new[]
-                {
-        new { Id = 1, Nombre = "Individual" },
-        new { Id = 2, Nombre = "Grupal" },
-        new { Id = 3, Nombre = "Corporativa" }
-    }, "Id", "Nombre");
-            ViewBag.TiposReserva = new SelectList(new[]
-            {
-        new { Id = 1, Nombre = "Individual" },
-        new { Id = 2, Nombre = "Grupal" },
-        new { Id = 3, Nombre = "Corporativa" }
-    }, "Id", "Nombre");
+
+            ViewBag.Habitaciones = new List<SelectListItem>(); // se llenará por JS
+
+           
+            ViewBag.TipoHabitacion = new List<SelectListItem>(); // se llenará por JS
+
+
 
             ViewBag.IdTrabajador = Session["IdTrabajador"];
 
-            var model = new Front_Hoteleria.Model.Reserva.ReservaTrabajadorModel
+            var Dto = new Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
             {
                 FechaDesde = DateTime.Today,
                 FechaHasta = DateTime.Today.AddDays(1),
                 IdEstadoReserva = 1
             };
 
-            return PartialView("~/Views/Reservas/_UpsertReserva.cshtml", model);
+            return PartialView("~/Views/Reservas/_UpsertReserva.cshtml", Dto);
         }
 
 
         // ReservasController
-        // PanelPrincipalController (o el que corresponda)
+        // carga el 
         [HttpGet]
         public async Task<ActionResult> HabitacionesCombo()
         {
@@ -151,7 +146,7 @@ namespace Front_Hoteleria.Controllers
 
                 // Llama a tu API de habitaciones
                 var list = await _apihabitacion.HabitacionesDisponiblesAsync(1, token)
-                           ?? new List<Front_Hoteleria.Model.Habitacion.HabitacionModel>();
+                           ?? new List<Front_Hoteleria.Dto.Habitacion.HabitacionDto>();
 
                 // Normaliza textos: si no hay nombre, usa el Id con padding D4
                 var data = list.Select(h =>
@@ -164,7 +159,7 @@ namespace Front_Hoteleria.Controllers
                     {
                         id = h.IdHabitacion,
                         value = display,                  // <- lo que coincide con la columna "Habitación"
-                        text = $"Habitación {display}"   // <- lo que verá el usuario en el combo
+                        text = $"{display}"   // <- lo que verá el usuario en el combo
                     };
                 });
 
@@ -177,11 +172,83 @@ namespace Front_Hoteleria.Controllers
                             JsonRequestBehavior.AllowGet);
             }
         }
+        [HttpGet]
+        public async Task<ActionResult> TipoHabitacionesCombo()
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult(401, "Sesión expirada");
 
+                // Llama a tu API de habitaciones
+                var list = await _apihabitacion.GetListaTipoHabitacion(token)
+                           ?? new List<Front_Hoteleria.Dto.TipoHabitacion.TipoHabitacionDto>();
 
+                // Normaliza textos: si no hay nombre, usa el Id con padding D4
+                var data = list.Select(h =>
+                {
+                    var display = string.IsNullOrWhiteSpace(h.Descripcion)
+                        ? h.IdTipoHabitacion.ToString("D4")
+                        : h.Descripcion.Trim();
+
+                    return new
+                    {
+                        id = h.IdTipoHabitacion,
+                        value = display,                  // <- lo que coincide con la columna "Habitación"
+                       text = $"{display}"   // <- lo que verá el usuario en el combo
+                    };
+                });
+
+                return Json(new { ok = true, data }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError($"[HabitacionesCombo] {ex}");
+                return Json(new { ok = false, message = "No se pudieron cargar las habitaciones." },
+                            JsonRequestBehavior.AllowGet);
+            }
+        }
+        [HttpGet]
+        public async Task<ActionResult> EstadoReservaCombo()
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult(401, "Sesión expirada");
+
+                // Llama a tu API de habitaciones
+                var list = await _api.GetListaEstadoReservas(token)
+                           ?? new List<Front_Hoteleria.Dto.EstadoReserva.EstadoReservaDto>();
+
+                // Normaliza textos: si no hay nombre, usa el Id con padding D4
+                var data = list.Select(h =>
+                {
+                    var display = string.IsNullOrWhiteSpace(h.NombreEstadoReserva)
+                        ? h.IdEstadoReserva.ToString("D4")
+                        : h.NombreEstadoReserva.Trim();
+
+                    return new
+                    {
+                        id = h.IdEstadoReserva,
+                        value = display,                  // <- lo que coincide con la columna "Habitación"
+                        text = $"{display}"    // <- lo que verá el usuario en el combo
+                    };
+                });
+
+                return Json(new { ok = true, data }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError($"[HabitacionesCombo] {ex}");
+                return Json(new { ok = false, message = "No se pudieron cargar las habitaciones." },
+                            JsonRequestBehavior.AllowGet);
+            }
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CrearReserva(Front_Hoteleria.Model.Reserva.ReservaTrabajadorModel dto)
+        public async Task<ActionResult> CrearReserva(Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto dto)
         {
             try
             {
@@ -222,9 +289,9 @@ namespace Front_Hoteleria.Controllers
 
                 // Llama al servicio SIN parámetros de fecha (usa null, null)
 
-                var dto = new ReservaDashboardModel();
+                var dto = new ReservaDashboardDto();
                  dto = await _api.DashboardReservasAsync(token)
-                          ?? new ReservaDashboardModel();
+                          ?? new ReservaDashboardDto();
 
                 // Devuelve el parcial fuertemente tipado con el DTO
                 return PartialView("~/Views/Reservas/_DashboardReserva.cshtml", dto);

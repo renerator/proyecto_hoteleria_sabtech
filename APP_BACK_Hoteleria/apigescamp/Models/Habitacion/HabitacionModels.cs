@@ -37,6 +37,9 @@ namespace DemoBackend.Models.Habitacion
 
         [Column("Motivo")]
         public string Motivo { get; set; }
+
+        [Column("IdTipoHabitacion")]
+        public int IdTipoHabitacion { get; set; }
     }
 }
 

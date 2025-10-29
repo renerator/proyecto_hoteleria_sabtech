@@ -1,4 +1,4 @@
-﻿@model Front_Hoteleria.Dto.adm.Reserva.ReservaTrabajadorModel
+﻿@Model Front_Hoteleria.Dto.adm.Reserva.ReservaTrabajadorDto
 @using System.Web.Mvc
 @{
     // Catálogos que te deja el GET Upsert()
@@ -10,7 +10,7 @@
     // Defaults de solo-lectura para la UI
     var fechaDesdeStr = (Model?.FechaDesde ?? DateTime.Today).ToString("yyyy-MM-dd");
     var fechaHastaStr = (Model?.FechaHasta ?? DateTime.Today.AddDays(1)).ToString("yyyy-MM-dd");
-    var estadoEfectivo = (Model?.IdEstadoReserva ?? 0) == 0 ? 1 : Model.IdEstadoReserva; // 1 = Ingresada
+    var estadoEfectivo = (Model?.IdEstadoReserva ?? 0) == 0 ? 1 : Dto.IdEstadoReserva; // 1 = Ingresada
 }
 
 @using (Html.BeginForm("CrearReserva", "Reservas", FormMethod.Post, new { id = "formCrearReserva", @class = "form-horizontal", autocomplete = "off" }))

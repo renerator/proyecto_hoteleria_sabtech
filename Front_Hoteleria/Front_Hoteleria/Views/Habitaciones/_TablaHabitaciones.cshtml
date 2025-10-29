@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Front_Hoteleria.Dto.adm.Habitacion.HabitacionModel>
+﻿@Model IEnumerable<Front_Hoteleria.Dto.adm.Habitacion.HabitacionDto>
 
 <table id="tablaHabitaciones" class="table table-striped table-bordered">
     <thead>
@@ -13,13 +13,13 @@
         </tr>
     </thead>
     <tbody>
-        @if (Model == null || !Model.Any())
+        @if (Dto == null || !Dto.Any())
         {
             <tr><td colspan="7" class="text-muted">Sin datos</td></tr>
         }
         else
         {
-            foreach (var h in Model)
+            foreach (var h in Dto)
             {
                 <tr>
                     @*<td>@h.Area</td>*@

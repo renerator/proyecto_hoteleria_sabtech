@@ -1,4 +1,4 @@
-﻿@@model IEnumerable<Front_Hoteleria.ViewModels.InventarioFilaVm>
+﻿@@Model IEnumerable<Front_Hoteleria.ViewDtos.InventarioFilaVm>
 
     <table id="tablaInventario" class="table table-striped table-bordered">
         <thead>
@@ -14,7 +14,7 @@
         <tbody>
             @if (Model != null)
             {
-                foreach (var it in Model)
+                foreach (var it in Dto)
                 {
                     <tr>
                         <td>@it.IdHabitacionInsumo</td>

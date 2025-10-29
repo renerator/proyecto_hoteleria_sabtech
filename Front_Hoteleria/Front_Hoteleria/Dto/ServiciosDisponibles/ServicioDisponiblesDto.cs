@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Front_Hoteleria.Model.ServiciosDisponibles
+namespace Front_Hoteleria.Dto.ServiciosDisponibles
 {
-    public class ServicioDisponiblesModel
+    public class ServicioDisponiblesDto
     {
 
         public int IdServicio { get; set; }        

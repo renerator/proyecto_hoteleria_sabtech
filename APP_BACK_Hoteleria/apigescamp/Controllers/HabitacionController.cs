@@ -1,7 +1,10 @@
 ﻿using DemoBackend.Dto.BitacoraHabitacion;
 using DemoBackend.Dto.Habitacion;
+using DemoBackend.Dto.TipoHabitacion;
+using DemoBackend.Services;
 using DemoBackend.Services.Habitacion;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -287,6 +290,30 @@ namespace DemoBackend.Controllers
             return Ok(data);
 
 
+        }
+        /// <summary>
+        /// Lista los tipos de habitación (SP: HOT_TIPO_HAB_LISTAR).
+        /// </summary>
+        [HttpGet("listartiposhabitaciones")]
+        // [Authorize] // <-- descomenta si tu API está protegida por JWT
+        [ProducesResponseType(typeof(List<TipoHabitacionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<List<TipoHabitacionDto>> Listar()
+        {
+            try
+            {
+                var lista = _grupoService.GetListaTipoHabitacion();
+                if (lista == null || lista.Count == 0)
+                    return NoContent();
+
+                return Ok(lista);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[TipoHabitacion/Listar] Error al listar tipos de habitación.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error interno al listar tipos de habitación.");
+            }
         }
 
         [HttpPost("CrearBitacoraHabitacion")]

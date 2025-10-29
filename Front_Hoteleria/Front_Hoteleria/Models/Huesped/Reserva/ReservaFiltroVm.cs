@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Front_Hoteleria.Models.Huesped.Reserva
+namespace Front_Hoteleria.Dtos.Huesped.Reserva
 {
     public class ReservaFiltroVm
     {

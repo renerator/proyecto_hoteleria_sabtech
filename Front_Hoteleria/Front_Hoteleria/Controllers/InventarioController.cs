@@ -1,4 +1,4 @@
-using Front_Hoteleria.Model.Reserva;
+using Front_Hoteleria.Dto.Reserva;
 using Front_Hoteleria.Services.Inventario;
 using System;
 using System.Collections.Generic;
@@ -73,7 +73,7 @@ namespace Front_Hoteleria.Controllers
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult(401, "Sesión expirada");
 
-                var filtro = new ReservaTrabajadorModel
+                var filtro = new ReservaTrabajadorDto
                 {
                     FechaDesde = fechaDesde,
                     FechaHasta = fechaHasta,
@@ -83,7 +83,7 @@ namespace Front_Hoteleria.Controllers
 
                 var data = 0; // await _api.ReservasDisponiblesTrabajadorAsync(filtro, token);
 
-                // TIP: el partial debe estar tipado a List<ReservaTrabajadorModel>
+                // TIP: el partial debe estar tipado a List<ReservaTrabajadorDto>
                 return PartialView("~/Views/Reservas/_TablaReserva.cshtml", data);
             }
             catch (Exception ex)
@@ -115,14 +115,14 @@ namespace Front_Hoteleria.Controllers
 
             ViewBag.IdTrabajador = Session["IdTrabajador"];
 
-            var model = new Front_Hoteleria.Model.Reserva.ReservaTrabajadorModel
+            var Dto = new Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
             {
                 FechaDesde = DateTime.Today,
                 FechaHasta = DateTime.Today.AddDays(1),
                 IdEstadoReserva = 1
             };
 
-            return PartialView("~/Views/Reservas/_UpsertReserva.cshtml", model);
+            return PartialView("~/Views/Reservas/_UpsertReserva.cshtml", Dto);
         }
 
 
@@ -130,7 +130,7 @@ namespace Front_Hoteleria.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CrearReserva(Front_Hoteleria.Model.Reserva.ReservaTrabajadorModel dto)
+        public async Task<ActionResult> CrearReserva(Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto dto)
         {
             try
             {
@@ -171,8 +171,8 @@ namespace Front_Hoteleria.Controllers
 
                 // Llama al servicio SIN parámetros de fecha (usa null, null)
 
-                var dto = new ReservaDashboardModel();
-                dto = new ReservaDashboardModel(); // await _api.DashboardReservasAsync(token)
+                var dto = new ReservaDashboardDto();
+                dto = new ReservaDashboardDto(); // await _api.DashboardReservasAsync(token)
                          
 
                 // Devuelve el parcial fuertemente tipado con el DTO

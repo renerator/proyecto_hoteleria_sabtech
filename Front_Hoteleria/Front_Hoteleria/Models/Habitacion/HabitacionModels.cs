@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Front_Hoteleria.Models.Habitacion
+namespace Front_Hoteleria.Dtos.Habitacion
 {
-    public class HabitacionModels
+    public class HabitacionDtos
     
     {
 

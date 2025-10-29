@@ -1,10 +1,12 @@
 ﻿using DemoBackend.Dto.BitacoraReserva;
+using DemoBackend.Dto.EstadoReserva;
 using DemoBackend.Dto.Mantenedores;
 using DemoBackend.Dto.Reserva;
 using DemoBackend.Models.Reserva;
 using DemoBackend.Services;
 using DemoBackend.Services.Reserva;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -429,6 +431,31 @@ namespace DemoBackend.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        /// <summary>
+        /// Lista los estados de reserva (hot_EstadoReservas).
+        /// SP: HOT_ESTADO_RESERVA_LISTAR
+        /// </summary>
+        [HttpGet("ListarEstadoReserva")]
+        [ProducesResponseType(typeof(List<EstadoReservaDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<List<EstadoReservaDto>> Listar()
+        {
+            try
+            {
+                var data = _reservaService.GetListaEstadoReserva() ?? new List<EstadoReservaDto>();
+                if (data.Count == 0) return NoContent();
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[EstadoReserva/Listar] Error al listar estados de reserva.");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error interno al listar estados de reserva.");
+            }
+        }
+
 
     }
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Front_Hoteleria.Model.Inventario
+namespace Front_Hoteleria.Dto.Inventario
 {
-    public class InventarioDashboardModel
+    public class InventarioDashboardDto
     {
         public int? TotalConfirmadas { get; set; }
         public int? TotalRechazadas { get; set; }

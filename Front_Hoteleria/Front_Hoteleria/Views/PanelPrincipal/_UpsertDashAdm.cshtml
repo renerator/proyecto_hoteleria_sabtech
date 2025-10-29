@@ -1,5 +1,5 @@
 ﻿
-@model Front_Hoteleria.Model.Reserva.ReservaTrabajadorModel
+@model Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
 @using System.Web.Mvc
 
 @{
@@ -8,7 +8,7 @@
     var tipos = ViewBag.TiposReserva as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
     var idTrabajador = (ViewBag.IdTrabajador as int?) ?? 0;
 
-    // Defaults SOLO para la UI (sin tocar Model)
+    // Defaults SOLO para la UI (sin tocar Dto)
     var fechaDesde = Model?.FechaDesde ?? DateTime.Today;
     var fechaHasta = Model?.FechaHasta ?? DateTime.Today.AddDays(1);
     var fechaDesdeStr = fechaDesde.ToString("yyyy-MM-dd");
@@ -62,13 +62,20 @@
         <div class="col-sm-6">
             <div class="form-group">
                 <label>Habitación *</label>
-                @Html.DropDownListFor(m => m.IdHabitacion, habitaciones, "Seleccionar habitación...", new { @class = "form-control", required = "required" })
+                @Html.DropDownListFor(m => m.IdHabitacion,
+                    Enumerable.Empty<SelectListItem>(),
+                    "Seleccionar habitación...",
+                    new { @class = "form-control", required = "required", id = "ddlHabitaciones" })
             </div>
         </div>
+
         <div class="col-sm-6">
             <div class="form-group">
-                <label>Tipo de Reserva *</label>
-                @Html.DropDownListFor(m => m.IdTipoReserva, tipos, "Seleccionar tipo...", new { @class = "form-control", required = "required" })
+                <label>Tipo Habitación *</label>
+                @Html.DropDownListFor(m => m.IdTipoHabitacion,
+                    Enumerable.Empty<SelectListItem>(),
+                    "Seleccionar Tipo habitación...",
+                    new { @class = "form-control", required = "required", id = "ddlTipoHabitaciones" })
             </div>
         </div>
 
@@ -104,3 +111,55 @@
         <button type="submit" class="btn btn-success">Crear Reserva</button>
     </div>
 }
+<script>
+$(document).ready(function () {
+    // Llama al endpoint al abrir el modal
+    cargarHabitaciones();
+    cargarTipoHabitaciones();
+    function cargarHabitaciones() {
+        $.ajax({
+            url: '@Url.Action("HabitacionesCombo", "Reservas")',
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+                if (res.ok && res.data) {
+                    const ddl = $('#ddlHabitaciones');
+                    ddl.empty();
+                    ddl.append('<option value="">Seleccionar habitación...</option>');
+                    $.each(res.data, function (i, item) {
+                        ddl.append(`<option value="${item.id}">${item.text}</option>`);
+                    });
+                } else {
+                    console.warn('No se encontraron habitaciones.');
+                }
+            },
+            error: function (xhr) {
+                console.error('Error cargando habitaciones:', xhr.responseText);
+            }
+        });
+    }
+
+     function cargarTipoHabitaciones() {
+        $.ajax({
+            url: '@Url.Action("TipoHabitacionesCombo", "Reservas")',
+            type: 'GET',
+            dataType: 'json',
+            success: function (res) {
+                if (res.ok && res.data) {
+                    const ddl = $('#ddlTipoHabitaciones');
+                    ddl.empty();
+                    ddl.append('<option value="">Seleccionar Tipo habitación...</option>');
+                    $.each(res.data, function (i, item) {
+                        ddl.append(`<option value="${item.id}">${item.text}</option>`);
+                    });
+                } else {
+                    console.warn('No se encontraron Tipohabitaciones.');
+                }
+            },
+            error: function (xhr) {
+                console.error('Error cargando tipo habitaciones:', xhr.responseText);
+            }
+        });
+ }
+});
+</script>

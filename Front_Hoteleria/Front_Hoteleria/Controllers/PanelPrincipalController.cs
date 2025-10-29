@@ -1,4 +1,4 @@
-﻿using Front_Hoteleria.Model.Reserva;
+﻿using Front_Hoteleria.Dto.Reserva;
 using Front_Hoteleria.Services.Reservas;
 using System;
 using System.Diagnostics;
@@ -60,7 +60,7 @@ namespace Front_Hoteleria.Controllers
                 //desde = null;
                 //hasta = null;
                 var dto = await _api.DashboardReservasPanelPrincipalAsync(fechaDesde, fechaHasta, token)
-                          ?? new ReservaDashboardPanelPrincipalModel();
+                          ?? new ReservaDashboardPanelPrincipalDto();
 
                 return PartialView("~/Views/PanelPrincipal/_DashboardAdm.cshtml", dto);
             }
@@ -91,7 +91,7 @@ namespace Front_Hoteleria.Controllers
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult(401, "Sesión expirada");
 
-                var filtro = new ReservaTrabajadorModel
+                var filtro = new ReservaTrabajadorDto
                 {
                     FechaDesde = fechaDesde,
                     FechaHasta = fechaHasta,
@@ -100,7 +100,7 @@ namespace Front_Hoteleria.Controllers
                 };
 
                 var data = await _api.ReservasDisponiblesTrabajadorAsync(filtro, token)
-                           ?? new System.Collections.Generic.List<ReservaTrabajadorModel>();
+                           ?? new System.Collections.Generic.List<ReservaTrabajadorDto>();
 
                 // Vista correcta en /Views/PanelPrincipal
                 return PartialView("~/Views/PanelPrincipal/_TablaDashAdm.cshtml", data);

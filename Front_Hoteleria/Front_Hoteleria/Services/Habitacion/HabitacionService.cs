@@ -1,4 +1,5 @@
-﻿using Front_Hoteleria.Model.Habitacion;
+﻿using Front_Hoteleria.Dto.Habitacion;
+using Front_Hoteleria.Dto.TipoHabitacion;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,7 @@ namespace Front_Hoteleria.Services.Habitacion
                 _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
         }
 
-        public async Task<List<HabitacionModel>> HabitacionesDisponiblesAsync(int vigencia, string bearer = null)
+        public async Task<List<HabitacionDto>> HabitacionesDisponiblesAsync(int vigencia, string bearer = null)
         {
             try
             {
@@ -48,31 +49,31 @@ namespace Front_Hoteleria.Services.Habitacion
                 using (var resp = await _http.GetAsync(url))
                 {
                     if ((int)resp.StatusCode == 204) // NoContent
-                        return new List<HabitacionModel>();
+                        return new List<HabitacionDto>();
 
                     resp.EnsureSuccessStatusCode();
                     var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<HabitacionModel>>(json) ?? new List<HabitacionModel>();
+                    return JsonConvert.DeserializeObject<List<HabitacionDto>>(json) ?? new List<HabitacionDto>();
                 }
             }
             catch (HttpRequestException ex)
             {
                 Trace.TraceError($"[HabitacionesDisponiblesAsync] Error HTTP: {ex}");
-                return new List<HabitacionModel>();
+                return new List<HabitacionDto>();
             }
             catch (TaskCanceledException ex)
             {
                 Trace.TraceError($"[HabitacionesDisponiblesAsync] Timeout: {ex}");
-                return new List<HabitacionModel>();
+                return new List<HabitacionDto>();
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[HabitacionesDisponiblesAsync] Error inesperado: {ex}");
-                return new List<HabitacionModel>();
+                return new List<HabitacionDto>();
             }
         }
 
-        public async Task<HabitacionDashboardModel> DashboardHabitacionAsync(string bearer = null)
+        public async Task<HabitacionDashboardDto> DashboardHabitacionAsync(string bearer = null)
         {
             try
             {
@@ -88,31 +89,31 @@ namespace Front_Hoteleria.Services.Habitacion
                 using (var resp = await _http.GetAsync(url))
                 {
                     if ((int)resp.StatusCode == 204)
-                        return new HabitacionDashboardModel();
+                        return new HabitacionDashboardDto();
 
                     resp.EnsureSuccessStatusCode();
                     var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<HabitacionDashboardModel>(json) ?? new HabitacionDashboardModel();
+                    return JsonConvert.DeserializeObject<HabitacionDashboardDto>(json) ?? new HabitacionDashboardDto();
                 }
             }
             catch (HttpRequestException ex)
             {
                 Trace.TraceError($"[DashboardHabitacionAsync] Error HTTP: {ex}");
-                return new HabitacionDashboardModel();
+                return new HabitacionDashboardDto();
             }
             catch (TaskCanceledException ex)
             {
                 Trace.TraceError($"[DashboardHabitacionAsync] Timeout: {ex}");
-                return new HabitacionDashboardModel();
+                return new HabitacionDashboardDto();
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[DashboardHabitacionAsync] Error inesperado: {ex}");
-                return new HabitacionDashboardModel();
+                return new HabitacionDashboardDto();
             }
         }
 
-        public async Task<bool> CrearHabitacionAsync(HabitacionModel dto, string bearer = null)
+        public async Task<bool> CrearHabitacionAsync(HabitacionDto dto, string bearer = null)
         {
             try
             {
@@ -141,7 +142,7 @@ namespace Front_Hoteleria.Services.Habitacion
             }
         }
 
-        public async Task<bool> ConfirmarHabitacionAsync(HabitacionModel dto, string bearer = null)
+        public async Task<bool> ConfirmarHabitacionAsync(HabitacionDto dto, string bearer = null)
         {
             try
             {
@@ -170,7 +171,7 @@ namespace Front_Hoteleria.Services.Habitacion
             }
         }
 
-        public async Task<bool> ModificarHabitacionAsync(HabitacionModel dto, string bearer = null)
+        public async Task<bool> ModificarHabitacionAsync(HabitacionDto dto, string bearer = null)
         {
             try
             {
@@ -229,6 +230,39 @@ namespace Front_Hoteleria.Services.Habitacion
             {
                 Trace.TraceError($"[EliminarHabitacionAsync] Error inesperado: {ex}");
                 return false;
+            }
+        }
+        public async Task<List<TipoHabitacionDto>> GetListaTipoHabitacion(string bearer = null)
+        {
+            try
+            {
+                SetBearer(bearer);
+                var url = "/api/Habitacion/listartiposhabitaciones";
+
+                using (var resp = await _http.GetAsync(url))
+                {
+                    if ((int)resp.StatusCode == 204) // NoContent
+                        return new List<TipoHabitacionDto>();
+
+                    resp.EnsureSuccessStatusCode();
+                    var json = await resp.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<List<TipoHabitacionDto>>(json) ?? new List<TipoHabitacionDto>();
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Trace.TraceError($"[HabitacionesDisponiblesAsync] Error HTTP: {ex}");
+                return new List<TipoHabitacionDto>();
+            }
+            catch (TaskCanceledException ex)
+            {
+                Trace.TraceError($"[HabitacionesDisponiblesAsync] Timeout: {ex}");
+                return new List<TipoHabitacionDto>();
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[HabitacionesDisponiblesAsync] Error inesperado: {ex}");
+                return new List<TipoHabitacionDto>();
             }
         }
     }

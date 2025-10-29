@@ -1,7 +1,7 @@
-﻿using Front_Hoteleria.Model.Habitacion;
+﻿using Front_Hoteleria.Dto.Habitacion;
 using Front_Hoteleria.Services.Habitacion;
 using Front_Hoteleria.Services.HabitacionInsumo;
-using Front_Hoteleria.Models.Habitacion;
+using Front_Hoteleria.Dtos.Habitacion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -135,7 +135,7 @@ namespace Front_Hoteleria.Controllers
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
 
-                var dto = await _api.DashboardHabitacionAsync(token) ?? new HabitacionDashboardModel();
+                var dto = await _api.DashboardHabitacionAsync(token) ?? new HabitacionDashboardDto();
 
                 // Usamos ruta absoluta para evitar problemas de resolución del partial
                 return PartialView("~/Views/Habitaciones/_DashboardHabitacion.cshtml", dto);
@@ -217,7 +217,7 @@ namespace Front_Hoteleria.Controllers
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
 
-                var dto = new HabitacionModel { Capacidad = 1, IdEstado = 1 };
+                var dto = new HabitacionDto { Capacidad = 1, IdEstado = 1 };
 
                 if (id.HasValue)
                 {
@@ -247,7 +247,7 @@ namespace Front_Hoteleria.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Upsert(HabitacionModel dto)
+        public async Task<ActionResult> Upsert(HabitacionDto dto)
         {
             try
             {

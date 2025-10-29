@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Front_Hoteleria.Models
+namespace Front_Hoteleria.Dtos
 {
-    public class ServicioModels
+    public class ServicioDtos
     {
 
         public int IdServicio { get; set; }

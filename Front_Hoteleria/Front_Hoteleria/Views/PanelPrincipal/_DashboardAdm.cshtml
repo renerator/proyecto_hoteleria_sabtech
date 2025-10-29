@@ -1,4 +1,4 @@
-﻿@model Front_Hoteleria.Model.Reserva.ReservaDashboardPanelPrincipalModel
+﻿@model Front_Hoteleria.Dto.Reserva.ReservaDashboardPanelPrincipalDto
 
 <div class="row">
     <div class="col-md-3">
@@ -11,7 +11,7 @@
 
     <div class="col-md-3">
         <div class="dashboard-card">
-            <i class="fa fa-times"></i>
+            <i class="fa fa-tasks"></i>
             <h3>@(Model?.Servicios ?? 0)</h3>
             <p>Servicios</p>
         </div>
@@ -36,51 +36,79 @@
 
 <!-- Contenedor del gráfico -->
 <div class="chart-container">
-    <h4 class="chart-title">Reservas x Fecha - Progreso Semanal</h4>
+    <h4 class="chart-title">Reservas x Fecha (Check-in)</h4>
     <div style="position:relative;height:260px;">
         <canvas id="reservationsChart1"></canvas>
     </div>
 </div>
 
+@* Si tu proyecto tiene el archivo local *@
 <script src="@Url.Content("~/vendors/Chart.js/dist/Chart.min.js")"></script>
+@* Fallback a CDN si no cargó el local *@
+<script>
+    if (typeof Chart === 'undefined') {
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1';
+        document.head.appendChild(s);
+    }
+</script>
+
+@{
+    // IMPORTANTE:
+    // Asumo que Model.Labels y Model.Values vienen como JSON string:
+    // Labels: '["18/10/25","24/10/25", ...]'
+    // Values: '[45,67,89,...]'
+    // Si en tu DTO son listas (.NET), usa: @Html.Raw(System.Web.Helpers.Json.Encode(Model.Labels))
+    var labelsJson = Model?.Labels ?? "[]";
+    var valuesJson = Model?.Values ?? "[]";
+}
 
 <script>
-    $(function () {
-        // Solo crea el gráfico si existe el canvas
-        const el = document.getElementById('reservationsChart1');
-        if (!el || typeof Chart === 'undefined') return;
-         const labels = @Html.Raw(Model.Labels ?? "[]");
-          const values = @Html.Raw(Model.Values ?? "[]");
-        const ctx = el.getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels ,
-                datasets: [{
-                    label: 'Reservas',
-                    data: values,
-                    borderColor: '#27ae60',
-                    backgroundColor: 'rgba(39,174,96,0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { stepSize: 20 }
+    (function initChart(){
+        function ready(fn){ if(document.readyState!='loading'){ fn(); } else { document.addEventListener('DOMContentLoaded', fn);} }
+        ready(function(){
+            const el = document.getElementById('reservationsChart1');
+            if (!el) return;
+
+            // Espera a que Chart esté disponible (por si cargó por CDN)
+            function boot(){
+                if (typeof Chart === 'undefined') { return setTimeout(boot, 50); }
+
+                const labels = @Html.Raw(labelsJson);
+                const values = @Html.Raw(valuesJson);
+
+                // Guardrails por si el SP aún no devuelve datos
+                const _labels = Array.isArray(labels) ? labels : [];
+                const _values = Array.isArray(values) ? values : [];
+
+                const ctx = el.getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: _labels,
+                        datasets: [{
+                            label: 'Reservas (check-in)',
+                            data: _values,
+                            borderColor: '#27ae60',
+                            backgroundColor: 'rgba(39,174,96,0.10)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, ticks: { precision: 0 } }
+                        },
+                        plugins: { legend: { display: false } }
                     }
-                },
-                plugins: {
-                    legend: { display: false }
-                }
+                });
             }
+            boot();
         });
-    });
+    })();
 </script>

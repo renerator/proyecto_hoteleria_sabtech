@@ -1,4 +1,4 @@
-﻿using Front_Hoteleria.Model.Inventario;
+﻿using Front_Hoteleria.Dto.Inventario;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -44,49 +44,49 @@ namespace Front_Hoteleria.Services.Inventario
         // GET /api/Inventarios/InventariosDisponibles?vigencia={vigencia}
 
        
-        public async Task<List<InventarioModel>> InventarioDisponiblesAsync(int vigencia, string bearer = null)
+        public async Task<List<InventarioDto>> InventarioDisponiblesAsync(int vigencia, string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
                 using (var resp = await _http.GetAsync($"/api/Inventarios/InventariosDisponibles?vigencia={vigencia}"))
                 {
-                    if ((int)resp.StatusCode == 204) return new List<InventarioModel>();
+                    if ((int)resp.StatusCode == 204) return new List<InventarioDto>();
                     resp.EnsureSuccessStatusCode();
                     var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<InventarioModel>>(json) ?? new List<InventarioModel>();
+                    return JsonConvert.DeserializeObject<List<InventarioDto>>(json) ?? new List<InventarioDto>();
                 }
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[InventariosDisponiblesAsync] {ex}");
-                return new List<InventarioModel>();
+                return new List<InventarioDto>();
             }
         }
 
         // GET /api/Inventarios/dashboardInventarios
-        public async Task<InventarioDashboardModel> DashboardInventarioAsync(string bearer = null)
+        public async Task<InventarioDashboardDto> DashboardInventarioAsync(string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
                 using (var resp = await _http.GetAsync("/api/Inventarios/dashboardInventarios"))
                 {
-                    if ((int)resp.StatusCode == 204) return new InventarioDashboardModel();
+                    if ((int)resp.StatusCode == 204) return new InventarioDashboardDto();
                     resp.EnsureSuccessStatusCode();
                     var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<InventarioDashboardModel>(json) ?? new InventarioDashboardModel();
+                    return JsonConvert.DeserializeObject<InventarioDashboardDto>(json) ?? new InventarioDashboardDto();
                 }
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[DashboardInventariosAsync] {ex}");
-                return new InventarioDashboardModel();
+                return new InventarioDashboardDto();
             }
         }
 
         // POST /api/Inventarios/SolicitaInventario
-        public async Task<bool> CrearInventarioAsync(InventarioModel dto, string bearer = null)
+        public async Task<bool> CrearInventarioAsync(InventarioDto dto, string bearer = null)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace Front_Hoteleria.Services.Inventario
         }
 
         // POST /api/Inventarios/ConfirmarInventario
-        public async Task<bool> ConfirmarInventarioAsync(InventarioModel dto, string bearer = null)
+        public async Task<bool> ConfirmarInventarioAsync(InventarioDto dto, string bearer = null)
         {
             try
             {
@@ -122,7 +122,7 @@ namespace Front_Hoteleria.Services.Inventario
         }
 
         // PUT /api/Inventarios/ModificaInventario
-        public async Task<bool> ModificarInventarioAsync(InventarioModel dto, string bearer = null)
+        public async Task<bool> ModificarInventarioAsync(InventarioDto dto, string bearer = null)
         {
             try
             {
@@ -160,23 +160,23 @@ namespace Front_Hoteleria.Services.Inventario
         }
 
         // GET /api/Inventarios/BuscarInventarios?criterio={texto}
-        public async Task<List<InventarioModel>> BuscarInventarioAsync(string criterio, string bearer = null)
+        public async Task<List<InventarioDto>> BuscarInventarioAsync(string criterio, string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
                 var url = $"/api/Inventarios/BuscarInventarios?criterio={Uri.EscapeDataString(criterio ?? string.Empty)}";
                  var resp = await _http.GetAsync(url);
-                if ((int)resp.StatusCode == 204) return new List<InventarioModel>();
+                if ((int)resp.StatusCode == 204) return new List<InventarioDto>();
 
                 resp.EnsureSuccessStatusCode();
                 var json = await resp.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<InventarioModel>>(json) ?? new List<InventarioModel>();
+                return JsonConvert.DeserializeObject<List<InventarioDto>>(json) ?? new List<InventarioDto>();
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[BuscarInventariosAsync] {ex}");
-                return new List<InventarioModel>();
+                return new List<InventarioDto>();
             }
         }
 
@@ -187,6 +187,6 @@ namespace Front_Hoteleria.Services.Inventario
        
 
         // Si más adelante usas bitácora:
-        // public async Task<bool> CrearBitacoraInventarioAsync(BitacoraInventarioModel dto, string bearer = null) { ... }
+        // public async Task<bool> CrearBitacoraInventarioAsync(BitacoraInventarioDto dto, string bearer = null) { ... }
     }
 }

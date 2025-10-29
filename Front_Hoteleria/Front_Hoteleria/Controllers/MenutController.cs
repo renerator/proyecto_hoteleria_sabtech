@@ -32,12 +32,12 @@ namespace Front_Hoteleria.Controllers
 
 
                 // BLOQUEAR de forma segura la llamada async
-                var modelo = _service.ObtenerMenuAsync(idUsuario, idPerfil)
+                var Dtoo = _service.ObtenerMenuAsync(idUsuario, idPerfil)
                                      .ConfigureAwait(false)
                                      .GetAwaiter()
                                      .GetResult();
 
-                return PartialView("_MenuPartial", modelo);
+                return PartialView("_MenuPartial", Dtoo);
             }
             catch (Exception ex)
             {

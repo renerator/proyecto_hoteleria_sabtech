@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Front_Hoteleria.Model.Reserva.ReservaTrabajadorModel>
+﻿@model IEnumerable<Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto>
 @using System.Globalization
 
 <table id="tablaDashAdm" class="table table-striped table-bordered" style="width:100%">
@@ -33,7 +33,7 @@
                         @(
                   (item.dniTrabajador)
 
-                /* por si tu modelo usa RutTrabajador */
+                /* por si tu Dtoo usa RutTrabajador */
                     )
                     </td>
                     <td>@item.Nombres</td>

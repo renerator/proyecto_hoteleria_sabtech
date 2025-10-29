@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Front_Hoteleria.Models.Habitacion
+namespace Front_Hoteleria.Dtos.Habitacion
 {
     public class InventarioFilaVm
     {

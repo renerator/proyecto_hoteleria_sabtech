@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Front_Hoteleria.Model.Habitacion
+namespace Front_Hoteleria.Dto.Habitacion
 {
-    public class HabitacionModel
+    public class HabitacionDto
     {
 
         public int IdHabitacion { get; set; }
@@ -19,5 +19,6 @@ namespace Front_Hoteleria.Model.Habitacion
         public int IdEstado { get; set; }
         public int IdEmpresa { get; set; }
         public string Motivo { get; set; }
+        public int IdTipoHabitacion { get; set; }
     }
 }

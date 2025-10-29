@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Front_Hoteleria.Model.Servicio.ServicioModel>
+﻿@Model IEnumerable<Front_Hoteleria.Dto.Servicio.ServicioDto>
 
 <div class="row">
     <!-- Clima -->
@@ -45,7 +45,7 @@
                     <tbody>
                         @if (Model != null && Model.Any())
                         {
-                            foreach (var s in Model)
+                            foreach (var s in Dto)
                             {
                                 <tr>
                                     <td>@(s.NumeroHabitacion ?? "0000")</td>

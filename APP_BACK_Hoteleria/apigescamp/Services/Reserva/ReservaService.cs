@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using DemoBackend.Dto.BitacoraReserva;
 using DemoBackend.Dto.Reserva;
+using DemoBackend.Dto.EstadoReserva;
 using DemoBackend.Models.Reserva;
+using DemoBackend.Models.EstadoReserva;
 using DemoBackend.RepositoryGes;
 using DemoBackend.Services.Reserva;
 
@@ -19,6 +21,7 @@ namespace DemoBackend.Services
         private readonly IGenericRepositoryEntity<ReservaDashboardKPI> _listaReservaDashboard;
         private readonly IGenericRepositoryEntity<ReservaDashboardPanelPrincipalModel> _listaReservaDashboardPanelPrincipal;
         private readonly IGenericRepositoryEntity<ReservaTrabajadorModels> _listaReservaTrabajador;
+        private readonly IGenericRepositoryEntity<EstadoReservaModels> _listaEstadoReserva;
         private readonly IMapper _mapper;
 
         public ReservaService(
@@ -26,12 +29,14 @@ namespace DemoBackend.Services
             IGenericRepositoryEntity<ReservaDashboardKPI> listaReservaDashboard,
             IGenericRepositoryEntity<ReservaTrabajadorModels> listaReservaTrabajador,
              IGenericRepositoryEntity<ReservaDashboardPanelPrincipalModel> listaReservaDashboardPanelPrincipal,
-            IMapper mapper)
+            IGenericRepositoryEntity<EstadoReservaModels> listaEstadoReserva,
+        IMapper mapper)
         {
             _listaReserva = listaReserva;
             _listaReservaDashboard = listaReservaDashboard;
             _listaReservaTrabajador = listaReservaTrabajador;
             _listaReservaDashboardPanelPrincipal = listaReservaDashboardPanelPrincipal;
+             _listaEstadoReserva = listaEstadoReserva;
 
             _mapper = mapper;
         }
@@ -387,6 +392,26 @@ namespace DemoBackend.Services
             }
         }
 
+        public List<EstadoReservaDto> GetListaEstadoReserva()
+        {
+            const string sql = "HOT_ESTADO_RESERVA_LISTAR";
+            var respuesta = new List<EstadoReservaDto>();
+
+            try
+            {
+                var lista = _listaEstadoReserva.GetStoreProcedure(sql, Array.Empty<SqlParameter>());
+                if (lista == null || !lista.Any()) return respuesta;
+
+                return _mapper.Map<List<EstadoReservaDto>>(lista);
+                // Si tu repo ya devuelve DTO:
+                // return lista.Cast<EstadoReservaDto>().ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return respuesta; // vacío ante error
+            }
+        }
 
 
     }
