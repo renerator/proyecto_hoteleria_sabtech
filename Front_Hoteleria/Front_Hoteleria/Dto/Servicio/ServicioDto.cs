@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 
-namespace DemoBackend.Dto.Servicio
+namespace Front_Hoteleria.Dto.Servicio
 {
     public class ServicioDto
     {
+
         public int IdServicio { get; set; }             // PK
         public string NombreServicio { get; set; }      // Ej: Limpieza, Reparación
         public int IdTipoServicio { get; set; }         // FK tipo

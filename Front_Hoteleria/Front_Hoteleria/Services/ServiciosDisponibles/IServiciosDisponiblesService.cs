@@ -6,17 +6,12 @@ using System.Threading.Tasks;
 
 namespace Front_Hoteleria.Services.ServiciosDisponibles
 {
-    public interface IServiciosDisponiblesService
+    public interface IServicioDisponiblesService
     {
-        Task<List<ServicioDto>> HabitacionesDisponiblesAsync(int vigencia, string bearer = null);
-        Task<ServicioDashboardDto> DashboardHabitacionAsync(DateTime? desde, DateTime? hasta, string bearer = null);
-
-        Task<bool> CrearHabitacionAsync(ServicioDto dto, string bearer = null);
-        Task<bool> ConfirmarHabitacionAsync(ServicioDto dto, string bearer = null);
-        Task<bool> ModificarHabitacionAsync(ServicioDto dto, string bearer = null);
-        Task<bool> EliminarHabitacionAsync(int idHabitacion, string bearer = null);
-
-        // Si luego necesitas bitácora:
-        // Task<bool> CrearBitacoraReservaAsync(BitacoraReservaDto dto, string bearer = null);
+        Task<List<ServicioDto>> ListarServiciosAsync(int? estado = null, string bearer = null);
+        Task<bool> CrearServicioAsync(ServicioDto dto, string bearer = null);
+        Task<bool> ModificarServicioAsync(ServicioDto dto, string bearer = null);
+        Task<bool> EliminarServicioAsync(int idServicio, string bearer = null);
     }
 }
+

@@ -154,7 +154,7 @@
     <Compile Include="Dto\ServiciosDisponibles\ServicioDisponibleDashboardDto.cs" />
     <Compile Include="Dto\ServiciosDisponibles\ServicioDisponiblesDto.cs" />
     <Compile Include="Dto\Servicio\ServicioDashboardDto.cs" />
-    <Compile Include="Dto\Servicio\ServicioModel.cs" />
+    <Compile Include="Dto\Servicio\ServicioDto.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

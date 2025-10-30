@@ -129,9 +129,9 @@ namespace Front_Hoteleria.Controllers
             // mock inicial para que SIEMPRE muestre filas
             var data = new List<ServicioDto>
             {
-                new ServicioDto{ IdServicio=1, NumeroHabitacion="0005", NombreServicio="Limpieza",  Fecha=DateTime.Today, Hora="10:00", Prioridad="Alta" },
-                new ServicioDto{ IdServicio=2, NumeroHabitacion="0008", NombreServicio="Mantenimiento", Fecha=DateTime.Today, Hora="14:30", Prioridad="Urgente" },
-                new ServicioDto{ IdServicio=3, NumeroHabitacion="0012", NombreServicio="WiFi",       Fecha=DateTime.Today, Hora="16:45", Prioridad="Normal" }
+               // new ServicioDto{ IdServicio=1, NumeroHabitacion="0005", NombreServicio="Limpieza",  Fecha=DateTime.Today, Hora="10:00", Prioridad="Alta" },
+               // new ServicioDto{ IdServicio=2, NumeroHabitacion="0008", NombreServicio="Mantenimiento", Fecha=DateTime.Today, Hora="14:30", Prioridad="Urgente" },
+                //new ServicioDto{ IdServicio=3, NumeroHabitacion="0012", NombreServicio="WiFi",       Fecha=DateTime.Today, Hora="16:45", Prioridad="Normal" }
             };
 
             try

@@ -1,5 +1,5 @@
-﻿using Front_Hoteleria.Dto.Servicio;
-using Front_Hoteleria.Services.ServiciosDisponibles;
+﻿// Front_Hoteleria/Services/Servicio/ServicioApiClient.cs
+using Front_Hoteleria.Dto.Servicio;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Front_Hoteleria.Services.ServiciosDisponibles
 {
-    public class ServiciosDisponiblesService : IServiciosDisponiblesService
+    public class ServiciosDisponiblesService : IServicioDisponiblesService
     {
         private static readonly HttpClient _http;
 
@@ -39,12 +39,13 @@ namespace Front_Hoteleria.Services.ServiciosDisponibles
                 _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
         }
 
-        public async Task<List<ServicioDto>> HabitacionesDisponiblesAsync(int vigencia, string bearer = null)
+        public async Task<List<ServicioDto>> ListarServiciosAsync(int? estado = null, string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
-                var url = "/api/Habitacion/HabitacionesDisponibles?vigencia=" + vigencia;
+                var url = "/api/Servicio/ListarServicios";
+                if (estado.HasValue) url += "?estado=" + estado.Value;
 
                 using (var resp = await _http.GetAsync(url))
                 {
@@ -56,182 +57,73 @@ namespace Front_Hoteleria.Services.ServiciosDisponibles
                     return JsonConvert.DeserializeObject<List<ServicioDto>>(json) ?? new List<ServicioDto>();
                 }
             }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[HabitacionesDisponiblesAsync] Error HTTP: {ex}");
-                return new List<ServicioDto>();
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[HabitacionesDisponiblesAsync] Timeout: {ex}");
-                return new List<ServicioDto>();
-            }
             catch (Exception ex)
             {
-                Trace.TraceError($"[HabitacionesDisponiblesAsync] Error inesperado: {ex}");
+                Trace.TraceError($"[ListarServiciosAsync] {ex}");
                 return new List<ServicioDto>();
             }
         }
 
-        public async Task<ServicioDashboardDto> DashboardHabitacionAsync(DateTime? desde, DateTime? hasta, string bearer = null)
-        {
-            try
-            {
-                SetBearer(bearer);
-
-                var qs = System.Web.HttpUtility.ParseQueryString(string.Empty);
-                if (desde.HasValue) qs["desde"] = desde.Value.ToString("yyyy-MM-dd");
-                if (hasta.HasValue) qs["hasta"] = hasta.Value.ToString("yyyy-MM-dd");
-
-                var url = "/api/Habitacion/dashboardHabitacion";
-                var query = qs.ToString();
-                if (!string.IsNullOrEmpty(query)) url += "?" + query;
-
-                using (var resp = await _http.GetAsync(url))
-                {
-                    if ((int)resp.StatusCode == 204)
-                        return new ServicioDashboardDto();
-
-                    resp.EnsureSuccessStatusCode();
-                    var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<ServicioDashboardDto>(json) ?? new ServicioDashboardDto();
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[DashboardHabitacionAsync] Error HTTP: {ex}");
-                return new ServicioDashboardDto();
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[DashboardHabitacionAsync] Timeout: {ex}");
-                return new ServicioDashboardDto();
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[DashboardHabitacionAsync] Error inesperado: {ex}");
-                return new ServicioDashboardDto();
-            }
-        }
-
-        public async Task<bool> CrearHabitacionAsync(ServicioDto dto, string bearer = null)
+        public async Task<bool> CrearServicioAsync(ServicioDto dto, string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
                 var json = JsonConvert.SerializeObject(dto);
                 using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
-                using (var resp = await _http.PostAsync("/api/Habitacion/SolicitaHabitacion", content))
+                using (var resp = await _http.PostAsync("/api/Servicio/CrearServicio", content))
                 {
                     return resp.IsSuccessStatusCode;
                 }
             }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[CrearHabitacionAsync] Error HTTP: {ex}");
-                return false;
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[CrearHabitacionAsync] Timeout: {ex}");
-                return false;
-            }
             catch (Exception ex)
             {
-                Trace.TraceError($"[CrearHabitacionAsync] Error inesperado: {ex}");
+                Trace.TraceError($"[CrearServicioAsync] {ex}");
                 return false;
             }
         }
 
-        public async Task<bool> ConfirmarHabitacionAsync(ServicioDto dto, string bearer = null)
+        public async Task<bool> ModificarServicioAsync(ServicioDto dto, string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
                 var json = JsonConvert.SerializeObject(dto);
                 using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
-                using (var resp = await _http.PostAsync("/api/Habitacion/ConfirmarHabitacion", content))
+                using (var resp = await _http.PutAsync("/api/Servicio/ModificarServicio", content))
                 {
                     return resp.IsSuccessStatusCode;
                 }
             }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[ConfirmarHabitacionAsync] Error HTTP: {ex}");
-                return false;
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[ConfirmarHabitacionAsync] Timeout: {ex}");
-                return false;
-            }
             catch (Exception ex)
             {
-                Trace.TraceError($"[ConfirmarHabitacionAsync] Error inesperado: {ex}");
+                Trace.TraceError($"[ModificarServicioAsync] {ex}");
                 return false;
             }
         }
 
-        public async Task<bool> ModificarHabitacionAsync(ServicioDto dto, string bearer = null)
+        public async Task<bool> EliminarServicioAsync(int idServicio, string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
-                var json = JsonConvert.SerializeObject(dto);
-                using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
-                using (var resp = await _http.PutAsync("/api/Habitacion/ModificaHabitacion", content))
-                {
-                    return resp.IsSuccessStatusCode;
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[ModificarHabitacionAsync] Error HTTP: {ex}");
-                return false;
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[ModificarHabitacionAsync] Timeout: {ex}");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[ModificarHabitacionAsync] Error inesperado: {ex}");
-                return false;
-            }
-        }
-
-        public async Task<bool> EliminarHabitacionAsync(int idHabitacion, string bearer = null)
-        {
-            try
-            {
-                SetBearer(bearer);
-                var url = "/api/Habitacion/EliminaHabitacion?idHabitacion=" + idHabitacion;
+                var url = "/api/Servicio/EliminarServicio?idServicio=" + idServicio;
 
                 using (var resp = await _http.DeleteAsync(url))
                 {
                     if (resp.IsSuccessStatusCode) return true;
 
                     var error = await resp.Content.ReadAsStringAsync();
-                    Trace.TraceWarning($"[EliminarHabitacionAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {error}");
+                    Trace.TraceWarning($"[EliminarServicioAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {error}");
                     return false;
                 }
             }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[EliminarHabitacionAsync] Error HTTP: {ex}");
-                return false;
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[EliminarHabitacionAsync] Timeout: {ex}");
-                return false;
-            }
             catch (Exception ex)
             {
-                Trace.TraceError($"[EliminarHabitacionAsync] Error inesperado: {ex}");
+                Trace.TraceError($"[EliminarServicioAsync] {ex}");
                 return false;
             }
         }
     }
 }
+

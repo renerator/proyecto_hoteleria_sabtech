@@ -1,138 +1,92 @@
 ﻿@{
-    ViewBag.Title = "Servicios";
+    ViewBag.Title = "Gestión de Reservas | Sabtech Group";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="right_col" role="main">
     <div class="x_panel">
         <div class="x_title">
-            <h2>Gestión de Servicios Disponibles <small>Panel Operativo</small></h2>
+            <h2>Gestión de Servicios Disponibles</h2>
             <div class="clearfix"></div>
         </div>
 
         <div class="x_content">
-            <!-- Filtros básicos para la tabla -->
-            <form id="frmFiltrosServicios" class="form-inline" method="post" style="margin-bottom:10px">
+            <div id="panelesContainer">
+                @Html.Action("Paneles", "Servicios")
+            </div>
+
+            <hr />
+
+            <form id="frmFiltroServicios" class="form-inline" method="post" action="@Url.Action("Tabla","ServiciosDisponibles")">
                 @Html.AntiForgeryToken()
-                <input type="hidden" name="vigencia" value="1" />
                 <div class="form-group">
-                    <label for="txtNombre" class="sr-only">Nombre</label>
-                    <input id="txtNombre" name="nombre" class="form-control" placeholder="Buscar servicio..." />
+                    <label for="estado">Estado:&nbsp;</label>
+                    <select class="form-control" id="estado" name="estado">
+                        <option value="">Todos</option>
+                        <option value="1">Activos</option>
+                        <option value="0">Inactivos</option>
+                    </select>
                 </div>
-                <button type="submit" class="btn btn-default"><i class="fa fa-search"></i> Buscar</button>
-                <button type="button" id="btnLimpiarFiltros" class="btn btn-default"><i class="fa fa-eraser"></i> Limpiar</button>
-                <button type="button" id="btnNuevoServicio" class="btn btn-primary pull-right" data-toggle="modal" data-target="#modalUpsert">
-                    <i class="fa fa-plus"></i> Crear Nuevo Servicio
+                <button type="submit" class="btn btn-primary"><i class="fa fa-filter"></i> Filtrar</button>
+                <button type="button" id="btnNuevo" class="btn btn-success pull-right">
+                    <i class="fa fa-plus"></i> Nuevo Servicio
                 </button>
             </form>
 
-            <!-- 1) Dashboard -->
-            <div id="dashContainer" style="margin-bottom:15px"></div>
-
-            <!-- 2) Paneles intermedios -->
-            <div id="panelesContainer" style="margin-bottom:15px"></div>
-
-            <!-- 3) Tabla -->
-            <div id="tablaContainer" class="table-responsive"></div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Upsert -->
-<div class="modal fade" id="modalUpsert" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h4 class="modal-title">Servicio</h4>
-            </div>
-            <div class="modal-body" id="upsertBody">
-                <div class="text-muted">Cargando…</div>
+            <div id="tablaContainer" style="margin-top:15px;">
+                @Html.Partial("_TablaServicioDisponibles", new List<Front_Hoteleria.Dto.Servicio.ServicioDto>())
             </div>
         </div>
     </div>
 </div>
 
-@section Scripts{
+@section scripts{
     <script>
-(function(){
-    const urlDashboard  = '@Url.Action("DashboardServicio","Servicios")';
-    const urlPaneles    = '@Url.Action("PanelesServicio","Servicios")';
-    const urlTabla      = '@Url.Action("TablaServicio","Servicios")';
-    const urlUpsertGet  = '@Url.Action("UpsertServicio","Servicios")';
-    const urlUpsertPost = '@Url.Action("UpsertServicio","Servicios")';
-    const urlEliminar   = '@Url.Action("EliminarServicio","Servicios")';
-
-    function token(){
-        var $t = $('#frmFiltrosServicios').find('input[name="__RequestVerificationToken"]');
-        return $t.length ? $t.val() : $('input[name="__RequestVerificationToken"]').val();
-    }
-
-    function cargarDashboard(){
-        $('#dashContainer').load(urlDashboard, function(_, status){
-            if(status!=='success') $('#dashContainer').html('<div class="text-danger">No se pudo cargar el dashboard.</div>');
-        });
-    }
-
-    function cargarPaneles(){
-        $('#panelesContainer').load(urlPaneles, function(_, status){
-            if(status!=='success') $('#panelesContainer').html('<div class="text-danger">No se pudieron cargar los paneles.</div>');
-        });
-    }
-
+$(function(){
     function cargarTabla(){
-        $('#tablaContainer').html('<div class="text-muted">Cargando…</div>');
+        var $f = $('#frmFiltroServicios');
         $.ajax({
-            url: urlTabla, type: 'POST',
-            data: $('#frmFiltrosServicios').serialize(),
-            headers: { 'RequestVerificationToken': token() },
-            success: function(html){
-                $('#tablaContainer').html(html);
-            },
-            error: function(){
-                $('#tablaContainer').html('<div class="text-danger">No se pudo cargar el listado.</div>');
-            }
+            url: $f.attr('action'),
+            type: 'POST',
+            data: $f.serialize(),
+            success: function(html){ $('#tablaContainer').html(html); },
+            error: function(){ alert('No se pudo cargar la tabla.'); }
         });
     }
+    $('#frmFiltroServicios').on('submit', function(e){ e.preventDefault(); cargarTabla(); });
+    cargarTabla();
 
-    // Crear
-    $('#btnNuevoServicio').on('click', function(){
-        $('#upsertBody').html('<div class="text-muted">Cargando…</div>');
-        $('#upsertBody').load(urlUpsertGet);
-    });
-
-    // Buscar / limpiar
-    $('#frmFiltrosServicios').on('submit', function(e){ e.preventDefault(); cargarTabla(); });
-    $('#btnLimpiarFiltros').on('click', function(){
-        $('#frmFiltrosServicios')[0].reset(); cargarTabla();
-    });
-
-    // Delegados editar / eliminar
-    $('#tablaContainer').on('click','.btn-editar-servicio', function(){
-        var id = $(this).data('id');
-        $('#upsertBody').html('<div class="text-muted">Cargando…</div>');
-        $('#modalUpsert').modal('show');
-        $('#upsertBody').load(urlUpsertGet + '?id=' + id);
-    });
-
-    $('#tablaContainer').on('click','.btn-eliminar-servicio', function(){
-        var id = $(this).data('id');
-        if(!confirm('¿Eliminar el servicio?')) return;
-        $.ajax({
-            url: urlEliminar, type:'POST',
-            headers: { 'RequestVerificationToken': token() },
-            data: { idServicio: id },
-            success: function(){ cargarTabla(); },
-            error: function(xhr){ alert(xhr.responseText || 'Error al eliminar.'); }
+    $('#btnNuevo').on('click', function(){
+        $.get('@Url.Action("Upsert","ServiciosDisponibles")', function(html){
+            $('#modalUpsert .modal-content').html(html);
+            $('#modalUpsert').modal('show');
         });
     });
 
-    // Carga inicial
-    $(function(){
-        cargarDashboard();
-        cargarPaneles();
-        cargarTabla();
+    $(document).on('click', '.btn-edit', function(){
+        var id = $(this).data('id');
+        $.get('@Url.Action("Upsert","ServiciosDisponibles")', { id: id }, function(html){
+            $('#modalUpsert .modal-content').html(html);
+            $('#modalUpsert').modal('show');
+        });
     });
-})();
+
+    $(document).on('click', '.btn-del', function(){
+        if(!confirm('¿Eliminar servicio?')) return;
+        var id = $(this).data('id');
+        $.post('@Url.Action("Eliminar","ServiciosDisponibles")',
+               { idServicio: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
+               function(r){
+                   if(r.ok){ cargarTabla(); } else { alert(r.message || 'Error'); }
+               });
+    });
+});
     </script>
+
+    <!-- Modal genérico para crear/editar -->
+    <div class="modal fade" id="modalUpsert" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content"></div>
+        </div>
+    </div>
 }

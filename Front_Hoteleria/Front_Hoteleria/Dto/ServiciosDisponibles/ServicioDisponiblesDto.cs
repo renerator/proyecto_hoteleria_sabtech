@@ -17,6 +17,10 @@ namespace Front_Hoteleria.Dto.ServiciosDisponibles
         public string Hora { get; set; } // Empresa asociada
         public bool Estado { get; set; }
         public string Prioridad { get; set; }
+
+            // "baja", "media", "alta", "urgente"
+        public string Categoria { get; set; }     // "limpieza", "mantenimiento", "concierge", etc.
+        public int TiempoEstimadoMin { get; set; } 
         // true = Activo, false = Inactivo o eliminado
     }
 }
