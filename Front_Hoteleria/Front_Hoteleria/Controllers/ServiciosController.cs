@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -53,8 +54,17 @@ namespace Front_Hoteleria.Controllers
         [HttpGet]
         public ActionResult Paneles()
         {
-            return PartialView("~/Views/Servicios/_PanelesServicio.cshtml");
+            return PartialView("~/Views/ServiciosDisponibles/__PanelesServicioDisponibles.cshtml");
         }
+
+        [HttpGet]
+        public async Task<ActionResult> Kpi()
+        {
+            var token = GetBearer();
+            var kpi = await _api.KpiServiciosAsync(token);
+            return Json(new { ok = true, data = kpi }, JsonRequestBehavior.AllowGet);
+        }
+
 
         [HttpGet]
         public ActionResult Dashboard()
@@ -69,6 +79,7 @@ namespace Front_Hoteleria.Controllers
             var model = new ServicioDto { IdServicio = id ?? 0, Estado = true };
             return PartialView("~/Views/Servicios/_UpsertServicio.cshtml", model);
         }
+       
 
         [HttpPost]
         [ValidateAntiForgeryToken]

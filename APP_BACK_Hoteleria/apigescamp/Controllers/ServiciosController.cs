@@ -1,9 +1,12 @@
 ﻿
 using DemoBackend.Dto.Servicio; // Si tu ServicioDto está aquí, déjalo; si no, ajusta el using
+using DemoBackend.Dto.ServicioCategoria;
+using DemoBackend.Dto.ServicioEstado;
+using DemoBackend.Dto.ServicioPrioridad;
+using DemoBackend.Models.Servicio;
  // Quita si no aplica
 using DemoBackend.Services;
 using DemoBackend.Services.Servicio; // Quita si no aplica
-using DemoBackend.Models.Servicio;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,6 +21,7 @@ namespace DemoBackend.Controllers
     public class ServicioController : BaseController
     {
         private readonly IServicioService _servicioService;
+
         private readonly ILogger<ServicioController> _logger;
 
         public ServicioController(IServicioService servicioService, ILogger<ServicioController> logger)
@@ -42,7 +46,7 @@ namespace DemoBackend.Controllers
             _logger.LogInformation("GET ServiciosPendientes: inicio.");
             try
             {
-                var servicios = _servicioService.GetListaServicioEstado(vigencia);
+                var servicios = _servicioService.GetListaServicio();
                 if (servicios == null || servicios.Count == 0)
                 {
                     _logger.LogInformation("GET ServiciosPendientes: sin resultados.");
@@ -184,6 +188,99 @@ namespace DemoBackend.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e, "DELETE EliminarServicio: error.");
+                return StatusCode(500, "Error interno del servidor.");
+            }
+        }
+
+
+
+        // 1) ServiciosEstadoss
+        [HttpGet("ListarServiciosEstados")]
+        public ActionResult<List<ServicioEstadoDto>> ListarServiciosEstado(int vigencia = 1)
+        {
+            _logger.LogInformation("GET ListarServiciosEstado: inicio.");
+            try
+            {
+                var items = _servicioService.GetListaServicioEstado(vigencia);
+                if (items == null || items.Count == 0)
+                {
+                    _logger.LogInformation("GET ListarServiciosEstado: sin resultados.");
+                    return NoContent();
+                }
+
+                _logger.LogInformation("GET ListarServiciosEstado: {Count} registros.", items.Count);
+                return Ok(items);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "GET ListarServiciosCategoria: error.");
+                return StatusCode(500, "Error interno del servidor.");
+            }
+        }
+
+        // 2) Categorías
+        [HttpGet("ListarServiciosCategoria")]
+        public ActionResult<List<ServicioCategoriaDto>> ListarServiciosCategoria(int vigencia = 1)
+        {
+            _logger.LogInformation("GET ListarServiciosCategoria: inicio.");
+            try
+            {
+                var items = _servicioService.GetListaServiciosCategoria(vigencia);
+                if (items == null || items.Count == 0)
+                {
+                    _logger.LogInformation("GET ListarServiciosCategoria: sin resultados.");
+                    return NoContent();
+                }
+
+                _logger.LogInformation("GET ListarServiciosCategoria: {Count} registros.", items.Count);
+                return Ok(items);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "GET ListarServiciosCategoria: error.");
+                return StatusCode(500, "Error interno del servidor.");
+            }
+        }
+        [HttpGet("KpiServicios")]
+        public ActionResult<ServicioKpiDto> KpiServicios()
+        {
+            _logger.LogInformation("GET KpiServicios: inicio.");
+            try
+            {
+                var kpi = _servicioService.GetKpiServicios();
+                Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, proxy-revalidate";
+                Response.Headers["Pragma"] = "no-cache";
+                Response.Headers["Expires"] = "0";
+                _logger.LogInformation($"DashboardPanelPrincipal :  resultado(s).");
+                return Ok(kpi);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "GET KpiServicios: error.");
+                return StatusCode(500, "Error interno del servidor.");
+            }
+        }
+
+        // 3) Prioridades
+        [HttpGet("ListarServicioPrioridad")]
+        public ActionResult<List<ServicioPrioridadDto>> ListarServicioPrioridad(int vigencia = 1)
+        {
+            _logger.LogInformation("GET ListarServicioPrioridad: inicio.");
+            try
+            {
+                var items = _servicioService.GetListaServicioPrioridad(vigencia);
+                if (items == null || items.Count == 0)
+                {
+                    _logger.LogInformation("GET ListarServicioPrioridad: sin resultados.");
+                    return NoContent();
+                }
+
+                _logger.LogInformation("GET ListarServicioPrioridad: {Count} registros.", items.Count);
+                return Ok(items);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "GET ListarServicioPrioridad: error.");
                 return StatusCode(500, "Error interno del servidor.");
             }
         }

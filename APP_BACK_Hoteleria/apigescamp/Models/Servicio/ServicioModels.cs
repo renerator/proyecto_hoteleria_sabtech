@@ -1,7 +1,12 @@
 ﻿using DemoBackend.Models;
+using DemoBackend.Models.ServicioCategoria;
+using DemoBackend.Models.ServicioEstado;
+using DemoBackend.Models.ServicioPrioridad;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
+
 
 namespace DemoBackend.Models.Servicio
 {
@@ -13,7 +18,6 @@ namespace DemoBackend.Models.Servicio
         public int IdServicio { get; set; }
 
         [Column("NombreServicio")]
-        [StringLength(150)]
         public string NombreServicio { get; set; }
 
         [Column("idTipoServicio")]
@@ -25,33 +29,43 @@ namespace DemoBackend.Models.Servicio
         [Column("Estado")]
         public bool Estado { get; set; }
 
-        // Nuevos campos
+        [Column("idServicioEstado")]
+        public int? IdServicioEstado { get; set; }
+
         [Column("idServicioPrioridad")]
         public int? IdServicioPrioridad { get; set; }
 
         [Column("idServiciosCategoria")]
         public int? IdServiciosCategoria { get; set; }
 
-        // OJO: el nombre en BD está con doble 't': TiempoEsttimado
         [Column("TiempoEsttimado")]
         public int TiempoEstimadoMinutos { get; set; }
 
         [Column("Precio")]
         public int? Precio { get; set; }
 
-        // Helper opcional para mostrar HH:mm en la UI
-        [NotMapped]
-        public string TiempoEstimadoFmt =>
-            TimeSpan.FromMinutes(TiempoEstimadoMinutos).ToString(@"hh\:mm");
+        // ====== NUEVAS columnas que vienen del SP (no están en la tabla física) ======
+       // [NotMapped]
+        public string NombreEstadoServicio { get; set; }
 
-        // (Opcional) Navegación si tienes los modelos creados:
-        // [ForeignKey(nameof(IdServicioPrioridad))]
-        // public virtual ServicioPrioridadModels ServicioPrioridad { get; set; }
-        //
-        // [ForeignKey(nameof(IdServiciosCategoria))]
-        // public virtual ServiciosCategoriaModels ServiciosCategoria { get; set; }
+       // [NotMapped]
+        public string NombreCategoria { get; set; }
+
+       // [NotMapped]
+        public string NombrePrioridad { get; set; }
+
+        // si quieres seguir teniendo las navegaciones, las dejas:
+        [ForeignKey(nameof(IdServicioEstado))]
+        public virtual ServicioEstadoModels ServicioEstado { get; set; }
+
+        [ForeignKey(nameof(IdServicioPrioridad))]
+        public virtual ServicioPrioridadModels ServicioPrioridad { get; set; }
+
+        [ForeignKey(nameof(IdServiciosCategoria))]
+        public virtual ServicioCategoriaModels ServiciosCategoria { get; set; }
     }
 }
+
 
 
 

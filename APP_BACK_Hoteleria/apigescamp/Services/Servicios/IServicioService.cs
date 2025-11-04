@@ -1,4 +1,7 @@
 ﻿using DemoBackend.Dto.Servicio;
+using DemoBackend.Dto.ServicioEstado;
+using DemoBackend.Dto.ServicioCategoria;
+using DemoBackend.Dto.ServicioPrioridad;
 using System.Collections.Generic;
 
 namespace DemoBackend.Services.Servicio
@@ -13,7 +16,7 @@ namespace DemoBackend.Services.Servicio
         /// <summary>
         /// Obtiene la lista de servicios filtrados por estado (1 = activos, 0 = inactivos).
         /// </summary>
-        List<ServicioDto> GetListaServicioEstado(int estado);
+        List<ServicioEstadoDto> GetListaServicioEstado(int estado);
 
         /// <summary>
         /// Crea un nuevo servicio en el sistema.
@@ -34,6 +37,14 @@ namespace DemoBackend.Services.Servicio
         /// Verifica si existe un servicio por su Id.
         /// </summary>
         List<ServicioDto> VerificaServicioPorId(ServicioDto servicio);
+
+
+
+        // estos son los nuevos para los combos
+        List<ServicioCategoriaDto> GetListaServiciosCategoria(int vigencia);
+        List<ServicioPrioridadDto> GetListaServicioPrioridad(int vigencia);
+
+        ServicioKpiDto GetKpiServicios();
     }
 }
 

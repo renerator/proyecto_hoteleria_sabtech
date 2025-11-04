@@ -15,10 +15,16 @@ namespace Front_Hoteleria.Dto.Servicio
         public bool Estado { get; set; }                // Activo/Inactivo
 
         // Nuevos campos
+        public int? IdServicioEstado { get; set; }
         public int? IdServicioPrioridad { get; set; }   // FK a ctr_man_ServicioPrioridad
         public int? IdServiciosCategoria { get; set; }  // FK a ctr_man_ServiciosCategoria
         public int TiempoEstimadoMinutos { get; set; }  // minutos (mapea a columna TiempoEsttimado)
         public int? Precio { get; set; }             // DECIMAL(19,4) en BD
+
+        // nuevos que vienen del SP
+        public string NombreEstadoServicio { get; set; }
+        public string NombreCategoria { get; set; }
+        public string NombrePrioridad { get; set; }
 
         // (Opcionales para la UI; si no los usarás, elimínalos)
         public string TiempoEstimadoFmt =>

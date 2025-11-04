@@ -4,20 +4,23 @@ namespace DemoBackend.Dto.Servicio
 {
     public class ServicioDto
     {
-        public int IdServicio { get; set; }             // PK
-        public string NombreServicio { get; set; }      // Ej: Limpieza, Reparación
-        public int IdTipoServicio { get; set; }         // FK tipo
-        public int IdEmpresa { get; set; }              // FK empresa
-        public bool Estado { get; set; }                // Activo/Inactivo
+        public int IdServicio { get; set; }
+        public string NombreServicio { get; set; }
+        public int IdTipoServicio { get; set; }
+        public int IdEmpresa { get; set; }
+        public bool Estado { get; set; }
 
-        // Nuevos campos
-        public int? IdServicioPrioridad { get; set; }   // FK a ctr_man_ServicioPrioridad
-        public int? IdServiciosCategoria { get; set; }  // FK a ctr_man_ServiciosCategoria
-        public int TiempoEstimadoMinutos { get; set; }  // minutos (mapea a columna TiempoEsttimado)
-        public int? Precio { get; set; }             // DECIMAL(19,4) en BD
+        public int? IdServicioEstado { get; set; }
+        public int? IdServicioPrioridad { get; set; }
+        public int? IdServiciosCategoria { get; set; }
 
-        // (Opcionales para la UI; si no los usarás, elimínalos)
-        public string TiempoEstimadoFmt =>
-            TimeSpan.FromMinutes(TiempoEstimadoMinutos).ToString(@"hh\:mm");
+        public int TiempoEstimadoMinutos { get; set; }
+        public int? Precio { get; set; }
+
+        // nuevos que vienen del SP
+        public string NombreEstadoServicio { get; set; }
+        public string NombreCategoria { get; set; }
+        public string NombrePrioridad { get; set; }
     }
+
 }
