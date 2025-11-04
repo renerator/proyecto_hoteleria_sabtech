@@ -1,0 +1,224 @@
+﻿@model Front_Hoteleria.Dto.Servicio.ServicioDto
+
+<div class="modal-header" style="background:#1f4f6e;color:#fff;">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff;">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title">
+        @(Model != null && Model.IdServicio > 0
+            ? "Editar Servicio del Catálogo"
+            : "Agregar Nuevo Servicio al Catálogo")
+    </h4>
+</div>
+
+@using (Html.BeginForm("Guardar", "ServiciosDisponibles", FormMethod.Post, new { id = "frmServicio" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.IdServicio)
+
+    <div class="modal-body">
+        <div class="row">
+            <!-- Nombre -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="NombreServicio">Nombre del Servicio *</label>
+                    <input type="text"
+                           class="form-control"
+                           id="NombreServicio"
+                           name="NombreServicio"
+                           placeholder="Ej: Limpieza Estándar"
+                           value="@(Model != null ? Model.NombreServicio : "")"
+                           required />
+                </div>
+            </div>
+
+            <!-- Categoría -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="IdServiciosCategoria">Categoría *</label>
+                    <select id="IdServiciosCategoria" name="IdServiciosCategoria" class="form-control" required>
+                        <option value="">Seleccionar categoría...</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Prioridad -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="IdServicioPrioridad">Prioridad *</label>
+                    <select id="IdServicioPrioridad" name="IdServicioPrioridad" class="form-control" required>
+                        <option value="">Seleccionar prioridad...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Tiempo estimado -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="TiempoEstimadoMinutos">Tiempo Estimado (minutos) *</label>
+                    <input type="number"
+                           min="0"
+                           class="form-control"
+                           id="TiempoEstimadoMinutos"
+                           name="TiempoEstimadoMinutos"
+                           value="@(Model != null ? Model.TiempoEstimadoMinutos : 0)"
+                           required />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Precio -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="Precio">Precio ($) *</label>
+                    <input type="number"
+                           step="0.01"
+                           min="0"
+                           class="form-control"
+                           id="Precio"
+                           name="Precio"
+                           value="@(Model != null && Model.Precio.HasValue ? Model.Precio.Value : 0)"
+                           required />
+                </div>
+            </div>
+
+            <!-- Personal requerido (solo UI) -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="PersonalRequerido">Personal Requerido *</label>
+                    <input type="text"
+                           class="form-control"
+                           id="PersonalRequerido"
+                           name="PersonalRequerido"
+                           placeholder="Ej: Personal Limpieza" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Estado -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="IdServicioEstado">Estado *</label>
+                    <select id="IdServicioEstado" name="IdServicioEstado" class="form-control" required>
+                        <option value="">Seleccionar estado...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Código -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="CodigoServicio">Código del Servicio</label>
+                    <input type="text"
+                           class="form-control"
+                           id="CodigoServicio"
+                           name="CodigoServicio"
+                           value="@(Model != null && Model.IdServicio > 0 ? Model.IdServicio.ToString() : "Se genera automáticamente")"
+                           readonly />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="DescripcionServicio">Descripción del Servicio</label>
+            <textarea id="DescripcionServicio"
+                      name="DescripcionServicio"
+                      rows="3"
+                      class="form-control"
+                      placeholder="Descripción detallada del servicio, procedimientos, materiales necesarios, etc."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="ProtocoloAtencion">Protocolo de Atención</label>
+            <textarea id="ProtocoloAtencion"
+                      name="ProtocoloAtencion"
+                      rows="3"
+                      class="form-control"
+                      placeholder="Pasos específicos para la ejecución del servicio..."></textarea>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="button" id="btnLimpiarModal" class="btn btn-warning">Limpiar</button>
+        <button type="submit" class="btn btn-primary">
+            @(Model != null && Model.IdServicio > 0 ? "Actualizar Servicio" : "Agregar Servicio")
+        </button>
+    </div>
+}
+
+<script>
+    (function () {
+
+        // valores seleccionados (sin operador ?. porque Razor a veces se queja)
+        var selCategoria = '@(Model != null && Model.IdServiciosCategoria.HasValue ? Model.IdServiciosCategoria.Value.ToString() : "")';
+        var selPrioridad = '@(Model != null && Model.IdServicioPrioridad.HasValue ? Model.IdServicioPrioridad.Value.ToString() : "")';
+        var selEstado    = '@(Model != null && Model.IdServicioEstado.HasValue ? Model.IdServicioEstado.Value.ToString() : "")';
+
+        // Cargar combos
+        $.getJSON('@Url.Action("CategoriaCombo","ServiciosDisponibles")', function (r) {
+            var $c = $('#IdServiciosCategoria');
+            if (r && r.ok) {
+                $.each(r.data, function (_, o) {
+                    var opt = $('<option>').val(o.value).text(o.text);
+                    if (selCategoria && selCategoria === o.value.toString())
+                        opt.prop('selected', true);
+                    $c.append(opt);
+                });
+            }
+        });
+
+        $.getJSON('@Url.Action("PrioridadCombo","ServiciosDisponibles")', function (r) {
+            var $p = $('#IdServicioPrioridad');
+            if (r && r.ok) {
+                $.each(r.data, function (_, o) {
+                    var opt = $('<option>').val(o.value).text(o.text);
+                    if (selPrioridad && selPrioridad === o.value.toString())
+                        opt.prop('selected', true);
+                    $p.append(opt);
+                });
+            }
+        });
+
+        $.getJSON('@Url.Action("EstadoCombo","ServiciosDisponibles")', function (r) {
+            var $e = $('#IdServicioEstado');
+            if (r && r.ok) {
+                $.each(r.data, function (_, o) {
+                    var opt = $('<option>').val(o.value).text(o.text);
+                    if (selEstado && selEstado === o.value.toString())
+                        opt.prop('selected', true);
+                    $e.append(opt);
+                });
+            }
+        });
+
+        // limpiar
+        $('#btnLimpiarModal').on('click', function () {
+            $('#frmServicio')[0].reset();
+            $('#IdServiciosCategoria').val('');
+            $('#IdServicioPrioridad').val('');
+            $('#IdServicioEstado').val('');
+        });
+
+        // submit ajax
+        $('#frmServicio').on('submit', function (e) {
+            e.preventDefault();
+            var datos = $(this).serialize();
+            $.post('@Url.Action("Guardar","ServiciosDisponibles")', datos, function (r) {
+                if (r && r.ok) {
+                    $('#modalUpsert').modal('hide');
+                    if (window.cargarTabla) {
+                        window.cargarTabla();
+                    }
+                } else {
+                    alert(r.message || 'No se pudo guardar.');
+                }
+            });
+        });
+
+    })();
+</script>

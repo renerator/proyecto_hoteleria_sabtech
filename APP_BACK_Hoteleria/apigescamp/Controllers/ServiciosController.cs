@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DemoBackend.Controllers
 {
@@ -251,7 +252,7 @@ namespace DemoBackend.Controllers
                 Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, proxy-revalidate";
                 Response.Headers["Pragma"] = "no-cache";
                 Response.Headers["Expires"] = "0";
-                _logger.LogInformation($"DashboardPanelPrincipal :  resultado(s).");
+                _logger.LogInformation($"KpiServicios :  resultado(s).");
                 return Ok(kpi);
             }
             catch (Exception e)
@@ -261,8 +262,47 @@ namespace DemoBackend.Controllers
             }
         }
 
-        // 3) Prioridades
-        [HttpGet("ListarServicioPrioridad")]
+
+       
+
+[HttpGet("MuestraServicio")]
+    public ActionResult<ServicioDto> MuestraServicio([FromQuery] int id)
+    {
+        _logger.LogInformation("GET MuestraServicio: inicio.");
+
+        try
+        {
+            // armamos el dto que espera tu service
+            var filtro = new ServicioDto
+            {
+                IdServicio = id
+            };
+
+            // tu service devuelve una LISTA
+            var items = _servicioService.VerificaServicioPorId(filtro);
+
+            if (items == null || items.Count == 0)
+            {
+                _logger.LogInformation("GET MuestraServicio: sin resultados.");
+                return NoContent();
+            }
+
+            // nos quedamos con el primero
+            var servicio = items.First();
+
+            _logger.LogInformation("GET MuestraServicio: 1 registro.");
+            return Ok(servicio);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "GET MuestraServicio: error.");
+            return StatusCode(500, "Error interno del servidor.");
+        }
+    }
+
+
+    // 3) Prioridades
+    [HttpGet("ListarServicioPrioridad")]
         public ActionResult<List<ServicioPrioridadDto>> ListarServicioPrioridad(int vigencia = 1)
         {
             _logger.LogInformation("GET ListarServicioPrioridad: inicio.");

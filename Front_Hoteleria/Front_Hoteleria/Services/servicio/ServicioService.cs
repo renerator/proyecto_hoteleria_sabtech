@@ -1,5 +1,8 @@
 ﻿// Front_Hoteleria/Services/Servicio/ServicioService.cs
 using Front_Hoteleria.Dto.Servicio;
+using Front_Hoteleria.Dto.ServicioCategoria;
+using Front_Hoteleria.Dto.ServicioEstado;
+using Front_Hoteleria.Dto.ServicioPrioridad;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -39,6 +42,55 @@ namespace Front_Hoteleria.Services.Servicio
             if (!string.IsNullOrWhiteSpace(bearer))
                 _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
         }
+
+        public async Task<List<ServicioDto>> VerificaServicioPorId(ServicioDto servicio, string token)
+        {
+            try
+            {
+                // validación básica
+                if (servicio == null || servicio.IdServicio <= 0)
+                    return new List<ServicioDto>();
+
+                // setea el bearer igual que en los otros métodos
+                SetBearer(token);
+
+                // tu endpoint que devuelve 1 ServicioDto
+                // ej: /api/Servicio/MuestraServicio?id=5
+                var url = "/api/Servicio/MuestraServicio?id=" + servicio.IdServicio;
+
+                using (var resp = await _http.GetAsync(url))
+                {
+                    if (resp.StatusCode == HttpStatusCode.NoContent)
+                        return new List<ServicioDto>();
+
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[VerificaServicioPorId] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return new List<ServicioDto>();
+                    }
+
+                    var json = await resp.Content.ReadAsStringAsync();
+                    if (string.IsNullOrWhiteSpace(json))
+                        return new List<ServicioDto>();
+
+                    // el endpoint devuelve UN SOLO dto
+                    var dto = JsonConvert.DeserializeObject<ServicioDto>(json);
+                    if (dto == null)
+                        return new List<ServicioDto>();
+
+                    // tu interfaz pide List<ServicioDto>
+                    return new List<ServicioDto> { dto };
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[VerificaServicioPorId] {ex}");
+                return new List<ServicioDto>();
+            }
+        }
+
+
 
         // GET /api/Servicio/ListarServicios?estado={0|1}
         public async Task<List<ServicioDto>> ListarServiciosAsync(int? estado = null, string bearer = null)
@@ -81,6 +133,7 @@ namespace Front_Hoteleria.Services.Servicio
             try
             {
                 SetBearer(bearer);
+                
                 var json = JsonConvert.SerializeObject(dto);
                 using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
                 using (var resp = await _http.PostAsync("/api/Servicio/CrearServicio", content))
@@ -137,6 +190,151 @@ namespace Front_Hoteleria.Services.Servicio
             {
                 Trace.TraceError($"[EliminarServicioAsync] {ex}");
                 return false;
+            }
+        }
+
+        // =========================================================
+        // 2) Combo: Estado
+        // GET /api/Servicio/ListarServicioEstado?vigencia=1
+        // =========================================================
+        public async Task<List<ServicioEstadoDto>> ListarServicioEstadoAsync(int vigencia = 1, string bearer = null)
+        {
+            try
+            {
+                SetBearer(bearer);
+                var url = $"/api/Servicio/ListarServiciosEstados?vigencia={vigencia}";
+
+                using (var resp = await _http.GetAsync(url))
+                {
+                    if (resp.StatusCode == HttpStatusCode.NoContent)
+                        return new List<ServicioEstadoDto>();
+
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[ListarServicioEstadoAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return new List<ServicioEstadoDto>();
+                    }
+
+                    var json = await resp.Content.ReadAsStringAsync();
+                    if (string.IsNullOrWhiteSpace(json))
+                        return new List<ServicioEstadoDto>();
+
+                    return JsonConvert.DeserializeObject<List<ServicioEstadoDto>>(json)
+                           ?? new List<ServicioEstadoDto>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[ListarServicioEstadoAsync] {ex}");
+                return new List<ServicioEstadoDto>();
+            }
+        }
+
+        // =========================================================
+        // 3) Combo: Categoría
+        // GET /api/Servicio/ListarServiciosCategoria?vigencia=1
+        // =========================================================
+        public async Task<List<ServicioCategoriaDto>> ListarServiciosCategoriaAsync(int vigencia = 1, string bearer = null)
+        {
+            try
+            {
+                SetBearer(bearer);
+                var url = $"/api/Servicio/ListarServiciosCategoria?vigencia={vigencia}";
+
+                using (var resp = await _http.GetAsync(url))
+                {
+                    if (resp.StatusCode == HttpStatusCode.NoContent)
+                        return new List<ServicioCategoriaDto>();
+
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[ListarServiciosCategoriaAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return new List<ServicioCategoriaDto>();
+                    }
+
+                    var json = await resp.Content.ReadAsStringAsync();
+                    if (string.IsNullOrWhiteSpace(json))
+                        return new List<ServicioCategoriaDto>();
+
+                    return JsonConvert.DeserializeObject<List<ServicioCategoriaDto>>(json)
+                           ?? new List<ServicioCategoriaDto>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[ListarServiciosCategoriaAsync] {ex}");
+                return new List<ServicioCategoriaDto>();
+            }
+        }
+
+        // =========================================================
+        // 4) Combo: Prioridad
+        // GET /api/Servicio/ListarServicioPrioridad?vigencia=1
+        // =========================================================
+        public async Task<List<ServicioPrioridadDto>> ListarServicioPrioridadAsync(int vigencia = 1, string bearer = null)
+        {
+            try
+            {
+                SetBearer(bearer);
+                var url = $"/api/Servicio/ListarServicioPrioridad?vigencia={vigencia}";
+
+                using (var resp = await _http.GetAsync(url))
+                {
+                    if (resp.StatusCode == HttpStatusCode.NoContent)
+                        return new List<ServicioPrioridadDto>();
+
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[ListarServicioPrioridadAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return new List<ServicioPrioridadDto>();
+                    }
+
+                    var json = await resp.Content.ReadAsStringAsync();
+                    if (string.IsNullOrWhiteSpace(json))
+                        return new List<ServicioPrioridadDto>();
+
+                    return JsonConvert.DeserializeObject<List<ServicioPrioridadDto>>(json)
+                           ?? new List<ServicioPrioridadDto>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[ListarServicioPrioridadAsync] {ex}");
+                return new List<ServicioPrioridadDto>();
+            }
+        }
+
+        public async Task<ServicioKpiDto> KpiServiciosAsync(string bearer = null)
+        {
+            try
+            {
+                SetBearer(bearer); // igual que en tus otros métodos
+                using (var resp = await _http.GetAsync("/api/Servicio/KpiServicios"))
+                {
+                    if ((int)resp.StatusCode == (int)HttpStatusCode.NoContent)
+                        return new ServicioKpiDto();
+
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[KpiServiciosAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return new ServicioKpiDto();
+                    }
+
+                    var json = await resp.Content.ReadAsStringAsync();
+                    if (string.IsNullOrWhiteSpace(json))
+                        return new ServicioKpiDto();
+
+                    return JsonConvert.DeserializeObject<ServicioKpiDto>(json) ?? new ServicioKpiDto();
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[KpiServiciosAsync] {ex}");
+                return new ServicioKpiDto();
             }
         }
     }

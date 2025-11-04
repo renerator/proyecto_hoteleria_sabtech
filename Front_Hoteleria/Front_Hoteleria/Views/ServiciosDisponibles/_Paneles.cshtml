@@ -1,0 +1,29 @@
+﻿@model Front_Hoteleria.Dto.Servicio.ServicioKpiDto
+
+<div class="services-stats row">
+    <div class="col-md-3 col-sm-6 stat-item">
+        <span class="stat-number" id="kpiTotal">@((Model?.TotalServicios ?? 0))</span>
+        <span class="stat-label">Servicios Disponibles</span>
+    </div>
+    <div class="col-md-3 col-sm-6 stat-item">
+        <span class="stat-number" id="kpiActivos">@((Model?.ServiciosActivos ?? 0))</span>
+        <span class="stat-label">Activos</span>
+    </div>
+    <div class="col-md-3 col-sm-6 stat-item">
+        @{
+            var total = Model?.TotalServicios ?? 0;
+            var activos = Model?.ServiciosActivos ?? 0;
+            var inactivos = total - activos;
+            if (inactivos < 0)
+            {
+                inactivos = 0;
+            }
+        }
+        <span class="stat-number" id="kpiInactivos">@inactivos</span>
+        <span class="stat-label">Inactivos</span>
+    </div>
+    <div class="col-md-3 col-sm-6 stat-item">
+        <span class="stat-number" id="kpiPromedio">@((Model?.PromedioMinutos ?? 0))</span>
+        <span class="stat-label">Min Promedio</span>
+    </div>
+</div>

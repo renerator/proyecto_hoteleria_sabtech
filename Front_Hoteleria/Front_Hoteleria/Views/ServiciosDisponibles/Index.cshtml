@@ -1,40 +1,413 @@
 ﻿@{
-    ViewBag.Title = "Gestión de Reservas | Sabtech Group";
+    ViewBag.Title = "Gestión de Servicios Disponibles | Sabtech Group";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<style>
+    /* ====== KPIs / Tarjeta azul ====== */
+    .services-stats {
+        background: linear-gradient(135deg,#2C5B82 0%,#263747 100%);
+        color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(44,91,130,.3)
+    }
+
+        .services-stats .stat-item {
+            text-align: center;
+            padding: 10px
+        }
+
+        .services-stats .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            display: block
+        }
+
+        .services-stats .stat-label {
+            font-size: 12px;
+            opacity: .9
+        }
+
+    /* ====== Acciones rápidas ====== */
+    .quick-actions {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px
+    }
+
+        .quick-actions .action-btn {
+            margin: 5px;
+            min-width: 140px
+        }
+
+    /* ====== Filtros ====== */
+    .filtros-servicios .form-group {
+        width: 100%
+    }
+
+    .filtros-servicios label {
+        display: block;
+        font-weight: 600;
+        color: #5b6c7d;
+        margin-bottom: 6px
+    }
+
+    .filtros-servicios .form-control {
+        width: 100%;
+        height: 38px
+    }
+
+    .filtros-acciones-wrap {
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+        height: 100%;
+        padding-top: 22px;
+        justify-content: flex-end;
+    }
+
+    .btn-apply {
+        background: #2b6aa0;
+        border-color: #2b6aa0
+    }
+
+    .btn-clear {
+        background: #fff;
+        border: 1px solid #dfe3e8;
+        color: #333
+    }
+
+        .btn-apply .fa, .btn-clear .fa {
+            margin-right: 6px
+        }
+
+    @@media(max-width:991px) {
+        .filtros-acciones-wrap {
+            padding-top: 0;
+            margin-top: 10px;
+            justify-content: flex-start;
+        }
+    }
+
+    /* ====== Cabecera de Catálogo ====== */
+    .catalog-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 10px 0 15px
+    }
+
+        .catalog-header h4 {
+            margin: 0
+        }
+
+    .catalog-tools {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-end;
+    }
+
+        .catalog-tools .form-control {
+            height: 34px;
+            width: 220px;
+        }
+
+        .catalog-tools .btn {
+            align-self: flex-end;
+        }
+
+    /* ====== Asegurar íconos FA ====== */
+    .fa {
+        font-family: FontAwesome !important
+    }
+
+    .fa-plus:before {
+        content: "\f067"
+    }
+
+    .fa-refresh:before {
+        content: "\f021"
+    }
+
+    .fa-times:before {
+        content: "\f00d"
+    }
+
+    .fa-filter:before {
+        content: "\f0b0"
+    }
+
+    /* columnas más angostas en la tabla */
+    #servicesTable th.col-servicio,
+    #servicesTable td.col-servicio {
+        width: 200px;
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #servicesTable th.col-tiempo,
+    #servicesTable td.col-tiempo {
+        width: 80px;
+        text-align: center;
+    }
+
+    /* ====== chips de categoría/prioridad ====== */
+    .pill {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.4;
+    }
+
+    .cat-emergencias {
+        background: #e74c3c;
+    }
+
+    .cat-business {
+        background: #e67e22;
+    }
+
+    .cat-spa {
+        background: #8e44ad;
+    }
+
+    .cat-concierge {
+        background: #2980b9;
+    }
+
+    .cat-mant {
+        background: #f1c40f;
+        color: #333;
+    }
+
+    .cat-limpieza {
+        background: #27ae60;
+    }
+
+    .cat-default {
+        background: #7f8c8d;
+    }
+
+    .prio-urgente {
+        background: #8e44ad;
+    }
+
+    .prio-alta {
+        background: #c0392b;
+    }
+
+    .prio-media {
+        background: #f39c12;
+        color: #333;
+    }
+
+    .prio-baja {
+        background: #27ae60;
+    }
+
+    .estado-activo {
+        color: #27ae60;
+        font-weight: 600;
+    }
+
+        .estado-activo i {
+            margin-right: 4px;
+        }
+
+    .estado-inactivo {
+        color: #c0392b;
+        font-weight: 600;
+    }
+</style>
+<style>
+    .quick-actions {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap; /* <-- para que no se escondan si no entra */
+    }
+
+        .quick-actions h4 {
+            margin: 0;
+            margin-right: 10px;
+            color: #5b6c7d;
+            font-weight: 600;
+        }
+
+        .quick-actions .action-btn {
+            min-width: 140px;
+        }
+
+    /* colores como tu captura */
+    .btn-quick-green {
+        background: #1abc9c;
+        border-color: #1abc9c;
+        color: #fff;
+    }
+
+    .btn-quick-cyan {
+        background: #26a5d3;
+        border-color: #26a5d3;
+        color: #fff;
+    }
+
+    .btn-quick-orange {
+        background: #f0ad4e;
+        border-color: #f0ad4e;
+        color: #fff;
+    }
+
+    .btn-quick-blue {
+        background: #337ab7;
+        border-color: #337ab7;
+        color: #fff;
+    }
+
+    .btn-quick-white {
+        background: #fff;
+        border-color: #ddd;
+        color: #000;
+    }
+</style>
+
 <div class="right_col" role="main">
-    <div class="x_panel">
-        <div class="x_title">
-            <h2>Gestión de Servicios Disponibles</h2>
-            <div class="clearfix"></div>
+    <div class="">
+        <!-- Título + búsqueda superior -->
+        <div class="page-title">
+            <div class="title_left">
+                <h3>Gestión de Servicios Disponibles</h3>
+            </div>
+            <div class="title_right">
+                <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+                    <div class="input-group">
+                        <input id="txtBuscarTop" type="text" class="form-control" placeholder="Buscar servicio...">
+                        <span class="input-group-btn">
+                            <button id="btnBuscarTop" class="btn btn-default" type="button">Go!</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="x_content">
-            <div id="panelesContainer">
-                @Html.Action("Paneles", "Servicios")
-            </div>
+        <div class="clearfix"></div>
 
-            <hr />
+        <!-- Paneles KPI de Servicios -->
+        <div id="panelesServiciosContainer"></div>
 
-            <form id="frmFiltroServicios" class="form-inline" method="post" action="@Url.Action("Tabla","ServiciosDisponibles")">
-                @Html.AntiForgeryToken()
-                <div class="form-group">
-                    <label for="estado">Estado:&nbsp;</label>
-                    <select class="form-control" id="estado" name="estado">
-                        <option value="">Todos</option>
-                        <option value="1">Activos</option>
-                        <option value="0">Inactivos</option>
-                    </select>
+        <!-- Acciones rápidas -->
+        <div class="row">
+            <h4><i class="fa fa-bolt"></i> Acciones Rápidas</h4>
+            <div class="col-md-12">
+                <div class="quick-actions">
+
+
+                    <button type="button" id="btnNuevo" class="btn action-btn btn-quick-green">
+                        <i class="fa fa-plus"></i> Agregar Servicio
+                    </button>
+
+                    <button type="button" id="btnImportar" class="btn action-btn btn-quick-cyan">
+                        <i class="fa fa-upload"></i> Importar Masivo
+                    </button>
+
+                    <button type="button" id="btnConfigurar" class="btn action-btn btn-quick-orange">
+                        <i class="fa fa-cogs"></i> Configurar Servicios
+                    </button>
+
+                    <button type="button" id="btnReporte" class="btn action-btn btn-quick-blue">
+                        <i class="fa fa-file-pdf-o"></i> Generar Reporte
+                    </button>
+
+                    <button type="button" id="btnRefresh" class="btn action-btn btn-quick-white">
+                        <i class="fa fa-refresh"></i> Actualizar
+                    </button>
                 </div>
-                <button type="submit" class="btn btn-primary"><i class="fa fa-filter"></i> Filtrar</button>
-                <button type="button" id="btnNuevo" class="btn btn-success pull-right">
-                    <i class="fa fa-plus"></i> Nuevo Servicio
-                </button>
-            </form>
+            </div>
+        </div>
 
-            <div id="tablaContainer" style="margin-top:15px;">
-                @Html.Partial("_TablaServicioDisponibles", new List<Front_Hoteleria.Dto.Servicio.ServicioDto>())
+        <!-- ===== Filtros ===== -->
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Filtros de Servicios</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content filtros-servicios">
+                @using (Html.BeginForm("Tabla", "ServiciosDisponibles", FormMethod.Post, new { id = "frmFiltroServicios", @class = "form-inline" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6">
+                            <div class="form-group">
+                                <label for="categoria">Categoría:</label>
+                                <select id="categoria" name="categoria" class="form-control">
+                                    <option value="">Todas las categorías</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="form-group">
+                                <label for="estado">Estado:</label>
+                                <select id="estado" name="estado" class="form-control">
+                                    <option value="">Todos los estados</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="form-group">
+                                <label for="prioridad">Prioridad:</label>
+                                <select id="prioridad" name="prioridad" class="form-control">
+                                    <option value="">Todas las prioridades</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="filtros-acciones-wrap">
+                                <button type="submit" class="btn btn-primary btn-apply">
+                                    <i class="fa fa-filter"></i> Aplicar Filtros
+                                </button>
+                                <button type="button" id="btnLimpiar" class="btn btn-default btn-clear">
+                                    <i class="fa fa-times"></i> Limpiar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- ===== Catálogo / Tabla ===== -->
+        <div class="x_panel">
+            <div class="x_content">
+                <div class="catalog-header">
+                    <div>
+                        <h4>Catálogo de Servicios Disponibles</h4>
+                        <p class="text-muted" style="margin:4px 0 0;">
+                            Gestión completa de servicios disponibles. Define, configura y estandariza la atención al huésped.
+                        </p>
+                    </div>
+                    <div class="catalog-tools">
+                        <button type="button" id="btnAgregarServicio" class="btn btn-success">
+                            <i class="fa fa-plus"></i> Agregar Servicio
+                        </button>
+                        <input id="txtBuscar" type="text" class="form-control" placeholder="Buscar..." />
+                    </div>
+                </div>
+
+                <div id="tablaContainer" style="margin-top:5px;">
+                    @Html.Partial("_TablaServicioDisponibles", new List<Front_Hoteleria.Dto.Servicio.ServicioDto>())
+                </div>
             </div>
         </div>
     </div>
@@ -42,48 +415,160 @@
 
 @section scripts{
     <script>
-$(function(){
-    function cargarTabla(){
-        var $f = $('#frmFiltroServicios');
-        $.ajax({
-            url: $f.attr('action'),
-            type: 'POST',
-            data: $f.serialize(),
-            success: function(html){ $('#tablaContainer').html(html); },
-            error: function(){ alert('No se pudo cargar la tabla.'); }
+        $(function () {
+            // cargar panel de KPIs
+            var urlPanel = '@Url.Action("Paneles", "ServiciosDisponibles")';
+            $('#panelesServiciosContainer').load(urlPanel);
         });
-    }
-    $('#frmFiltroServicios').on('submit', function(e){ e.preventDefault(); cargarTabla(); });
-    cargarTabla();
-
-    $('#btnNuevo').on('click', function(){
-        $.get('@Url.Action("Upsert","ServiciosDisponibles")', function(html){
-            $('#modalUpsert .modal-content').html(html);
-            $('#modalUpsert').modal('show');
-        });
-    });
-
-    $(document).on('click', '.btn-edit', function(){
-        var id = $(this).data('id');
-        $.get('@Url.Action("Upsert","ServiciosDisponibles")', { id: id }, function(html){
-            $('#modalUpsert .modal-content').html(html);
-            $('#modalUpsert').modal('show');
-        });
-    });
-
-    $(document).on('click', '.btn-del', function(){
-        if(!confirm('¿Eliminar servicio?')) return;
-        var id = $(this).data('id');
-        $.post('@Url.Action("Eliminar","ServiciosDisponibles")',
-               { idServicio: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
-               function(r){
-                   if(r.ok){ cargarTabla(); } else { alert(r.message || 'Error'); }
-               });
-    });
-});
     </script>
 
-    <!-- Modal genérico para crear/editar -->
+    <script>
+        $(function () {
+
+            // ========= helpers =========
+            window.initTablaServicios = function () {
+                var $tbl = $('#servicesTable');
+                if ($.fn.DataTable && $.fn.DataTable.isDataTable($tbl)) {
+                    $tbl.DataTable().destroy();
+                }
+                if ($.fn.DataTable) {
+                    $tbl.DataTable({
+                        pageLength: 10,
+                        lengthChange: false,
+                        searching: false,
+                        ordering: true,
+                        language: {
+                            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                        }
+                    });
+                }
+            };
+
+            window.cargarTabla = function () {
+                var $f = $('#frmFiltroServicios');
+                var datos = $f.serialize();
+                var criterio = $('#txtBuscar').val() || $('#txtBuscarTop').val() || '';
+                if (criterio) datos += '&criterio=' + encodeURIComponent(criterio);
+
+                $.ajax({
+                    url: $f.attr('action'),
+                    type: 'POST',
+                    data: datos,
+                    success: function (html) {
+                        $('#tablaContainer').html(html);
+                        window.initTablaServicios();
+                    }
+                });
+            };
+
+            // ========= combos =========
+            function cargarCategorias() {
+                $.getJSON('@Url.Action("CategoriaCombo", "ServiciosDisponibles")', function (resp) {
+                    var $sel = $('#categoria');
+                    $sel.find('option:not([value=""])').remove();
+                    if (resp && resp.ok) {
+                        resp.data.forEach(function (o) {
+                            $sel.append($('<option>').val(o.value).text(o.text));
+                        });
+                    }
+                });
+            }
+            function cargarEstados() {
+                $.getJSON('@Url.Action("EstadoCombo", "ServiciosDisponibles")', function (resp) {
+                    var $sel = $('#estado');
+                    $sel.find('option:not([value=""])').remove();
+                    if (resp && resp.ok) {
+                        resp.data.forEach(function (o) {
+                            $sel.append($('<option>').val(o.value).text(o.text));
+                        });
+                    }
+                });
+            }
+            function cargarPrioridades() {
+                $.getJSON('@Url.Action("PrioridadCombo", "ServiciosDisponibles")', function (resp) {
+                    var $sel = $('#prioridad');
+                    $sel.find('option:not([value=""])').remove();
+                    if (resp && resp.ok) {
+                        resp.data.forEach(function (o) {
+                            $sel.append($('<option>').val(o.value).text(o.text));
+                        });
+                    }
+                });
+            }
+
+            // ========= eventos =========
+            $('#frmFiltroServicios').on('submit', function (e) {
+                e.preventDefault();
+                window.cargarTabla();
+            });
+
+            $('#btnBuscarTop').on('click', window.cargarTabla);
+            $('#txtBuscar, #txtBuscarTop').on('keyup', function (e) {
+                if (e.key === 'Enter') window.cargarTabla();
+            });
+
+            $('#btnLimpiar').on('click', function () {
+                $('#categoria').val('');
+                $('#estado').val('');
+                $('#prioridad').val('');
+                $('#txtBuscar, #txtBuscarTop').val('');
+                window.cargarTabla();
+            });
+
+            $('#btnRefresh').on('click', window.cargarTabla);
+
+            // ====== abrir CREAR (-> controller.ServiciosDisponibles.Crear) ======
+            function abrirCrear() {
+                $.get('@Url.Action("Crear","ServiciosDisponibles")', function (html) {
+                    $('#modalUpsert .modal-content').html(html);
+                    $('#modalUpsert').modal('show');
+                });
+            }
+
+            // ====== abrir MODIFICAR (-> controller.ServiciosDisponibles.Modificar) ======
+            function abrirModificar(id) {
+                $.get('@Url.Action("Modificar","ServiciosDisponibles")', { id: id }, function (html) {
+                    $('#modalUpsert .modal-content').html(html);
+                    $('#modalUpsert').modal('show');
+                });
+            }
+
+            // botones que van al controller
+            $('#btnNuevo, #btnAgregarServicio').on('click', abrirCrear);
+
+            // editar fila
+            $(document).on('click', '.btn-edit', function () {
+                var id = $(this).data('id');
+                abrirModificar(id);
+            });
+
+            // eliminar fila (POST -> Eliminar)
+            $(document).on('click', '.btn-del', function () {
+                if (!confirm('¿Eliminar servicio?')) return;
+                var id = $(this).data('id');
+                $.post('@Url.Action("Eliminar","ServiciosDisponibles")',
+                    {
+                        idServicio: id,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    function (r) {
+                        if (r.ok) {
+                            window.cargarTabla();
+                        } else {
+                            alert(r.message || 'Error al eliminar.');
+                        }
+                    });
+            });
+
+            // carga inicial
+            cargarCategorias();
+            cargarEstados();
+            cargarPrioridades();
+            window.cargarTabla();
+        });
+    </script>
+
+    <!-- Modal genérico -->
     <div class="modal fade" id="modalUpsert" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content"></div>

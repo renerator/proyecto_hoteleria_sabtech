@@ -4,10 +4,10 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Servicio</th>
-            <th>Categoría (id)</th>
-            <th>Prioridad (id)</th>
-            <th>Tiempo Est. (min)</th>
+            <th class="col-servicio">Servicio</th>
+            <th>Categoría</th>
+            <th>Prioridad</th>
+            <th class="col-tiempo">Tiempo Est. (min)</th>
             <th>Precio</th>
             <th>Estado</th>
             <th style="width:90px;">Opciones</th>
@@ -16,20 +16,63 @@
     <tbody>
         @foreach (var s in (Model ?? Enumerable.Empty<Front_Hoteleria.Dto.Servicio.ServicioDto>()))
         {
+            // ====== resolver clases de categoría ======
+            var catClass = "cat-default";
+            switch ((s.NombreCategoria ?? "").Trim())
+            {
+                case "Emergencias": catClass = "cat-emergencias"; break;
+                case "Business": catClass = "cat-business"; break;
+                case "Spa & Bienestar": catClass = "cat-spa"; break;
+                case "Concierge": catClass = "cat-concierge"; break;
+                case "Mantenimiento": catClass = "cat-mant"; break;
+                case "Limpieza": catClass = "cat-limpieza"; break;
+            }
+
+            // ====== resolver clases de prioridad ======
+            var prioClass = "prio-media";
+            switch ((s.NombrePrioridad ?? "").Trim())
+            {
+                case "Urgente": prioClass = "prio-urgente"; break;
+                case "Alta": prioClass = "prio-alta"; break;
+                case "Media": prioClass = "prio-media"; break;
+                case "Baja": prioClass = "prio-baja"; break;
+            }
+
+            // ====== resolver estado ======
+            var esActivo = (s.NombreEstadoServicio ?? "").Trim()
+                .Equals("Activo", StringComparison.OrdinalIgnoreCase);
+
             <tr>
                 <td>@s.IdServicio</td>
                 <td>@s.NombreServicio</td>
-                <td>@s.IdServiciosCategoria</td>
-                <td>@s.IdServicioPrioridad</td>
+                <td><span class="pill @catClass">@s.NombreCategoria</span></td>
+                <td><span class="pill @prioClass">@s.NombrePrioridad</span></td>
                 <td>@s.TiempoEstimadoMinutos</td>
-                <td>@s.Precio</td>
-                <td>@(s.Estado ? "Activo" : "Inactivo")</td>
+                <td>@string.Format("${0:N2}", s.Precio ?? 0)</td>
+                <td>
+                    @if (esActivo)
+                    {
+                        <span class="estado-activo"><i class="fa fa-check"></i> Activo</span>
+                    }
+                    else
+                    {
+                        <span class="estado-inactivo"><i class="fa fa-times"></i> @s.NombreEstadoServicio</span>
+                    }
+                </td>
                 <td class="text-center">
-                    <button type="button" class="btn btn-success btn-xs btn-edit" data-id="@s.IdServicio" title="Editar">
-                        <i class="fa fa-edit"></i>
+                    <!-- estas 3 son las que te interesan -->
+                    <button type="button"
+                            class="btn btn-warning btn-xs btn-edit"
+                            title="Editar"
+                            data-id="@s.IdServicio">
+                        <i class="fa fa-pencil"></i>
                     </button>
-                    <button type="button" class="btn btn-danger btn-xs btn-del" data-id="@s.IdServicio" title="Eliminar">
-                        <i class="fa fa-trash"></i>
+
+                    <button type="button"
+                            class="btn btn-danger btn-xs btn-del"
+                            title="Eliminar"
+                            data-id="@s.IdServicio">
+                        <i class="fa fa-times"></i>
                     </button>
                 </td>
             </tr>

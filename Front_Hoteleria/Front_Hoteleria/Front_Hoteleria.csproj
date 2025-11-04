@@ -151,9 +151,13 @@
     <Compile Include="Dto\Reserva\ReservaTrabajadorDto.cs" />
     <Compile Include="Dto\Reserva\ReservaDashboardDto.cs" />
     <Compile Include="Dto\Reserva\ReservaDto.cs" />
+    <Compile Include="Dto\ServicioCategoria\ServicioCategoriaDto.cs" />
+    <Compile Include="Dto\ServicioEstado\ServicioEstadoDto.cs" />
+    <Compile Include="Dto\ServicioPrioridad\ServicioPrioridadDto.cs" />
     <Compile Include="Dto\ServiciosDisponibles\ServicioDisponibleDashboardDto.cs" />
     <Compile Include="Dto\ServiciosDisponibles\ServicioDisponiblesDto.cs" />
     <Compile Include="Dto\Servicio\ServicioDashboardDto.cs" />
+    <Compile Include="Dto\Servicio\ServicioKpiDto.cs" />
     <Compile Include="Dto\Servicio\ServicioDto.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -4607,9 +4611,9 @@
     <Content Include="Views\PanelPrincipal\Index.cshtml" />
     <Content Include="Views\PanelPrincipal\_UpsertDashAdm.cshtml" />
     <Content Include="Views\ServiciosDisponibles\_DashboardServicioDisponibles.cshtml" />
-    <Content Include="Views\ServiciosDisponibles\_PanelesServicioDisponibles.cshtml" />
+    <Content Include="Views\ServiciosDisponibles\_Paneles.cshtml" />
     <Content Include="Views\ServiciosDisponibles\_TablaServicioDisponibles.cshtml" />
-    <Content Include="Views\ServiciosDisponibles\_UpsertServicioDisponibles..cshtml" />
+    <Content Include="Views\ServiciosDisponibles\_Upsert.cshtml" />
     <Content Include="Views\ServiciosDisponibles\Index.cshtml" />
     <Content Include="Views\Contratos\_DashboardContrato.cshtml" />
     <Content Include="Views\Contratos\_TablaContrato.cshtml" />

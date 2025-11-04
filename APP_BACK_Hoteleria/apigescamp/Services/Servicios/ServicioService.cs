@@ -102,7 +102,7 @@ namespace DemoBackend.Services
             const string sql = "MAN_UPD_Servicio " +
                                "@idServicio,@NombreServicio,@idTipoServicio,@idEmpresa,@Estado," +
                                "@idServicioPrioridad,@idServiciosCategoria," +
-                               "@TiempoEsttimado,@Precio";
+                               "@TiempoEsttimado,@Precio,@IdServicioEstado";
 
             var pPrecio = new SqlParameter("@Precio", SqlDbType.Int)
             {
@@ -121,7 +121,8 @@ namespace DemoBackend.Services
                 new SqlParameter("@idServiciosCategoria", (object?)servicio.IdServiciosCategoria ?? DBNull.Value),
 
                 new SqlParameter("@TiempoEsttimado", servicio.TiempoEstimadoMinutos),
-                pPrecio
+                pPrecio,
+                 new SqlParameter("@IdServicioEstado", (object?)servicio.IdServicioEstado ?? DBNull.Value)
             };
 
             try

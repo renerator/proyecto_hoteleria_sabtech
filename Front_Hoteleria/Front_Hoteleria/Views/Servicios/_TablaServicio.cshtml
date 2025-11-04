@@ -19,18 +19,16 @@
             <tr>
                 <td>@s.IdServicio</td>
                 <td>@s.NombreServicio</td>
-                <td>@s.IdServiciosCategoria</td>
-                <td>@s.IdServicioPrioridad</td>
+                <td>@s.NombreCategoria</td>
+                <td>@s.NombrePrioridad</td>
                 <td>@s.TiempoEstimadoMinutos</td>
-                <td>$@s.Precio</td>
-                <td>@(s.Estado ? "Activo" : "Inactivo")</td>
-                <td>
-                    <button type="button" class="btn btn-xs btn-primary btn-edit" data-id="@s.IdServicio">
-                        <i class="fa fa-edit"></i>
-                    </button>
-                    <button type="button" class="btn btn-xs btn-danger btn-del" data-id="@s.IdServicio">
-                        <i class="fa fa-trash"></i>
-                    </button>
+                <td>@String.Format("${0:N2}", @s.Precio)</td>                
+                <td>@(s.NombreEstadoServicio</td>
+                <td class="text-center">
+                    <button class="btn btn-success btn-xs" title="Confirmar" data-id="@s.IdServicio"><i class="fa fa-check"></i></button>
+                    <button class="btn btn-info btn-xs" title="Ver Detalle" data-id="@s.IdServicio"><i class="fa fa-eye"></i></button>
+                    <button class="btn btn-warning btn-xs" title="Editar" data-id="@s.IdServicio"><i class="fa fa-pencil"></i></button>
+                    <button class="btn btn-danger btn-xs" title="Eliminar" data-id="@s.IdServicio"><i class="fa fa-times"></i></button>
                 </td>
             </tr>
         }
