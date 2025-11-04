@@ -1,0 +1,106 @@
+﻿@* Views/ServiciosDisponibles/_ConfigurarServicios.cshtml *@
+
+<div class="modal-header" style="background:#244769;color:#fff;border-top-left-radius:4px;border-top-right-radius:4px;">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff;opacity:1;">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title">Configuración de Servicios</h4>
+</div>
+
+<div class="modal-body">
+    <div class="row">
+        <!-- columna izquierda -->
+        <div class="col-md-6">
+            <h5><i class="fa fa-cog"></i> Configuración General</h5>
+
+            <div class="form-group">
+                <label>Tiempo de Respuesta Por Defecto (min)</label>
+                <input type="number" class="form-control" value="20" id="cfgTiempoDefecto" />
+            </div>
+
+            <div class="form-group">
+                <label>Máximo Servicios Simultáneos</label>
+                <input type="number" class="form-control" value="50" id="cfgMaxSimultaneos" />
+            </div>
+
+            <div class="form-group">
+                <label>Asignación Automática</label>
+                <select class="form-control" id="cfgAsignacion">
+                    <option value="1">Habilitada</option>
+                    <option value="0">Deshabilitada</option>
+                </select>
+            </div>
+
+            <h5 style="margin-top:20px;"><i class="fa fa-users"></i> Configuración de Personal</h5>
+
+            <div class="form-group">
+                <label>Personal de Limpieza Disponible</label>
+                <input type="number" class="form-control" value="8" id="cfgPersonalLimpieza" />
+            </div>
+
+            <div class="form-group">
+                <label>Personal de Mantenimiento Disponible</label>
+                <input type="number" class="form-control" value="3" id="cfgPersonalMantenimiento" />
+            </div>
+
+            <div class="form-group">
+                <label>Personal de Concierge Disponible</label>
+                <input type="number" class="form-control" value="2" id="cfgPersonalConcierge" />
+            </div>
+        </div>
+
+        <!-- columna derecha -->
+        <div class="col-md-6">
+            <h5><i class="fa fa-clock-o"></i> Configuración de Tiempos</h5>
+
+            <div class="form-group">
+                <label>Tiempo Baja Prioridad (min)</label>
+                <input type="number" class="form-control" value="30" id="cfgTiempoBaja" />
+            </div>
+
+            <div class="form-group">
+                <label>Tiempo Media Prioridad (min)</label>
+                <input type="number" class="form-control" value="15" id="cfgTiempoMedia" />
+            </div>
+
+            <div class="form-group">
+                <label>Tiempo Alta Prioridad (min)</label>
+                <input type="number" class="form-control" value="5" id="cfgTiempoAlta" />
+            </div>
+
+            <div class="form-group">
+                <label>Tiempo Urgente (min)</label>
+                <input type="number" class="form-control" value="2" id="cfgTiempoUrgente" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer" style="text-align:right;">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+    <button type="button" class="btn btn-warning" id="btnCfgRestaurar">Restaurar Valores</button>
+    <button type="button" class="btn btn-success" id="btnCfgGuardar">Guardar Configuración</button>
+</div>
+
+<script>
+    // acá puedes enganchar los botones interno del modal
+    $('#btnCfgRestaurar').on('click', function () {
+        // ejemplo rápido
+        $('#cfgTiempoDefecto').val(20);
+        $('#cfgMaxSimultaneos').val(50);
+        $('#cfgAsignacion').val(1);
+        $('#cfgPersonalLimpieza').val(8);
+        $('#cfgPersonalMantenimiento').val(3);
+        $('#cfgPersonalConcierge').val(2);
+        $('#cfgTiempoBaja').val(30);
+        $('#cfgTiempoMedia').val(15);
+        $('#cfgTiempoAlta').val(5);
+        $('#cfgTiempoUrgente').val(2);
+    });
+
+    $('#btnCfgGuardar').on('click', function () {
+        // acá enviarías por ajax al API la configuración
+        alert('Configuración guardada (demo).');
+        $('#modalUpsert').modal('hide');
+    });
+</script>

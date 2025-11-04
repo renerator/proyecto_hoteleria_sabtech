@@ -79,7 +79,17 @@ namespace Front_Hoteleria.Controllers
             var model = new ServicioDto { IdServicio = id ?? 0, Estado = true };
             return PartialView("~/Views/Servicios/_UpsertServicio.cshtml", model);
         }
-       
+        [HttpGet]
+        public ActionResult ImportarMasivo()
+        {
+            // si quieres validar sesión, puedes hacer lo mismo que en los otros métodos:
+            var token = GetBearer();
+            if (string.IsNullOrWhiteSpace(token))
+                return new HttpStatusCodeResult(401, "Sesión expirada.");
+
+            return PartialView("~/Views/ServiciosDisponibles/_ImportarMasivo.cshtml");
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

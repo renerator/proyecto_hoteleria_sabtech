@@ -35,6 +35,8 @@ namespace DemoBackend.Services.Reserva
         ReservaDashboardPanelPrincipaDto ObtenerDashboardPanelPrincipal(DateTime? desde, DateTime? hasta);
 
         List<EstadoReservaDto> GetListaEstadoReserva();
+
+
     }
 }
 

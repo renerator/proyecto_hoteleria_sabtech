@@ -1,0 +1,42 @@
+﻿@* Views/ServiciosDisponibles/_ImportarMasivo.cshtml *@
+
+<div class="modal-header" style="background:#244769;color:#fff;border-top-left-radius:4px;border-top-right-radius:4px;">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff;opacity:1;">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title">Importación Masiva de Servicios</h4>
+</div>
+
+<div class="modal-body">
+    <div class="alert alert-info" style="background:#4aa3d9;color:#fff;border:none;">
+        <strong><i class="fa fa-info-circle"></i> Instrucciones:</strong>
+        Sube un archivo Excel (.xlsx) con las columnas: <em>Nombre, Categoría, Prioridad, Tiempo, Precio, Personal, Estado, Descripción</em>
+    </div>
+
+    <div class="form-group">
+        <label for="fileImport">Archivo Excel <span style="color:red">*</span></label>
+        <input type="file" id="fileImport" name="fileImport" class="form-control" />
+    </div>
+
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" id="chkSobrescribir" /> Sobrescribir servicios existentes (mismo código)
+        </label>
+    </div>
+
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" id="chkValidar" checked="checked" /> Validar datos antes de importar
+        </label>
+    </div>
+</div>
+
+<div class="modal-footer" style="text-align:right;">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+    <button type="button" class="btn btn-success" id="btnDescargarPlantilla">
+        Descargar Plantilla
+    </button>
+    <button type="button" class="btn btn-primary" id="btnProcesarImportacion">
+        Procesar Importación
+    </button>
+</div>

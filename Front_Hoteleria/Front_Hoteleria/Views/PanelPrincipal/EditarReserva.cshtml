@@ -1,0 +1,103 @@
+﻿@model Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
+
+
+<div class="modal-header" style="background: #f5f8fb; border-bottom: 1px solid #e5e5e5;">
+    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+    <h4 class="modal-title">
+        <i class="fa fa-pencil"></i>
+        Editar Reserva @Model.IdReserva
+    </h4>
+</div>
+
+<div class="modal-body" style="padding: 20px 20px 0 20px;">
+    @* si vas a guardar por AJAX luego, puedes poner un form aquí *@
+    <div class="row">
+        <!-- Huésped -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Huésped:</label>
+                <input type="text"
+                       class="form-control"
+                       name="Huesped"
+                       value="@(string.IsNullOrWhiteSpace(Model.Nombres) ? "" : Model.Nombres)"
+                       readonly
+                       style="background:#eee;" />
+            </div>
+        </div>
+
+        <!-- Habitación -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Habitación:</label>
+                <select class="form-control" name="Habitacion">
+                    <option value="">Seleccione…</option>
+                    <option value="0015" @(Model.Habitacion == "0015" ? "selected" : "")>Habitación 0015</option>
+                    <option value="0016" @(Model.Habitacion == "0016" ? "selected" : "")>Habitación 0016</option>
+                    <option value="0020" @(Model.Habitacion == "0020" ? "selected" : "")>Habitación 0020</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Check In -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Check In:</label>
+                <input type="date"
+                       class="form-control"
+                       name="CheckIn"
+                       value="@(Model.FechaCheckIN.HasValue ? Model.FechaCheckIN.Value.ToString("yyyy-MM-dd") : "")" />
+            </div>
+        </div>
+
+        <!-- Check Out -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Check Out:</label>
+                <input type="date"
+                       class="form-control"
+                       name="CheckOut"
+                       value="@(Model.FechaCheckOut.HasValue ? Model.FechaCheckOut.Value.ToString("yyyy-MM-dd") : "")" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Tipo -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Tipo:</label>
+                @*<select class="form-control" name="TipoReserva">
+                    <option value="">Seleccione…</option>
+                    <option value="Individual" @(Model.IdTipoHabitacion == "Individual" ? "selected" : "")>Individual</option>
+                    <option value="Doble" @(Model.TipoReserva == "Doble" ? "selected" : "")>Doble</option>
+                    <option value="Familiar" @(Model.TipoReserva == "Familiar" ? "selected" : "")>Familiar</option>
+                </select>*@
+            </div>
+        </div>
+
+        <!-- Total -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Total:</label>
+                <input type="text"
+                       class="form-control"
+                       name="Total"
+                       value="@(Model.Totales.ToString("N0"))" />
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">
+        <i class="fa fa-times"></i> Cancelar
+    </button>
+    <button type="button" class="btn btn-primary" id="btnGuardarReserva">
+        <i class="fa fa-save"></i> Guardar Cambios
+    </button>
+</div>
+

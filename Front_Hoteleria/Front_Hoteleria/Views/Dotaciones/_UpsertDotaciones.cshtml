@@ -1,106 +1,98 @@
-﻿
-@Model Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
-@using System.Web.Mvc
+﻿@model Front_Hoteleria.Dto.Dotaciones.DotacionDto
 
-@{
-    // Catálogos desde el GET Upsert()
-    var habitaciones = ViewBag.Habitaciones as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
-    var tipos = ViewBag.TiposReserva as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
-    var idTrabajador = (ViewBag.IdTrabajador as int?) ?? 0;
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+    <h4 class="modal-title">
+        @(Model != null && Model.Id > 0 ? "Editar trabajador" : "Nuevo trabajador")
+    </h4>
+</div>
+<div class="modal-body">
+    @using (Html.BeginForm("Guardar", "Dotaciones", FormMethod.Post, new { id = "frmDotacion" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.Id)
 
-    // Defaults SOLO para la UI (sin tocar Dto)
-    var fechaDesde = Model?.FechaDesde ?? DateTime.Today;
-    var fechaHasta = Model?.FechaHasta ?? DateTime.Today.AddDays(1);
-    var fechaDesdeStr = fechaDesde.ToString("yyyy-MM-dd");
-    var fechaHastaStr = fechaHasta.ToString("yyyy-MM-dd");
-
-    // 1 = Ingresada si viene vacío/0
-    var idEstadoEfectivo = (Model?.IdEstadoReserva ?? 0) == 0 ? 1 : Dto.IdEstadoReserva;
-}
-
-@using (Html.BeginForm("CrearReserva", "Reservas", FormMethod.Post,
-                      new { id = "formCrearReserva", @class = "form-horizontal", autocomplete = "off" }))
-{
-    @Html.AntiForgeryToken()
-
-    <input type="hidden" name="IdEstadoReserva" value="@idEstadoEfectivo" />
-    <input type="hidden" name="IdTrabajador" value="@idTrabajador" />
-
-    <div class="row">
-
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Rut *</label>
-                @Html.TextBoxFor(m => m.dniTrabajador, new { @class = "form-control", required = "required", placeholder = "Rut" })
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Nombre</label>
+                    @Html.TextBoxFor(x => x.Nombre, new { @class = "form-control", required = "required" })
+                </div>
             </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Nombre *</label>
-                @Html.TextBoxFor(m => m.Nombres, new { @class = "form-control", required = "required", placeholder = "Nombre" })
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Telefono *</label>
-                @Html.TextBoxFor(m => m.Telefono, new { @class = "form-control", required = "required", placeholder = "Telefono" })
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Email *</label>
-                @Html.TextBoxFor(m => m.Correo, new { @class = "form-control", required = "required", placeholder = "Email" })
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Apellido *</label>
-                @Html.TextBoxFor(m => m.Apellidos, new { @class = "form-control", required = "required", placeholder = "Apellido" })
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Apellido</label>
+                    @Html.TextBoxFor(x => x.Apellido, new { @class = "form-control", required = "required" })
+                </div>
             </div>
         </div>
 
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Habitación *</label>
-                @Html.DropDownListFor(m => m.IdHabitacion, habitaciones, "Seleccionar habitación...", new { @class = "form-control", required = "required" })
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>RUT</label>
+                    @Html.TextBoxFor(x => x.Rut, new { @class = "form-control", required = "required" })
+                </div>
             </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Tipo de Reserva *</label>
-                @Html.DropDownListFor(m => m.IdTipoReserva, tipos, "Seleccionar tipo...", new { @class = "form-control", required = "required" })
-            </div>
-        </div>
-
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Fecha Check In *</label>
-                <input class="form-control" type="date" name="FechaDesde" value="@fechaDesdeStr" required />
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Fecha Check Out *</label>
-                <input class="form-control" type="date" name="FechaHasta" value="@fechaHastaStr" required />
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Empresa</label>
+                    @Html.TextBoxFor(x => x.Empresa, new { @class = "form-control", required = "required" })
+                </div>
             </div>
         </div>
 
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Monto Total *</label>
-                @Html.TextBoxFor(m => m.Totales, new { @class = "form-control", type = "number", min = "0", step = "1", required = "required" })
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Cargo</label>
+                    @Html.TextBoxFor(x => x.Cargo, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Turno</label>
+                    @Html.DropDownListFor(x => x.Turno,
+                        new SelectList(new[] {
+                            new { Value = "Día", Text = "Día (06:00 - 18:00)" },
+                            new { Value = "Noche", Text = "Noche (18:00 - 06:00)" },
+                            new { Value = "Mantenimiento", Text = "Mantenimiento" },
+                            new { Value = "Fuera", Text = "Fuera de servicio" }
+                        }, "Value", "Text", Model?.Turno),
+                        "-- Seleccione --",
+                        new { @class = "form-control", required = "required" })
+                </div>
             </div>
         </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Solicitudes Especiales</label>
-                @Html.TextAreaFor(m => m.MotivoReserva, 3, 40, new { @class = "form-control", placeholder = "Cama extra, cuna, etc." })
-            </div>
-        </div>
-    </div>
 
-    <div class="text-right">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-success">Crear Reserva</button>
-    </div>
-}
+        <div class="form-group">
+            <label>Teléfono</label>
+            @Html.TextBoxFor(x => x.Telefono, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            <label>Observaciones</label>
+            @Html.TextAreaFor(x => x.Observaciones, 2, 40, new { @class = "form-control" })
+        </div>
+    }
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+    <button type="button" id="btnGuardarDot" class="btn btn-primary">
+        <i class="fa fa-save"></i> Guardar
+    </button>
+</div>
+
+<script>
+    $('#btnGuardarDot').on('click', function () {
+        var $f = $('#frmDotacion');
+        $.post($f.attr('action'), $f.serialize(), function (r) {
+            if (r.ok) {
+                $('#modalDot').modal('hide');
+                $('#tablaDotContainer').load('@Url.Action("Tabla","Dotaciones")');
+            } else {
+                alert(r.message || 'No se pudo guardar.');
+            }
+        });
+    });
+</script>

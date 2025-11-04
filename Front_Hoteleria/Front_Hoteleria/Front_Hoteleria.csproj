@@ -142,6 +142,8 @@
     <Compile Include="Controllers\ServiciosHuespedController.cs" />
     <Compile Include="Controllers\ServiciosController.cs" />
     <Compile Include="Controllers\ServiciosDisponiblesController.cs" />
+    <Compile Include="Dto\Dotaciones\DotacionKPIDto.cs" />
+    <Compile Include="Dto\Dotaciones\DotacionDto.cs" />
     <Compile Include="Dto\EstadoReserva\EstadoReservaDto.cs" />
     <Compile Include="Dto\Habitacion\HabitacionDashboardDto.cs" />
     <Compile Include="Dto\Habitacion\HabitacionDto.cs" />
@@ -4659,6 +4661,11 @@
     <Content Include="Views\Roles\_TablaReserva.cshtml" />
     <Content Include="Views\Roles\_UpsertReserva.cshtml" />
     <Content Include="Views\Roles\Index.cshtml" />
+    <Content Include="Views\ServiciosDisponibles\_ImportarMasivo.cshtml" />
+    <Content Include="Views\ServiciosDisponibles\_ConfigurarServicios.cshtml" />
+    <Content Include="Views\ServiciosDisponibles\_DetalleServicio.cshtml" />
+    <Content Include="Views\PanelPrincipal\_DetalleReserva.cshtml" />
+    <Content Include="Views\PanelPrincipal\EditarReserva.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\vendors\devbridge-autocomplete\src\jquery.autocomplete.d.ts" />

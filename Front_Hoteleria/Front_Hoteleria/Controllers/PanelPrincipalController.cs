@@ -29,6 +29,38 @@ namespace Front_Hoteleria.Controllers
                 return null;
             }
         }
+        // GET: /PanelPrincipal/Detalle?id=RES-001
+        [HttpGet]
+        public ActionResult Detalle(string id)
+        {
+            // Aquí deberías ir a tu servicio/repositorio para traer la reserva.
+            // Como no me pasaste el DTO real, te armo uno “mock” para que el modal no reviente.
+            // Luego lo cambias por tu llamada real.
+
+            var modelo = new ReservaTrabajadorDto();
+            
+            return PartialView("~/Views/PanelPrincipal/_DetalleReserva.cshtml", modelo);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> Editar(string id)
+        {
+            // aquí deberías ir a la API real
+            // por ahora te hago el mismo mock que en Detalle
+            // para que veas el modal con datos
+
+            var token = GetBearer();
+            if (string.IsNullOrWhiteSpace(token))
+                return new HttpStatusCodeResult(401, "Sesión expirada");
+
+            // si tu servicio tuviera algo como ObtenerReservaPorIdAsync(id, token)
+            // var dto = await _api.ObtenerReservaPorIdAsync(id, token);
+
+            var dto = new ReservaTrabajadorDto();
+            
+
+            return PartialView("~/Views/PanelPrincipal/_EditarReserva.cshtml", dto);
+        }
 
         [HttpGet]
         public ActionResult Index()

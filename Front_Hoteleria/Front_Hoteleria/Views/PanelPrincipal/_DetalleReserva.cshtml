@@ -1,0 +1,75 @@
+﻿@model Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
+
+@{
+    // armo el nombre del huésped
+    var huesped = string.Format("{0} {1}",
+        (Model.Nombres ?? "").Trim(),
+        (Model.Apellidos ?? "").Trim()
+    ).Trim();
+
+    // fechas en formato dd/MM/yyyy
+    var checkIn = Model.FechaCheckIN?.ToString("dd/MM/yyyy") ?? "—";
+    var checkOut = Model.FechaCheckOut?.ToString("dd/MM/yyyy") ?? "—";
+
+    // total (asumo decimal?)
+    var total = Model.Totales;
+}
+
+
+
+<div class="modal-body" style="padding: 0;">
+    <div class="row" style="padding:20px 20px 0 20px;">
+        <div class="col-md-6">
+            <h5><i class="fa fa-user"></i> Información del Huésped</h5>
+            <table class="table table-bordered" style="background:#fff;">
+                <tr>
+                    <th style="width:160px;">ID de Reserva:</th>
+                    <td>@Model.IdReserva</td>
+                </tr>
+                <tr>
+                    <th>Huésped:</th>
+                    <td>@(string.IsNullOrWhiteSpace(huesped) ? "—" : huesped)</td>
+                </tr>
+                <tr>
+                    <th>Habitación:</th>
+                    <td>@(string.IsNullOrWhiteSpace(Model.Habitacion) ? "—" : Model.Habitacion)</td>
+                </tr>
+                <tr>
+                    <th>Tipo de Reserva:</th>
+                    <td>@(Model.IdTipoReserva)</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <h5><i class="fa fa-calendar"></i> Detalles de la Reserva</h5>
+            <table class="table table-bordered" style="background:#fff;">
+                <tr>
+                    <th style="width:160px;">Check In:</th>
+                    <td>@checkIn</td>
+                </tr>
+                <tr>
+                    <th>Check Out:</th>
+                    <td>@checkOut</td>
+                </tr>
+                <tr>
+                    <th>Estado:</th>
+                    <td>@(string.IsNullOrWhiteSpace(Model.EstadoReserva) ? "—" : Model.EstadoReserva)</td>
+                </tr>
+                <tr>
+                    <th>Total:</th>
+                    <td>
+                        <span style="color:#27ae60;font-weight:600;">
+                            @string.Format("{0:C0}", total)
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">
+        <i class="fa fa-times"></i> Cerrar
+    </button>
+</div>

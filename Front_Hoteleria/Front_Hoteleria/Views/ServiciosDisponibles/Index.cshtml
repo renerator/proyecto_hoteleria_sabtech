@@ -227,6 +227,46 @@
         color: #c0392b;
         font-weight: 600;
     }
+
+    .options-cell {
+        white-space: nowrap;
+    }
+
+    .tbl-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 3px;
+        cursor: pointer;
+    }
+
+        .tbl-btn i {
+            font-size: 15px;
+        }
+
+    /* colores */
+    .tbl-view {
+        background: #33a8d6;
+    }
+    /* celeste */
+    .tbl-edit {
+        background: #1abc9c;
+    }
+    /* verde */
+    .tbl-config {
+        background: #f0ad4e;
+    }
+    /* naranja */
+    .tbl-del {
+        background: #e74c3c;
+    }
+    /* rojo */
+
 </style>
 <style>
     .quick-actions {
@@ -434,7 +474,7 @@
                 if ($.fn.DataTable) {
                     $tbl.DataTable({
                         pageLength: 10,
-                        lengthChange: false,
+                        lengthChange: true,
                         searching: false,
                         ordering: true,
                         language: {
@@ -515,7 +555,10 @@
                 window.cargarTabla();
             });
 
-            $('#btnRefresh').on('click', window.cargarTabla);
+            $('#btnRefresh').on('click', function () {
+                location.reload();   // recarga la vista completa
+            });
+
 
             // ====== abrir CREAR (-> controller.ServiciosDisponibles.Crear) ======
             function abrirCrear() {
@@ -536,14 +579,32 @@
             // botones que van al controller
             $('#btnNuevo, #btnAgregarServicio').on('click', abrirCrear);
 
-            // editar fila
-            $(document).on('click', '.btn-edit', function () {
+            // VER (botón celeste de la tabla)
+                $(document).on('click', '.tbl-view', function () {
+                    var id = $(this).data('id');
+
+                    $.get('@Url.Action("Ver","ServiciosDisponibles")', { id: id }, function (html) {
+                        $('#modalUpsert .modal-content').html(html);
+                        $('#modalUpsert').modal('show');
+                    });
+                });
+
+
+            // editar
+            $(document).on('click', '.tbl-edit', function () {
                 var id = $(this).data('id');
                 abrirModificar(id);
             });
 
+            // configurar (si es otro modal)
+            $(document).on('click', '.tbl-config', function () {
+                var id = $(this).data('id');
+                // por ahora lo mando a editar también
+                abrirModificar(id);
+            });
+
             // eliminar fila (POST -> Eliminar)
-            $(document).on('click', '.btn-del', function () {
+            $(document).on('click', '.tbl-del', function () {
                 if (!confirm('¿Eliminar servicio?')) return;
                 var id = $(this).data('id');
                 $.post('@Url.Action("Eliminar","ServiciosDisponibles")',
@@ -558,6 +619,21 @@
                             alert(r.message || 'Error al eliminar.');
                         }
                     });
+            });
+
+            // abrir IMPORTAR MASIVO
+            $('#btnImportar').on('click', function () {
+                $.get('@Url.Action("ImportarMasivo","ServiciosDisponibles")', function (html) {
+                    $('#modalUpsert .modal-content').html(html);
+                    $('#modalUpsert').modal('show');
+                });
+            });
+            // abrir CONFIGURAR SERVICIOS
+            $('#btnConfigurar').on('click', function () {
+                $.get('@Url.Action("ConfigurarServicios","ServiciosDisponibles")', function (html) {
+                    $('#modalUpsert .modal-content').html(html);
+                    $('#modalUpsert').modal('show');
+                });
             });
 
             // carga inicial

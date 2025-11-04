@@ -4,6 +4,52 @@
     var cl = new CultureInfo("es-CL");
 }
 
+<style>
+    /* barra de acciones como la imagen */
+    .actions-cell {
+        white-space: nowrap;
+    }
+
+    .actions-bar {
+        display: inline-flex;
+        overflow: hidden;
+        border-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0,0,0,.08);
+    }
+
+        .actions-bar button {
+            width: 34px;
+            height: 34px;
+            border: none;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+    .act-ok {
+        background: #1abc9c;
+    }
+    /* verde check */
+    .act-view {
+        background: #33a8d6;
+    }
+    /* celeste ojo */
+    .act-edit {
+        background: #f0ad4e;
+    }
+    /* naranja lápiz */
+    .act-del {
+        background: #e74c3c;
+    }
+    /* rojo X */
+
+    .actions-bar i {
+        font-size: 15px;
+    }
+</style>
+
 <div class="row">
     <table id="tablaDashAdm" class="table table-striped table-bordered" style="width:100%">
         <thead style="background:#34495e;color:#fff;">
@@ -16,7 +62,7 @@
                 <th>Tipo</th>
                 <th>Estado</th>
                 <th>Total</th>
-                <th style="width:110px;">Acciones</th>
+                <th style="width:140px;">Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -30,7 +76,7 @@
                                  : "status-checked-in";
 
                     var nombreCompleto = ((r.Nombres ?? "").Trim() + " " + (r.Apellidos ?? "").Trim()).Trim();
-                    var tipoTexto = "";
+                    var tipoTexto = ""; // string.IsNullOrWhiteSpace(r.TipoReserva) ? "—" : r.TipoReserva;
 
                     <tr>
                         <td>@r.IdReserva</td>
@@ -44,17 +90,41 @@
                                 @( !string.IsNullOrWhiteSpace(r.EstadoReserva) ? r.EstadoReserva : r.IdEstadoReserva.ToString() )
                             </span>
                         </td>
-                        <td>
-                            @{
-                                //var total = r.Totales ?? 0m;
-                                @: @string.Format(cl, "{0:C0}", r.Totales)
-                            }
-                        </td>
-                        <td class="text-center">
-                            <button class="btn btn-success btn-xs" title="Confirmar" data-id="@r.IdReserva"><i class="fa fa-check"></i></button>
-                            <button class="btn btn-info btn-xs" title="Ver Detalle" data-id="@r.IdReserva"><i class="fa fa-eye"></i></button>
-                            <button class="btn btn-warning btn-xs" title="Editar" data-id="@r.IdReserva"><i class="fa fa-pencil"></i></button>
-                            <button class="btn btn-danger btn-xs" title="Eliminar" data-id="@r.IdReserva"><i class="fa fa-times"></i></button>
+                        <td>@string.Format(cl, "{0:C0}", r.Totales)</td>
+                        <td class="text-center actions-cell">
+                            <div class="actions-bar">
+                                <!-- confirmar -->
+                                <button type="button"
+                                        class="act-ok btn-confirmar-reserva"
+                                        title="Confirmar"
+                                        data-id="@r.IdReserva">
+                                    <i class="fa fa-check"></i>
+                                </button>
+
+                                <!-- ver -->
+                                <button type="button"
+                                        class="act-view btn-ver-reserva"
+                                        title="Ver detalle"
+                                        data-id="@r.IdReserva">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+
+                                <!-- editar -->
+                                <button type="button"
+                                        class="act-edit btn-editar-reserva"
+                                        title="Editar"
+                                        data-id="@r.IdReserva">
+                                    <i class="fa fa-pencil"></i>
+                                </button>
+
+                                <!-- eliminar -->
+                                <button type="button"
+                                        class="act-del btn-eliminar-reserva"
+                                        title="Eliminar"
+                                        data-id="@r.IdReserva">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 }
@@ -68,4 +138,3 @@
         </tbody>
     </table>
 </div>
-

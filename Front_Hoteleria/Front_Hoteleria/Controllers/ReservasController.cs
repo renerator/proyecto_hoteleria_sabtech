@@ -248,7 +248,7 @@ namespace Front_Hoteleria.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CrearReserva(Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto dto)
+        public async Task<ActionResult> CrearReserva(ReservaTrabajadorDto dto)
         {
             try
             {

@@ -59,22 +59,21 @@
                         <span class="estado-inactivo"><i class="fa fa-times"></i> @s.NombreEstadoServicio</span>
                     }
                 </td>
-                <td class="text-center">
-                    <!-- estas 3 son las que te interesan -->
-                    <button type="button"
-                            class="btn btn-warning btn-xs btn-edit"
-                            title="Editar"
-                            data-id="@s.IdServicio">
+                <td class="text-center options-cell">
+                    <button type="button" class="tbl-btn tbl-view" data-id="@s.IdServicio" title="Ver">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                    <button type="button" class="tbl-btn tbl-edit" data-id="@s.IdServicio" title="Editar">
                         <i class="fa fa-pencil"></i>
                     </button>
-
-                    <button type="button"
-                            class="btn btn-danger btn-xs btn-del"
-                            title="Eliminar"
-                            data-id="@s.IdServicio">
-                        <i class="fa fa-times"></i>
+                    <button type="button" class="tbl-btn tbl-config" data-id="@s.IdServicio" title="Configurar">
+                        <i class="fa fa-cogs"></i>
+                    </button>
+                    <button type="button" class="tbl-btn tbl-del" data-id="@s.IdServicio" title="Eliminar">
+                        <i class="fa fa-trash"></i>
                     </button>
                 </td>
+
             </tr>
         }
     </tbody>

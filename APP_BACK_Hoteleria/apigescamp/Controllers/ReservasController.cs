@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DemoBackend.Controllers
 {
@@ -109,6 +110,42 @@ namespace DemoBackend.Controllers
                 _logger.LogError($"PostCreaReserva: Error --> {e.Message}");
                 _logger.LogTrace(e.StackTrace);
                 return StatusCode(500, e.Message);
+            }
+        }
+
+
+        [HttpGet("MuestraReserva")]
+        public ActionResult<ReservaDto> MuestraReserva([FromQuery] int id)
+        {
+            _logger.LogInformation("GET MuestraReserva: inicio. Id={Id}", id);
+
+            try
+            {
+                // armado del filtro que espera tu service
+                var filtro = new ReservaDto
+                {
+                    IdReserva = id
+                };
+
+                // tu service devuelve una LISTA (igual que el de servicios)
+                var items = _reservaService.VerificaReservaPorId(filtro);
+
+                if (items == null || items.Count == 0)
+                {
+                    _logger.LogInformation("GET MuestraReserva: sin resultados para Id={Id}.", id);
+                    return NoContent();
+                }
+
+                // devolvemos solo la primera coincidencia
+                var reserva = items.First();
+
+                _logger.LogInformation("GET MuestraReserva: 1 registro encontrado para Id={Id}.", id);
+                return Ok(reserva);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "GET MuestraReserva: error para Id={Id}.", id);
+                return StatusCode(500, "Error interno del servidor.");
             }
         }
 

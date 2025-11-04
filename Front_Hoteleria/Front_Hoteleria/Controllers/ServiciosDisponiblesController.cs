@@ -63,6 +63,56 @@ namespace Front_Hoteleria.Controllers
             return PartialView("~/Views/ServiciosDisponibles/_Paneles.cshtml", kpi);
         }
 
+        [HttpGet]
+        public ActionResult ImportarMasivo()
+        {
+            // si quieres validar sesión, puedes hacer lo mismo que en los otros métodos:
+            var token = GetBearer();
+            if (string.IsNullOrWhiteSpace(token))
+                return new HttpStatusCodeResult(401, "Sesión expirada.");
+
+            return PartialView("~/Views/ServiciosDisponibles/_ImportarMasivo.cshtml");
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> Ver(int id)
+        {
+            var token = GetBearer();
+            if (string.IsNullOrWhiteSpace(token))
+                return new HttpStatusCodeResult(401, "Sesión expirada.");
+
+            // usamos tu método que trae por id (el que devolvía List<ServicioDto>)
+            var lista = await _api.VerificaServicioPorId(
+                new ServicioDto { IdServicio = id },
+                token
+            );
+
+            var model = lista?.FirstOrDefault();
+            if (model == null)
+            {
+                // si no vino nada, mandamos un dto mínimo para que no rompa la vista
+                model = new ServicioDto
+                {
+                    IdServicio = id,
+                    NombreServicio = "(no encontrado)",
+                    Estado = false
+                };
+            }
+
+            return PartialView("~/Views/ServiciosDisponibles/_DetalleServicio.cshtml", model);
+        }
+
+        [HttpGet]
+        public ActionResult ConfigurarServicios()
+        {
+            var token = GetBearer();
+            if (string.IsNullOrWhiteSpace(token))
+                return new HttpStatusCodeResult(401, "Sesión expirada.");
+
+            // si en el futuro querés traer la config desde el API, acá la cargas
+            return PartialView("~/Views/ServiciosDisponibles/_ConfigurarServicios.cshtml");
+        }
+
         // ===== crear (GET) -> se llama desde botón "Agregar Servicio" =====
         [HttpGet]
         public ActionResult Crear()

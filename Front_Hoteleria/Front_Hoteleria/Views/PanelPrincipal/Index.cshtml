@@ -12,30 +12,27 @@
         margin-bottom: 20px;
         box-shadow: 0 2px 4px rgba(0,0,0,.08);
         min-height: 120px;
-        position: relative
+        position: relative;
     }
-
-        .dashboard-card h3 {
-            font-size: 2.4rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: #2c3e50
-        }
-
-        .dashboard-card p {
-            color: #7f8c8d;
-            margin: 0;
-            font-weight: 500
-        }
-
-        .dashboard-card i {
-            font-size: 2.4rem;
-            color: #3498db;
-            position: absolute;
-            top: 18px;
-            right: 18px;
-            opacity: .85
-        }
+    .dashboard-card h3 {
+        font-size: 2.4rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: #2c3e50;
+    }
+    .dashboard-card p {
+        color: #7f8c8d;
+        margin: 0;
+        font-weight: 500;
+    }
+    .dashboard-card i {
+        font-size: 2.4rem;
+        color: #3498db;
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        opacity: .85;
+    }
 
     .real-time-indicator {
         display: inline-block;
@@ -44,21 +41,12 @@
         background: #27ae60;
         border-radius: 50%;
         margin-right: 8px;
-        animation: pulse 2s infinite
+        animation: pulse 2s infinite;
     }
-
     @@keyframes pulse {
-        0% {
-            opacity: 1
-        }
-
-        50% {
-            opacity: .5
-        }
-
-        100% {
-            opacity: 1
-        }
+        0% { opacity: 1 }
+        50% { opacity: .5 }
+        100% { opacity: 1 }
     }
 
     .reservations-table {
@@ -66,72 +54,66 @@
         border: 1px solid #e5e5e5;
         border-radius: 4px;
         overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0,0,0,.08)
+        box-shadow: 0 1px 3px rgba(0,0,0,.08);
     }
-
     .table-header {
         background: #34495e;
         color: #fff;
-        padding: 20px
+        padding: 20px;
     }
-
-        .table-header h4 {
-            margin: 0;
-            font-weight: 600
-        }
+    .table-header h4 {
+        margin: 0;
+        font-weight: 600;
+    }
 
     .status-badge {
         padding: 4px 8px;
         border-radius: 3px;
         font-size: .8rem;
-        font-weight: 500
+        font-weight: 500;
     }
+    .status-confirmed { background: #d4edda; color: #155724; }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-cancelled { background: #f8d7da; color: #721c24; }
+    .status-checked-in { background: #cce5ff; color: #004085; }
+    .status-checked-out { background: #e2e3e5; color: #383d41; }
 
-    .status-confirmed {
-        background: #d4edda;
-        color: #155724
-    }
-
-    .status-pending {
-        background: #fff3cd;
-        color: #856404
-    }
-
-    .status-cancelled {
-        background: #f8d7da;
-        color: #721c24
-    }
-
-    .status-checked-in {
-        background: #cce5ff;
-        color: #004085
-    }
-
-    .status-checked-out {
-        background: #e2e3e5;
-        color: #383d41
-    }
-
-    /* Gráfico */
     .chart-container {
         background: #fff;
         border: 1px solid #e5e5e5;
         border-radius: 4px;
         padding: 20px;
         margin-bottom: 30px;
-        box-shadow: 0 1px 3px rgba(0,0,0,.08)
+        box-shadow: 0 1px 3px rgba(0,0,0,.08);
     }
-
     .chart-wrapper {
         position: relative;
         height: 240px;
-        width: 100%
+        width: 100%;
     }
-
     .chart-container canvas {
         width: 100% !important;
-        height: 240px !important
+        height: 240px !important;
     }
+
+    /* botones de acciones de la tabla (los pequeños de color) */
+    .actions-cell { white-space: nowrap; }
+    .dash-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 2px;
+        cursor: pointer;
+    }
+    .dash-btn i { font-size: 15px; }
+    .dash-view { background: #33a8d6; }
+    .dash-edit { background: #1abc9c; }
+    .dash-del { background: #e74c3c; }
 </style>
 
 <div class="right_col" role="main">
@@ -155,14 +137,12 @@
 
         <div class="clearfix"></div>
 
-
-
-        <!-- ===== PARCIAL: TARJETAS + GRÁFICO ===== -->
+        <!-- DASHBOARD (parcial) -->
         <div id="dashAdmContainer" class="row">
             <div class="col-md-12"><div class="text-muted">Cargando dashboard…</div></div>
         </div>
-        
-        <!-- ===== PANEL DE ACCIONES ===== -->
+
+        <!-- PANEL DE ACCIONES -->
         <div class="row">
             <div class="col-md-12">
                 <div style="background:#f8f9fa;border:1px solid #e5e5e5;border-radius:4px;padding:20px;margin-bottom:30px">
@@ -191,12 +171,12 @@
             </div>
         </div>
 
-        <!-- ===== PARCIAL: TABLA ===== -->
+        <!-- TABLA (parcial) -->
         <div class="row">
             <div class="col-md-12">
                 <div class="reservations-table">
                     <div class="table-header">
-                        <h4><i class="fa fa-list"></i> Reservas Listado de Reservas en Línea</h4>
+                        <h4><i class="fa fa-list"></i> Reservas · Listado de Reservas en Línea</h4>
                     </div>
                     <div style="padding:20px" id="tablaAdmContainer">
                         <div class="text-muted">Cargando reservas…</div>
@@ -207,10 +187,11 @@
     </div>
 </div>
 
-<!-- Modal NUEVA RESERVA -->
+<!-- Modal general -->
 <div class="modal fade" id="modalUpsertAdm" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
+            <!-- header fijo, solo cambiaremos el texto por JS -->
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                 <h4 class="modal-title">Nueva Reserva</h4>
@@ -223,67 +204,97 @@
 </div>
 
 @section Scripts{
-    
     <script>
-    // Endpoints del controlador PanelPrincipal
-    const urlDashAdm   = '@Url.Action("Dashboard","PanelPrincipal")';
-    const urlTablaAdm  = '@Url.Action("Tabla","PanelPrincipal")';
-    const urlUpsertAdm = '@Url.Action("Upsert","PanelPrincipal")';
+        // endpoints que usa este Index
+        const urlDashAdm    = '@Url.Action("Dashboard","PanelPrincipal")';
+        const urlTablaAdm   = '@Url.Action("Tabla","PanelPrincipal")';
+        const urlUpsertAdm  = '@Url.Action("Upsert","PanelPrincipal")';
+        const urlDetalleAdm = '@Url.Action("Detalle","PanelPrincipal")';
 
-    function token(){ return $('input[name="__RequestVerificationToken"]').first().val(); }
-    if (window.PNotify) { PNotify.prototype.options.styling = "bootstrap3"; }
+        // cargar dashboard
+        function cargarDashboardAdm() {
+            $('#dashAdmContainer').load(urlDashAdm);
+        }
 
-   
+        // cargar tabla
+        function cargarTablaAdm() {
+            $('#tablaAdmContainer').load(urlTablaAdm, function () {
+                var $t = $('#tablaDashAdm');
+                if ($t.length) {
+                    $t.DataTable({
+                        destroy: true,
+                        responsive: true,
+                        pageLength: 10,
+                        order: [[0, 'desc']],
+                        language: {
+                            sProcessing: "Procesando...",
+                            sLengthMenu: "Mostrar _MENU_",
+                            sZeroRecords: "Sin resultados",
+                            sEmptyTable: "Sin datos",
+                            sInfo: "_START_ - _END_ de _TOTAL_",
+                            sSearch: "Buscar:",
+                            oPaginate: {
+                                sFirst: "Primero",
+                                sLast: "Último",
+                                sNext: "Siguiente",
+                                sPrevious: "Anterior"
+                            }
+                        }
+                    });
+                }
+            });
+        }
 
-
-
-
-    function cargarDashboardAdm(){
-        $('#dashAdmContainer').load(urlDashAdm, function (){ // Gráfico principal (solo si existe el canvas y Chart.js está cargado)
-            
+        // botones superiores
+        $('#btnNuevaAdm').on('click', function () {
+            // poner título correcto
+            $('#modalUpsertAdm .modal-title').text('Nueva Reserva');
+            $('#modalUpsertAdm').modal('show');
+            $('#upsertAdmBody').load(urlUpsertAdm);
         });
-    }
 
-    function cargarTablaAdm(){
-        $('#tablaAdmContainer').load(urlTablaAdm, function(){
-            var $t = $('#tablaDashAdm');
-            if ($t.length){
-                $t.DataTable({
-                    destroy:true, responsive:true, pageLength:10, order:[[0,'desc']],
-                    language:{
-                        sProcessing:"Procesando...", sLengthMenu:"Mostrar _MENU_",
-                        sZeroRecords:"Sin resultados", sEmptyTable:"Sin datos",
-                        sInfo:"_START_ - _END_ de _TOTAL_", sSearch:"Buscar:",
-                        oPaginate:{ sFirst:"Primero", sLast:"Último", sNext:"Siguiente", sPrevious:"Anterior" }
-                    }
-                });
-            }
+        $('#btnRefrescarAdm').on('click', function () {
+            location.reload();
         });
-    }
 
-    // Botones
-    $('#btnNuevaAdm').on('click', function(){
-        $('#modalUpsertAdm').modal('show');
-        $('#upsertAdmBody').load(urlUpsertAdm);
-    });
-    $('#btnRefrescarAdm').on('click', function(){
-        cargarDashboardAdm(); cargarTablaAdm();
-        if (window.PNotify) new PNotify({title:'Datos actualizados', text:'Información recargada.', type:'success'});
-    });
-    $('#btnExportarAdm').on('click', function(){
-        if (window.PNotify) new PNotify({title:'Exportar', text:'Ejemplo de exportación listo.', type:'info'});
-    });
-    $('#btnVerTodoAdm').on('click', function(){
-        $('html,body').animate({scrollTop: $('#tablaAdmContainer').offset().top - 70}, 400);
-    });
-    $('#btnConfigAdm').on('click', function(){
-        if (window.PNotify) new PNotify({title:'Configuración', text:'Próximamente…', type:'info'});
-    });
+        $('#btnExportarAdm').on('click', function () {
+            if (window.PNotify) new PNotify({ title: 'Exportar', text: 'Ejemplo de exportación listo.', type: 'info' });
+        });
 
-    // Init
-    $(function(){
-        cargarDashboardAdm();
-        cargarTablaAdm();
-    });
+        $('#btnVerTodoAdm').on('click', function () {
+            $('html,body').animate({ scrollTop: $('#tablaAdmContainer').offset().top - 70 }, 400);
+        });
+
+        $('#btnConfigAdm').on('click', function () {
+            if (window.PNotify) new PNotify({ title: 'Configuración', text: 'Próximamente…', type: 'info' });
+        });
+
+        // abrir detalle desde la tabla
+        // abrir detalle desde la tabla
+        $(document).on('click', '.btn-ver-reserva', function () {
+            var id = $(this).data('id');
+
+            // título dinámico
+            $('#modalUpsertAdm .modal-title').text('Detalles de la Reserva ' + id);
+            $('#modalUpsertAdm').modal('show');
+
+            // 👇 ahora sí es GET porque va en la querystring
+            $('#upsertAdmBody').load(urlDetalleAdm + '?id=' + encodeURIComponent(id));
+        });
+        // abre el modal de editar
+        $(document).on('click', '.btn-editar-reserva', function () {
+            var id = $(this).data('id');
+            // mismo modal grande que ya tienes
+            $('#modalUpsertAdm').modal('show');
+            // llamamos al nuevo endpoint
+            $('#upsertAdmBody').load('@Url.Action("Editar","PanelPrincipal")' + '?id=' + encodeURIComponent(id));
+        });
+
+
+        // init
+        $(function () {
+            cargarDashboardAdm();
+            cargarTablaAdm();
+        });
     </script>
 }

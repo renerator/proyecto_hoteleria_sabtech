@@ -1,16 +1,12 @@
-using Front_Hoteleria.Dto.Reserva;
+using Front_Hoteleria.Dto.Dotaciones;
 using Front_Hoteleria.Services.Dotaciones;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
 
 namespace Front_Hoteleria.Controllers
 {
@@ -19,118 +15,72 @@ namespace Front_Hoteleria.Controllers
         private readonly IDotacionesService _api;
 
         public DotacionesController() : this(new DotacionesService()) { }
-        public DotacionesController(IDotacionesService api) { _api = api; }
 
-        // -------------------------------
-        //  TOKEN & PERFIL
-        // -------------------------------
+        public DotacionesController(IDotacionesService api)
+        {
+            _api = api;
+        }
+
         private string GetBearer()
         {
             try
             {
                 return (Session["Token"] as string)
-                       ?? (Request.Cookies["access_token"] != null ? Request.Cookies["access_token"].Value : null);
+                       ?? (Request.Cookies["access_token"] != null
+                           ? Request.Cookies["access_token"].Value
+                           : null);
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[GetBearer] Error leyendo token: {ex}");
+                Trace.TraceError("[DotacionesController.GetBearer] " + ex);
                 return null;
             }
         }
 
-        // -------------------------------
-        //  INDEX
-        // -------------------------------
+        // ================== VISTA PRINCIPAL ==================
         [HttpGet]
         public ActionResult Index()
         {
-            if (!(Session["Token"] is string tok) || string.IsNullOrWhiteSpace(tok))
-                return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-
-            var perfil = Session["IdPerfil"];
-            if (perfil == null)
-                return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-
-            switch (perfil)
-            {
-                case 1: return View("~/Views/Dotaciones/Index.cshtml");
-                case 4: return View("~/Views/Dotaciones/Index.cshtml");
-                default: return RedirectToAction("Login", "Account");
-            }
+            return View("~/Views/Dotaciones/Index.cshtml");
         }
 
-
-
-public async Task<ActionResult> TablaPartial(
-    DateTime? fechaDesde,
-    DateTime? fechaHasta,
-    int? idEstadoReserva,
-    int? idtiporeserva)
-    {
-        try
-        {
-            var token = GetBearer();
-            if (string.IsNullOrWhiteSpace(token))
-                return new HttpStatusCodeResult(401, "Sesión expirada");
-
-            var filtro = new ReservaTrabajadorDto
-            {
-                FechaDesde = fechaDesde,
-                FechaHasta = fechaHasta,
-                IdEstadoReserva = idEstadoReserva ?? 0, // 0 = no filtra (según tu SP)
-                IdTipoReserva = idtiporeserva ?? 0
-            };
-
-            var data = await _api.ReservasDisponiblesTrabajadorAsync(filtro, token);
-
-            // TIP: el partial debe estar tipado a List<ReservaTrabajadorDto>
-            return PartialView("~/Views/Reservas/_TablaDotaciones.cshtml", data);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Trace.TraceError($"[TablaReserva] {ex}");
-            return new HttpStatusCodeResult(500, "Error al cargar reservas");
-        }
-    }
+        // ================== DASHBOARD (lo que carga #dashDotContainer) ==================
+        // el Index llama a: @Url.Action("Dashboard","Dotaciones")
         [HttpGet]
-        public async Task<ActionResult> Upsert()
+        public async Task<ActionResult> Dashboard()
         {
             var token = GetBearer();
-            if (string.IsNullOrWhiteSpace(token))
-                return new HttpStatusCodeResult(401);
 
-            // Rellena combos (ajusta a tu servicio)
-            ViewBag.Habitaciones = new SelectList(new[]
-                {
-        new { Id = 1, Nombre = "Individual" },
-        new { Id = 2, Nombre = "Grupal" },
-        new { Id = 3, Nombre = "Corporativa" }
-    }, "Id", "Nombre");
-            ViewBag.TiposReserva = new SelectList(new[]
+            // si no hay token, igual devolvemos algo vacío para que no reviente el .load()
+            DotacionKPIDto dto = new DotacionKPIDto
             {
-        new { Id = 1, Nombre = "Individual" },
-        new { Id = 2, Nombre = "Grupal" },
-        new { Id = 3, Nombre = "Corporativa" }
-    }, "Id", "Nombre");
-
-            ViewBag.IdTrabajador = Session["IdTrabajador"];
-
-            var Dto = new Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
-            {
-                FechaDesde = DateTime.Today,
-                FechaHasta = DateTime.Today.AddDays(1),
-                IdEstadoReserva = 1
+                TotalTrabajadores = 0,
+                TurnoDia = 0,
+                TurnoNoche = 0,
+                FueraServicio = 0
             };
 
-            return PartialView("~/Views/Reservas/_UpsertDotaciones.cshtml", Dto);
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(token))
+                {
+                    var desdeApi = await _api.ResumenAsync(token);
+                    if (desdeApi != null)
+                        dto = desdeApi;
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[DotacionesController.Dashboard] " + ex);
+            }
+
+            return PartialView("~/Views/Dotaciones/_ResumenDotacion.cshtml", dto);
         }
 
-
-        // ReservasController
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CrearReserva(Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto dto)
+        // ================== TABLA (lo que carga #tablaDotContainer) ==================
+        // el Index llama con GET /Dotaciones/Tabla?criterio=xxx
+        [HttpGet]
+        public async Task<ActionResult> Tabla(int? empresaId, string criterio)
         {
             try
             {
@@ -138,83 +88,98 @@ public async Task<ActionResult> TablaPartial(
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada");
 
-                // saneos mínimos
-                if (dto == null) return new HttpStatusCodeResult(400, "Datos inválidos");
-                if (dto.IdHabitacion <= 0  || !dto.FechaDesde.HasValue || !dto.FechaHasta.HasValue)
-                    return new HttpStatusCodeResult(400, "Campos obligatorios faltantes");
+                // llamamos al servicio
+                var lista = await _api.ListarAsync(empresaId, criterio, token)
+                            ?? new List<DotacionDto>();
 
-                if (dto.IdEstadoReserva == 0) dto.IdEstadoReserva = 1; // Ingresada
+                // si quieres refiltrar en MVC
+                if (!string.IsNullOrWhiteSpace(criterio))
+                {
+                    var f = criterio.ToLower().Trim();
+                    lista = lista
+                        .Where(x =>
+                            (!string.IsNullOrWhiteSpace(x.Nombre) && x.Nombre.ToLower().Contains(f)) ||
+                            (!string.IsNullOrWhiteSpace(x.Apellido) && x.Apellido.ToLower().Contains(f)) ||
+                            (!string.IsNullOrWhiteSpace(x.Rut) && x.Rut.ToLower().Contains(f)) ||
+                            (!string.IsNullOrWhiteSpace(x.Empresa) && x.Empresa.ToLower().Contains(f))
+                        )
+                        .ToList();
+                }
 
-                var ok = await _api.CrearReservaTrabajadorAsync(dto, token);
-                if (!ok) return new HttpStatusCodeResult(500, "No se pudo crear la reserva.");
-
-                // Respuesta para manejar por JS
-                return Json(new { ok = true });
+                return PartialView("~/Views/Dotaciones/_TablaDotacion.cshtml", lista);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError($"[CrearReserva] {ex}");
-                return new HttpStatusCodeResult(500, "Error al crear la reserva.");
+                Trace.TraceError("[DotacionesController.Tabla] " + ex);
+                return new HttpStatusCodeResult(500, "Error al cargar dotaciones");
             }
         }
 
-        // ===== DASHBOARD VIEW (PARCIAL) =====
-        // SIN parámetros de fecha
+        // ================== MODAL: ALTA / EDICIÓN ==================
+        // el Index hace $.get(urlUpsertDot, ...)
         [HttpGet]
-        public async Task<ActionResult> Dashboard()
+        public async Task<ActionResult> Upsert(int? id)
         {
-            try
-            {
-                var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
+            var token = GetBearer();
+            DotacionDto model = new DotacionDto();
 
-                // Llama al servicio SIN parámetros de fecha (usa null, null)
+            if (id.HasValue && id.Value > 0)
+            {
+                try
+                {
+                    var dto = await _api.ObtenerPorIdAsync(id.Value, token);
+                    if (dto != null)
+                        model = dto;
+                }
+                catch (Exception ex)
+                {
+                    Trace.TraceError("[DotacionesController.Upsert] " + ex);
+                }
+            }
 
-                var dto = new ReservaDashboardDto();
-                 dto = await _api.DashboardReservasAsync(token)
-                          ?? new ReservaDashboardDto();
-
-                // Devuelve el parcial fuertemente tipado con el DTO
-                return PartialView("~/Views/Reservas/_DashboardDotaciones.cshtml", dto);
-                
-            }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[Dashboard] Error HTTP: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.BadGateway, "No se pudo comunicar con la API de dashboard.");
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[Dashboard] Timeout: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta de dashboard excedió el tiempo de espera.");
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[Dashboard] Error: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al cargar el dashboard.");
-            }
+            return PartialView("~/Views/Dotaciones/_UpsertDotacion.cshtml", model);
         }
 
+        // ================== MODAL: CARGA MASIVA ==================
+        // el Index hace $.get(urlCargaDot, ...)
+        [HttpGet]
+        public ActionResult CargaMasiva()
+        {
+            return PartialView("~/Views/Dotaciones/_CargaMasivaDotacion.cshtml");
+        }
+
+        // ================== MODAL: TURNOS ==================
+        // el Index hace $.get(urlTurnosDot, ...)
+        [HttpGet]
+        public ActionResult Turnos()
+        {
+            return PartialView("~/Views/Dotaciones/_TurnosDotacion.cshtml");
+        }
+
+        // opcional: guardar (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Eliminar(int idHabitacion)
+        public async Task<JsonResult> Guardar(DotacionDto dto)
         {
+            var token = GetBearer();
+            if (string.IsNullOrWhiteSpace(token))
+                return Json(new { ok = false, message = "Sesión expirada." });
+
+            var ok = false;
+
             try
             {
-                var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized);
-
-                var ok = await _api.EliminarReservaAsync(idHabitacion, token);
-                if (!ok) return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "No se pudo eliminar.");
-                return new HttpStatusCodeResult((int)HttpStatusCode.OK);
+                if (dto.IdDotacion == 0)
+                    ok = await _api.CrearAsync(dto, token);
+                else
+                    ok = await _api.ModificarAsync(dto, token);
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[Eliminar] Error: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al eliminar la reserva.");
+                Trace.TraceError("[DotacionesController.Guardar] " + ex);
             }
+
+            return Json(new { ok, message = ok ? "Dotación guardada." : "No se pudo guardar." });
         }
     }
 }
