@@ -1,59 +1,80 @@
-﻿@model List<Front_Hoteleria.Dto.Servicio.ServicioDto>
+﻿@model IEnumerable<Front_Hoteleria.Dto.Servicio.ServicioDto>
 
-<table id="tblServicios" class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Servicio</th>
-            <th>Categoría</th>
-            <th>Prioridad</th>
-            <th>Tiempo Est. (min)</th>
-            <th>Precio</th>
-            <th>Estado</th>
-            <th style="width:130px;">Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var s in Model)
-        {
-            <tr>
-                <td>@s.IdServicio</td>
-                <td>@s.NombreServicio</td>
-                <td>@s.NombreCategoria</td>
-                <td>@s.NombrePrioridad</td>
-                <td>@s.TiempoEstimadoMinutos</td>
-                <td>@String.Format("${0:N2}", @s.Precio)</td>                
-                <td>@(s.NombreEstadoServicio</td>
-                <td class="text-center">
-                    <button class="btn btn-success btn-xs" title="Confirmar" data-id="@s.IdServicio"><i class="fa fa-check"></i></button>
-                    <button class="btn btn-info btn-xs" title="Ver Detalle" data-id="@s.IdServicio"><i class="fa fa-eye"></i></button>
-                    <button class="btn btn-warning btn-xs" title="Editar" data-id="@s.IdServicio"><i class="fa fa-pencil"></i></button>
-                    <button class="btn btn-danger btn-xs" title="Eliminar" data-id="@s.IdServicio"><i class="fa fa-times"></i></button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-@section scripts{
-    <script>
-        $(function () {
-            if (!$.fn.DataTable.isDataTable('#tblServicios')) {
-                $('#tblServicios').DataTable({
-                    responsive: true,
-                    pageLength: 25,
-                    order: [[0, 'desc']],
-                    language: { url: '//cdn.datatables.net/plug-ins/1.13.1/i18n/es-ES.json' }
-                });
-            }
-            // KPIs simples
-            var total = $('#tblServicios tbody tr').length;
-            var activos = $('#tblServicios tbody tr').filter(function () {
-                return $(this).find('td:eq(6)').text().trim() === 'Activo';
-            }).length;
-            $('#kpiTotal').text(total);
-            $('#kpiActivos').text(activos);
-            $('#kpiInactivos').text(total - activos);
-        });
-    </script>
+@{
+    // por si viene null del controller
+    var data = Model ?? Enumerable.Empty<Front_Hoteleria.Dto.Servicio.ServicioDto>();
 }
+
+@Html.AntiForgeryToken()
+
+<div class="x_panel">
+    <div class="x_title">
+        <h2 id="tituloListado"><i class="fa fa-list"></i> Listado de Servicios</h2>
+        <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+        <div class="table-responsive">
+            <table id="servicesTable" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th class="col-servicio">Servicio</th>
+                        <th>Categoría</th>
+                        <th>Prioridad</th>
+                        <th class="col-tiempo">Tiempo Est. (min)</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
+                        <th style="width:90px;">Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in data)
+                    {
+                        // clases según categoría, igual que en tu código anterior
+                        var catClass = "label label-default";
+                        switch ((s.NombreCategoria ?? "").Trim())
+                        {
+                            case "Emergencias": catClass = "label label-danger"; break;
+                            case "Business": catClass = "label label-primary"; break;
+                            case "Spa & Bienestar": catClass = "label label-success"; break;
+                        }
+
+                        var estadoBadge = s.Estado
+                            ? "<span class='label label-success'>Activo</span>"
+                            : "<span class='label label-default'>Inactivo</span>";
+
+                        <tr>
+                            <td>@s.IdServicio</td>
+                            <td>@s.NombreServicio</td>
+                            <td><span class="@catClass">@(!string.IsNullOrWhiteSpace(s.NombreCategoria) ? s.NombreCategoria : "N/D")</span></td>
+                            <td>@(string.IsNullOrWhiteSpace(s.NombrePrioridad) ? "N/D" : s.NombrePrioridad)</td>
+                            <td class="text-right">@s.TiempoEstimadoMinutos</td>
+                            <td class="text-right">@((s.Precio ?? 0).ToString("N0"))</td>
+                            <td>@Html.Raw(estadoBadge)</td>
+                            <td>
+                                <button type="button"
+                                        class="btn btn-xs btn-warning"
+                                        onclick="editarServicio(@s.IdServicio)">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+                                <button type="button"
+                                        class="btn btn-xs btn-danger"
+                                        onclick="eliminarServicio(@s.IdServicio)">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    @if (!data.Any())
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">
+                                No hay servicios para los filtros seleccionados.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

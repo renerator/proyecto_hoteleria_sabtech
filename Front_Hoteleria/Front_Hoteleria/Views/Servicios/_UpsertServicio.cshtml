@@ -1,90 +1,144 @@
 ﻿@model Front_Hoteleria.Dto.Servicio.ServicioDto
 
-<div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal">&times;</button>
-    <h4 class="modal-title">@((Model?.IdServicio ?? 0) == 0 ? "Agregar Servicio" : "Editar Servicio")</h4>
-</div>
-<div class="modal-body">
-    @using (Html.BeginForm((Model.IdServicio == 0 ? "Crear" : "Modificar"), "Servicios", FormMethod.Post, new { id = "frmUpsertServicio", @class = "form-horizontal" }))
+@{
+    // si la vista se renderiza sin modelo desde el Index, creo uno por defecto
+    var m = Model ?? new Front_Hoteleria.Dto.Servicio.ServicioDto
     {
-        @Html.AntiForgeryToken()
-        @Html.HiddenFor(m => m.IdServicio)
+        IdServicio = 0,
+        Estado = true,
+        TiempoEstimadoMinutos = 30
+    };
 
-        <div class="form-group">
-            @Html.LabelFor(m => m.NombreServicio, new { @class = "col-sm-3 control-label" })
-            <div class="col-sm-9">
-                @Html.TextBoxFor(m => m.NombreServicio, new { @class = "form-control", required = "required" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="col-sm-3 control-label">Categoría (id)</label>
-            <div class="col-sm-9">
-                @Html.TextBoxFor(m => m.IdServiciosCategoria, new { @class = "form-control", type = "number", min = "1" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="col-sm-3 control-label">Prioridad (id)</label>
-            <div class="col-sm-9">
-                @Html.TextBoxFor(m => m.IdServicioPrioridad, new { @class = "form-control", type = "number", min = "1" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.Label("Tiempo Estimado (min)", new { @class = "col-sm-3 control-label" })
-            <div class="col-sm-9">
-                @Html.TextBoxFor(m => m.TiempoEstimadoMinutos, new { @class = "form-control", type = "number", min = "1", required = "required" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.Label("Precio ($)", new { @class = "col-sm-3 control-label" })
-            <div class="col-sm-9">
-                @Html.TextBoxFor(m => m.Precio, new { @class = "form-control", type = "number", min = "0", required = "required" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(m => m.Estado, new { @class = "col-sm-3 control-label" })
-            <div class="col-sm-9">
-                @Html.DropDownListFor(m => m.Estado,
-                    new SelectList(new[]{
-                        new { v=true,  t="Activo" },
-                        new { v=false, t="Inactivo"}
-                    }, "v", "t", Model.Estado),
-                    new { @class = "form-control" })
-            </div>
-        </div>
-    }
-</div>
-<div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-    <button type="button" class="btn btn-primary" id="btnGuardarServicio">
-        <i class="fa fa-check"></i> Guardar
-    </button>
-</div>
-
-@section scripts{
-    <script>
-        $(function () {
-            $('#btnGuardarServicio').on('click', function () {
-                var $f = $('#frmUpsertServicio');
-                $.ajax({
-                    url: $f.attr('action'),
-                    type: 'POST',
-                    data: $f.serialize(),
-                    success: function (r) {
-                        if (r.ok) {
-                            $('#modalUpsert').modal('hide');
-                            $('#frmFiltroServicios').submit(); // recargar tabla
-                        } else {
-                            alert(r.message || 'No se pudo guardar.');
-                        }
-                    },
-                    error: function () { alert('Error al guardar.'); }
-                });
-            });
-        });
-    </script>
+    // según si es nuevo o edición cambio la acción
+    var actionName = m.IdServicio > 0 ? "Modificar" : "Crear";
 }
+
+<div id="modalServicio" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header" style="background: #2a3f54; color: #fff;">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title">@((m.IdServicio > 0) ? "Editar servicio" : "Nuevo servicio")</h4>
+            </div>
+
+            @using (Html.BeginForm(actionName, "Servicios", FormMethod.Post, new { id = "frmServicio", @class = "form-horizontal form-label-left" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <!-- id oculto -->
+                <input type="hidden" name="IdServicio" value="@m.IdServicio" />
+
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Nombre del servicio <span class="text-danger">*</span></label>
+                        <div class="col-md-9">
+                            <input type="text"
+                                   name="NombreServicio"
+                                   class="form-control"
+                                   value="@m.NombreServicio"
+                                   placeholder="Ej: Limpieza de habitación"
+                                   required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Tipo de servicio</label>
+                        <div class="col-md-3">
+                            <input type="number"
+                                   name="IdTipoServicio"
+                                   class="form-control"
+                                   value="@(m.IdTipoServicio == 0 ? "" : m.IdTipoServicio.ToString())"
+                                   min="1" />
+                        </div>
+
+                        <label class="control-label col-md-3">Empresa</label>
+                        <div class="col-md-3">
+                            <input type="number"
+                                   name="IdEmpresa"
+                                   class="form-control"
+                                   value="@(m.IdEmpresa == 0 ? "" : m.IdEmpresa.ToString())"
+                                   min="1" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Categoría</label>
+                        <div class="col-md-3">
+                            <input type="number"
+                                   name="IdServiciosCategoria"
+                                   class="form-control"
+                                   value="@(m.IdServiciosCategoria.HasValue ? m.IdServiciosCategoria.Value.ToString() : "")" />
+                        </div>
+
+                        <label class="control-label col-md-3">Prioridad</label>
+                        <div class="col-md-3">
+                            <input type="number"
+                                   name="IdServicioPrioridad"
+                                   class="form-control"
+                                   value="@(m.IdServicioPrioridad.HasValue ? m.IdServicioPrioridad.Value.ToString() : "")" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Estado de servicio</label>
+                        <div class="col-md-3">
+                            <input type="number"
+                                   name="IdServicioEstado"
+                                   class="form-control"
+                                   value="@(m.IdServicioEstado.HasValue ? m.IdServicioEstado.Value.ToString() : "")" />
+                        </div>
+
+                        <label class="control-label col-md-3">Tiempo estimado (min)</label>
+                        <div class="col-md-3">
+                            <input type="number"
+                                   name="TiempoEstimadoMinutos"
+                                   class="form-control"
+                                   min="0"
+                                   value="@m.TiempoEstimadoMinutos" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Precio</label>
+                        <div class="col-md-3">
+                            <input type="number"
+                                   name="Precio"
+                                   class="form-control"
+                                   min="0"
+                                   step="1"
+                                   value="@(m.Precio.HasValue ? m.Precio.Value.ToString() : "")" />
+                        </div>
+
+                        <label class="control-label col-md-3">Activo</label>
+                        <div class="col-md-3" style="padding-top:5px;">
+                            <input type="checkbox" name="Estado" value="true" @(m.Estado ? "checked=\"checked\"" : "") />
+                            <input type="hidden" name="Estado" value="false" />
+                        </div>
+                    </div>
+
+                </div> <!-- /modal-body -->
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa fa-save"></i> Guardar
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    // abrir para nuevo
+    function nuevoServicio() {
+        $('#modalServicio').modal('show');
+    }
+    // abrir para edición (luego puedes hacer un GET y rellenar)
+    function editarServicio(id) {
+        // por ahora solo abrir
+        $('#modalServicio').modal('show');
+    }
+</script>

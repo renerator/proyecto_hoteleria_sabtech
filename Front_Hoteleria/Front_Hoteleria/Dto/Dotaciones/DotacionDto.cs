@@ -13,6 +13,12 @@
         public string Apellido { get; set; }
         public string Rut { get; set; }
 
+        public string RutEmpresa { get; set; }
+
+        public string TurnoNombre { get; set; }
+
+         public string TurnoCodigo { get; set; }
+
         // datos laborales
         public string Cargo { get; set; }
 

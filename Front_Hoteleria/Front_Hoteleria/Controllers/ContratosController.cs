@@ -1,16 +1,12 @@
-using Front_Hoteleria.Dto.Reserva;
+using Front_Hoteleria.Dto.Contrato;
 using Front_Hoteleria.Services.Contratos;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
 
 namespace Front_Hoteleria.Controllers
 {
@@ -18,119 +14,70 @@ namespace Front_Hoteleria.Controllers
     {
         private readonly IContratosService _api;
 
+        // ctor por defecto
         public ContratosController() : this(new ContratosService()) { }
-        public ContratosController(IContratosService api) { _api = api; }
 
-        // -------------------------------
-        //  TOKEN & PERFIL
-        // -------------------------------
+        // ctor con inyección
+        public ContratosController(IContratosService api)
+        {
+            _api = api;
+        }
+
+        // leer el bearer igual que en dotaciones
         private string GetBearer()
         {
             try
             {
                 return (Session["Token"] as string)
-                       ?? (Request.Cookies["access_token"] != null ? Request.Cookies["access_token"].Value : null);
+                       ?? (Request.Cookies["access_token"] != null
+                           ? Request.Cookies["access_token"].Value
+                           : null);
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[GetBearer] Error leyendo token: {ex}");
+                Trace.TraceError("[ContratosController.GetBearer] " + ex);
                 return null;
             }
         }
 
-        // -------------------------------
-        //  INDEX
-        // -------------------------------
+        // GET: /Contratos
         [HttpGet]
         public ActionResult Index()
         {
-            if (!(Session["Token"] is string tok) || string.IsNullOrWhiteSpace(tok))
-                return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-
-            var perfil = Session["IdPerfil"];
-            if (perfil == null)
-                return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-
-            switch (perfil)
-            {
-                case 1: return View("~/Views/Contratos/Index.cshtml");
-                case 4: return View("~/Views/Contratos/Index.cshtml");
-                default: return RedirectToAction("Login", "Account");
-            }
+            // ~/Views/Contratos/Index.cshtml
+            return View("~/Views/Contratos/Index.cshtml");
         }
 
-
-
-public async Task<ActionResult> TablaPartial(
-    DateTime? fechaDesde,
-    DateTime? fechaHasta,
-    int? idEstadoReserva,
-    int? idtiporeserva)
-    {
-        try
-        {
-            var token = GetBearer();
-            if (string.IsNullOrWhiteSpace(token))
-                return new HttpStatusCodeResult(401, "Sesión expirada");
-
-            var filtro = new ReservaTrabajadorDto
-            {
-                FechaDesde = fechaDesde,
-                FechaHasta = fechaHasta,
-                IdEstadoReserva = idEstadoReserva ?? 0, // 0 = no filtra (según tu SP)
-                IdTipoReserva = idtiporeserva ?? 0
-            };
-
-            var data = await _api.ReservasDisponiblesTrabajadorAsync(filtro, token);
-
-            // TIP: el partial debe estar tipado a List<ReservaTrabajadorDto>
-            return PartialView("~/Views/Contratos/_TablaContratos.cshtml", data);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Trace.TraceError($"[TablaReserva] {ex}");
-            return new HttpStatusCodeResult(500, "Error al cargar reservas");
-        }
-    }
+        // PANEL AZUL (KPI)
+        // GET: /Contratos/Resumen
         [HttpGet]
-        public async Task<ActionResult> Upsert()
+        public async Task<ActionResult> Resumen()
         {
             var token = GetBearer();
-            if (string.IsNullOrWhiteSpace(token))
-                return new HttpStatusCodeResult(401);
 
-            // Rellena combos (ajusta a tu servicio)
-            ViewBag.Habitaciones = new SelectList(new[]
+            // intenta ir a la api
+            var dto = await _api.ResumenAsync(token);
+            if (dto == null)
+            {
+                // datos en duro para ver diseño
+                dto = new ContratoKPIDto
                 {
-        new { Id = 1, Nombre = "Individual" },
-        new { Id = 2, Nombre = "Grupal" },
-        new { Id = 3, Nombre = "Corporativa" }
-    }, "Id", "Nombre");
-            ViewBag.TiposReserva = new SelectList(new[]
-            {
-        new { Id = 1, Nombre = "Individual" },
-        new { Id = 2, Nombre = "Grupal" },
-        new { Id = 3, Nombre = "Corporativa" }
-    }, "Id", "Nombre");
+                    ContratosActivos = 8,
+                    EmpresasRegistradas = 12,
+                    TrabajadoresActivos = 156,
+                    VencenPronto = 3
+                };
+            }
 
-            ViewBag.IdTrabajador = Session["IdTrabajador"];
-
-            var Dto = new Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
-            {
-                FechaDesde = DateTime.Today,
-                FechaHasta = DateTime.Today.AddDays(1),
-                IdEstadoReserva = 1
-            };
-
-            return PartialView("~/Views/Contratos/_UpsertContrato.cshtml", Dto);
+            // ~/Views/Contratos/_ResumenContratos.cshtml
+            return PartialView("~/Views/Contratos/_DashboardContrato.cshtml", dto);
         }
 
-
-        // ReservasController
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CrearReserva(Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto dto)
+        // LISTA / tarjetas
+        // GET: /Contratos/Tabla
+        [HttpGet]
+        [ActionName("Tabla")]
+        public async Task<ActionResult> Tabla(string criterio)
         {
             try
             {
@@ -138,82 +85,259 @@ public async Task<ActionResult> TablaPartial(
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada");
 
-                // saneos mínimos
-                if (dto == null) return new HttpStatusCodeResult(400, "Datos inválidos");
-                if (dto.IdHabitacion <= 0  || !dto.FechaDesde.HasValue || !dto.FechaHasta.HasValue)
-                    return new HttpStatusCodeResult(400, "Campos obligatorios faltantes");
+                // 1) intentamos traer de la API
+                var lista = await _api.ListarAsync(criterio, token);
 
-                if (dto.IdEstadoReserva == 0) dto.IdEstadoReserva = 1; // Ingresada
+                // 2) si la api no devolvió nada, armamos datos en duro para ver el diseño
+                if (lista == null || !lista.Any())
+                {
+                    lista = new List<ContratoDto>
+                    {
+                        new ContratoDto
+                        {
+                            IdContrato = 1,
+                            IdEmpresa = 1,
+                            Empresa = "Constructora ABC Ltda.",
+                            RutEmpresa = "12.345.678-9",
+                            NumeroContrato = "CONT-2024-001",
+                            FechaInicio = DateTime.Today.AddMonths(-2),
+                            FechaFin = DateTime.Today.AddMonths(10),
+                            Tipo = "indefinido",
+                            Valor = 1500000,
+                            IdCampamento = 1,
+                            Campamento = "Campamento Norte",
+                            MaximoTrabajadores = 50,
+                            Descripcion = "Contrato principal de construcción",
+                            Estado = "Activo",
+                            Trabajadores = new List<ContratoTrabajadorDto>
+                            {
+                                new ContratoTrabajadorDto
+                                {
+                                    IdTrabajador = 1,
+                                    Nombres = "Juan Pérez",
+                                    Rut = "12.345.678-9",
+                                    Cargo = "Supervisor",
+                                    NivelAcceso = "manager"
+                                },
+                                new ContratoTrabajadorDto
+                                {
+                                    IdTrabajador = 2,
+                                    Nombres = "Carlos Méndez",
+                                    Rut = "11.222.333-4",
+                                    Cargo = "Operador",
+                                    NivelAcceso = "worker"
+                                }
+                            }
+                        },
+                        new ContratoDto
+                        {
+                            IdContrato = 2,
+                            IdEmpresa = 2,
+                            Empresa = "Servicios Mineros XYZ S.A.",
+                            RutEmpresa = "98.765.432-1",
+                            NumeroContrato = "CONT-2024-002",
+                            FechaInicio = DateTime.Today.AddMonths(-1),
+                            FechaFin = DateTime.Today.AddDays(25),  // para que salga "vence pronto"
+                            Tipo = "proyecto",
+                            Valor = 800000,
+                            IdCampamento = 2,
+                            Campamento = "Campamento Sur",
+                            MaximoTrabajadores = 25,
+                            Descripcion = "Contrato de servicios de mantenimiento",
+                            Estado = "Activo",
+                            Trabajadores = new List<ContratoTrabajadorDto>
+                            {
+                                new ContratoTrabajadorDto
+                                {
+                                    IdTrabajador = 3,
+                                    Nombres = "María González",
+                                    Rut = "13.456.789-0",
+                                    Cargo = "Gerente",
+                                    NivelAcceso = "admin"
+                                }
+                            }
+                        }
+                    };
+                }
 
-                var ok = await _api.CrearReservaTrabajadorAsync(dto, token);
-                if (!ok) return new HttpStatusCodeResult(500, "No se pudo crear la reserva.");
+                // 3) si vino criterio, filtramos igual que en dotaciones
+                if (!string.IsNullOrWhiteSpace(criterio))
+                {
+                    var f = criterio.ToLower().Trim();
+                    lista = lista
+                        .Where(c =>
+                            (!string.IsNullOrWhiteSpace(c.Empresa) && c.Empresa.ToLower().Contains(f)) ||
+                            (!string.IsNullOrWhiteSpace(c.NumeroContrato) && c.NumeroContrato.ToLower().Contains(f)) ||
+                            (!string.IsNullOrWhiteSpace(c.RutEmpresa) && c.RutEmpresa.ToLower().Contains(f)) ||
+                            (!string.IsNullOrWhiteSpace(c.Campamento) && c.Campamento.ToLower().Contains(f))
+                        )
+                        .ToList();
+                }
 
-                // Respuesta para manejar por JS
+                // ~/Views/Contratos/_TablaContratos.cshtml
+                return PartialView("~/Views/Contratos/_TablaContrato.cshtml", lista);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[ContratosController.Tabla] " + ex);
+                return new HttpStatusCodeResult(500, "Error al cargar contratos");
+            }
+        }
+        // GET: /Contratos/NuevoTrabajador
+        [HttpGet]
+        public ActionResult NuevoTrabajador(int? idContrato)
+        {
+            // puedes precargar el contrato si quieres, por ahora solo mando el id
+            var dto = new ContratoTrabajadorUpsertDto
+            {
+                IdContrato = idContrato
+            };
+
+            return PartialView("~/Views/Contratos/_UpsertTrabajador.cshtml", dto);
+        }
+
+        // POST: /Contratos/GuardarTrabajador
+        [HttpPost]
+        public async Task<ActionResult> GuardarTrabajador(ContratoTrabajadorUpsertDto dto)
+        {
+            if (dto == null)
+                return Json(new { ok = false, msg = "Datos vacíos" });
+
+            var token = GetBearer();
+
+            try
+            {
+                // acá iría la llamada real a la API, algo como:
+                // var ok = await _api.AgregarTrabajadorAsync(dto, token);
+                // demo:
+                var ok = true;
+
+                if (!ok)
+                    return Json(new { ok = false, msg = "No se pudo guardar en la API" });
+
+                return Json(new { ok = true });
+            }
+            catch (System.Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("[ContratosController.GuardarTrabajador] " + ex);
+                return Json(new { ok = false, msg = "Error inesperado al guardar trabajador" });
+            }
+        }
+
+        // GET: /Contratos/NuevaEmpresa
+        [HttpGet]
+        public ActionResult NuevaEmpresa()
+        {
+            // solo para mostrar el modal vacío
+            var dto = new EmpresaContratoDto();
+            return PartialView("~/Views/Contratos/_UpsertEmpresa.cshtml", dto);
+        }
+
+        // POST: /Contratos/GuardarEmpresa
+        [HttpPost]
+        public async Task<ActionResult> GuardarEmpresa(EmpresaContratoDto dto)
+        {
+            if (dto == null)
+                return Json(new { ok = false, msg = "Datos vacíos" });
+
+            var token = GetBearer();
+
+            try
+            {
+                // aquí iría la llamada real a la API, algo como:
+                // var ok = await _api.CrearEmpresaAsync(dto, token);
+                // por ahora demo:
+                var ok = true;
+
+                if (!ok)
+                    return Json(new { ok = false, msg = "No se pudo guardar en la API" });
+
                 return Json(new { ok = true });
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError($"[CrearReserva] {ex}");
-                return new HttpStatusCodeResult(500, "Error al crear la reserva.");
+                Trace.TraceError("[ContratosController.GuardarEmpresa] " + ex);
+                return Json(new { ok = false, msg = "Error inesperado al guardar empresa" });
             }
         }
 
-        // ===== DASHBOARD VIEW (PARCIAL) =====
-        // SIN parámetros de fecha
+        // MODAL (nuevo / editar / ver)
+        // GET: /Contratos/Upsert
         [HttpGet]
-        public async Task<ActionResult> Dashboard()
+        public async Task<ActionResult> Upsert(int? id, bool? soloLectura)
         {
+            var token = GetBearer();
+            ContratoDto dto = null;
+
+            if (id.HasValue && id.Value > 0)
+            {
+                // intentar traer de la api
+                dto = await _api.ObtenerPorIdAsync(id.Value, token);
+            }
+
+            if (dto == null)
+            {
+                dto = new ContratoDto
+                {
+                    IdContrato = id ?? 0,
+                    Estado = "Activo",
+                    FechaInicio = DateTime.Today,
+                    FechaFin = DateTime.Today.AddMonths(6)
+                };
+            }
+
+            // le pasas por querystring ?soloLectura=true y en la vista ya lo capturaste
+            return PartialView("~/Views/Contratos/_UpsertContrato.cshtml", dto);
+        }
+
+        // guardar (demo)
+        // POST: /Contratos/Guardar
+        [HttpPost]
+        public async Task<ActionResult> Guardar(ContratoDto dto)
+        {
+            if (dto == null)
+                return Json(new { ok = false, msg = "Datos vacíos" });
+
+            var token = GetBearer();
+
             try
             {
-                var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
+                bool ok;
+                if (dto.IdContrato > 0)
+                {
+                    ok = await _api.ActualizarAsync(dto, token);
+                }
+                else
+                {
+                    ok = await _api.CrearAsync(dto, token);
+                }
 
-                // Llama al servicio SIN parámetros de fecha (usa null, null)
+                if (!ok)
+                    return Json(new { ok = false, msg = "No se pudo guardar en la API" });
 
-                var dto = new ReservaDashboardDto();
-                 dto = await _api.DashboardReservasAsync(token)
-                          ?? new ReservaDashboardDto();
-
-                // Devuelve el parcial fuertemente tipado con el DTO
-                return PartialView("~/Views/Contratos/_DashboardContrato.cshtml", dto);
-                
-            }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[Dashboard] Error HTTP: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.BadGateway, "No se pudo comunicar con la API de dashboard.");
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[Dashboard] Timeout: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta de dashboard excedió el tiempo de espera.");
+                return Json(new { ok = true });
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[Dashboard] Error: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al cargar el dashboard.");
+                Trace.TraceError("[ContratosController.Guardar] " + ex);
+                return Json(new { ok = false, msg = "Error inesperado al guardar" });
             }
         }
 
+        // opcional: eliminar
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Eliminar(int idHabitacion)
+        public async Task<ActionResult> Eliminar(int id)
         {
+            var token = GetBearer();
             try
             {
-                var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized);
-
-                var ok = await _api.EliminarReservaAsync(idHabitacion, token);
-                if (!ok) return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "No se pudo eliminar.");
-                return new HttpStatusCodeResult((int)HttpStatusCode.OK);
+                var ok = await _api.EliminarAsync(id, token);
+                return Json(new { ok });
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[Eliminar] Error: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al eliminar la reserva.");
+                Trace.TraceError("[ContratosController.Eliminar] " + ex);
+                return Json(new { ok = false, msg = "Error al eliminar" });
             }
         }
     }

@@ -124,6 +124,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CheckinCheckoutController.cs" />
     <Compile Include="Controllers\DotacionesController.cs" />
     <Compile Include="Controllers\HabitacionesPlataformaController.cs" />
     <Compile Include="Controllers\HabitacionesController.cs" />
@@ -142,6 +143,15 @@
     <Compile Include="Controllers\ServiciosHuespedController.cs" />
     <Compile Include="Controllers\ServiciosController.cs" />
     <Compile Include="Controllers\ServiciosDisponiblesController.cs" />
+    <Compile Include="Dto\Checkin\CheckinAccionDto.cs" />
+    <Compile Include="Dto\Checkin\CheckinKpiDto.cs" />
+    <Compile Include="Dto\Checkin\CheckinExtensionDto.cs" />
+    <Compile Include="Dto\Checkin\ReservaCheckinDto.cs" />
+    <Compile Include="Dto\Contrato\ContratoTrabajadorUpsertDto.cs" />
+    <Compile Include="Dto\Contrato\EmpresaContratoDto.cs" />
+    <Compile Include="Dto\Contrato\ContratoDto.cs" />
+    <Compile Include="Dto\Contrato\ContratoTrabajadorDto.cs" />
+    <Compile Include="Dto\Contrato\ContratoKPIDto.cs" />
     <Compile Include="Dto\Dotaciones\DotacionKPIDto.cs" />
     <Compile Include="Dto\Dotaciones\DotacionDto.cs" />
     <Compile Include="Dto\EstadoReserva\EstadoReservaDto.cs" />
@@ -156,8 +166,10 @@
     <Compile Include="Dto\ServicioCategoria\ServicioCategoriaDto.cs" />
     <Compile Include="Dto\ServicioEstado\ServicioEstadoDto.cs" />
     <Compile Include="Dto\ServicioPrioridad\ServicioPrioridadDto.cs" />
+    <Compile Include="Dto\ServiciosDisponibles\ServicioDashboardDto.cs" />
     <Compile Include="Dto\ServiciosDisponibles\ServicioDisponibleDashboardDto.cs" />
-    <Compile Include="Dto\ServiciosDisponibles\ServicioDisponiblesDto.cs" />
+    <Compile Include="Dto\ServiciosDisponibles\ServicioDisponibleDto.cs" />
+    <Compile Include="Dto\ServiciosDisponibles\ServicioKpiDto.cs" />
     <Compile Include="Dto\Servicio\ServicioDashboardDto.cs" />
     <Compile Include="Dto\Servicio\ServicioKpiDto.cs" />
     <Compile Include="Dto\Servicio\ServicioDto.cs" />
@@ -168,6 +180,8 @@
     <Compile Include="Dto\FuncionalidadDTO.cs" />
     <Compile Include="Models\Habitacion\HabitacionBuscarVm.cs" />
     <Compile Include="Dto\TipoHabitacion\TipoHabitacionDto.cs" />
+    <Compile Include="Services\ChekcinService\CheckinService.cs" />
+    <Compile Include="Services\ChekcinService\ICheckinService.cs" />
     <Compile Include="Services\ServiciosPersonal\IServiciosPersonalService.cs" />
     <Compile Include="Services\ServiciosPersonal\ServiciosPersonalService.cs" />
     <Compile Include="Services\ServiciosHuesped\IServiciosHuespedService.cs" />
@@ -4666,6 +4680,13 @@
     <Content Include="Views\ServiciosDisponibles\_DetalleServicio.cshtml" />
     <Content Include="Views\PanelPrincipal\_DetalleReserva.cshtml" />
     <Content Include="Views\PanelPrincipal\EditarReserva.cshtml" />
+    <Content Include="Views\Contratos\_UpsertEmpresa.cshtml" />
+    <Content Include="Views\Contratos\_UpsertTrabajador.cshtml" />
+    <Content Include="Views\CheckinCheckout\Index.cshtml" />
+    <Content Include="Views\CheckinCheckout\_DashboardCheckin.cshtml" />
+    <Content Include="Views\CheckinCheckout\_PanelesCheckin.cshtml" />
+    <Content Include="Views\CheckinCheckout\_TablaCheckin.cshtml" />
+    <Content Include="Views\CheckinCheckout\_ModalesCheckin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\vendors\devbridge-autocomplete\src\jquery.autocomplete.d.ts" />

@@ -1,92 +1,41 @@
 ﻿@{
-    ViewBag.Title = "Gestión de Reservas | Sabtech Group";
+    ViewBag.Title = "Servicios";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="right_col" role="main">
-    <div class="x_panel">
-        <div class="x_title">
-            <h2>Gestión de Servicios Disponibles</h2>
-            <div class="clearfix"></div>
-        </div>
-
-        <div class="x_content">
-            <div id="panelesContainer">
-                @Html.Action("Paneles", "Servicios")
-            </div>
-
-            <hr />
-
-            <form id="frmFiltroServicios" class="form-inline" method="post" action="@Url.Action("Tabla","Servicios")">
-                @Html.AntiForgeryToken()
-                <div class="form-group">
-                    <label for="estado">Estado:&nbsp;</label>
-                    <select class="form-control" id="estado" name="estado">
-                        <option value="">Todos</option>
-                        <option value="1">Activos</option>
-                        <option value="0">Inactivos</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary"><i class="fa fa-filter"></i> Filtrar</button>
-                <button type="button" id="btnNuevo" class="btn btn-success pull-right">
-                    <i class="fa fa-plus"></i> Nuevo Servicio
-                </button>
-            </form>
-
-            <div id="tablaContainer" style="margin-top:15px;">
-                @Html.Partial("_TablaServicioDisponibles", new List<Front_Hoteleria.Dto.Servicio.ServicioDto>())
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3>Gestión de Servicios</h3>
+                <p class="text-muted">Administración de solicitudes de servicios</p>
             </div>
         </div>
+        <div class="clearfix"></div>
+
+        @Html.Partial("_DashboardServicio")
+        @Html.Partial("_PanelesServicio")
+
+        <div id="divTablaServicios">
+            @Html.Partial("_TablaServicio", new List<Front_Hoteleria.Dto.Servicio.ServicioDto>())
+        </div>
+
+        @Html.Partial("_UpsertServicio")
     </div>
 </div>
 
-@section scripts{
+@section Scripts {
     <script>
-$(function(){
-    function cargarTabla(){
-        var $f = $('#frmFiltroServicios');
-        $.ajax({
-            url: $f.attr('action'),
-            type: 'POST',
-            data: $f.serialize(),
-            success: function(html){ $('#tablaContainer').html(html); },
-            error: function(){ alert('No se pudo cargar la tabla.'); }
-        });
-    }
-    $('#frmFiltroServicios').on('submit', function(e){ e.preventDefault(); cargarTabla(); });
-    cargarTabla();
-
-    $('#btnNuevo').on('click', function(){
-        $.get('@Url.Action("Upsert","Servicios")', function(html){
-            $('#modalUpsert .modal-content').html(html);
-            $('#modalUpsert').modal('show');
-        });
-    });
-
-    $(document).on('click', '.btn-edit', function(){
-        var id = $(this).data('id');
-        $.get('@Url.Action("Upsert","Servicios")', { id: id }, function(html){
-            $('#modalUpsert .modal-content').html(html);
-            $('#modalUpsert').modal('show');
-        });
-    });
-
-    $(document).on('click', '.btn-del', function(){
-        if(!confirm('¿Eliminar servicio?')) return;
-        var id = $(this).data('id');
-        $.post('@Url.Action("Eliminar","Servicios")',
-               { idServicio: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
-               function(r){
-                   if(r.ok){ cargarTabla(); } else { alert(r.message || 'Error'); }
-               });
-    });
-});
+        // acá luego enganchas el ajax para /Servicios/Tabla
+        function recargarTabla(estado) {
+            $.post('@Url.Action("Tabla", "Servicios")',
+                {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                    estado: estado
+                },
+                function (html) {
+                    $('#divTablaServicios').html(html);
+                });
+        }
     </script>
-
-    <!-- Modal genérico para crear/editar -->
-    <div class="modal fade" id="modalUpsert" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content"></div>
-        </div>
-    </div>
 }

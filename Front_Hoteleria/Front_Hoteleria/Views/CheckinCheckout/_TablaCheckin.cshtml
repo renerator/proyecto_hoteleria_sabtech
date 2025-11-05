@@ -1,0 +1,91 @@
+﻿@model IEnumerable<Front_Hoteleria.Dto.Checkin.ReservaCheckinDto>
+
+@{
+    var data = Model ?? Enumerable.Empty<Front_Hoteleria.Dto.Checkin.ReservaCheckinDto>();
+}
+
+<div class="x_panel">
+    <div class="x_title">
+        <h2 id="tituloListado"><i class="fa fa-list"></i> Listado de Reservas</h2>
+        <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover" id="reservasTable">
+                <thead>
+                    <tr>
+                        <th style="width:30px; text-align:center;">
+                            <input type="checkbox" id="selectAll" />
+                        </th>
+                        <th>ID</th>
+                        <th>Huésped</th>
+                        <th>Habitación</th>
+                        <th>Fecha Entrada</th>
+                        <th>Fecha Salida</th>
+                        <th>Días</th>
+                        <th>Estado</th>
+                        <th style="width:140px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!data.Any())
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center text-muted" style="padding:30px;">
+                                No hay reservas para los filtros seleccionados.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var r in data)
+                        {
+                            var estadoClass = "label label-default";
+                            switch ((r.Estado ?? "").ToLower())
+                            {
+                                case "confirmada": estadoClass = "label label-success"; break;
+                                case "checkin": estadoClass = "label label-info"; break;
+                                case "checkout": estadoClass = "label label-primary"; break;
+                                case "noshow": estadoClass = "label label-danger"; break;
+                                case "extendida": estadoClass = "label label-warning"; break;
+                            }
+
+                            <tr>
+                                <td style="text-align:center;">
+                                    @if ((r.Estado ?? "").ToLower() == "confirmada")
+                                    {
+                                        <input type="checkbox" class="reserva-check" data-id="@r.IdReserva" />
+                                    }
+                                </td>
+                                <td>@(r.CodigoReserva ?? r.IdReserva.ToString())</td>
+                                <td>@r.Huesped</td>
+                                <td>@r.Habitacion</td>
+                                <td>@r.FechaEntrada.ToString("dd/MM/yyyy")</td>
+                                <td>@r.FechaSalida.ToString("dd/MM/yyyy")</td>
+                                <td>@r.Dias</td>
+                                <td><span class="@estadoClass">@r.Estado</span></td>
+                                <td>
+                                    @* acciones según estado *@
+                                    @if ((r.Estado ?? "").ToLower() == "confirmada")
+                                    {
+                                        <button class="btn btn-xs btn-success" onclick="abrirCheckin(@r.IdReserva)"><i class="fa fa-sign-in"></i></button>
+                                        <button class="btn btn-xs btn-danger" onclick="abrirNoShow(@r.IdReserva)"><i class="fa fa-user-times"></i></button>
+                                    }
+                                    else if ((r.Estado ?? "").ToLower() == "checkin")
+                                    {
+                                        <button class="btn btn-xs btn-info" onclick="abrirCheckout(@r.IdReserva)"><i class="fa fa-sign-out"></i></button>
+                                        <button class="btn btn-xs btn-warning" onclick="abrirExtension(@r.IdReserva)"><i class="fa fa-calendar-plus-o"></i></button>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Sin acciones</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

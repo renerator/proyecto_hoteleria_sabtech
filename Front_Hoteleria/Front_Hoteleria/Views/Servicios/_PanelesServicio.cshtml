@@ -1,27 +1,44 @@
-﻿@* Views/Servicios/_PanelesServicio.cshtml *@
+﻿@{
+    Layout = null;
+}
+
 <div class="row">
-    <div class="col-md-3">
-        <div class="tile-stats">
-            <div class="count" id="kpiTotal">—</div>
-            <h3>Total Servicios</h3>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="tile-stats">
-            <div class="count" id="kpiActivos">—</div>
-            <h3>Activos</h3>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="tile-stats">
-            <div class="count" id="kpiInactivos">—</div>
-            <h3>Inactivos</h3>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="tile-stats">
-            <div class="count" id="kpiPromedio">—</div>
-            <h3>Min. Promedio</h3>
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2><i class="fa fa-filter"></i> Filtros de búsqueda</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Fecha inicio</label>
+                        <input type="date" id="fechaInicio" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label>Fecha fin</label>
+                        <input type="date" id="fechaFin" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label>Estado</label>
+                        <select id="filtroEstado" class="form-control" onchange="recargarTabla($(this).val());">
+                            <option value="">-- Todos --</option>
+                            <option value="1">Activos</option>
+                            <option value="0">Inactivos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-primary btn-block" onclick="recargarTabla($('#filtroEstado').val());">
+                            <i class="fa fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+                <hr />
+                <button class="btn btn-success" onclick="nuevoServicio();">
+                    <i class="fa fa-plus"></i> Nuevo Servicio
+                </button>
+            </div>
         </div>
     </div>
 </div>

@@ -11,8 +11,8 @@
         public int FueraServicio { get; set; }
 
         // opcionalmente
-        public int Mantenimiento { get; set; }
-        public int EmpresaId { get; set; }
-        public string EmpresaNombre { get; set; }
+        //public int Mantenimiento { get; set; }
+        //public int EmpresaId { get; set; }
+        //public string EmpresaNombre { get; set; }
     }
 }

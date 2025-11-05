@@ -52,13 +52,13 @@ namespace Front_Hoteleria.Controllers
             var token = GetBearer();
 
             // si no hay token, igual devolvemos algo vacío para que no reviente el .load()
-            DotacionKPIDto dto = new DotacionKPIDto
-            {
-                TotalTrabajadores = 0,
-                TurnoDia = 0,
-                TurnoNoche = 0,
-                FueraServicio = 0
-            };
+            DotacionKPIDto dto = new DotacionKPIDto();
+            //{
+            //    TotalTrabajadores = 0,
+            //    TurnoDia = 0,
+            //    TurnoNoche = 0,
+            //    FueraServicio = 0
+            //};
 
             try
             {
@@ -74,46 +74,106 @@ namespace Front_Hoteleria.Controllers
                 Trace.TraceError("[DotacionesController.Dashboard] " + ex);
             }
 
-            return PartialView("~/Views/Dotaciones/_ResumenDotacion.cshtml", dto);
+            return PartialView("~/Views/Dotaciones/_DashboardDotaciones.cshtml", dto);
         }
 
         // ================== TABLA (lo que carga #tablaDotContainer) ==================
         // el Index llama con GET /Dotaciones/Tabla?criterio=xxx
         [HttpGet]
+       
         public async Task<ActionResult> Tabla(int? empresaId, string criterio)
         {
+            List<DotacionDto> lista = null;
+
             try
             {
                 var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada");
 
-                // llamamos al servicio
-                var lista = await _api.ListarAsync(empresaId, criterio, token)
-                            ?? new List<DotacionDto>();
-
-                // si quieres refiltrar en MVC
-                if (!string.IsNullOrWhiteSpace(criterio))
+                // 1) Intentamos llamar a la API SOLO si hay token
+                if (!string.IsNullOrWhiteSpace(token))
                 {
-                    var f = criterio.ToLower().Trim();
-                    lista = lista
-                        .Where(x =>
-                            (!string.IsNullOrWhiteSpace(x.Nombre) && x.Nombre.ToLower().Contains(f)) ||
-                            (!string.IsNullOrWhiteSpace(x.Apellido) && x.Apellido.ToLower().Contains(f)) ||
-                            (!string.IsNullOrWhiteSpace(x.Rut) && x.Rut.ToLower().Contains(f)) ||
-                            (!string.IsNullOrWhiteSpace(x.Empresa) && x.Empresa.ToLower().Contains(f))
-                        )
-                        .ToList();
+                    lista = await _api.ListarAsync(empresaId, criterio, token);
                 }
-
-                return PartialView("~/Views/Dotaciones/_TablaDotacion.cshtml", lista);
             }
-            catch (Exception ex)
+            catch (Exception exApi)
             {
-                Trace.TraceError("[DotacionesController.Tabla] " + ex);
-                return new HttpStatusCodeResult(500, "Error al cargar dotaciones");
+                // si la API falló, lo registramos y seguimos con datos en duro
+                Trace.TraceError("[DotacionesController.Tabla] error API: " + exApi);
             }
+
+            // 2) Si la API no trajo nada, usamos datos de prueba
+            if (lista == null || lista.Count == 0)
+            {
+                lista = new List<DotacionDto>
+        {
+            // Empresa 1
+            new DotacionDto
+            {
+                IdDotacion = 1,
+                IdEmpresa = 1,
+                Empresa = "Constructora ABC Ltda.",
+                RutEmpresa = "12.345.678-9",
+                Nombre = "Juan",
+                Apellido = "Pérez",
+                Rut = "12.345.678-9",
+                Cargo = "Supervisor",
+                TurnoCodigo = "day",
+                TurnoNombre = "Día"
+            },
+            new DotacionDto
+            {
+                IdDotacion = 2,
+                IdEmpresa = 1,
+                Empresa = "Constructora ABC Ltda.",
+                RutEmpresa = "12.345.678-9",
+                Nombre = "Carlos",
+                Apellido = "Méndez",
+                Rut = "11.222.333-4",
+                Cargo = "Operador",
+                TurnoCodigo = "night",
+                TurnoNombre = "Noche"
+            },
+
+            // Empresa 2
+            new DotacionDto
+            {
+                IdDotacion = 3,
+                IdEmpresa = 2,
+                Empresa = "Servicios Mineros XYZ S.A.",
+                RutEmpresa = "98.765.432-1",
+                Nombre = "María",
+                Apellido = "González",
+                Rut = "13.456.789-0",
+                Cargo = "Gerente",
+                TurnoCodigo = "maintenance",
+                TurnoNombre = "Mantenimiento"
+            }
+        };
+            }
+
+            // 3) Filtro por empresa (vale tanto para datos reales como de prueba)
+            if (empresaId.HasValue)
+            {
+                lista = lista.Where(x => x.IdEmpresa == empresaId.Value).ToList();
+            }
+
+            // 4) Filtro de texto
+            if (!string.IsNullOrWhiteSpace(criterio))
+            {
+                var f = criterio.ToLower().Trim();
+                lista = lista
+                    .Where(x =>
+                        (!string.IsNullOrWhiteSpace(x.Nombre) && x.Nombre.ToLower().Contains(f)) ||
+                        (!string.IsNullOrWhiteSpace(x.Apellido) && x.Apellido.ToLower().Contains(f)) ||
+                        (!string.IsNullOrWhiteSpace(x.Rut) && x.Rut.ToLower().Contains(f)) ||
+                        (!string.IsNullOrWhiteSpace(x.Empresa) && x.Empresa.ToLower().Contains(f)))
+                    .ToList();
+            }
+
+            // 5) devolvemos el parcial con el diseño de tarjetas
+            return PartialView("~/Views/Dotaciones/_TablaDotaciones.cshtml", lista);
         }
+
 
         // ================== MODAL: ALTA / EDICIÓN ==================
         // el Index hace $.get(urlUpsertDot, ...)
@@ -137,7 +197,7 @@ namespace Front_Hoteleria.Controllers
                 }
             }
 
-            return PartialView("~/Views/Dotaciones/_UpsertDotacion.cshtml", model);
+            return PartialView("~/Views/Dotaciones/_UpsertDotaciones.cshtml", model);
         }
 
         // ================== MODAL: CARGA MASIVA ==================

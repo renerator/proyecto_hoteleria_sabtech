@@ -1,5 +1,5 @@
-﻿using Front_Hoteleria.Dto.Servicio;
-using Front_Hoteleria.Services.Servicio;
+﻿using Front_Hoteleria.Dto.ServiciosDisponibles;
+using Front_Hoteleria.Services.ServiciosDisponibles;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,11 +12,11 @@ namespace Front_Hoteleria.Controllers
 {
     public class ServiciosDisponiblesController : Controller
     {
-        private readonly IServicioService _api;
+        private readonly IServiciosDisponiblesService _api;
 
-        public ServiciosDisponiblesController() : this(new ServicioService()) { }
+        public ServiciosDisponiblesController() : this(new ServiciosDisponiblesService()) { }
 
-        public ServiciosDisponiblesController(IServicioService api)
+        public ServiciosDisponiblesController(IServiciosDisponiblesService api)
         {
             _api = api;
         }
@@ -81,9 +81,9 @@ namespace Front_Hoteleria.Controllers
             if (string.IsNullOrWhiteSpace(token))
                 return new HttpStatusCodeResult(401, "Sesión expirada.");
 
-            // usamos tu método que trae por id (el que devolvía List<ServicioDto>)
+            // usamos tu método que trae por id (el que devolvía List< ServicioDisponibleDto>)
             var lista = await _api.VerificaServicioPorId(
-                new ServicioDto { IdServicio = id },
+                new ServicioDisponibleDto { IdServicio = id },
                 token
             );
 
@@ -91,7 +91,7 @@ namespace Front_Hoteleria.Controllers
             if (model == null)
             {
                 // si no vino nada, mandamos un dto mínimo para que no rompa la vista
-                model = new ServicioDto
+                model = new  ServicioDisponibleDto
                 {
                     IdServicio = id,
                     NombreServicio = "(no encontrado)",
@@ -117,7 +117,7 @@ namespace Front_Hoteleria.Controllers
         [HttpGet]
         public ActionResult Crear()
         {
-            var model = new ServicioDto
+            var model = new  ServicioDisponibleDto
             {
                 IdServicio = 0,
                 Estado = true
@@ -129,7 +129,7 @@ namespace Front_Hoteleria.Controllers
         // ===== crear / modificar (POST) =====
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<JsonResult> Guardar(ServicioDto dto)
+        public async Task<JsonResult> Guardar( ServicioDisponibleDto dto)
         {
             var token = GetBearer();
             if (string.IsNullOrWhiteSpace(token))
@@ -170,7 +170,7 @@ namespace Front_Hoteleria.Controllers
 
             // llamamos al servicio que acabas de implementar
             var lista = await _api.VerificaServicioPorId(
-                new ServicioDto { IdServicio = id },
+                new  ServicioDisponibleDto { IdServicio = id },
                 token
             );
 
@@ -180,7 +180,7 @@ namespace Front_Hoteleria.Controllers
             if (model == null)
             {
                 // si no vino nada, igual mandamos un dto con el id para no romper la vista
-                model = new ServicioDto
+                model = new  ServicioDisponibleDto
                 {
                     IdServicio = id,
                     Estado = true
@@ -216,7 +216,7 @@ namespace Front_Hoteleria.Controllers
                 return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada.");
 
             
-            var lista = await _api.ListarServiciosAsync(estado, token) ?? new List<ServicioDto>();
+            var lista = await _api.ListarServiciosAsync(estado, token) ?? new List< ServicioDisponibleDto>();
 
             if (categoria.HasValue)
                 lista = lista.Where(x => x.IdServiciosCategoria == categoria.Value).ToList();

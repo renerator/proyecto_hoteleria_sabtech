@@ -83,12 +83,12 @@ namespace Front_Hoteleria.Controllers
         public async Task<ActionResult> DashboardServicio(DateTime? desde, DateTime? hasta)
         {
             // 1) DTO con valores por defecto (mock) para que SIEMPRE haya contenido
-            var dto = new ServicioDashboardDto
+            var dto = new ServicioDashboardDto();
             {
-                TotalServicios = 231_809,
-                TotalDesayunos = 897,
-                TotalLimpieza = 650,
-                TotalTickets = 111_569
+                //TotalServicios = 231_809,
+                //TotalDesayunos = 897,
+                //TotalLimpieza = 650,
+                //TotalTickets = 111_569
             };
 
             try

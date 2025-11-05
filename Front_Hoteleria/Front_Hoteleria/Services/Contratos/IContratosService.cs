@@ -1,37 +1,18 @@
-﻿using System.Collections.Generic;
+﻿// Front_Hoteleria/Services/Contratos/IContratosService.cs
+using Front_Hoteleria.Dto.Contrato;
+
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Front_Hoteleria.Dto.Reserva;
 
 namespace Front_Hoteleria.Services.Contratos
 {
     public interface IContratosService
     {
-        // GET /api/Reservas/ReservasDisponibles?vigencia={vigencia}
-        Task<List<ReservaDto>> ReservasDisponiblesAsync(int vigencia, string bearer = null);
-
-        // GET /api/Reservas/dashboardReservas
-        Task<ReservaDashboardDto> DashboardReservasAsync(string bearer = null);
-
-        // POST /api/Reservas/SolicitaReserva
-        Task<bool> CrearReservaAsync(ReservaDto dto, string bearer = null);
-
-        // POST /api/Reservas/ConfirmarReserva
-        Task<bool> ConfirmarReservaAsync(ReservaDto dto, string bearer = null);
-
-        // PUT /api/Reservas/ModificaReserva
-        Task<bool> ModificarReservaAsync(ReservaDto dto, string bearer = null);
-
-        // DELETE /api/Reservas/EliminaReserva?idReserva={id}
-        Task<bool> EliminarReservaAsync(int idReserva, string bearer = null);
-
-        // GET /api/Reservas/BuscarReservas?criterio={texto}
-        Task<List<ReservaDto>> BuscarReservasAsync(string criterio, string bearer = null);
-
-        Task<List<ReservaTrabajadorDto>> ReservasDisponiblesTrabajadorAsync(ReservaTrabajadorDto ResevaTrabajador,string bearer = null);
-        // Front_Hoteleria.Services.Reservas.IReservaService
-        Task<bool> CrearReservaTrabajadorAsync(ReservaTrabajadorDto dto, string bearer = null);
-
-        // Si luego necesitas bitácora:
-        // Task<bool> CrearBitacoraReservaAsync(BitacoraReservaDto dto, string bearer = null);
+        Task<ContratoKPIDto> ResumenAsync(string bearer = null);
+        Task<List<ContratoDto>> ListarAsync(string criterio = null, string bearer = null);
+        Task<ContratoDto> ObtenerPorIdAsync(int id, string bearer = null);
+        Task<bool> CrearAsync(ContratoDto dto, string bearer = null);
+        Task<bool> ActualizarAsync(ContratoDto dto, string bearer = null);
+        Task<bool> EliminarAsync(int id, string bearer = null);
     }
 }

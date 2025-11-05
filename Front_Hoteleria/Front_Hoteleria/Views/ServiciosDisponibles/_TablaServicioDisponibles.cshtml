@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Front_Hoteleria.Dto.Servicio.ServicioDto>
+﻿@model IEnumerable<Front_Hoteleria.Dto.ServiciosDisponibles.ServicioDisponibleDto>
 
 <table id="servicesTable" class="table table-striped table-bordered">
     <thead>
@@ -14,7 +14,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var s in (Model ?? Enumerable.Empty<Front_Hoteleria.Dto.Servicio.ServicioDto>()))
+        @foreach (var s in (Model ?? Enumerable.Empty<Front_Hoteleria.Dto.ServiciosDisponibles.ServicioDisponibleDto>()))
         {
             // ====== resolver clases de categoría ======
             var catClass = "cat-default";

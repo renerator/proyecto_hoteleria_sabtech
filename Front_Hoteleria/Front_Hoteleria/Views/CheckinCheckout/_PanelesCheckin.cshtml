@@ -1,0 +1,45 @@
+﻿@Html.AntiForgeryToken()
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2><i class="fa fa-filter"></i> Filtros y Acciones</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Fecha</label>
+                        <input type="date" id="filtroFecha" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-md-3">
+                        <label>Estado</label>
+                        <select id="filtroEstado" class="form-control">
+                            <option value="todos">Todos</option>
+                            <option value="confirmada">Confirmada (Pendiente CI)</option>
+                            <option value="checkin">Check-in Realizado</option>
+                            <option value="checkout">Check-out Realizado</option>
+                            <option value="noshow">No Show</option>
+                            <option value="extendida">Extendida</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label>&nbsp;</label>
+                        <div>
+                            <button class="btn btn-primary" onclick="recargarTabla()">
+                                <i class="fa fa-search"></i> Buscar
+                            </button>
+                            <button class="btn btn-success" id="btnCheckinMasivo" disabled>
+                                <i class="fa fa-sign-in"></i> Check-in Masivo (<span id="countSeleccionados">0</span>)
+                            </button>
+                            <button class="btn btn-info" id="btnCheckoutMasivo" disabled>
+                                <i class="fa fa-sign-out"></i> Check-out Masivo (<span id="countSeleccionadosCO">0</span>)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

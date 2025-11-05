@@ -1,0 +1,118 @@
+﻿@model Front_Hoteleria.Dto.Contrato.ContratoTrabajadorUpsertDto
+
+<div class="modal-header" style="background:#f5f8fb;">
+    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+    <h4 class="modal-title">
+        <i class="fa fa-user-plus"></i> Agregar Trabajador
+    </h4>
+</div>
+
+<div class="modal-body">
+    <form id="frmTrabajadorCon">
+        <input type="hidden" name="IdTrabajador" value="@(Model?.IdTrabajador ?? 0)" />
+        <input type="hidden" name="IdContrato" value="@(Model?.IdContrato ?? 0)" />
+
+        <div class="row">
+            <div class="col-md-6">
+                <label>Nombre *</label>
+                <input type="text" name="Nombre" class="form-control" placeholder="Ej: Juan"
+                       value="@(Model?.Nombre ?? "")" />
+            </div>
+            <div class="col-md-6">
+                <label>Apellido *</label>
+                <input type="text" name="Apellido" class="form-control" placeholder="Ej: Pérez"
+                       value="@(Model?.Apellido ?? "")" />
+            </div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+            <div class="col-md-6">
+                <label>RUT *</label>
+                <input type="text" name="Rut" class="form-control" placeholder="Ej: 12.345.678-9"
+                       value="@(Model?.Rut ?? "")" />
+            </div>
+            <div class="col-md-6">
+                <label>Empresa *</label>
+                <select name="IdEmpresa" class="form-control">
+                    <option value="">Seleccionar empresa...</option>
+                    <option value="1">Constructora ABC Ltda.</option>
+                    <option value="2">Servicios Mineros XYZ S.A.</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+            <div class="col-md-6">
+                <label>Cargo *</label>
+                <input type="text" name="Cargo" class="form-control" placeholder="Ej: Supervisor"
+                       value="@(Model?.Cargo ?? "")" />
+            </div>
+            <div class="col-md-6">
+                <label>Nivel de Acceso *</label>
+                <select name="NivelAcceso" class="form-control">
+                    <option value="">Seleccionar...</option>
+                    <option value="guest" @(Model?.NivelAcceso == "guest" ? "selected" : "")>Invitado</option>
+                    <option value="worker" @(Model?.NivelAcceso == "worker" ? "selected" : "")>Trabajador</option>
+                    <option value="manager" @(Model?.NivelAcceso == "manager" ? "selected" : "")>Supervisor</option>
+                    <option value="admin" @(Model?.NivelAcceso == "admin" ? "selected" : "")>Administrador</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+            <div class="col-md-6">
+                <label>Teléfono</label>
+                <input type="text" name="Telefono" class="form-control" placeholder="Ej: +56 9 1234 5678"
+                       value="@(Model?.Telefono ?? "")" />
+            </div>
+            <div class="col-md-6">
+                <label>Email</label>
+                <input type="email" name="Email" class="form-control" placeholder="Ej: juan.perez@empresa.com"
+                       value="@(Model?.Email ?? "")" />
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top:10px;">
+            <label>Observaciones</label>
+            <textarea name="Observaciones" class="form-control" rows="3"
+                      placeholder="Observaciones sobre el trabajador...">@((Model?.Observaciones) ?? "")</textarea>
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+    <button type="button" class="btn btn-primary" id="btnGuardarTrabajadorCon">Agregar Trabajador</button>
+</div>
+
+<script>
+    $('#btnGuardarTrabajadorCon').on('click', function () {
+
+        var data = $('#frmTrabajadorCon').serialize();
+
+        $.post('@Url.Action("GuardarTrabajador","Contratos")', data, function (r) {
+            if (r && r.ok) {
+                if (window.PNotify) {
+                    new PNotify({
+                        title: 'Trabajador',
+                        text: 'Trabajador agregado correctamente.',
+                        type: 'success',
+                        styling: 'bootstrap3'
+                    });
+                }
+                $('#modalCon').modal('hide');
+            } else {
+                if (window.PNotify) {
+                    new PNotify({
+                        title: 'Trabajador',
+                        text: r.msg || 'No se pudo guardar.',
+                        type: 'error',
+                        styling: 'bootstrap3'
+                    });
+                } else {
+                    alert(r.msg || 'No se pudo guardar.');
+                }
+            }
+        });
+    });
+</script>

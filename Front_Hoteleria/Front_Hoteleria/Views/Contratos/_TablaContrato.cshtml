@@ -1,57 +1,120 @@
-﻿@Model IEnumerable<Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto>
+﻿@model IEnumerable<Front_Hoteleria.Dto.Contrato.ContratoDto>
 
-<table id="tablaReservas" class="table table-striped table-bordered" style="width:100%">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Rut</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Fecha Desde</th>
-            <th>Fecha Hasta</th>
-            <th>Habitación</th>
-            <th>Estado</th>
-            <th>Total</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model != null && Model.Any())
-        {
-            foreach (var item in Model)
-            {
-                <tr>
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">No hay contratos registrados.</div>
+}
+else
+{
+    foreach (var c in Model)
+    {
+        // aseguramos string
+        var estado = (c.Estado ?? "Activo").ToString().Trim();
 
-                    <td>@item.IdReserva</td>
-                    <td>@item.dniTrabajador"</td>
-                    <td>@item.Nombres</td>
-                    <td>@item.Apellidos</td>
+        // usamos string.Equals y StartsWith de string
+        var css =
+            string.Equals(estado, "Activo", System.StringComparison.OrdinalIgnoreCase) ? "status-active" :
+            estado.StartsWith("Venc", System.StringComparison.OrdinalIgnoreCase) ? "status-expired" :
+            estado.StartsWith("Pend", System.StringComparison.OrdinalIgnoreCase) ? "status-pending" :
+            "status-suspended";
 
+        <div class="contract-card">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4>
+                        @(c.NumeroContrato ?? "SIN CÓDIGO")
+                        <small>@(c.Empresa ?? "Empresa no informada")</small>
+                    </h4>
+                    <p>
+                        <strong>Empresa:</strong> @c.Empresa (@c.RutEmpresa)
+                    </p>
+                    <p>
+                        <strong>Campamento:</strong> @(string.IsNullOrWhiteSpace(c.Campamento) ? "No asignado" : c.Campamento)
+                    </p>
+                    <p>
+                        <strong>Período:</strong>
+                        @((c.FechaInicio.HasValue ? c.FechaInicio.Value.ToString("dd-MM-yyyy") : "—"))
+                        al
+                        @((c.FechaFin.HasValue ? c.FechaFin.Value.ToString("dd-MM-yyyy") : "—"))
+                    </p>
+                    <p>
+                        <strong>Tipo:</strong> @(string.IsNullOrWhiteSpace(c.Tipo) ? "—" : c.Tipo)
+                        |
+                        <strong>Valor:</strong> @(c.Valor.HasValue ? ("$" + c.Valor.Value.ToString("N0")) : "—")
+                    </p>
+                    <p>
+                        <strong>Trabajadores:</strong>
+                        @(c.Trabajadores != null ? c.Trabajadores.Count : 0) /
+                        @(c.MaximoTrabajadores.HasValue ? c.MaximoTrabajadores.Value.ToString() : "Sin límite")
+                    </p>
+                </div>
+                <div class="col-md-4 text-right">
+                    <span class="contract-status @css">@estado</span>
+                    <br /><br />
+                    <button type="button"
+                            class="btn btn-sm btn-info btn-ver-contrato"
+                            data-id="@c.IdContrato">
+                        <i class="fa fa-eye"></i> Ver
+                    </button>
+                    <button type="button"
+                            class="btn btn-sm btn-warning btn-editar-contrato"
+                            data-id="@c.IdContrato">
+                        <i class="fa fa-edit"></i> Editar
+                    </button>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px;">
+                <div class="col-md-12">
+                    <h5>Trabajadores Asociados (@(c.Trabajadores != null ? c.Trabajadores.Count : 0)):</h5>
+                    <div class="row">
+                        @if (c.Trabajadores != null && c.Trabajadores.Any())
+                        {
+                            foreach (var w in c.Trabajadores)
+                            {
+                                <div class="col-md-4">
+                                    <div class="worker-item">
+                                        <strong>@w.NombreCompleto</strong><br />
+                                        <small>
+                                            @w.Cargo
+                                            <span class="access-level level-@w.NivelAcceso">@w.NivelAcceso</span><br />
+                                            RUT: @w.Rut
+                                        </small>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-md-12">
+                                <p class="text-muted">No hay trabajadores asignados a este contrato.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
 
-                    <td>@(item.FechaDesde?.ToString("dd/MM/yyyy"))</td>
-                    <td>@(item.FechaHasta?.ToString("dd/MM/yyyy"))</td>
-                    <td>@item.Habitacion</td>
-                    <td>@item.EstadoReserva</td>
-                    <td>@item.Totales</td>
+<script>
+    // botones internos del parcial
+    $(document)
+        .off('click', '.btn-editar-contrato')
+        .on('click', '.btn-editar-contrato', function () {
+            var id = $(this).data('id');
+            $.get('@Url.Action("Upsert","Contratos")', { id: id }, function (html) {
+                $('#modalCon .modal-content').html(html);
+                $('#modalCon').modal('show');
+            });
+        });
 
-                    <td>—</td>  @* Placeholder si no viene Total *@
-                    <td>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-info btn-sm btn-res-editar" data-id="@item.IdReserva">
-                                <i class="fa fa-pencil"></i>
-                            </button>
-                            <button type="button" class="btn btn-danger btn-sm btn-res-eliminar" data-id="@item.IdReserva">
-                                <i class="fa fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            }
-        }
-        else
-        {
-            <tr><td colspan="9" class="text-center text-muted">No se encontraron reservas.</td></tr>
-        }
-    </tbody>
-</table>
-
+    $(document)
+        .off('click', '.btn-ver-contrato')
+        .on('click', '.btn-ver-contrato', function () {
+            var id = $(this).data('id');
+            $.get('@Url.Action("Upsert","Contratos")', { id: id, soloLectura: true }, function (html) {
+                $('#modalCon .modal-content').html(html);
+                $('#modalCon').modal('show');
+            });
+        });
+</script>

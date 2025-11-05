@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -16,14 +15,19 @@ namespace Front_Hoteleria.Controllers
         private readonly IServicioService _api;
 
         public ServiciosController() : this(new ServicioService()) { }
-        public ServiciosController(IServicioService api) { _api = api; }
+        public ServiciosController(IServicioService api)
+        {
+            _api = api;
+        }
 
         private string GetBearer()
         {
             try
             {
                 return (Session["Token"] as string)
-                       ?? (Request.Cookies["access_token"] != null ? Request.Cookies["access_token"].Value : null);
+                       ?? (Request.Cookies["access_token"] != null
+                           ? Request.Cookies["access_token"].Value
+                           : null);
             }
             catch (Exception ex)
             {
@@ -39,6 +43,7 @@ namespace Front_Hoteleria.Controllers
             return View("~/Views/Servicios/Index.cshtml");
         }
 
+        // se llama por ajax para refrescar la grilla
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Tabla(int? estado)
@@ -47,24 +52,29 @@ namespace Front_Hoteleria.Controllers
             if (string.IsNullOrWhiteSpace(token))
                 return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada.");
 
-            var lista = await _api.ListarServiciosAsync(estado, token) ?? new List<ServicioDto>();
+            var lista = await _api.ListarServiciosAsync(estado, token)
+                        ?? new List<ServicioDto>();
+
             return PartialView("~/Views/Servicios/_TablaServicio.cshtml", lista);
         }
 
         [HttpGet]
         public ActionResult Paneles()
         {
-            return PartialView("~/Views/ServiciosDisponibles/__PanelesServicioDisponibles.cshtml");
+            // ahora apunta a tu carpeta Servicios
+            return PartialView("~/Views/Servicios/_PanelesServicio.cshtml");
         }
 
         [HttpGet]
         public async Task<ActionResult> Kpi()
         {
             var token = GetBearer();
+            if (string.IsNullOrWhiteSpace(token))
+                return Json(new { ok = false, message = "Sesión expirada." }, JsonRequestBehavior.AllowGet);
+
             var kpi = await _api.KpiServiciosAsync(token);
             return Json(new { ok = true, data = kpi }, JsonRequestBehavior.AllowGet);
         }
-
 
         [HttpGet]
         public ActionResult Dashboard()
@@ -75,21 +85,14 @@ namespace Front_Hoteleria.Controllers
         [HttpGet]
         public ActionResult Upsert(int? id)
         {
-            // Si necesitaras precargar por ID, podríamos agregar un método GetById en el ApiClient.
-            var model = new ServicioDto { IdServicio = id ?? 0, Estado = true };
+            var model = new ServicioDto
+            {
+                IdServicio = id ?? 0,
+                Estado = true,
+                TiempoEstimadoMinutos = 30
+            };
             return PartialView("~/Views/Servicios/_UpsertServicio.cshtml", model);
         }
-        [HttpGet]
-        public ActionResult ImportarMasivo()
-        {
-            // si quieres validar sesión, puedes hacer lo mismo que en los otros métodos:
-            var token = GetBearer();
-            if (string.IsNullOrWhiteSpace(token))
-                return new HttpStatusCodeResult(401, "Sesión expirada.");
-
-            return PartialView("~/Views/ServiciosDisponibles/_ImportarMasivo.cshtml");
-        }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]

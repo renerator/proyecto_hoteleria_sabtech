@@ -1,0 +1,78 @@
+﻿@model Front_Hoteleria.Dto.Checkin.CheckinKpiDto
+
+<style>
+    .stats-card {
+        background: #fff;
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        position: relative;
+        min-height: 120px;
+    }
+
+        .stats-card .number {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .stats-card .icon {
+            font-size: 3em;
+            opacity: 0.12;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+        }
+
+        .stats-card.checkin .number {
+            color: #2ecc71;
+        }
+
+        .stats-card.checkout .number {
+            color: #3498db;
+        }
+
+        .stats-card.noshow .number {
+            color: #e74c3c;
+        }
+
+        .stats-card.extended .number {
+            color: #f39c12;
+        }
+</style>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="stats-card checkin">
+            <i class="fa fa-sign-in icon"></i>
+            <h4>Check-ins Hoy</h4>
+            <div class="number" id="statCheckinHoy">@((Model?.CheckinsHoy ?? 0))</div>
+            <small class="text-muted">ENTRADAS PROGRAMADAS</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card checkout">
+            <i class="fa fa-sign-out icon"></i>
+            <h4>Check-outs Hoy</h4>
+            <div class="number" id="statCheckoutHoy">@((Model?.CheckoutsHoy ?? 0))</div>
+            <small class="text-muted">SALIDAS PROGRAMADAS</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card noshow">
+            <i class="fa fa-user-times icon"></i>
+            <h4>No Shows</h4>
+            <div class="number" id="statNoShow">@((Model?.NoShows ?? 0))</div>
+            <small class="text-muted">NO SE PRESENTARON</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card extended">
+            <i class="fa fa-calendar-plus-o icon"></i>
+            <h4>Extensiones</h4>
+            <div class="number" id="statExtendidas">@((Model?.Extensiones ?? 0))</div>
+            <small class="text-muted">DÍAS EXTENDIDOS</small>
+        </div>
+    </div>
+</div>

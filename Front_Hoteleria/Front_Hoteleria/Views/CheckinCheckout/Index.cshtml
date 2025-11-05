@@ -1,0 +1,50 @@
+﻿@model Front_Hoteleria.Dto.Checkin.CheckinKpiDto
+@{
+    ViewBag.Title = "Checkin / Checkout";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3>Gestión de Checkin / Checkout</h3>
+                <p class="text-muted">Administración de entradas y salidas de huéspedes</p>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+
+        @Html.Partial("_DashboardCheckin", Model)
+        @Html.Partial("_PanelesCheckin")
+
+        <div id="divTablaCheckin">
+            @Html.Partial("_TablaCheckin", Enumerable.Empty<Front_Hoteleria.Dto.Checkin.ReservaCheckinDto>())
+        </div>
+
+        @Html.Partial("_ModalesCheckin")
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function recargarTabla() {
+            var fecha = $('#filtroFecha').val();
+            var estado = $('#filtroEstado').val();
+            $.post('@Url.Action("Tabla", "CheckinCheckout")',
+                {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                    fecha: fecha,
+                    estado: estado
+                },
+                function (html) {
+                    $('#divTablaCheckin').html(html);
+                }
+            );
+        }
+
+        // al cargar página traemos la tabla por defecto
+        $(function () {
+            recargarTabla();
+        });
+    </script>
+}
