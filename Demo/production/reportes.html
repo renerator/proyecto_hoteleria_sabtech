@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Dashboard y Reportes | Sabtech Group</title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <!-- PNotify -->
+    <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+
+    <style>
+        .stats-card {
+            background: white;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .stats-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stats-card.ocupacion .number { color: #3498db; }
+        .stats-card.disponibles .number { color: #2ecc71; }
+        .stats-card.bloqueadas .number { color: #e74c3c; }
+        .stats-card.noshow .number { color: #f39c12; }
+        
+        .stats-card .icon {
+            font-size: 3em;
+            opacity: 0.3;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .report-section {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .btn-export {
+            margin: 5px;
+        }
+        
+        .turno-badge {
+            padding: 8px 15px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin: 5px;
+            display: inline-block;
+        }
+        
+        .turno-manana { background: #3498db; color: white; }
+        .turno-tarde { background: #f39c12; color: white; }
+        .turno-noche { background: #34495e; color: white; }
+    </style>
+</head>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <!-- Sidebar -->
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title" style="border: 0;">
+                        <a href="admin-dashboard.html" class="site_title"><i class="fa fa-hotel"></i> <span>Hoteleria</span></a>
+                    </div>
+                    <div class="clearfix"></div>
+
+                    <!-- menu profile quick info -->
+                    <div class="profile clearfix">
+                        <div class="profile_pic">
+                            <img src="images/img.jpg" alt="..." class="img-circle profile_img">
+                        </div>
+                        <div class="profile_info">
+                            <span>Bienvenido,</span>
+                            <h2>Admin</h2>
+                        </div>
+                    </div>
+
+                    <!-- sidebar menu -->
+                    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                        <div class="menu_section">
+                            <h3>MENÚ ADMINISTRADOR</h3>
+                            <ul class="nav side-menu">
+                                <li class="active"><a><i class="fa fa-check"></i> Administración <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu" style="display: block;">
+                                        <li><a href="reservas-detalladas.html">Reservas</a></li>
+                                        <li><a href="servicios.html">Servicios</a></li>
+                                        <li><a href="checkin-checkout.html">Checkin / Checkout</a></li>
+                                        <li class="current-page"><a href="reportes.html">Reportes</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <img src="images/img.jpg" alt="">Admin
+                                    <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Cerrar Sesión</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>Dashboard y Reportes</h3>
+                            <p class="text-muted">Análisis de ocupación y auditoría operativa</p>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- Estadísticas Diarias -->
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="stats-card ocupacion">
+                                <i class="fa fa-bed icon"></i>
+                                <h4>% Ocupación Hoy</h4>
+                                <div class="number" id="statOcupacion">0%</div>
+                                <small class="text-muted">HABITACIONES OCUPADAS</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card disponibles">
+                                <i class="fa fa-check-circle icon"></i>
+                                <h4>Habitaciones Disponibles</h4>
+                                <div class="number" id="statDisponibles">0</div>
+                                <small class="text-muted">LISTAS PARA OCUPAR</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card bloqueadas">
+                                <i class="fa fa-ban icon"></i>
+                                <h4>Piezas Bloqueadas</h4>
+                                <div class="number" id="statBloqueadas">0</div>
+                                <small class="text-muted">MANTENIMIENTO/REPARACIÓN</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card noshow">
+                                <i class="fa fa-user-times icon"></i>
+                                <h4>No Show Hoy</h4>
+                                <div class="number" id="statNoShowHoy">0</div>
+                                <small class="text-muted">NO SE PRESENTARON</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Ocupación -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="chart-container">
+                                <h4><i class="fa fa-area-chart"></i> Ocupación Últimos 7 Días</h4>
+                                <canvas id="ocupacionChart" height="80"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="chart-container">
+                                <h4><i class="fa fa-pie-chart"></i> Distribución de Estados</h4>
+                                <canvas id="estadosChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cierre de Turno -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="report-section">
+                                <h4><i class="fa fa-clock-o"></i> Cierre de Cambio de Turno</h4>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Fecha</label>
+                                            <input type="date" class="form-control" id="fechaTurno">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Turno</label>
+                                            <select class="form-control" id="turnoSeleccionado">
+                                                <option value="manana">Mañana (07:00 - 15:00)</option>
+                                                <option value="tarde">Tarde (15:00 - 23:00)</option>
+                                                <option value="noche">Noche (23:00 - 07:00)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>&nbsp;</label>
+                                            <div>
+                                                <button class="btn btn-primary" onclick="generarCierreTurno()">
+                                                    <i class="fa fa-file-text-o"></i> Generar Cierre
+                                                </button>
+                                                <button class="btn btn-success btn-export" onclick="exportarPDF('cierre')">
+                                                    <i class="fa fa-file-pdf-o"></i> Exportar PDF
+                                                </button>
+                                                <button class="btn btn-info btn-export" onclick="exportarExcel('cierre')">
+                                                    <i class="fa fa-file-excel-o"></i> Exportar Excel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="resultadoCierre" style="margin-top: 20px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reportes Diarios -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="report-section">
+                                <h4><i class="fa fa-calendar"></i> Reporte Diario de Operaciones</h4>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Fecha del Reporte</label>
+                                            <input type="date" class="form-control" id="fechaReporte">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label>&nbsp;</label>
+                                            <div>
+                                                <button class="btn btn-primary" onclick="generarReporteDiario()">
+                                                    <i class="fa fa-file-text-o"></i> Generar Reporte
+                                                </button>
+                                                <button class="btn btn-success btn-export" onclick="exportarPDF('diario')">
+                                                    <i class="fa fa-file-pdf-o"></i> Exportar PDF
+                                                </button>
+                                                <button class="btn btn-info btn-export" onclick="exportarExcel('diario')">
+                                                    <i class="fa fa-file-excel-o"></i> Exportar Excel
+                                                </button>
+                                                <button class="btn btn-warning btn-export" onclick="enviarEmailReporte()">
+                                                    <i class="fa fa-envelope"></i> Enviar por Email
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="resultadoReporte" style="margin-top: 20px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Auditoría de Ocupación -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="report-section">
+                                <h4><i class="fa fa-search"></i> Auditoría de Ocupación</h4>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Fecha Desde</label>
+                                            <input type="date" class="form-control" id="auditFechaDesde">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Fecha Hasta</label>
+                                            <input type="date" class="form-control" id="auditFechaHasta">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>&nbsp;</label>
+                                            <div>
+                                                <button class="btn btn-primary" onclick="generarAuditoria()">
+                                                    <i class="fa fa-search"></i> Generar Auditoría
+                                                </button>
+                                                <button class="btn btn-success btn-export" onclick="exportarPDF('auditoria')">
+                                                    <i class="fa fa-file-pdf-o"></i> Exportar PDF
+                                                </button>
+                                                <button class="btn btn-info btn-export" onclick="exportarExcel('auditoria')">
+                                                    <i class="fa fa-file-excel-o"></i> Exportar Excel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="resultadoAuditoria" style="margin-top: 20px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer>
+                <div class="pull-right">
+                    Sabtech Group - Sistema de Gestión Hotelera
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="../vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="../vendors/nprogress/nprogress.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <!-- PNotify -->
+    <script src="../vendors/pnotify/dist/pnotify.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- SheetJS -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
+    <script>
+        var ocupacionChart, estadosChart;
+        var datosReporte = {};
+
+        // Datos de ejemplo
+        var totalHabitaciones = 50;
+        var habitacionesOcupadas = 35;
+        var habitacionesDisponibles = 12;
+        var habitacionesBloqueadas = 3;
+        var noShowsHoy = 2;
+
+        $(document).ready(function() {
+            // Configurar fechas por defecto
+            var hoy = new Date();
+            $('#fechaTurno').val(formatDate(hoy));
+            $('#fechaReporte').val(formatDate(hoy));
+            $('#auditFechaDesde').val(formatDate(new Date(hoy.getTime() - 7 * 24 * 60 * 60 * 1000)));
+            $('#auditFechaHasta').val(formatDate(hoy));
+
+            // Actualizar estadísticas
+            actualizarEstadisticas();
+
+            // Inicializar gráficos
+            inicializarGraficos();
+        });
+
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+
+        function actualizarEstadisticas() {
+            var ocupacion = ((habitacionesOcupadas / totalHabitaciones) * 100).toFixed(1);
+            
+            $('#statOcupacion').text(ocupacion + '%');
+            $('#statDisponibles').text(habitacionesDisponibles);
+            $('#statBloqueadas').text(habitacionesBloqueadas);
+            $('#statNoShowHoy').text(noShowsHoy);
+        }
+
+        function inicializarGraficos() {
+            // Gráfico de Ocupación (Línea)
+            var ctxOcupacion = document.getElementById('ocupacionChart').getContext('2d');
+            ocupacionChart = new Chart(ctxOcupacion, {
+                type: 'line',
+                data: {
+                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                    datasets: [{
+                        label: '% Ocupación',
+                        data: [65, 72, 68, 75, 80, 85, 70],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        title: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Estados (Dona)
+            var ctxEstados = document.getElementById('estadosChart').getContext('2d');
+            estadosChart = new Chart(ctxEstados, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ocupadas', 'Disponibles', 'Bloqueadas'],
+                    datasets: [{
+                        data: [habitacionesOcupadas, habitacionesDisponibles, habitacionesBloqueadas],
+                        backgroundColor: ['#3498db', '#2ecc71', '#e74c3c']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function generarCierreTurno() {
+            var fecha = $('#fechaTurno').val();
+            var turno = $('#turnoSeleccionado').val();
+            
+            if (!fecha) {
+                new PNotify({
+                    title: 'Fecha Requerida',
+                    text: 'Por favor seleccione la fecha del turno',
+                    type: 'warning',
+                    styling: 'bootstrap3'
+                });
+                return;
+            }
+
+            var turnoTexto = $('#turnoSeleccionado option:selected').text();
+            
+            // Simular generación de cierre
+            var html = '<div class="panel panel-primary">' +
+                '<div class="panel-heading"><strong>Cierre de Turno - ' + turnoTexto + '</strong></div>' +
+                '<div class="panel-body">' +
+                '<p><strong>Fecha:</strong> ' + fecha + '</p>' +
+                '<p><strong>Turno:</strong> ' + turnoTexto + '</p>' +
+                '<hr>' +
+                '<h5><strong>Resumen de Operaciones:</strong></h5>' +
+                '<ul>' +
+                '<li>Check-ins realizados: 12</li>' +
+                '<li>Check-outs realizados: 8</li>' +
+                '<li>No Shows: ' + noShowsHoy + '</li>' +
+                '<li>Servicios atendidos: 15</li>' +
+                '<li>Incidencias reportadas: 2</li>' +
+                '</ul>' +
+                '<h5><strong>Estado de Habitaciones:</strong></h5>' +
+                '<ul>' +
+                '<li>Ocupadas: ' + habitacionesOcupadas + ' (' + ((habitacionesOcupadas / totalHabitaciones) * 100).toFixed(1) + '%)</li>' +
+                '<li>Disponibles: ' + habitacionesDisponibles + '</li>' +
+                '<li>Bloqueadas: ' + habitacionesBloqueadas + '</li>' +
+                '<li>En limpieza: 5</li>' +
+                '</ul>' +
+                '<h5><strong>Observaciones:</strong></h5>' +
+                '<p>Turno operado sin incidencias mayores. Se requiere mantenimiento preventivo en habitación 205.</p>' +
+                '</div>' +
+                '</div>';
+
+            $('#resultadoCierre').html(html);
+            
+            // Guardar datos para exportación
+            datosReporte.cierre = {
+                fecha: fecha,
+                turno: turnoTexto,
+                checkins: 12,
+                checkouts: 8,
+                noShows: noShowsHoy,
+                servicios: 15,
+                incidencias: 2,
+                ocupadas: habitacionesOcupadas,
+                disponibles: habitacionesDisponibles,
+                bloqueadas: habitacionesBloqueadas
+            };
+
+            new PNotify({
+                title: '✓ Cierre Generado',
+                text: 'Cierre de turno generado correctamente',
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+        }
+
+        function generarReporteDiario() {
+            var fecha = $('#fechaReporte').val();
+            
+            if (!fecha) {
+                new PNotify({
+                    title: 'Fecha Requerida',
+                    text: 'Por favor seleccione la fecha del reporte',
+                    type: 'warning',
+                    styling: 'bootstrap3'
+                });
+                return;
+            }
+
+            var ocupacion = ((habitacionesOcupadas / totalHabitaciones) * 100).toFixed(1);
+            
+            var html = '<div class="panel panel-info">' +
+                '<div class="panel-heading"><strong>Reporte Diario de Operaciones</strong></div>' +
+                '<div class="panel-body">' +
+                '<p><strong>Fecha:</strong> ' + fecha + '</p>' +
+                '<hr>' +
+                '<div class="row">' +
+                '<div class="col-md-6">' +
+                '<h5><strong>📊 Indicadores de Ocupación:</strong></h5>' +
+                '<table class="table table-striped">' +
+                '<tr><td>% Ocupación</td><td><strong>' + ocupacion + '%</strong></td></tr>' +
+                '<tr><td>Habitaciones Ocupadas</td><td>' + habitacionesOcupadas + ' / ' + totalHabitaciones + '</td></tr>' +
+                '<tr><td>Disponibles</td><td>' + habitacionesDisponibles + '</td></tr>' +
+                '<tr><td>Bloqueadas</td><td>' + habitacionesBloqueadas + '</td></tr>' +
+                '</table>' +
+                '</div>' +
+                '<div class="col-md-6">' +
+                '<h5><strong>👥 Actividad del Día:</strong></h5>' +
+                '<table class="table table-striped">' +
+                '<tr><td>Check-ins</td><td>12</td></tr>' +
+                '<tr><td>Check-outs</td><td>8</td></tr>' +
+                '<tr><td>No Shows</td><td class="text-danger"><strong>' + noShowsHoy + '</strong></td></tr>' +
+                '<tr><td>Extensiones</td><td>3</td></tr>' +
+                '</table>' +
+                '</div>' +
+                '</div>' +
+                '<h5><strong>🛠️ Piezas Bloqueadas:</strong></h5>' +
+                '<ul>' +
+                '<li>Habitación 105: Mantenimiento de aire acondicionado</li>' +
+                '<li>Habitación 202: Reparación de sanitarios</li>' +
+                '<li>Habitación 310: Pintura y limpieza profunda</li>' +
+                '</ul>' +
+                '<h5><strong>📝 Observaciones del Día:</strong></h5>' +
+                '<p>Operación normal. Se registraron 2 no-shows correspondientes a reservas corporativas. ' +
+                'Las habitaciones bloqueadas se estiman disponibles en 24-48 horas.</p>' +
+                '</div>' +
+                '</div>';
+
+            $('#resultadoReporte').html(html);
+            
+            // Guardar datos para exportación
+            datosReporte.diario = {
+                fecha: fecha,
+                ocupacion: ocupacion,
+                ocupadas: habitacionesOcupadas,
+                total: totalHabitaciones,
+                disponibles: habitacionesDisponibles,
+                bloqueadas: habitacionesBloqueadas,
+                checkins: 12,
+                checkouts: 8,
+                noShows: noShowsHoy,
+                extensiones: 3
+            };
+
+            new PNotify({
+                title: '✓ Reporte Generado',
+                text: 'Reporte diario generado correctamente',
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+        }
+
+        function generarAuditoria() {
+            var fechaDesde = $('#auditFechaDesde').val();
+            var fechaHasta = $('#auditFechaHasta').val();
+            
+            if (!fechaDesde || !fechaHasta) {
+                new PNotify({
+                    title: 'Fechas Requeridas',
+                    text: 'Por favor seleccione el rango de fechas',
+                    type: 'warning',
+                    styling: 'bootstrap3'
+                });
+                return;
+            }
+
+            var html = '<div class="panel panel-success">' +
+                '<div class="panel-heading"><strong>Auditoría de Ocupación</strong></div>' +
+                '<div class="panel-body">' +
+                '<p><strong>Período:</strong> ' + fechaDesde + ' al ' + fechaHasta + '</p>' +
+                '<hr>' +
+                '<h5><strong>📈 Resumen del Período:</strong></h5>' +
+                '<table class="table table-bordered">' +
+                '<thead><tr><th>Indicador</th><th>Valor</th><th>Meta</th><th>Estado</th></tr></thead>' +
+                '<tbody>' +
+                '<tr><td>Ocupación Promedio</td><td>72.5%</td><td>70%</td><td><span class="label label-success">✓ Cumplido</span></td></tr>' +
+                '<tr><td>No Shows</td><td>8</td><td>< 10</td><td><span class="label label-success">✓ Cumplido</span></td></tr>' +
+                '<tr><td>Check-ins a Tiempo</td><td>95%</td><td>90%</td><td><span class="label label-success">✓ Cumplido</span></td></tr>' +
+                '<tr><td>Satisfacción Huéspedes</td><td>4.5/5</td><td>4.0/5</td><td><span class="label label-success">✓ Cumplido</span></td></tr>' +
+                '</tbody>' +
+                '</table>' +
+                '<h5><strong>📊 Desglose Diario:</strong></h5>' +
+                '<table class="table table-striped">' +
+                '<thead><tr><th>Fecha</th><th>Ocupación</th><th>Check-ins</th><th>Check-outs</th><th>No Shows</th></tr></thead>' +
+                '<tbody>' +
+                '<tr><td>2025-10-29</td><td>68%</td><td>15</td><td>12</td><td>1</td></tr>' +
+                '<tr><td>2025-10-30</td><td>72%</td><td>18</td><td>14</td><td>2</td></tr>' +
+                '<tr><td>2025-10-31</td><td>70%</td><td>16</td><td>15</td><td>0</td></tr>' +
+                '<tr><td>2025-11-01</td><td>75%</td><td>20</td><td>13</td><td>1</td></tr>' +
+                '<tr><td>2025-11-02</td><td>78%</td><td>17</td><td>11</td><td>2</td></tr>' +
+                '<tr><td>2025-11-03</td><td>80%</td><td>19</td><td>16</td><td>1</td></tr>' +
+                '<tr><td>2025-11-04</td><td>70%</td><td>12</td><td>18</td><td>1</td></tr>' +
+                '</tbody>' +
+                '</table>' +
+                '<h5><strong>💡 Recomendaciones:</strong></h5>' +
+                '<ul>' +
+                '<li>Mantener estrategias de overbooking controlado para compensar no-shows</li>' +
+                '<li>Implementar recordatorios automáticos 24h antes del check-in</li>' +
+                '<li>Continuar con el programa de mantenimiento preventivo actual</li>' +
+                '</ul>' +
+                '</div>' +
+                '</div>';
+
+            $('#resultadoAuditoria').html(html);
+            
+            // Guardar datos para exportación
+            datosReporte.auditoria = {
+                fechaDesde: fechaDesde,
+                fechaHasta: fechaHasta,
+                ocupacionPromedio: 72.5,
+                noShows: 8,
+                satisfaccion: 4.5
+            };
+
+            new PNotify({
+                title: '✓ Auditoría Generada',
+                text: 'Auditoría de ocupación generada correctamente',
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+        }
+
+        function exportarPDF(tipo) {
+            if (!datosReporte[tipo]) {
+                new PNotify({
+                    title: 'Generar Primero',
+                    text: 'Por favor genere el reporte antes de exportar',
+                    type: 'warning',
+                    styling: 'bootstrap3'
+                });
+                return;
+            }
+
+            new PNotify({
+                title: '📄 Generando PDF',
+                text: 'El archivo PDF se está generando y descargando...',
+                type: 'info',
+                styling: 'bootstrap3',
+                delay: 3000
+            });
+
+            // Simulación de exportación
+            setTimeout(function() {
+                console.log('=== EXPORTANDO A PDF ===');
+                console.log('Tipo:', tipo);
+                console.log('Datos:', datosReporte[tipo]);
+                console.log('========================');
+                
+                new PNotify({
+                    title: '✓ PDF Descargado',
+                    text: 'El archivo reporte_' + tipo + '_' + formatDate(new Date()) + '.pdf se ha descargado',
+                    type: 'success',
+                    styling: 'bootstrap3'
+                });
+            }, 1500);
+        }
+
+        function exportarExcel(tipo) {
+            if (!datosReporte[tipo]) {
+                new PNotify({
+                    title: 'Generar Primero',
+                    text: 'Por favor genere el reporte antes de exportar',
+                    type: 'warning',
+                    styling: 'bootstrap3'
+                });
+                return;
+            }
+
+            // Preparar datos para Excel
+            var datos = [];
+            
+            if (tipo === 'cierre') {
+                datos = [
+                    ['CIERRE DE TURNO'],
+                    ['Fecha', datosReporte.cierre.fecha],
+                    ['Turno', datosReporte.cierre.turno],
+                    [],
+                    ['OPERACIONES'],
+                    ['Check-ins', datosReporte.cierre.checkins],
+                    ['Check-outs', datosReporte.cierre.checkouts],
+                    ['No Shows', datosReporte.cierre.noShows],
+                    ['Servicios', datosReporte.cierre.servicios],
+                    ['Incidencias', datosReporte.cierre.incidencias],
+                    [],
+                    ['HABITACIONES'],
+                    ['Ocupadas', datosReporte.cierre.ocupadas],
+                    ['Disponibles', datosReporte.cierre.disponibles],
+                    ['Bloqueadas', datosReporte.cierre.bloqueadas]
+                ];
+            } else if (tipo === 'diario') {
+                datos = [
+                    ['REPORTE DIARIO'],
+                    ['Fecha', datosReporte.diario.fecha],
+                    [],
+                    ['OCUPACIÓN'],
+                    ['% Ocupación', datosReporte.diario.ocupacion + '%'],
+                    ['Ocupadas', datosReporte.diario.ocupadas],
+                    ['Total', datosReporte.diario.total],
+                    ['Disponibles', datosReporte.diario.disponibles],
+                    ['Bloqueadas', datosReporte.diario.bloqueadas],
+                    [],
+                    ['ACTIVIDAD'],
+                    ['Check-ins', datosReporte.diario.checkins],
+                    ['Check-outs', datosReporte.diario.checkouts],
+                    ['No Shows', datosReporte.diario.noShows],
+                    ['Extensiones', datosReporte.diario.extensiones]
+                ];
+            } else if (tipo === 'auditoria') {
+                datos = [
+                    ['AUDITORÍA DE OCUPACIÓN'],
+                    ['Desde', datosReporte.auditoria.fechaDesde],
+                    ['Hasta', datosReporte.auditoria.fechaHasta],
+                    [],
+                    ['INDICADORES'],
+                    ['Ocupación Promedio', datosReporte.auditoria.ocupacionPromedio + '%'],
+                    ['No Shows Total', datosReporte.auditoria.noShows],
+                    ['Satisfacción', datosReporte.auditoria.satisfaccion + '/5']
+                ];
+            }
+
+            // Crear libro de Excel
+            var wb = XLSX.utils.book_new();
+            var ws = XLSX.utils.aoa_to_sheet(datos);
+            XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
+            
+            // Descargar archivo
+            var nombreArchivo = 'reporte_' + tipo + '_' + formatDate(new Date()) + '.xlsx';
+            XLSX.writeFile(wb, nombreArchivo);
+
+            new PNotify({
+                title: '✓ Excel Descargado',
+                text: 'El archivo ' + nombreArchivo + ' se ha descargado',
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+        }
+
+        function enviarEmailReporte() {
+            if (!datosReporte.diario) {
+                new PNotify({
+                    title: 'Generar Primero',
+                    text: 'Por favor genere el reporte antes de enviar',
+                    type: 'warning',
+                    styling: 'bootstrap3'
+                });
+                return;
+            }
+
+            new PNotify({
+                title: '📧 Enviando Email',
+                text: 'El reporte diario se está enviando por correo electrónico...',
+                type: 'info',
+                styling: 'bootstrap3',
+                delay: 3000
+            });
+
+            setTimeout(function() {
+                console.log('=== ENVIANDO EMAIL ===');
+                console.log('Destinatario: admin@sabtech.com');
+                console.log('Asunto: Reporte Diario - ' + datosReporte.diario.fecha);
+                console.log('Datos:', datosReporte.diario);
+                console.log('======================');
+                
+                new PNotify({
+                    title: '✓ Email Enviado',
+                    text: 'El reporte ha sido enviado a admin@sabtech.com',
+                    type: 'success',
+                    styling: 'bootstrap3'
+                });
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
