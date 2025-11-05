@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Gestión de Servicios | Sabtech Group</title>
+
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="../build/css/custom.min.css" rel="stylesheet">
+    <!-- PNotify -->
+    <link href="../vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="../vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    <!-- Datatables -->
+    <link href="../vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .stats-card {
+            background: white;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stats-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stats-card.pendientes .number { color: #f39c12; }
+        .stats-card.semana .number { color: #3498db; }
+        .stats-card.tiempo .number { color: #2ecc71; }
+        
+        .stats-card .icon {
+            font-size: 3em;
+            opacity: 0.3;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        .status-pendiente { background: #f39c12; color: white; }
+        .status-asignada { background: #3498db; color: white; }
+        .status-rechazada { background: #e74c3c; color: white; }
+        .status-realizada { background: #2ecc71; color: white; }
+        
+        .bitacora-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .action-btn {
+            margin: 2px;
+        }
+    </style>
+</head>
+
+<body class="nav-md">
+    <div class="container body">
+        <div class="main_container">
+            <!-- Sidebar -->
+            <div class="col-md-3 left_col">
+                <div class="left_col scroll-view">
+                    <div class="navbar nav_title" style="border: 0;">
+                        <a href="admin-dashboard.html" class="site_title"><i class="fa fa-hotel"></i> <span>Hoteleria</span></a>
+                    </div>
+                    <div class="clearfix"></div>
+
+                    <!-- menu profile quick info -->
+                    <div class="profile clearfix">
+                        <div class="profile_pic">
+                            <img src="images/img.jpg" alt="..." class="img-circle profile_img">
+                        </div>
+                        <div class="profile_info">
+                            <span>Bienvenido,</span>
+                            <h2>Admin</h2>
+                        </div>
+                    </div>
+
+                    <!-- sidebar menu -->
+                    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                        <div class="menu_section">
+                            <h3>MENÚ ADMINISTRADOR</h3>
+                            <ul class="nav side-menu">
+                                <li class="active"><a><i class="fa fa-check"></i> Administración <span class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu" style="display: block;">
+                                        <li><a href="reservas-detalladas.html">Reservas</a></li>
+                                        <li class="current-page"><a href="servicios.html">Servicios</a></li>
+                                        <li><a href="checkin-checkout.html">Checkin / Checkout</a></li>
+                                        <li><a href="reportes.html">Reportes</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav">
+                <div class="nav_menu">
+                    <nav>
+                        <div class="nav toggle">
+                            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                        </div>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="">
+                                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    <img src="images/img.jpg" alt="">Admin
+                                    <span class=" fa fa-angle-down"></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Cerrar Sesión</a></li>
+                                </ul>
+                            </li>
+                            <li role="presentation" class="dropdown">
+                                <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-bell-o"></i>
+                                    <span class="badge bg-green" id="notificationCount">0</span>
+                                </a>
+                                <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
+                                    <li>
+                                        <a>
+                                            <span><span>Notificaciones</span></span>
+                                            <span class="message">No hay notificaciones nuevas</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <div class="">
+                    <div class="page-title">
+                        <div class="title_left">
+                            <h3>Gestión de Servicios</h3>
+                            <p class="text-muted">Administración de solicitudes de servicios</p>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <!-- Estadísticas -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="stats-card pendientes">
+                                <i class="fa fa-clock-o icon"></i>
+                                <h4>Solicitudes Pendientes Hoy</h4>
+                                <div class="number" id="statPendientesHoy">0</div>
+                                <small class="text-muted">REQUIEREN ATENCIÓN</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stats-card semana">
+                                <i class="fa fa-calendar icon"></i>
+                                <h4>Solicitudes Pendientes Semana</h4>
+                                <div class="number" id="statPendientesSemana">0</div>
+                                <small class="text-muted">ÚLTIMOS 7 DÍAS</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stats-card tiempo">
+                                <i class="fa fa-hourglass-half icon"></i>
+                                <h4>Tiempo Promedio Respuesta</h4>
+                                <div class="number" id="statTiempoRespuesta">0h</div>
+                                <small class="text-muted">PROMEDIO GENERAL</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filtros de Búsqueda -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2><i class="fa fa-filter"></i> Filtros de Búsqueda</h2>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Fecha Inicio</label>
+                                                <input type="date" class="form-control" id="fechaInicio">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Fecha Fin</label>
+                                                <input type="date" class="form-control" id="fechaFin">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Estado</label>
+                                                <select class="form-control" id="filtroEstado">
+                                                    <option value="pendiente" selected>Pendiente</option>
+                                                    <option value="asignada">Asignada</option>
+                                                    <option value="rechazada">Rechazada</option>
+                                                    <option value="realizada">Realizada</option>
+                                                    <option value="todos">Todos</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>&nbsp;</label>
+                                                <button class="btn btn-primary btn-block" onclick="aplicarFiltros()">
+                                                    <i class="fa fa-search"></i> Buscar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-success" onclick="mostrarCrearServicio()">
+                                                <i class="fa fa-plus"></i> Crear Nueva Solicitud
+                                            </button>
+                                            <button class="btn btn-info" onclick="notificarPersonal()">
+                                                <i class="fa fa-bell"></i> Notificar Personal
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Servicios -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2 id="tituloListado"><i class="fa fa-list"></i> Listado de Servicios Pendientes</h2>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-bordered table-hover" id="serviciosTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID Solicitud</th>
+                                                    <th>Fecha/Hora</th>
+                                                    <th>Tipo Servicio</th>
+                                                    <th>Habitación</th>
+                                                    <th>Solicitante</th>
+                                                    <th>Personal Asignado</th>
+                                                    <th>Estado</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="serviciosBody">
+                                                <!-- Las solicitudes se cargarán dinámicamente -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bitácora de Servicios -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="bitacora-section">
+                                <h3><i class="fa fa-book"></i> Bitácora de Servicios</h3>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Filtrar por:</label>
+                                            <select class="form-control" id="filtroBitacora" onchange="cargarBitacora()">
+                                                <option value="dia">Hoy</option>
+                                                <option value="semana">Esta Semana</option>
+                                                <option value="mes">Este Mes</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Empresa:</label>
+                                            <select class="form-control" id="filtroEmpresa" onchange="cargarBitacora()">
+                                                <option value="todos">Todas</option>
+                                                <option value="minera">Minera XYZ S.A.</option>
+                                                <option value="constructora">Constructora ABC Ltda.</option>
+                                                <option value="servicios">Servicios DEF SpA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button class="btn btn-primary" style="margin-top: 25px;" onclick="exportarBitacora()">
+                                            <i class="fa fa-download"></i> Exportar Bitácora
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                    <table class="table table-striped table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha/Hora</th>
+                                                <th>Servicio</th>
+                                                <th>Habitación</th>
+                                                <th>Empresa</th>
+                                                <th>Personal</th>
+                                                <th>Estado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="bitacoraBody">
+                                            <!-- Se cargará dinámicamente -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer>
+                <div class="pull-right">
+                    Sabtech Group - Sistema de Gestión Hotelera
+                </div>
+                <div class="clearfix"></div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modal Crear/Editar Servicio -->
+    <div class="modal fade" id="servicioModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #2a3f54; color: white;">
+                    <button type="button" class="close" data-dismiss="modal" style="color: white;"><span>&times;</span></button>
+                    <h4 class="modal-title" id="servicioModalTitle"><i class="fa fa-plus"></i> Nueva Solicitud de Servicio</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="servicioForm">
+                        <input type="hidden" id="servicioId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Tipo de Servicio <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="tipoServicio" required>
+                                        <option value="">Seleccione...</option>
+                                        <option value="limpieza">Limpieza de Habitación</option>
+                                        <option value="mantenimiento">Mantenimiento</option>
+                                        <option value="lavanderia">Lavandería</option>
+                                        <option value="alimentos">Servicio de Alimentos</option>
+                                        <option value="otros">Otros</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Habitación <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="habitacion" placeholder="Ej: 301" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Solicitante <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="solicitante" placeholder="Nombre del solicitante" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Empresa</label>
+                                    <select class="form-control" id="empresa">
+                                        <option value="">Seleccione...</option>
+                                        <option value="minera">Minera XYZ S.A.</option>
+                                        <option value="constructora">Constructora ABC Ltda.</option>
+                                        <option value="servicios">Servicios DEF SpA</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Descripción <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="descripcion" rows="3" placeholder="Detalles de la solicitud" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Prioridad</label>
+                                    <select class="form-control" id="prioridad">
+                                        <option value="normal">Normal</option>
+                                        <option value="alta">Alta</option>
+                                        <option value="urgente">Urgente</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="guardarServicio()">
+                        <i class="fa fa-save"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Visualizar Servicio -->
+    <div class="modal fade" id="verServicioModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #2a3f54; color: white;">
+                    <button type="button" class="close" data-dismiss="modal" style="color: white;"><span>&times;</span></button>
+                    <h4 class="modal-title"><i class="fa fa-eye"></i> Detalles del Servicio</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>ID Solicitud:</strong> <span id="verSolicitudId"></span></p>
+                            <p><strong>Tipo de Servicio:</strong> <span id="verTipoServicio"></span></p>
+                            <p><strong>Habitación:</strong> <span id="verHabitacion"></span></p>
+                            <p><strong>Solicitante:</strong> <span id="verSolicitante"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Empresa:</strong> <span id="verEmpresa"></span></p>
+                            <p><strong>Fecha/Hora:</strong> <span id="verFechaHora"></span></p>
+                            <p><strong>Personal Asignado:</strong> <span id="verPersonal"></span></p>
+                            <p><strong>Estado:</strong> <span id="verEstado"></span></p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p><strong>Descripción:</strong></p>
+                            <p id="verDescripcion" style="padding: 10px; background: #f5f5f5; border-radius: 3px;"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Asignar Personal -->
+    <div class="modal fade" id="asignarModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #2a3f54; color: white;">
+                    <button type="button" class="close" data-dismiss="modal" style="color: white;"><span>&times;</span></button>
+                    <h4 class="modal-title"><i class="fa fa-user"></i> Asignar Personal</h4>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Solicitud:</strong> <span id="asignarSolicitudId"></span></p>
+                    <p><strong>Tipo:</strong> <span id="asignarTipo"></span></p>
+                    <p><strong>Habitación:</strong> <span id="asignarHabitacion"></span></p>
+                    <hr>
+                    <div class="form-group">
+                        <label>Seleccionar Personal <span class="text-danger">*</span></label>
+                        <select class="form-control" id="personalAsignado">
+                            <option value="">Seleccione...</option>
+                            <option value="Maria Lopez">María López (Limpieza)</option>
+                            <option value="Juan Perez">Juan Pérez (Limpieza)</option>
+                            <option value="Ana Garcia">Ana García (Mantenimiento)</option>
+                            <option value="Carlos Silva">Carlos Silva (Mantenimiento)</option>
+                        </select>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="asignacionAutomatica"> Usar asignación automática
+                        </label>
+                        <small class="help-block">El sistema asignará automáticamente al personal disponible más cercano</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="confirmarAsignacion()">
+                        <i class="fa fa-check"></i> Asignar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="../vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="../vendors/nprogress/nprogress.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="../build/js/custom.min.js"></script>
+    <!-- PNotify -->
+    <script src="../vendors/pnotify/dist/pnotify.js"></script>
+    <script src="../vendors/pnotify/dist/pnotify.buttons.js"></script>
+    <!-- Datatables -->
+    <script src="../vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="../vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
+    <script>
+        var table;
+        var servicioActual = null;
+
+        // Datos de ejemplo de servicios
+        var servicios = [
+            {
+                id: 'SOL-001',
+                fechaHora: '2025-11-04 08:30:15',
+                tipoServicio: 'Limpieza de Habitación',
+                habitacion: '301',
+                solicitante: 'Juan Pérez',
+                empresa: 'Minera XYZ S.A.',
+                personalAsignado: '',
+                estado: 'pendiente',
+                descripcion: 'Solicita limpieza profunda de habitación',
+                prioridad: 'normal'
+            },
+            {
+                id: 'SOL-002',
+                fechaHora: '2025-11-04 09:15:30',
+                tipoServicio: 'Mantenimiento',
+                habitacion: '205',
+                solicitante: 'María González',
+                empresa: 'Constructora ABC Ltda.',
+                personalAsignado: '',
+                estado: 'pendiente',
+                descripcion: 'Problema con el aire acondicionado',
+                prioridad: 'alta'
+            },
+            {
+                id: 'SOL-003',
+                fechaHora: '2025-11-04 10:00:00',
+                tipoServicio: 'Lavandería',
+                habitacion: '102',
+                solicitante: 'Carlos Rodríguez',
+                empresa: 'Servicios DEF SpA',
+                personalAsignado: '',
+                estado: 'pendiente',
+                descripcion: 'Cambio de sábanas y toallas',
+                prioridad: 'normal'
+            },
+            {
+                id: 'SOL-004',
+                fechaHora: '2025-11-04 11:30:00',
+                tipoServicio: 'Servicio de Alimentos',
+                habitacion: '401',
+                solicitante: 'Ana Martínez',
+                empresa: 'Minera XYZ S.A.',
+                personalAsignado: '',
+                estado: 'pendiente',
+                descripcion: 'Desayuno en habitación',
+                prioridad: 'normal'
+            },
+            {
+                id: 'SOL-005',
+                fechaHora: '2025-11-04 14:20:00',
+                tipoServicio: 'Limpieza de Habitación',
+                habitacion: '150',
+                solicitante: 'Luis Fernández',
+                empresa: 'Constructora ABC Ltda.',
+                personalAsignado: '',
+                estado: 'pendiente',
+                descripcion: 'Limpieza general',
+                prioridad: 'normal'
+            }
+        ];
+
+        // Personal disponible
+        var personalDisponible = [
+            { id: 'P001', nombre: 'María López', tipo: 'limpieza', disponible: true },
+            { id: 'P002', nombre: 'Juan Pérez', tipo: 'limpieza', disponible: true },
+            { id: 'P003', nombre: 'Ana García', tipo: 'mantenimiento', disponible: true },
+            { id: 'P004', nombre: 'Carlos Silva', tipo: 'mantenimiento', disponible: false }
+        ];
+
+        $(document).ready(function() {
+            // Configurar fechas por defecto
+            var hoy = new Date();
+            var enUnaSemana = new Date(hoy.getTime() + 7 * 24 * 60 * 60 * 1000);
+            
+            $('#fechaInicio').val(formatDate(hoy));
+            $('#fechaFin').val(formatDate(enUnaSemana));
+
+            // Cargar datos iniciales
+            cargarServicios();
+            actualizarEstadisticas();
+            cargarBitacora();
+
+            // Evento para asignación automática
+            $('#asignacionAutomatica').change(function() {
+                if ($(this).is(':checked')) {
+                    $('#personalAsignado').prop('disabled', true);
+                    $('#personalAsignado').val('');
+                } else {
+                    $('#personalAsignado').prop('disabled', false);
+                }
+            });
+        });
+
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+
+        function formatearFechaHora(fechaHora) {
+            var partes = fechaHora.split(' ');
+            var fecha = partes[0].split('-');
+            var hora = partes[1];
+            return fecha[2] + '/' + fecha[1] + '/' + fecha[0] + ' ' + hora;
+        }
+
+        function cargarServicios() {
+            var estadoFiltro = $('#filtroEstado').val();
+            var serviciosFiltrados = servicios;
+
+            // Actualizar título según filtro
+            var titulos = {
+                'pendiente': 'Listado de Servicios Pendientes',
+                'asignada': 'Listado de Servicios Asignados',
+                'rechazada': 'Listado de Servicios Rechazados',
+                'realizada': 'Listado de Servicios Realizados',
+                'todos': 'Listado de Todos los Servicios'
+            };
+            $('#tituloListado').html('<i class="fa fa-list"></i> ' + (titulos[estadoFiltro] || 'Listado de Servicios'));
+
+            // Filtrar por estado
+            if (estadoFiltro !== 'todos') {
+                serviciosFiltrados = servicios.filter(s => s.estado === estadoFiltro);
+            }
+
+            // Ordenar por fecha ascendente
+            serviciosFiltrados.sort((a, b) => new Date(a.fechaHora) - new Date(b.fechaHora));
+
+            // Destruir DataTable existente si existe
+            if ($.fn.DataTable.isDataTable('#serviciosTable')) {
+                table.destroy();
+            }
+
+            // Limpiar solo el tbody
+            var tbody = $('#serviciosBody');
+            tbody.empty();
+
+            // Verificar si hay servicios filtrados
+            if (serviciosFiltrados.length === 0) {
+                var mensaje = '<tr><td colspan="8" class="text-center" style="padding: 40px;">' +
+                    '<i class="fa fa-info-circle" style="font-size: 3em; color: #ccc; margin-bottom: 15px;"></i><br>' +
+                    '<strong style="font-size: 1.2em; color: #666;">No hay servicios con estado "' + 
+                    $('#filtroEstado option:selected').text() + '"</strong><br>' +
+                    '<small class="text-muted">Intente cambiar el filtro de estado para ver otros servicios</small>' +
+                    '</td></tr>';
+                tbody.html(mensaje);
+            } else {
+                serviciosFiltrados.forEach(function(servicio) {
+                    var estadoBadge = getEstadoBadge(servicio.estado);
+                    var acciones = '';
+                    
+                    if (servicio.estado === 'pendiente') {
+                        acciones = '<button class="btn btn-info btn-xs action-btn" onclick="verServicio(\'' + servicio.id + '\')" title="Ver Detalles">' +
+                                  '<i class="fa fa-eye"></i></button> ' +
+                                  '<button class="btn btn-warning btn-xs action-btn" onclick="editarServicio(\'' + servicio.id + '\')" title="Editar">' +
+                                  '<i class="fa fa-edit"></i></button> ' +
+                                  '<button class="btn btn-success btn-xs action-btn" onclick="abrirAsignacion(\'' + servicio.id + '\')" title="Asignar Personal">' +
+                                  '<i class="fa fa-user"></i></button> ' +
+                                  '<button class="btn btn-danger btn-xs action-btn" onclick="eliminarServicio(\'' + servicio.id + '\')" title="Eliminar">' +
+                                  '<i class="fa fa-trash"></i></button>';
+                    } else {
+                        acciones = '<button class="btn btn-info btn-xs action-btn" onclick="verServicio(\'' + servicio.id + '\')" title="Ver Detalles">' +
+                                  '<i class="fa fa-eye"></i></button>';
+                    }
+
+                    var row = '<tr>' +
+                        '<td><strong>' + servicio.id + '</strong></td>' +
+                        '<td>' + formatearFechaHora(servicio.fechaHora) + '</td>' +
+                        '<td>' + servicio.tipoServicio + '</td>' +
+                        '<td>' + servicio.habitacion + '</td>' +
+                        '<td>' + servicio.solicitante + '</td>' +
+                        '<td>' + (servicio.personalAsignado || '<span class="text-muted">Sin asignar</span>') + '</td>' +
+                        '<td>' + estadoBadge + '</td>' +
+                        '<td>' + acciones + '</td>' +
+                        '</tr>';
+                    
+                    tbody.append(row);
+                });
+            }
+            
+            // Inicializar DataTable
+            table = $('#serviciosTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json"
+                },
+                "order": [[1, "asc"]],
+                "pageLength": 10
+            });
+        }
+
+        function getEstadoBadge(estado) {
+            var badges = {
+                'pendiente': '<span class="status-badge status-pendiente"><i class="fa fa-clock-o"></i> Pendiente</span>',
+                'asignada': '<span class="status-badge status-asignada"><i class="fa fa-user"></i> Asignada</span>',
+                'rechazada': '<span class="status-badge status-rechazada"><i class="fa fa-times"></i> Rechazada</span>',
+                'realizada': '<span class="status-badge status-realizada"><i class="fa fa-check"></i> Realizada</span>'
+            };
+            return badges[estado] || estado;
+        }
+
+        function aplicarFiltros() {
+            cargarServicios();
+            
+            new PNotify({
+                title: 'Filtros Aplicados',
+                text: 'Se han aplicado los filtros de búsqueda',
+                type: 'success',
+                styling: 'bootstrap3',
+                delay: 2000
+            });
+        }
+
+        function mostrarCrearServicio() {
+            $('#servicioModalTitle').html('<i class="fa fa-plus"></i> Nueva Solicitud de Servicio');
+            $('#servicioForm')[0].reset();
+            $('#servicioId').val('');
+            $('#servicioModal').modal('show');
+        }
+
+        function editarServicio(servicioId) {
+            var servicio = servicios.find(s => s.id === servicioId);
+            if (!servicio) return;
+
+            $('#servicioModalTitle').html('<i class="fa fa-edit"></i> Editar Solicitud de Servicio');
+            $('#servicioId').val(servicio.id);
+            
+            // Mapear tipo de servicio
+            var tipoMap = {
+                'Limpieza de Habitación': 'limpieza',
+                'Mantenimiento': 'mantenimiento',
+                'Lavandería': 'lavanderia',
+                'Servicio de Alimentos': 'alimentos',
+                'Otros': 'otros'
+            };
+            $('#tipoServicio').val(tipoMap[servicio.tipoServicio] || '');
+            
+            $('#habitacion').val(servicio.habitacion);
+            $('#solicitante').val(servicio.solicitante);
+            
+            // Mapear empresa
+            var empresaMap = {
+                'Minera XYZ S.A.': 'minera',
+                'Constructora ABC Ltda.': 'constructora',
+                'Servicios DEF SpA': 'servicios'
+            };
+            $('#empresa').val(empresaMap[servicio.empresa] || '');
+            
+            $('#descripcion').val(servicio.descripcion);
+            $('#prioridad').val(servicio.prioridad);
+            
+            $('#servicioModal').modal('show');
+        }
+
+        function guardarServicio() {
+            // Validar campos requeridos
+            if (!$('#tipoServicio').val() || !$('#habitacion').val() || !$('#solicitante').val() || !$('#descripcion').val()) {
+                new PNotify({
+                    title: 'Campos Incompletos',
+                    text: 'Por favor complete todos los campos obligatorios',
+                    type: 'warning',
+                    styling: 'bootstrap3'
+                });
+                return;
+            }
+
+            var servicioId = $('#servicioId').val();
+            var ahora = new Date();
+            var fechaHora = ahora.getFullYear() + '-' + 
+                           String(ahora.getMonth() + 1).padStart(2, '0') + '-' + 
+                           String(ahora.getDate()).padStart(2, '0') + ' ' +
+                           String(ahora.getHours()).padStart(2, '0') + ':' +
+                           String(ahora.getMinutes()).padStart(2, '0') + ':' +
+                           String(ahora.getSeconds()).padStart(2, '0');
+
+            // Mapear valores
+            var tipoMap = {
+                'limpieza': 'Limpieza de Habitación',
+                'mantenimiento': 'Mantenimiento',
+                'lavanderia': 'Lavandería',
+                'alimentos': 'Servicio de Alimentos',
+                'otros': 'Otros'
+            };
+
+            var empresaMap = {
+                'minera': 'Minera XYZ S.A.',
+                'constructora': 'Constructora ABC Ltda.',
+                'servicios': 'Servicios DEF SpA'
+            };
+
+            var nuevoServicio = {
+                id: servicioId || 'SOL-' + String(servicios.length + 1).padStart(3, '0'),
+                fechaHora: fechaHora,
+                tipoServicio: tipoMap[$('#tipoServicio').val()],
+                habitacion: $('#habitacion').val(),
+                solicitante: $('#solicitante').val(),
+                empresa: empresaMap[$('#empresa').val()] || 'Sin empresa',
+                personalAsignado: '',
+                estado: 'pendiente',
+                descripcion: $('#descripcion').val(),
+                prioridad: $('#prioridad').val()
+            };
+
+            if (servicioId) {
+                // Editar existente
+                var index = servicios.findIndex(s => s.id === servicioId);
+                if (index !== -1) {
+                    servicios[index] = { ...servicios[index], ...nuevoServicio };
+                }
+            } else {
+                // Crear nuevo
+                servicios.push(nuevoServicio);
+            }
+
+            $('#servicioModal').modal('hide');
+            
+            // Cambiar filtro a "Todos" para ver el cambio
+            $('#filtroEstado').val('todos');
+            cargarServicios();
+            actualizarEstadisticas();
+
+            new PNotify({
+                title: servicioId ? 'Servicio Actualizado' : 'Servicio Creado',
+                text: 'La solicitud ha sido ' + (servicioId ? 'actualizada' : 'creada') + ' exitosamente',
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+        }
+
+        function verServicio(servicioId) {
+            var servicio = servicios.find(s => s.id === servicioId);
+            if (!servicio) return;
+
+            $('#verSolicitudId').text(servicio.id);
+            $('#verTipoServicio').text(servicio.tipoServicio);
+            $('#verHabitacion').text(servicio.habitacion);
+            $('#verSolicitante').text(servicio.solicitante);
+            $('#verEmpresa').text(servicio.empresa);
+            $('#verFechaHora').text(formatearFechaHora(servicio.fechaHora));
+            $('#verPersonal').text(servicio.personalAsignado || 'Sin asignar');
+            $('#verEstado').html(getEstadoBadge(servicio.estado));
+            $('#verDescripcion').text(servicio.descripcion);
+
+            $('#verServicioModal').modal('show');
+        }
+
+        function abrirAsignacion(servicioId) {
+            servicioActual = servicios.find(s => s.id === servicioId);
+            if (!servicioActual) return;
+
+            $('#asignarSolicitudId').text(servicioActual.id);
+            $('#asignarTipo').text(servicioActual.tipoServicio);
+            $('#asignarHabitacion').text(servicioActual.habitacion);
+            $('#personalAsignado').val('');
+            $('#asignacionAutomatica').prop('checked', false);
+            $('#personalAsignado').prop('disabled', false);
+
+            $('#asignarModal').modal('show');
+        }
+
+        function confirmarAsignacion() {
+            var personalSeleccionado = $('#personalAsignado').val();
+            var asignacionAuto = $('#asignacionAutomatica').is(':checked');
+
+            if (!personalSeleccionado && !asignacionAuto) {
+                new PNotify({
+                    title: 'Selección Requerida',
+                    text: 'Por favor seleccione personal o active la asignación automática',
+                    type: 'warning',
+                    styling: 'bootstrap3'
+                });
+                return;
+            }
+
+            // Si es asignación automática, seleccionar personal disponible
+            if (asignacionAuto) {
+                var personalDisp = personalDisponible.filter(p => p.disponible);
+                if (personalDisp.length > 0) {
+                    personalSeleccionado = personalDisp[0].nombre;
+                } else {
+                    new PNotify({
+                        title: 'Sin Personal Disponible',
+                        text: 'No hay personal disponible en este momento',
+                        type: 'error',
+                        styling: 'bootstrap3'
+                    });
+                    return;
+                }
+            }
+
+            // Actualizar en el array principal
+            var index = servicios.findIndex(s => s.id === servicioActual.id);
+            if (index !== -1) {
+                servicios[index].estado = 'asignada';
+                servicios[index].personalAsignado = personalSeleccionado;
+            }
+
+            $('#asignarModal').modal('hide');
+
+            // Cambiar filtro a "Todos" para ver el cambio
+            $('#filtroEstado').val('todos');
+            cargarServicios();
+            actualizarEstadisticas();
+            cargarBitacora();
+
+            new PNotify({
+                title: '✓ Personal Asignado',
+                text: 'El servicio <strong>' + servicioActual.id + '</strong> ha sido asignado a <strong>' + personalSeleccionado + '</strong>',
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+        }
+
+        function eliminarServicio(servicioId) {
+            if (!confirm('¿Está seguro de eliminar esta solicitud?')) {
+                return;
+            }
+
+            var index = servicios.findIndex(s => s.id === servicioId);
+            if (index !== -1) {
+                servicios.splice(index, 1);
+            }
+
+            cargarServicios();
+            actualizarEstadisticas();
+
+            new PNotify({
+                title: 'Servicio Eliminado',
+                text: 'La solicitud ha sido eliminada',
+                type: 'info',
+                styling: 'bootstrap3'
+            });
+        }
+
+        function notificarPersonal() {
+            new PNotify({
+                title: '🔔 Notificación Enviada',
+                text: 'Se ha enviado una notificación al personal sobre las solicitudes pendientes',
+                type: 'info',
+                styling: 'bootstrap3',
+                delay: 3000
+            });
+
+            // Simular log de notificación
+            console.log('=== NOTIFICACIÓN AL PERSONAL ===');
+            console.log('Fecha:', new Date().toLocaleString());
+            console.log('Solicitudes pendientes:', servicios.filter(s => s.estado === 'pendiente').length);
+            console.log('================================');
+        }
+
+        function actualizarEstadisticas() {
+            var hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            
+            var haceSemana = new Date(hoy.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+            // Pendientes hoy
+            var pendientesHoy = servicios.filter(s => {
+                var fecha = new Date(s.fechaHora);
+                fecha.setHours(0, 0, 0, 0);
+                return s.estado === 'pendiente' && fecha.getTime() === hoy.getTime();
+            }).length;
+
+            // Pendientes semana
+            var pendientesSemana = servicios.filter(s => {
+                var fecha = new Date(s.fechaHora);
+                return s.estado === 'pendiente' && fecha >= haceSemana;
+            }).length;
+
+            // Tiempo promedio de respuesta (simulado)
+            var tiempoPromedio = Math.floor(Math.random() * 5) + 2; // Entre 2 y 6 horas
+
+            $('#statPendientesHoy').text(pendientesHoy);
+            $('#statPendientesSemana').text(pendientesSemana);
+            $('#statTiempoRespuesta').text(tiempoPromedio + 'h');
+            $('#notificationCount').text(pendientesHoy);
+        }
+
+        function cargarBitacora() {
+            var filtro = $('#filtroBitacora').val();
+            var empresa = $('#filtroEmpresa').val();
+            
+            var serviciosFiltrados = servicios.filter(s => s.estado !== 'pendiente');
+
+            // Filtrar por empresa
+            if (empresa !== 'todos') {
+                var empresaMap = {
+                    'minera': 'Minera XYZ S.A.',
+                    'constructora': 'Constructora ABC Ltda.',
+                    'servicios': 'Servicios DEF SpA'
+                };
+                serviciosFiltrados = serviciosFiltrados.filter(s => s.empresa === empresaMap[empresa]);
+            }
+
+            // Filtrar por período
+            var ahora = new Date();
+            if (filtro === 'dia') {
+                ahora.setHours(0, 0, 0, 0);
+                serviciosFiltrados = serviciosFiltrados.filter(s => {
+                    var fecha = new Date(s.fechaHora);
+                    fecha.setHours(0, 0, 0, 0);
+                    return fecha.getTime() === ahora.getTime();
+                });
+            } else if (filtro === 'semana') {
+                var haceSemana = new Date(ahora.getTime() - 7 * 24 * 60 * 60 * 1000);
+                serviciosFiltrados = serviciosFiltrados.filter(s => new Date(s.fechaHora) >= haceSemana);
+            }
+
+            var tbody = $('#bitacoraBody');
+            tbody.empty();
+
+            if (serviciosFiltrados.length === 0) {
+                tbody.html('<tr><td colspan="6" class="text-center text-muted">No hay registros en la bitácora</td></tr>');
+            } else {
+                serviciosFiltrados.forEach(function(servicio) {
+                    var row = '<tr>' +
+                        '<td>' + formatearFechaHora(servicio.fechaHora) + '</td>' +
+                        '<td>' + servicio.tipoServicio + '</td>' +
+                        '<td>' + servicio.habitacion + '</td>' +
+                        '<td>' + servicio.empresa + '</td>' +
+                        '<td>' + (servicio.personalAsignado || 'N/A') + '</td>' +
+                        '<td>' + getEstadoBadge(servicio.estado) + '</td>' +
+                        '</tr>';
+                    tbody.append(row);
+                });
+            }
+        }
+
+        function exportarBitacora() {
+            var filtro = $('#filtroBitacora').val();
+            var empresa = $('#filtroEmpresa').val();
+            
+            var filtroTexto = filtro === 'dia' ? 'Hoy' : filtro === 'semana' ? 'Esta Semana' : 'Este Mes';
+            var empresaTexto = empresa === 'todos' ? 'Todas las Empresas' : $('#filtroEmpresa option:selected').text();
+
+            // Obtener datos filtrados de la bitácora
+            var serviciosFiltrados = servicios.filter(s => s.estado !== 'pendiente');
+
+            // Filtrar por empresa
+            if (empresa !== 'todos') {
+                var empresaMap = {
+                    'minera': 'Minera XYZ S.A.',
+                    'constructora': 'Constructora ABC Ltda.',
+                    'servicios': 'Servicios DEF SpA'
+                };
+                serviciosFiltrados = serviciosFiltrados.filter(s => s.empresa === empresaMap[empresa]);
+            }
+
+            // Filtrar por período
+            var ahora = new Date();
+            if (filtro === 'dia') {
+                ahora.setHours(0, 0, 0, 0);
+                serviciosFiltrados = serviciosFiltrados.filter(s => {
+                    var fecha = new Date(s.fechaHora);
+                    fecha.setHours(0, 0, 0, 0);
+                    return fecha.getTime() === ahora.getTime();
+                });
+            } else if (filtro === 'semana') {
+                var haceSemana = new Date(ahora.getTime() - 7 * 24 * 60 * 60 * 1000);
+                serviciosFiltrados = serviciosFiltrados.filter(s => new Date(s.fechaHora) >= haceSemana);
+            }
+
+            if (serviciosFiltrados.length === 0) {
+                new PNotify({
+                    title: 'Sin Datos',
+                    text: 'No hay registros para exportar con los filtros seleccionados',
+                    type: 'warning',
+                    styling: 'bootstrap3'
+                });
+                return;
+            }
+
+            // Crear CSV
+            var csv = 'Fecha/Hora,Tipo Servicio,Habitación,Empresa,Personal Asignado,Estado\n';
+            serviciosFiltrados.forEach(function(servicio) {
+                csv += formatearFechaHora(servicio.fechaHora) + ',';
+                csv += '"' + servicio.tipoServicio + '",';
+                csv += servicio.habitacion + ',';
+                csv += '"' + servicio.empresa + '",';
+                csv += '"' + (servicio.personalAsignado || 'Sin asignar') + '",';
+                csv += servicio.estado + '\n';
+            });
+
+            // Descargar archivo
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            var link = document.createElement('a');
+            var url = URL.createObjectURL(blob);
+            
+            var fecha = new Date().toISOString().split('T')[0];
+            var nombreArchivo = 'bitacora_servicios_' + filtro + '_' + fecha + '.csv';
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', nombreArchivo);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            new PNotify({
+                title: '✓ Bitácora Exportada',
+                text: 'Se ha descargado el archivo: ' + nombreArchivo + ' (' + serviciosFiltrados.length + ' registros)',
+                type: 'success',
+                styling: 'bootstrap3',
+                delay: 4000
+            });
+
+            // Log para referencia
+            console.log('=== EXPORTANDO BITÁCORA ===');
+            console.log('Archivo:', nombreArchivo);
+            console.log('Filtro:', filtroTexto);
+            console.log('Empresa:', empresaTexto);
+            console.log('Total registros:', serviciosFiltrados.length);
+            console.log('===========================');
+        }
+    </script>
+</body>
+</html>
+
