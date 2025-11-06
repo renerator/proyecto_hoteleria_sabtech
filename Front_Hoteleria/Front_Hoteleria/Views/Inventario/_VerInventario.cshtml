@@ -1,0 +1,197 @@
+﻿@model Front_Hoteleria.Dto.Inventario.InventarioItemDto
+@{
+    Layout = null;
+    var historial = ViewBag.Historial as IEnumerable<dynamic>;
+}
+
+<style>
+    .inv-view-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #4b5563;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .inv-view-table {
+        width: 100%;
+        border: 1px solid #e1e5ea;
+        border-collapse: collapse;
+        background: #fff;
+    }
+
+        .inv-view-table th,
+        .inv-view-table td {
+            border: 1px solid #e1e5ea;
+            padding: 6px 10px;
+            font-size: 13px;
+        }
+
+        .inv-view-table th {
+            background: #f7f8fb;
+            width: 120px;
+            color: #4b5563;
+        }
+
+    .inv-view-desc {
+        background: #f4f6f9;
+        border: 1px solid #e1e5ea;
+        border-radius: 4px;
+        padding: 10px 12px;
+        font-size: 13px;
+        color: #475569;
+        min-height: 60px;
+    }
+
+    .inv-view-hist th {
+        background: #fff;
+    }
+
+    .inv-view-footer .btn {
+        min-width: 140px;
+    }
+</style>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Detalles del Artículo</h4>
+</div>
+
+<div class="modal-body">
+    <div class="row">
+        <!-- Columna izquierda -->
+        <div class="col-md-6">
+            <div class="inv-view-title">
+                <i class="fa fa-info-circle"></i> Información Básica
+            </div>
+            <table class="inv-view-table">
+                <tr>
+                    <th style="width:140px;">ID:</th>
+                    <td>@Model.Id</td>
+                </tr>
+                <tr>
+                    <th>Nombre:</th>
+                    <td>@Model.Nombre</td>
+                </tr>
+                <tr>
+                    <th>Categoría:</th>
+                    <td>@Model.Categoria</td>
+                </tr>
+                <tr>
+                    <th>Habitación:</th>
+                    <td>@Model.Habitacion</td>
+                </tr>
+                <tr>
+                    <th>Estado:</th>
+                    <td>@Model.Estado</td>
+                </tr>
+                <tr>
+                    <th>Valor:</th>
+                    <td>
+                        @(Model.Valor.HasValue ? Model.Valor.Value.ToString("C0") : "")
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Columna derecha -->
+        <div class="col-md-6">
+            <div class="inv-view-title">
+                <i class="fa fa-cog"></i> Información Técnica
+            </div>
+            <table class="inv-view-table">
+                <tr>
+                    <th>Marca:</th>
+                    <td>@Model.Marca</td>
+                </tr>
+                <tr>
+                    <th>Modelo:</th>
+                    <td>@Model.Modelo</td>
+                </tr>
+                <tr>
+                    <th>Serie:</th>
+                    <td>@Model.Serie</td>
+                </tr>
+                <tr>
+                    <th>Fecha Compra:</th>
+                    <td>@(Model.FechaCompra.ToString("dd/MM/yyyy") )</td>
+                </tr>
+                <tr>
+                    <th>Último Movimiento:</th>
+                    <td>
+                        @if (Model.UltimoMovimientoFecha.HasValue)
+                        {
+                            @Model.UltimoMovimientoFecha.Value.ToString("dd/MM/yyyy")
+                            @: - @Model.UltimoMovimientoDescripcion
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <th>Responsable:</th>
+                    <td>Admin</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <br />
+
+    <!-- Descripción -->
+    <div class="inv-view-title">
+        <i class="fa fa-file-text-o"></i> Descripción
+    </div>
+    <div class="inv-view-desc">
+        @(!string.IsNullOrWhiteSpace(Model.Descripcion)
+            ? Model.Descripcion
+            : "Sin descripción registrada.")
+    </div>
+
+    <br />
+
+    <!-- Historial -->
+    <div class="inv-view-title">
+        <i class="fa fa-undo"></i> Historial de Movimientos
+    </div>
+    <table class="table table-bordered table-hover inv-view-hist">
+        <thead>
+            <tr>
+                <th style="width:110px;">Fecha</th>
+                <th style="width:120px;">Tipo</th>
+                <th>Desde</th>
+                <th>Hacia</th>
+                <th>Responsable</th>
+                <th>Motivo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (historial != null)
+            {
+                foreach (var h in historial)
+                {
+                    <tr>
+                        <td>@h.Fecha</td>
+                        <td>@h.TipoMovimiento</td>
+                        <td>@h.DesdeHabitacion</td>
+                        <td>@h.HaciaHabitacion</td>
+                        <td>@h.Responsable</td>
+                        <td>@h.Motivo</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center text-muted">Sin movimientos registrados.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="modal-footer inv-view-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+    <button type="button" class="btn btn-success" onclick="abrirModalInventario('@Model.Id')">Editar Artículo</button>
+    <button type="button" class="btn btn-warning" onclick="abrirMovimiento('@Model.Id')">Agregar Movimiento</button>
+</div>

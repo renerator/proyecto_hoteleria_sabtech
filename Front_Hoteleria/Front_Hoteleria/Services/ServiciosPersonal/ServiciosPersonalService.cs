@@ -1,10 +1,8 @@
-﻿using Front_Hoteleria.Dto.Reserva;
-using Front_Hoteleria.Dto.Servicio;
+﻿using Front_Hoteleria.Dto.ServiciosPersonal;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -12,226 +10,143 @@ using System.Threading.Tasks;
 
 namespace Front_Hoteleria.Services.ServiciosPersonal
 {
-    public class ServicioPersonalService : IServiciosPersonalService
+    public class ServiciosPersonalService : IServiciosPersonalService
     {
         private static readonly HttpClient _http;
 
-        static ServicioPersonalService()
+        static ServiciosPersonalService()
         {
+            _http = new HttpClient();
             var baseUrl = ConfigurationManager.AppSettings["Api.BaseUrl"]
                        ?? ConfigurationManager.AppSettings["ApiBaseUrl"];
 
-            if (string.IsNullOrWhiteSpace(baseUrl))
-                throw new InvalidOperationException("Falta Api.BaseUrl en Web.config (o ApiBaseUrl).");
-
-            if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var baseUri))
-                throw new InvalidOperationException("Api.BaseUrl no es una URL válida: " + baseUrl);
-
-            _http = new HttpClient { BaseAddress = baseUri, Timeout = TimeSpan.FromSeconds(30) };
-            _http.DefaultRequestHeaders.Accept.Clear();
-            _http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (!string.IsNullOrWhiteSpace(baseUrl))
+                _http.BaseAddress = new Uri(baseUrl);
         }
 
-        private static void SetBearer(string bearer)
+        private void SetBearer(string bearer)
         {
-            _http.DefaultRequestHeaders.Authorization = null;
+            _http.DefaultRequestHeaders.Clear();
+            _http.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
             if (!string.IsNullOrWhiteSpace(bearer))
-                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
+                _http.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", bearer);
         }
 
-        public async Task<List<ServicioDto>> HabitacionesDisponiblesAsync(int vigencia, string bearer = null)
+        public async Task<ServiciosPersonalKpiDto> ObtenerKpiAsync(string bearer = null)
         {
-            try
-            {
-                SetBearer(bearer);
-                var url = "/api/Habitacion/HabitacionesDisponibles?vigencia=" + vigencia;
+            SetBearer(bearer);
 
-                using (var resp = await _http.GetAsync(url))
-                {
-                    if ((int)resp.StatusCode == 204) // NoContent
-                        return new List<ServicioDto>();
+            // cambia al endpoint real
+            var res = await _http.GetAsync("/api/ServiciosPersonal/Kpi");
+            if (!res.IsSuccessStatusCode)
+                return new ServiciosPersonalKpiDto();
 
-                    resp.EnsureSuccessStatusCode();
-                    var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<ServicioDto>>(json) ?? new List<ServicioDto>();
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[HabitacionesDisponiblesAsync] Error HTTP: {ex}");
-                return new List<ServicioDto>();
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[HabitacionesDisponiblesAsync] Timeout: {ex}");
-                return new List<ServicioDto>();
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[HabitacionesDisponiblesAsync] Error inesperado: {ex}");
-                return new List<ServicioDto>();
-            }
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<ServiciosPersonalKpiDto>(json)
+                   ?? new ServiciosPersonalKpiDto();
         }
 
-        public async Task<ServicioDashboardDto> DashboardHabitacionAsync(DateTime? desde, DateTime? hasta, string bearer = null)
+        public async Task<List<ServiciosPersonalDto>> ListarSolicitudesAsync(
+            string ordenarPor = null,
+            string prioridad = null,
+            string estado = null,
+            string ubicacion = null,
+            string bearer = null)
         {
-            try
-            {
-                SetBearer(bearer);
+            SetBearer(bearer);
+            var url = "/api/ServiciosPersonal/Solicitudes";
+            var q = new List<string>();
+            if (!string.IsNullOrWhiteSpace(ordenarPor)) q.Add("ordenarPor=" + ordenarPor);
+            if (!string.IsNullOrWhiteSpace(prioridad)) q.Add("prioridad=" + prioridad);
+            if (!string.IsNullOrWhiteSpace(estado)) q.Add("estado=" + estado);
+            if (!string.IsNullOrWhiteSpace(ubicacion)) q.Add("ubicacion=" + Uri.EscapeDataString(ubicacion));
+            if (q.Count > 0) url += "?" + string.Join("&", q);
 
-                var qs = System.Web.HttpUtility.ParseQueryString(string.Empty);
-                if (desde.HasValue) qs["desde"] = desde.Value.ToString("yyyy-MM-dd");
-                if (hasta.HasValue) qs["hasta"] = hasta.Value.ToString("yyyy-MM-dd");
+            var res = await _http.GetAsync(url);
+            if (!res.IsSuccessStatusCode)
+                return new List<ServiciosPersonalDto>();
 
-                var url = "/api/Habitacion/dashboardHabitacion";
-                var query = qs.ToString();
-                if (!string.IsNullOrEmpty(query)) url += "?" + query;
-
-                using (var resp = await _http.GetAsync(url))
-                {
-                    if ((int)resp.StatusCode == 204)
-                        return new ServicioDashboardDto();
-
-                    resp.EnsureSuccessStatusCode();
-                    var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<ServicioDashboardDto>(json) ?? new ServicioDashboardDto();
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[DashboardHabitacionAsync] Error HTTP: {ex}");
-                return new ServicioDashboardDto();
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[DashboardHabitacionAsync] Timeout: {ex}");
-                return new ServicioDashboardDto();
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[DashboardHabitacionAsync] Error inesperado: {ex}");
-                return new ServicioDashboardDto();
-            }
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<ServiciosPersonalDto>>(json)
+                   ?? new List<ServiciosPersonalDto>();
         }
 
-        public async Task<bool> CrearHabitacionAsync(ServicioDto dto, string bearer = null)
+        public async Task<List<ServiciosPersonalDto>> ListarServiciosActivosAsync(string bearer = null)
         {
-            try
-            {
-                SetBearer(bearer);
-                var json = JsonConvert.SerializeObject(dto);
-                using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
-                using (var resp = await _http.PostAsync("/api/Habitacion/SolicitaHabitacion", content))
-                {
-                    return resp.IsSuccessStatusCode;
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[CrearHabitacionAsync] Error HTTP: {ex}");
-                return false;
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[CrearHabitacionAsync] Timeout: {ex}");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[CrearHabitacionAsync] Error inesperado: {ex}");
-                return false;
-            }
+            SetBearer(bearer);
+            var res = await _http.GetAsync("/api/ServiciosPersonal/Activos");
+            if (!res.IsSuccessStatusCode)
+                return new List<ServiciosPersonalDto>();
+
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<ServiciosPersonalDto>>(json)
+                   ?? new List<ServiciosPersonalDto>();
         }
 
-        public async Task<bool> ConfirmarHabitacionAsync(ServicioDto dto, string bearer = null)
+        public async Task<List<ServiciosPersonalDto>> ListarProximasSolicitudesAsync(string bearer = null)
         {
-            try
-            {
-                SetBearer(bearer);
-                var json = JsonConvert.SerializeObject(dto);
-                using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
-                using (var resp = await _http.PostAsync("/api/Habitacion/ConfirmarHabitacion", content))
-                {
-                    return resp.IsSuccessStatusCode;
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[ConfirmarHabitacionAsync] Error HTTP: {ex}");
-                return false;
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[ConfirmarHabitacionAsync] Timeout: {ex}");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[ConfirmarHabitacionAsync] Error inesperado: {ex}");
-                return false;
-            }
+            SetBearer(bearer);
+            var res = await _http.GetAsync("/api/ServiciosPersonal/Proximos");
+            if (!res.IsSuccessStatusCode)
+                return new List<ServiciosPersonalDto>();
+
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<ServiciosPersonalDto>>(json)
+                   ?? new List<ServiciosPersonalDto>();
         }
 
-        public async Task<bool> ModificarHabitacionAsync(ServicioDto dto, string bearer = null)
+        public async Task<bool> AsignarSolicitudAsync(string id, string bearer = null)
         {
-            try
-            {
-                SetBearer(bearer);
-                var json = JsonConvert.SerializeObject(dto);
-                using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
-                using (var resp = await _http.PutAsync("/api/Habitacion/ModificaHabitacion", content))
-                {
-                    return resp.IsSuccessStatusCode;
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[ModificarHabitacionAsync] Error HTTP: {ex}");
-                return false;
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[ModificarHabitacionAsync] Timeout: {ex}");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[ModificarHabitacionAsync] Error inesperado: {ex}");
-                return false;
-            }
+            SetBearer(bearer);
+            var body = JsonConvert.SerializeObject(new { id });
+            var res = await _http.PostAsync("/api/ServiciosPersonal/Asignar",
+                new StringContent(body, Encoding.UTF8, "application/json"));
+            return res.IsSuccessStatusCode;
         }
 
-        public async Task<bool> EliminarHabitacionAsync(int idHabitacion, string bearer = null)
+        public async Task<bool> IniciarSolicitudAsync(string id, string tiempoEstimado, string observaciones, string bearer = null)
         {
-            try
+            SetBearer(bearer);
+            var body = JsonConvert.SerializeObject(new
             {
-                SetBearer(bearer);
-                var url = "/api/Habitacion/EliminaHabitacion?idHabitacion=" + idHabitacion;
+                id,
+                tiempoEstimado,
+                observaciones
+            });
+            var res = await _http.PostAsync("/api/ServiciosPersonal/Iniciar",
+                new StringContent(body, Encoding.UTF8, "application/json"));
+            return res.IsSuccessStatusCode;
+        }
 
-                using (var resp = await _http.DeleteAsync(url))
-                {
-                    if (resp.IsSuccessStatusCode) return true;
+        public async Task<bool> CompletarServicioAsync(string id, string descripcion, string bearer = null)
+        {
+            SetBearer(bearer);
+            var body = JsonConvert.SerializeObject(new
+            {
+                id,
+                descripcion
+            });
+            var res = await _http.PostAsync("/api/ServiciosPersonal/Completar",
+                new StringContent(body, Encoding.UTF8, "application/json"));
+            return res.IsSuccessStatusCode;
+        }
 
-                    var error = await resp.Content.ReadAsStringAsync();
-                    Trace.TraceWarning($"[EliminarHabitacionAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {error}");
-                    return false;
-                }
-            }
-            catch (HttpRequestException ex)
+        public async Task<bool> NotificarHuespedAsync(string id, string metodo, string destino, string mensaje, string bearer = null)
+        {
+            SetBearer(bearer);
+            var body = JsonConvert.SerializeObject(new
             {
-                Trace.TraceError($"[EliminarHabitacionAsync] Error HTTP: {ex}");
-                return false;
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[EliminarHabitacionAsync] Timeout: {ex}");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[EliminarHabitacionAsync] Error inesperado: {ex}");
-                return false;
-            }
+                id,
+                metodo,
+                destino,
+                mensaje
+            });
+            var res = await _http.PostAsync("/api/ServiciosPersonal/Notificar",
+                new StringContent(body, Encoding.UTF8, "application/json"));
+            return res.IsSuccessStatusCode;
         }
     }
 }

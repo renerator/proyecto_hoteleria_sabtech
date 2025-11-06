@@ -1,106 +1,151 @@
-﻿
-@Model Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
-@using System.Web.Mvc
-
+﻿@model Front_Hoteleria.Dto.Inventario.InventarioItemDto
 @{
-    // Catálogos desde el GET Upsert()
-    var habitaciones = ViewBag.Habitaciones as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
-    var tipos = ViewBag.TiposReserva as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
-    var idTrabajador = (ViewBag.IdTrabajador as int?) ?? 0;
-
-    // Defaults SOLO para la UI (sin tocar Dto)
-    var fechaDesde = Model?.FechaDesde ?? DateTime.Today;
-    var fechaHasta = Model?.FechaHasta ?? DateTime.Today.AddDays(1);
-    var fechaDesdeStr = fechaDesde.ToString("yyyy-MM-dd");
-    var fechaHastaStr = fechaHasta.ToString("yyyy-MM-dd");
-
-    // 1 = Ingresada si viene vacío/0
-    var idEstadoEfectivo = (Model?.IdEstadoReserva ?? 0) == 0 ? 1 : Dto.IdEstadoReserva;
+    Layout = null;
+    // helper para comparar string sin que reviente si viene null
+    Func<string, string, bool> isSel = (val, current) =>
+        !string.IsNullOrWhiteSpace(val) && string.Equals(val, current, StringComparison.OrdinalIgnoreCase);
 }
 
-@using (Html.BeginForm("CrearReserva", "Reservas", FormMethod.Post,
-                      new { id = "formCrearReserva", @class = "form-horizontal", autocomplete = "off" }))
-{
-    @Html.AntiForgeryToken()
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Editar Artículo de Inventario</h4>
+</div>
 
-    <input type="hidden" name="IdEstadoReserva" value="@idEstadoEfectivo" />
-    <input type="hidden" name="IdTrabajador" value="@idTrabajador" />
+<div class="modal-body">
+    <form id="frmInventarioEdit" autocomplete="off">
+        @Html.HiddenFor(m => m.Id)
 
-    <div class="row">
-
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Rut *</label>
-                @Html.TextBoxFor(m => m.dniTrabajador, new { @class = "form-control", required = "required", placeholder = "Rut" })
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Nombre del Artículo *</label>
+                    @Html.TextBoxFor(m => m.Nombre,
+                        new { @class = "form-control", placeholder = "Ej: Sábanas Blancas King Size", required = "required" })
+                </div>
             </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Nombre *</label>
-                @Html.TextBoxFor(m => m.Nombres, new { @class = "form-control", required = "required", placeholder = "Nombre" })
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Telefono *</label>
-                @Html.TextBoxFor(m => m.Telefono, new { @class = "form-control", required = "required", placeholder = "Telefono" })
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Email *</label>
-                @Html.TextBoxFor(m => m.Correo, new { @class = "form-control", required = "required", placeholder = "Email" })
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Apellido *</label>
-                @Html.TextBoxFor(m => m.Apellidos, new { @class = "form-control", required = "required", placeholder = "Apellido" })
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Categoría *</label>
+                    <select name="Categoria" class="form-control" required>
+                        <option value="">Seleccionar categoría...</option>
+                        <option value="ropa_cama" @(isSel("ropa_cama", Model.Categoria) ? "selected" : "")>Ropa de Cama</option>
+                        <option value="electrodomesticos" @(isSel("electrodomesticos", Model.Categoria) ? "selected" : "")>Electrodomésticos</option>
+                        <option value="muebles" @(isSel("muebles", Model.Categoria) ? "selected" : "")>Muebles</option>
+                        <option value="decoracion" @(isSel("decoracion", Model.Categoria) ? "selected" : "")>Decoración</option>
+                        <option value="tecnologia" @(isSel("tecnologia", Model.Categoria) ? "selected" : "")>Tecnología</option>
+                        <option value="limpieza" @(isSel("limpieza", Model.Categoria) ? "selected" : "")>Limpieza</option>
+                        <option value="otros" @(isSel("otros", Model.Categoria) ? "selected" : "")>Otros</option>
+                    </select>
+                </div>
             </div>
         </div>
 
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Habitación *</label>
-                @Html.DropDownListFor(m => m.IdHabitacion, habitaciones, "Seleccionar habitación...", new { @class = "form-control", required = "required" })
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Habitación *</label>
+                    <select name="Habitacion" class="form-control" required>
+                        <option value="">Seleccionar habitación...</option>
+                        @for (int i = 1; i <= 20; i++)
+                        {
+                            var room = i.ToString("D4");
+                            <option value="@room" @(isSel(room, Model.Habitacion) ? "selected" : "")>@room</option>
+                        }
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Tipo de Reserva *</label>
-                @Html.DropDownListFor(m => m.IdTipoReserva, tipos, "Seleccionar tipo...", new { @class = "form-control", required = "required" })
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Estado *</label>
+                    <select name="Estado" class="form-control" required>
+                        <option value="">Seleccionar estado...</option>
+                        <option value="disponible" @(isSel("disponible", Model.Estado) ? "selected" : "")>Disponible</option>
+                        <option value="faltante" @(isSel("faltante", Model.Estado) ? "selected" : "")>Faltante</option>
+                        <option value="mantenimiento" @(isSel("mantenimiento", Model.Estado) ? "selected" : "")>Mantenimiento</option>
+                        <option value="dañado" @(isSel("dañado", Model.Estado) ? "selected" : "")>Dañado</option>
+                    </select>
+                </div>
             </div>
         </div>
 
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Fecha Check In *</label>
-                <input class="form-control" type="date" name="FechaDesde" value="@fechaDesdeStr" required />
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Valor ($) *</label>
+                    <input type="number"
+                           name="Valor"
+                           class="form-control"
+                           step="0.01"
+                           min="0"
+                           value="@(Model.Valor.HasValue ? Model.Valor.Value.ToString("0.##") : "0")"
+                           required />
+                </div>
             </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Fecha Check Out *</label>
-                <input class="form-control" type="date" name="FechaHasta" value="@fechaHastaStr" required />
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Marca</label>
+                    @Html.TextBoxFor(m => m.Marca,
+                        new { @class = "form-control", placeholder = "Samsung, LG, etc." })
+                </div>
             </div>
         </div>
 
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Monto Total *</label>
-                @Html.TextBoxFor(m => m.Totales, new { @class = "form-control", type = "number", min = "0", step = "1", required = "required" })
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Modelo</label>
+                    @Html.TextBoxFor(m => m.Modelo, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Número de Serie</label>
+                    @Html.TextBoxFor(m => m.Serie, new { @class = "form-control" })
+                </div>
             </div>
         </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label>Solicitudes Especiales</label>
-                @Html.TextAreaFor(m => m.MotivoReserva, 3, 40, new { @class = "form-control", placeholder = "Cama extra, cuna, etc." })
-            </div>
-        </div>
-    </div>
 
-    <div class="text-right">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-success">Crear Reserva</button>
-    </div>
-}
+        <div class="form-group">
+            <label>Descripción Detallada</label>
+            @Html.TextAreaFor(m => m.Descripcion, 3, 50,
+                new { @class = "form-control", placeholder = "Descripción detallada del artículo, características, estado, etc." })
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+    <button type="button" class="btn btn-warning" id="btnLimpiarInventarioEdit">Limpiar</button>
+    <button type="button" class="btn btn-success" id="btnActualizarInventario">Actualizar Artículo</button>
+</div>
+
+<script>
+    // limpiar
+    $('#btnLimpiarInventarioEdit').off('click').on('click', function () {
+        $('#frmInventarioEdit')[0].reset();
+    });
+
+    // actualizar (dejamos el endpoint como si ya existiera)
+    $('#btnActualizarInventario').off('click').on('click', function () {
+        var form = $('#frmInventarioEdit');
+        $.ajax({
+            url: '@Url.Action("Actualizar", "Inventario")',   // <-- asumimos que existe
+            type: 'POST',
+            data: form.serialize(),
+            success: function (r) {
+                if (r.ok) {
+                    $('#modalInventario').modal('hide');
+                    // recargar tabla
+                    $.get('@Url.Action("Tabla","Inventario")', function (html) {
+                        $('#contenedor-tabla').html(html);
+                    });
+                } else {
+                    alert(r.msg || 'No se pudo actualizar el artículo.');
+                }
+            },
+            error: function () {
+                alert('Error al actualizar el artículo.');
+            }
+        });
+    });
+</script>

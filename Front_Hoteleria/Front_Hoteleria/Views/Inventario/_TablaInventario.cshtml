@@ -1,57 +1,245 @@
-﻿@Model IEnumerable<Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto>
+﻿@model IEnumerable<Front_Hoteleria.Dto.Inventario.InventarioItemDto>
 
-<table id="tablaReservas" class="table table-striped table-bordered" style="width:100%">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Rut</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Fecha Desde</th>
-            <th>Fecha Hasta</th>
-            <th>Habitación</th>
-            <th>Estado</th>
-            <th>Total</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model != null && Model.Any())
-        {
-            foreach (var item in Model)
-            {
-                <tr>
+<style>
+    .inv-subheader {
+        padding: 12px 0 14px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+    }
 
-                    <td>@item.IdReserva</td>
-                    <td>@item.dniTrabajador"</td>
-                    <td>@item.Nombres</td>
-                    <td>@item.Apellidos</td>
+    .inv-subheader p {
+        margin: 0;
+        color: #6b7280;
+    }
 
+    /* --- botones de la tabla más pequeños --- */
+    .inv-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
 
-                    <td>@(item.FechaDesde?.ToString("dd/MM/yyyy"))</td>
-                    <td>@(item.FechaHasta?.ToString("dd/MM/yyyy"))</td>
-                    <td>@item.Habitacion</td>
-                    <td>@item.EstadoReserva</td>
-                    <td>@item.Totales</td>
+    .inv-action-btn {
+        width: 38px;
+        height: 32px;
+        border: none;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff !important;
+        cursor: pointer;
+    }
 
-                    <td>—</td>  @* Placeholder si no viene Total *@
-                    <td>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-info btn-sm btn-res-editar" data-id="@item.IdReserva">
-                                <i class="fa fa-pencil"></i>
-                            </button>
-                            <button type="button" class="btn btn-danger btn-sm btn-res-eliminar" data-id="@item.IdReserva">
-                                <i class="fa fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            }
+    .inv-action-btn i { font-size: 14px; }
+
+    .inv-action-view { background: #5bc0de; }
+    .inv-action-edit { background: #26b99a; }
+    .inv-action-move { background: #f0ad4e; }
+    .inv-action-delete { background: #e74c3c; }
+
+    /* --- categorías más pequeñas --- */
+    .inv-cat-pill {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 9999px;
+        font-size: 11px;
+        color: #fff;
+        font-weight: 600;
+        line-height: 1.3;
+        white-space: nowrap;
+    }
+
+    .inv-cat-muebles { background: #8e44ad; }
+    .inv-cat-electro { background: #d35454; }
+    .inv-cat-decoracion { background: #e8a343; }
+    .inv-cat-tecnologia { background: #2873b9; }
+    .inv-cat-ropa { background: #27ae60; }
+    .inv-cat-default { background: #94a3b8; }
+
+    /* --- estado --- */
+    .inv-state {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 500;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+    .inv-state-disponible { color: #27ae60; }
+    .inv-state-faltante { color: #c0392b; }
+    .inv-state-mant { color: #e8a343; }
+    .inv-state-danado { color: #6b7280; }
+
+    /* --- responsivo extra --- */
+    @@media (max-width: 768px) {
+        .inv-subheader {
+            flex-direction: column;
+            align-items: flex-start;
         }
-        else
-        {
-            <tr><td colspan="9" class="text-center text-muted">No se encontraron reservas.</td></tr>
-        }
-    </tbody>
-</table>
 
+        .inv-actions {
+            gap: 4px;
+        }
+
+        .inv-action-btn {
+            width: 34px;
+            height: 30px;
+        }
+    }
+</style>
+
+<div class="x_panel">
+    <div class="x_title">
+        <h2>Listado de Inventario</h2>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="x_content">
+        <div class="inv-subheader">
+            <p>
+                Control completo del inventario de mantenedores. Registra cambios, movimientos y evita pérdidas.
+            </p>
+            <button type="button"
+                    id="btnAbrirModalInventario"
+                    class="btn btn-success btn-sm">
+                <i class="fa fa-plus"></i> Agregar Artículo
+            </button>
+        </div>
+
+        <!-- 👇 esto hace la tabla responsiva -->
+        <div class="table-responsive">
+            <table id="tblInventario" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Artículo</th>
+                        <th>Categoría</th>
+                        <th>Habitación</th>
+                        <th>Estado</th>
+                        <th>Valor</th>
+                        <th>Último Movimiento</th>
+                        <th style="width:140px;">Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        foreach (var item in Model)
+                        {
+                            var ultimo = item.UltimoMovimientoFecha.HasValue
+                                ? item.UltimoMovimientoFecha.Value.ToString("dd/MM/yyyy") + " - " + item.UltimoMovimientoDescripcion
+                                : string.Empty;
+
+                            var cat = (item.Categoria ?? "").ToLower().Trim();
+                            string catClass;
+                            string catText;
+
+                            switch (cat)
+                            {
+                                case "muebles":
+                                    catClass = "inv-cat-muebles"; catText = "Muebles"; break;
+                                case "electrodomesticos":
+                                case "electrodomésticos":
+                                    catClass = "inv-cat-electro"; catText = "Electrodomésticos"; break;
+                                case "decoracion":
+                                case "decoración":
+                                    catClass = "inv-cat-decoracion"; catText = "Decoración"; break;
+                                case "tecnologia":
+                                case "tecnología":
+                                    catClass = "inv-cat-tecnologia"; catText = "Tecnología"; break;
+                                case "ropa_cama":
+                                case "ropa de cama":
+                                    catClass = "inv-cat-ropa"; catText = "Ropa de Cama"; break;
+                                default:
+                                    catClass = "inv-cat-default";
+                                    catText = string.IsNullOrWhiteSpace(item.Categoria) ? "Sin categoría" : item.Categoria;
+                                    break;
+                            }
+
+                            var est = (item.Estado ?? "").ToLower().Trim();
+                            string estClass, estText, estIcon;
+
+                            switch (est)
+                            {
+                                case "disponible":
+                                    estClass = "inv-state-disponible"; estText = "Disponible"; estIcon = "fa fa-check"; break;
+                                case "faltante":
+                                    estClass = "inv-state-faltante"; estText = "Faltante"; estIcon = "fa fa-exclamation-triangle"; break;
+                                case "mantenimiento":
+                                case "en mantenimiento":
+                                    estClass = "inv-state-mant"; estText = "Mantenimiento"; estIcon = "fa fa-wrench"; break;
+                                case "dañado":
+                                case "danado":
+                                    estClass = "inv-state-danado"; estText = "Dañado"; estIcon = "fa fa-times"; break;
+                                default:
+                                    estClass = "inv-state-danado"; estText = item.Estado ?? "Sin estado"; estIcon = "fa fa-minus"; break;
+                            }
+
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.Nombre</td>
+                                <td><span class="inv-cat-pill @catClass">@catText</span></td>
+                                <td>@item.Habitacion</td>
+                                <td>
+                                    <span class="inv-state @estClass">
+                                        <i class="@estIcon"></i> @estText
+                                    </span>
+                                </td>
+                                <td>@(item.Valor.HasValue ? "$" + item.Valor.Value.ToString("N0") : "")</td>
+                                <td>@ultimo</td>
+                                <td>
+                                    <div class="inv-actions">
+                                        <button type="button"
+                                                class="inv-action-btn inv-action-view"
+                                                title="Ver"
+                                                onclick="verInventario('@item.Id')">
+                                            <i class="fa fa-eye"></i>
+                                        </button>
+                                        <button type="button"
+                                                class="inv-action-btn inv-action-edit"
+                                                title="Editar"
+                                                onclick="abrirModalInventario('@item.Id')">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                        <button type="button"
+                                                class="inv-action-btn inv-action-move"
+                                                title="Registrar movimiento"
+                                                onclick="abrirMovimiento('@item.Id')">
+                                            <i class="fa fa-exchange"></i>
+                                        </button>
+                                        <button type="button"
+                                                class="inv-action-btn inv-action-delete"
+                                                title="Eliminar"
+                                                onclick="eliminarInventario('@item.Id')">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- /table-responsive -->
+    </div>
+</div>
+
+<script>
+    $(function () {
+        if ($.fn.DataTable) {
+            $('#tblInventario').DataTable({
+                pageLength: 25,
+                order: [[0, 'desc']],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.1/i18n/es-ES.json'
+                }
+                // si tienes el plugin responsive de datatables, puedes agregar:
+                // , responsive: true
+            });
+        }
+    });
+</script>

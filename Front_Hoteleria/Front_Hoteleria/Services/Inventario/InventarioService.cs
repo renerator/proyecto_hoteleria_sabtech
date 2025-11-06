@@ -9,8 +9,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
-
 
 namespace Front_Hoteleria.Services.Inventario
 {
@@ -29,7 +27,11 @@ namespace Front_Hoteleria.Services.Inventario
             if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var baseUri))
                 throw new InvalidOperationException("Api.BaseUrl no es una URL válida: " + baseUrl);
 
-            _http = new HttpClient { BaseAddress = baseUri, Timeout = TimeSpan.FromSeconds(30) };
+            _http = new HttpClient
+            {
+                BaseAddress = baseUri,
+                Timeout = TimeSpan.FromSeconds(30)
+            };
             _http.DefaultRequestHeaders.Accept.Clear();
             _http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
@@ -41,152 +43,273 @@ namespace Front_Hoteleria.Services.Inventario
                 _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
         }
 
-        // GET /api/Inventarios/InventariosDisponibles?vigencia={vigencia}
-
-       
-        public async Task<List<InventarioDto>> InventarioDisponiblesAsync(int vigencia, string bearer = null)
+        // ========== 1) RESUMEN ==========
+        // GET /api/Inventario/resumen
+        public async Task<InventarioKpiDto> ResumenAsync(string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
-                using (var resp = await _http.GetAsync($"/api/Inventarios/InventariosDisponibles?vigencia={vigencia}"))
+                using (var resp = await _http.GetAsync("/api/Inventario/resumen"))
                 {
-                    if ((int)resp.StatusCode == 204) return new List<InventarioDto>();
+                    if ((int)resp.StatusCode == 204)
+                        return new InventarioKpiDto();
+
                     resp.EnsureSuccessStatusCode();
                     var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<InventarioDto>>(json) ?? new List<InventarioDto>();
+                    return JsonConvert.DeserializeObject<InventarioKpiDto>(json)
+                           ?? new InventarioKpiDto();
                 }
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[InventariosDisponiblesAsync] {ex}");
-                return new List<InventarioDto>();
+                Trace.TraceError("[InventarioService.ResumenAsync] " + ex);
+                // datos dummy por si la API no responde
+                return new InventarioKpiDto
+                {
+                    TotalItems = 156,
+                    Disponibles = 142,
+                    Faltantes = 3,
+                    EnMantenimiento = 11
+                };
             }
         }
 
-        // GET /api/Inventarios/dashboardInventarios
-        public async Task<InventarioDashboardDto> DashboardInventarioAsync(string bearer = null)
+        // ========== 2) LISTAR ==========
+        // GET /api/Inventario?criterio=...&categoria=...&estado=...&habitacion=...
+        public async Task<List<InventarioItemDto>> ListarAsync(
+            string criterio = null,
+            string categoria = null,
+            string estado = null,
+            string habitacion = null,
+            string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
-                using (var resp = await _http.GetAsync("/api/Inventarios/dashboardInventarios"))
+
+                var qs = new List<string>();
+                if (!string.IsNullOrWhiteSpace(criterio))
+                    qs.Add("criterio=" + Uri.EscapeDataString(criterio));
+                if (!string.IsNullOrWhiteSpace(categoria))
+                    qs.Add("categoria=" + Uri.EscapeDataString(categoria));
+                if (!string.IsNullOrWhiteSpace(estado))
+                    qs.Add("estado=" + Uri.EscapeDataString(estado));
+                if (!string.IsNullOrWhiteSpace(habitacion))
+                    qs.Add("habitacion=" + Uri.EscapeDataString(habitacion));
+
+                var url = "/api/Inventario";
+                if (qs.Count > 0)
+                    url += "?" + string.Join("&", qs);
+
+                using (var resp = await _http.GetAsync(url))
                 {
-                    if ((int)resp.StatusCode == 204) return new InventarioDashboardDto();
-                    resp.EnsureSuccessStatusCode();
+                    if (resp.StatusCode == HttpStatusCode.NoContent)
+                        return new List<InventarioItemDto>();
+
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[InventarioService.ListarAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return new List<InventarioItemDto>();
+                    }
+
                     var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<InventarioDashboardDto>(json) ?? new InventarioDashboardDto();
+                    return JsonConvert.DeserializeObject<List<InventarioItemDto>>(json)
+                           ?? new List<InventarioItemDto>();
                 }
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[DashboardInventariosAsync] {ex}");
-                return new InventarioDashboardDto();
+                Trace.TraceError("[InventarioService.ListarAsync] " + ex);
+                return new List<InventarioItemDto>();
             }
         }
 
-        // POST /api/Inventarios/SolicitaInventario
-        public async Task<bool> CrearInventarioAsync(InventarioDto dto, string bearer = null)
+        // ========== 3) OBTENER POR ID ==========
+        // GET /api/Inventario/{id}
+        public async Task<InventarioItemDto> ObtenerPorIdAsync(string id, string bearer = null)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return null;
+
+            try
+            {
+                SetBearer(bearer);
+                using (var resp = await _http.GetAsync($"/api/Inventario/{id}"))
+                {
+                    if (resp.StatusCode == HttpStatusCode.NotFound ||
+                        resp.StatusCode == HttpStatusCode.NoContent)
+                        return null;
+
+                    resp.EnsureSuccessStatusCode();
+                    var json = await resp.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<InventarioItemDto>(json);
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[InventarioService.ObtenerPorIdAsync] " + ex);
+                return null;
+            }
+        }
+
+        // ========== 4) CREAR ==========
+        // POST /api/Inventario
+        public async Task<bool> CrearAsync(InventarioItemDto dto, string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
                 var json = JsonConvert.SerializeObject(dto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                 var resp = await _http.PostAsync("/api/Inventarios/SolicitaInventario", content);
-                return resp.IsSuccessStatusCode;
+
+                using (var resp = await _http.PostAsync("/api/Inventario", content))
+                {
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[InventarioService.CrearAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return false;
+                    }
+                    return true;
+                }
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[CrearInventarioAsync] {ex}");
+                Trace.TraceError("[InventarioService.CrearAsync] " + ex);
                 return false;
             }
         }
 
-        // POST /api/Inventarios/ConfirmarInventario
-        public async Task<bool> ConfirmarInventarioAsync(InventarioDto dto, string bearer = null)
+        // ========== 5) ACTUALIZAR ==========
+        // PUT /api/Inventario/{id}
+        public async Task<bool> ActualizarAsync(InventarioItemDto dto, string bearer = null)
         {
             try
             {
+                if (dto == null || string.IsNullOrWhiteSpace(dto.Id))
+                    return false;
+
                 SetBearer(bearer);
                 var json = JsonConvert.SerializeObject(dto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var resp = await _http.PostAsync("/api/Inventarios/ConfirmarInventario", content);
-                return resp.IsSuccessStatusCode;
+
+                using (var resp = await _http.PutAsync($"/api/Inventario/{dto.Id}", content))
+                {
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[InventarioService.ActualizarAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return false;
+                    }
+                    return true;
+                }
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[ConfirmarInventarioAsync] {ex}");
+                Trace.TraceError("[InventarioService.ActualizarAsync] " + ex);
                 return false;
             }
         }
 
-        // PUT /api/Inventarios/ModificaInventario
-        public async Task<bool> ModificarInventarioAsync(InventarioDto dto, string bearer = null)
+        // ========== 6) ELIMINAR ==========
+        // DELETE /api/Inventario/{id}
+        public async Task<bool> EliminarAsync(string id, string bearer = null)
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(id))
+                    return false;
+
                 SetBearer(bearer);
-                var json = JsonConvert.SerializeObject(dto);
-               var content = new StringContent(json, Encoding.UTF8, "application/json");
-                 var resp = await _http.PutAsync("/api/Inventarios/ModificaInventario", content);
-                return resp.IsSuccessStatusCode;
+                using (var resp = await _http.DeleteAsync($"/api/Inventario/{id}"))
+                {
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[InventarioService.EliminarAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return false;
+                    }
+                    return true;
+                }
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[ModificarInventarioAsync] {ex}");
+                Trace.TraceError("[InventarioService.EliminarAsync] " + ex);
                 return false;
             }
         }
-
-        // DELETE /api/Inventarios/EliminaInventario?idInventario={id}
-        public async Task<bool> EliminarInventarioAsync(int idInventario, string bearer = null)
+        // =========================================================
+        // 1) OBTENER UN ARTÍCULO POR ID
+        //    GET /api/Inventario/{id}
+        // =========================================================
+        public async Task<InventarioItemDto> GetByIdAsync(string id, string bearer = null)
         {
+            if (string.IsNullOrWhiteSpace(id))
+                return null;
+
             try
             {
                 SetBearer(bearer);
-                 var resp = await _http.DeleteAsync($"/api/Inventarios/EliminaInventario?idInventario={idInventario}");
-                if (resp.IsSuccessStatusCode) return true;
 
-                var error = await resp.Content.ReadAsStringAsync();
-                Trace.TraceWarning($"[EliminarInventarioAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {error}");
-                return false;
+                // ruta asumida
+                var url = $"/api/Inventario/{Uri.EscapeDataString(id)}";
+
+                using (var resp = await _http.GetAsync(url))
+                {
+                    if (resp.StatusCode == HttpStatusCode.NoContent ||
+                        resp.StatusCode == HttpStatusCode.NotFound)
+                        return null;
+
+                    resp.EnsureSuccessStatusCode();
+
+                    var json = await resp.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<InventarioItemDto>(json);
+                }
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[EliminarInventarioAsync] {ex}");
-                return false;
+                Trace.TraceError($"[InventarioService.GetByIdAsync] {ex}");
+                return null;
             }
         }
 
-        // GET /api/Inventarios/BuscarInventarios?criterio={texto}
-        public async Task<List<InventarioDto>> BuscarInventarioAsync(string criterio, string bearer = null)
+        // =========================================================
+        // 2) LISTAR MOVIMIENTOS DEL ARTÍCULO
+        //    GET /api/Inventario/{id}/movimientos
+        // =========================================================
+        public async Task<List<InventarioMovimientoPostDto>> GetMovimientosAsync(string id, string bearer = null)
         {
+            var listaVacia = new List<InventarioMovimientoPostDto>();
+
+            if (string.IsNullOrWhiteSpace(id))
+                return listaVacia;
+
             try
             {
                 SetBearer(bearer);
-                var url = $"/api/Inventarios/BuscarInventarios?criterio={Uri.EscapeDataString(criterio ?? string.Empty)}";
-                 var resp = await _http.GetAsync(url);
-                if ((int)resp.StatusCode == 204) return new List<InventarioDto>();
 
-                resp.EnsureSuccessStatusCode();
-                var json = await resp.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<InventarioDto>>(json) ?? new List<InventarioDto>();
+                // ruta asumida
+                var url = $"/api/Inventario/{Uri.EscapeDataString(id)}/movimientos";
+
+                using (var resp = await _http.GetAsync(url))
+                {
+                    if (resp.StatusCode == HttpStatusCode.NoContent)
+                        return listaVacia;
+
+                    resp.EnsureSuccessStatusCode();
+
+                    var json = await resp.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<List<InventarioMovimientoPostDto>>(json)
+                           ?? listaVacia;
+                }
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[BuscarInventariosAsync] {ex}");
-                return new List<InventarioDto>();
+                Trace.TraceError($"[InventarioService.GetMovimientosAsync] {ex}");
+                return listaVacia;
             }
         }
-
-       
-
-
-
-       
-
-        // Si más adelante usas bitácora:
-        // public async Task<bool> CrearBitacoraInventarioAsync(BitacoraInventarioDto dto, string bearer = null) { ... }
     }
 }

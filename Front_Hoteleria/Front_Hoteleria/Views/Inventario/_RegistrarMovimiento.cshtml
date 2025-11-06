@@ -1,0 +1,150 @@
+﻿@model Front_Hoteleria.Dto.Inventario.InventarioMovimientoPostDto  
+@{
+    Layout = null;
+    // opcional: puedes recibir por ViewBag el artículo preseleccionado
+    var articuloSel = ViewBag.ArticuloId as string;
+}
+
+<style>
+    .inv-mov-form label {
+        font-weight: 600;
+        color: #475569;
+    }
+
+    .inv-mov-footer .btn {
+        min-width: 140px;
+    }
+</style>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Registrar Movimiento de Artículo</h4>
+</div>
+
+<div class="modal-body inv-mov-form">
+    <form id="frmMovimientoInv" autocomplete="off">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Artículo *</label>
+                    <select name="IdArticulo" class="form-control" required>
+                        <option value="">Seleccionar artículo...</option>
+                        @* aquí puedes rellenar desde el controller una lista de artículos *@
+                        @if (ViewBag.Articulos is IEnumerable<SelectListItem> arts)
+                        {
+                            foreach (var a in arts)
+                            {
+                                <option value="@a.Value" @(a.Value == articuloSel ? "selected" : "")>@a.Text</option>
+                            }
+                        }
+                        else
+                        {
+                            // fallback
+                            <option value="INV-001" @(articuloSel == "INV-001" ? "selected" : "")>INV-001 - Sábanas Blancas King Size</option>
+                            <option value="INV-002" @(articuloSel == "INV-002" ? "selected" : "")>INV-002 - TV Samsung 55"</option>
+                            <option value="INV-003" @(articuloSel == "INV-003" ? "selected" : "")>INV-003 - Lámpara de Mesa</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Tipo de Movimiento *</label>
+                    <select name="TipoMovimiento" class="form-control" required>
+                        <option value="">Seleccionar tipo...</option>
+                        <option value="traslado">Traslado</option>
+                        <option value="baja">Baja</option>
+                        <option value="mantenimiento">Envío a mantenimiento</option>
+                        <option value="retorno">Retorno de mantenimiento</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Desde Habitación</label>
+                    <select name="DesdeHabitacion" class="form-control">
+                        <option value="">Seleccionar habitación...</option>
+                        @for (int i = 1; i <= 20; i++)
+                        {
+                            var room = i.ToString("D4");
+                            <option value="@room">@room</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Hacia Habitación</label>
+                    <select name="HaciaHabitacion" class="form-control">
+                        <option value="">Seleccionar habitación...</option>
+                        @for (int i = 1; i <= 20; i++)
+                        {
+                            var room = i.ToString("D4");
+                            <option value="@room">@room</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Fecha del Movimiento *</label>
+                    <input type="datetime-local" name="FechaMovimiento" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Responsable *</label>
+                    <input type="text" name="Responsable" class="form-control" placeholder="Nombre del responsable" required />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Motivo del Movimiento *</label>
+            <textarea name="Motivo" class="form-control" rows="3" placeholder="Descripción detallada del motivo del movimiento..." required></textarea>
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer inv-mov-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+    <button type="button" class="btn btn-warning" id="btnLimpiarMovimiento">Limpiar</button>
+    <button type="button" class="btn btn-success" id="btnGuardarMovimiento">Registrar Movimiento</button>
+</div>
+
+<script>
+    // limpiar
+    $('#btnLimpiarMovimiento').off('click').on('click', function () {
+        $('#frmMovimientoInv')[0].reset();
+    });
+
+    // guardar
+    $('#btnGuardarMovimiento').off('click').on('click', function () {
+        var form = $('#frmMovimientoInv');
+        var data = form.serialize();
+
+        $.post('@Url.Action("RegistrarMovimiento", "Inventario")', data, function (r) {
+            if (r && r.ok) {
+                $('#modalInventario').modal('hide');
+
+                // recargo tabla por si cambia estado/habitación
+                $.get('@Url.Action("Tabla","Inventario")', function (html) {
+                    $('#contenedor-tabla').html(html);
+                });
+            } else {
+                alert(r && r.msg ? r.msg : 'No se pudo registrar el movimiento.');
+            }
+        }).fail(function () {
+            alert('Error al registrar el movimiento.');
+        });
+    });
+</script>

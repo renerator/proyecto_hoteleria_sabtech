@@ -1,76 +1,124 @@
 ﻿@{
-    ViewBag.Title = "Gestión de Reservas | Sabtech Group";
+    ViewBag.Title = "Gestión de Inventario";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- ====== CSS (VENDORS LOCALES) ====== -->
-<link href="~/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-<link href="~/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
-<link href="~/vendors/nprogress/nprogress.css" rel="stylesheet" />
-<link href="~/vendors/iCheck/skins/flat/green.css" rel="stylesheet" />
-<link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
-<link href="~/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet" />
-<link href="~/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
-<link href="~/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet" />
-<link href="~/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet" />
-<link href="~/vendors/pnotify/dist/pnotify.css" rel="stylesheet" />
-<link href="~/vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet" />
-<link href="~/vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet" />
-<link href="~/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
-<link href="~/build/css/custom.min.css" rel="stylesheet" />
-
 <style>
-    .reservations-stats, .top-services, .reservations-table {
-        background: #fff;
-        border: 1px solid #e5e5e5;
-        border-radius: 4px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1)
+    /* fondo general del contenido */
+    .right_col {
+        background: #f4f6f9;
+        min-height: calc(100vh - 70px);
     }
 
-    .reservations-stats, .top-services {
-        padding: 25px;
-        margin-bottom: 30px
+    /* título */
+    .page-title .title_left h3 {
+        font-size: 28px;
+        font-weight: 500;
+        color: #365d82;
+        margin-top: 5px;
     }
 
-    .table-header {
-        background: #f8f9fa;
-        padding: 20px;
-        border-bottom: 1px solid #e5e5e5
+    /* ====== DASHBOARD (lo que devuelve _DashboardInventario) ====== */
+    #contenedor-dashboard .inventory-stats {
+        background: #2c6da5 !important;
+        border-radius: 8px;
+        padding: 18px 10px 14px 10px;
+        color: #fff;
+        margin-bottom: 18px;
+        box-shadow: 0 1px 2px rgba(0,0,0,.08);
     }
 
-        .table-header h4 {
-            margin: 0;
+        #contenedor-dashboard .inventory-stats .stat-number {
+            font-size: 30px;
             font-weight: 600;
-            font-size: 1.3rem;
-            color: #2c3e50
+            display: block;
+            line-height: 1;
+            margin-bottom: 4px;
         }
 
-    .filter-panel {
-        background: #f8f9fa;
-        border: 1px solid #e5e5e5;
-        border-radius: 4px;
-        padding: 20px;
-        margin-bottom: 30px
-    }
+        #contenedor-dashboard .inventory-stats .stat-label {
+            font-size: 13px;
+            opacity: .9;
+        }
 
-    .filter-title {
-        color: #2c3e50;
-        margin-bottom: 15px;
-        font-weight: 600
-    }
+        #contenedor-dashboard .inventory-stats .col-md-3:not(:last-child) {
+            border-right: 1px solid rgba(255,255,255,.25);
+        }
 
-    .date-range-picker {
+    /* ====== PANEL DE LA TABLA ====== */
+    #contenedor-tabla .x_panel {
         background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 8px;
-        width: 100%
+        border: 1px solid #e1e8f0;
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(15,23,42,.04);
     }
-    /* Contenedor simple para el dashboard de KPIs */
-    .kpi-container {
-        padding: 25px;
-        border-top: 1px solid #e5e5e5
+
+    #contenedor-tabla .x_title {
+        border-bottom: 1px solid #edf1f5;
+        padding: 16px 20px 10px 20px;
+        margin-bottom: 0;
+    }
+
+        #contenedor-tabla .x_title h2 {
+            font-size: 18px;
+            font-weight: 500;
+            color: #365d82;
+        }
+
+    #contenedor-tabla .x_content {
+        padding: 15px 20px 20px 20px !important;
+    }
+
+    /* ====== TABLA ====== */
+    #tblInventario {
+        background: #fff;
+    }
+
+        #tblInventario thead th {
+            background: #f4f6f9 !important;
+            border-bottom: none !important;
+            color: #53657a;
+            font-weight: 500;
+            vertical-align: middle;
+        }
+
+        #tblInventario tbody td {
+            vertical-align: middle;
+        }
+
+        /* botones de opciones */
+        #tblInventario .btn-xs {
+            width: 32px;
+            height: 28px;
+            padding: 3px 0;
+            text-align: center;
+            border: none;
+            color: #fff;
+        }
+
+        #tblInventario .btn-info {
+            background: #22a6b3;
+        }
+
+        #tblInventario .btn-success {
+            background: #27ae60;
+        }
+
+        #tblInventario .btn-danger {
+            background: #e74c3c;
+        }
+
+    /* ====== DATATABLES footer (paginación) ====== */
+    #contenedor-tabla .dataTables_wrapper .dataTables_paginate .paginate_button {
+        border-radius: 4px !important;
+        border: 1px solid #d7dfe7 !important;
+        margin-left: 3px !important;
+    }
+
+    /* input buscar datatable */
+    #contenedor-tabla .dataTables_filter input {
+        border: 1px solid #d7dfe7;
+        border-radius: 4px;
     }
 </style>
 
@@ -79,14 +127,13 @@
         <div class="page-title">
             <div class="title_left">
                 <h3>Gestión de Inventario</h3>
-                
             </div>
             <div class="title_right">
                 <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Buscar reserva...">
+                        <input type="text" id="txtBuscarInventario" class="form-control" placeholder="Buscar artículo...">
                         <span class="input-group-btn">
-                            <button class="btn btn-default" type="button">Go!</button>
+                            <button class="btn btn-default" type="button" id="btnBuscarInventario">Buscar</button>
                         </span>
                     </div>
                 </div>
@@ -95,274 +142,117 @@
 
         <div class="clearfix"></div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="reservations-table">
-                    <div class="table-header">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h4><i class="fa fa-list"></i> Gestión de Reservas</h4>
-                            </div>
-                            <div class="col-md-4 text-right">
-                                <button type="button" class="btn btn-success btn-sm" id="btnNueva">
-                                    <i class="fa fa-plus"></i> Nueva Reserva
-                                </button>
-                                <button type="button" class="btn btn-info btn-sm" id="refreshDataBtn">
-                                    <i class="fa fa-refresh"></i> Actualizar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+        <!-- aquí se carga el dashboard (KPIs + acciones + filtros) -->
+        <div id="contenedor-dashboard"></div>
 
-                    <!-- ====== DASHBOARD (PARCIAL CON 4 KPIs) ====== -->
-                    <div class="kpi-container">
-                        <div id="dashContainerReserva">
-                            <div class="text-muted">Cargando dashboard…</div>
-                        </div>
-                    </div>
-
-                    <!-- ====== FILTROS ====== -->
-                    <div class="filter-panel" style="margin:0;border-radius:0;border-top:1px solid #e5e5e5">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Rango de Fechas:</label>
-                                    <input type="text" class="date-range-picker" id="dateRange" placeholder="Seleccionar rango...">
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Estado:</label>
-                                    <select class="form-control" id="statusFilter">
-                                        <option value="">Todos los estados</option>
-                                        <option value="1">Pendiente</option>
-                                        <option value="2">Confirmada</option>
-                                        <option value="4">Rechazada</option>
-                                        <option value="5">Check In</option>
-                                        <option value="6">Check Out</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Habitación:</label>
-                                    <select class="form-control" id="roomFilter">
-                                        <option value="">Todas las habitaciones</option>
-                                        <option value="0001">Habitación 0001</option>
-                                        <option value="0002">Habitación 0002</option>
-                                        <option value="0003">Habitación 0003</option>
-                                        <option value="0004">Habitación 0004</option>
-                                        <option value="0005">Habitación 0005</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Tipo:</label>
-                                    <select class="form-control" id="typeFilter">
-                                        <option value="">Todos los tipos</option>
-                                        <option value="1">Individual</option>
-                                        <option value="2">Grupal</option>
-                                        <option value="3">Corporativa</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>&nbsp;</label><br />
-                                    @Html.AntiForgeryToken()
-                                    <button type="button" class="btn btn-primary btn-sm" id="applyFiltersBtn">
-                                        <i class="fa fa-search"></i> Aplicar Filtros
-                                    </button>
-                                    <button type="button" class="btn btn-default btn-sm" id="clearFiltersBtn">
-                                        <i class="fa fa-times"></i> Limpiar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ====== TABLA (PARCIAL) ====== -->
-                    <div class="reservations-table-content" style="padding:25px">
-                        <div id="tablaReservaContainer">
-                            <div class="text-muted">Cargando reservas…</div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
+        <!-- aquí se carga la tabla -->
+        <div id="contenedor-tabla" style="margin-top:20px;"></div>
     </div>
 </div>
 
-<!-- Modal para Nueva Reserva -->
-<div class="modal fade" id="modalUpsertReserva" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h4 class="modal-title">Nueva / Editar Reserva</h4>
-            </div>
-            <div class="modal-body" id="upsertReservaBody"><div class="text-muted">Cargando…</div></div>
-        </div>
-    </div>
-</div>
-
-@section Scripts{
-    <script src="~/vendors/jquery/dist/jquery.min.js"></script>
-    <script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="~/vendors/fastclick/lib/fastclick.js"></script>
-    <script src="~/vendors/nprogress/nprogress.js"></script>
-    <script src="~/vendors/iCheck/icheck.min.js"></script>
-
-    <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-    <script src="~/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="~/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
-    <script src="~/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
-    <script src="~/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
-    <script src="~/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
-    <script src="~/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
-    <script src="~/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="~/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
-    <script src="~/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
-
-    <script src="~/vendors/jszip/dist/jszip.min.js"></script>
-    <script src="~/vendors/pdfmake/build/pdfmake.min.js"></script>
-    <script src="~/vendors/pdfmake/build/vfs_fonts.js"></script>
-
-    <script src="~/vendors/pnotify/dist/pnotify.js"></script>
-    <script src="~/vendors/pnotify/dist/pnotify.buttons.js"></script>
-    <script src="~/vendors/pnotify/dist/pnotify.nonblock.js"></script>
-
-    <script src="~/vendors/moment/min/moment.min.js"></script>
-    <script src="~/vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
-
-    <!-- ¡OJO! Se eliminó Chart.js porque ya no se usa el “proceso semanal” -->
-
-    <script src="~/build/js/custom.min.js"></script>
-
+@section scripts {
     <script>
-    // ===== ENDPOINTS =====
-    const urlTablaReserva  = '@Url.Action("TablaPartial","Reservas")';
-    const urlDashboardView = '@Url.Action("Dashboard","Reservas")';
-    const urlUpsertReserva = '@Url.Action("Upsert","Reservas")';
-    const urlEliminar      = '@Url.Action("Eliminar","Reservas")';
+        // ========================
+        // FUNCIONES GLOBALES
+        // ========================
 
-    function token(){ return $('input[name="__RequestVerificationToken"]').first().val(); }
-    if (window.PNotify) { PNotify.prototype.options.styling = "bootstrap3"; }
+        // nuevo / editar
+        window.abrirModalInventario = function (id) {
+            $.get('@Url.Action("Upsert","Inventario")', { id: id }, function (html) {
+                $('#modalInventarioContent').html(html);
+                $('#modalInventario').modal('show');
+            }).fail(function () {
+                alert('No se pudo abrir el formulario de inventario.');
+            });
+        };
 
-    // ===== DATE RANGE para la tabla =====
-    $('#dateRange').daterangepicker({
-      startDate: moment().startOf('month'),
-      endDate: moment().endOf('day'),
-      locale:{ format:'DD/MM/YYYY', applyLabel:'Aplicar', cancelLabel:'Cancelar' }
-    });
+        // ver detalle
+        window.verInventario = function (id) {
+            $.get('@Url.Action("Ver","Inventario")', { id: id }, function (html) {
+                $('#modalInventarioContent').html(html);
+                $('#modalInventario').modal('show');
+            }).fail(function () {
+                alert('No se pudo cargar el detalle.');
+            });
+        };
 
-    // ===== DASHBOARD (carga del parcial con manejo de error) =====
-    function cargarDashboardView(){
-      $('#dashContainerReserva').html('<div class="text-muted">Cargando dashboard…</div>');
-      $('#dashContainerReserva').load(urlDashboardView, function(responseText, textStatus, xhr){
-        if (textStatus === 'error' || (xhr && xhr.status >= 400)) {
-          const code = (xhr && xhr.status) ? ` (${xhr.status})` : '';
-          const msg  = (xhr && xhr.statusText) ? xhr.statusText : 'Error';
-          const body = (xhr && xhr.responseText) ? $('<div>').text(xhr.responseText).html() : '';
-          $('#dashContainerReserva').html(
-            `<div class="text-danger">
-               <strong>No se pudo cargar el dashboard${code}:</strong> ${msg}<br/>
-               <small>${body}</small><br/>
-               <button type="button" class="btn btn-link p-0" id="retryDashboardBtn">Reintentar</button>
-             </div>`
-          );
-          if (window.PNotify) {
-            new PNotify({ title:'Dashboard', text:`Error${code}: ${msg}`, type:'error', styling:'bootstrap3' });
-          }
-        }
-      });
-    }
-    $(document).on('click', '#retryDashboardBtn', function(){ cargarDashboardView(); });
+        // registrar movimiento
+        window.abrirMovimiento = function (idArticulo) {
+            $.get('@Url.Action("RegistrarMovimiento","Inventario")', { id: idArticulo }, function (html) {
+                $('#modalInventarioContent').html(html);
+                $('#modalInventario').modal('show');
+            }).fail(function () {
+                alert('No se pudo abrir el movimiento.');
+            });
+        };
 
-    // ===== TABLA =====
-    function initDataTable(){
-      const $t = $('#tablaReservas').length ? $('#tablaReservas') : $('#reservationsTable');
-      if(!$t.length) return;
-      $t.DataTable({
-        destroy:true, responsive:true, pageLength:25, order:[[0,'desc']],
-        columnDefs:[{ orderable:false, targets:8 }],
-        language:{
-          sProcessing:"Procesando...", sLengthMenu:"Mostrar _MENU_ registros", sZeroRecords:"No se encontraron resultados",
-          sEmptyTable:"Ningún dato disponible en esta tabla", sInfo:"Mostrando _START_ a _END_ de _TOTAL_",
-          sInfoEmpty:"Mostrando 0 a 0 de 0", sInfoFiltered:"(filtrado de _MAX_ registros)", sSearch:"Buscar:",
-          oPaginate:{ sFirst:"Primero", sLast:"Último", sNext:"Siguiente", sPrevious:"Anterior" }
-        }
-      });
-    }
+        // importar masivo
+        window.abrirImportacion = function () {
+            $.get('@Url.Action("Importar","Inventario")', function (html) {
+                $('#modalInventarioContent').html(html);
+                $('#modalInventario').modal('show');
+            });
+        };
 
-    function buildTablaPayload(){
-      let fechaDesdeISO=null, fechaHastaISO=null;
-      const picker=$('#dateRange').data('daterangepicker');
-      if(picker){
-        fechaDesdeISO = picker.startDate.clone().startOf('day').toISOString();
-        fechaHastaISO = picker.endDate.clone().endOf('day').toISOString();
-      }
-      return { __RequestVerificationToken: token(), fechaDesde: fechaDesdeISO, fechaHasta: fechaHastaISO };
-    }
+        // ========================
+        // INICIAL
+        // ========================
+        $(function () {
+            cargarDashboard();
+            cargarTabla();
 
-    function cargarTabla(){
-      $('#tablaReservaContainer').html('<div class="text-muted">Cargando reservas…</div>');
-      $.ajax({
-        url: urlTablaReserva, type:'POST', data: buildTablaPayload(),
-        success: function(html){ $('#tablaReservaContainer').html(html); initDataTable(); },
-        error: function(xhr){
-          const msg = (xhr.status===401) ? 'Sesión expirada. Vuelva a iniciar sesión.' : 'No se pudo cargar el listado.';
-          $('#tablaReservaContainer').html('<div class="text-danger">'+msg+'</div>');
-        }
-      });
-    }
+            // buscador de arriba
+            $('#btnBuscarInventario').on('click', function () {
+                var criterio = $('#txtBuscarInventario').val();
+                cargarTabla({ criterio: criterio });
+            });
 
-    // ===== BOTONES =====
-    $('#refreshDataBtn').on('click', function(){
-      cargarDashboardView();
-      cargarTabla();
-      new PNotify({ title:'Datos Actualizados', text:'La información ha sido actualizada correctamente', type:'success' });
-    });
+            // botones que vienen en el dashboard (Agregar Artículo)
+            $(document).on('click', '#btnAbrirModalInventario, #inv-btn-add', function () {
+                abrirModalInventario(null);
+            });
 
-    $('#btnNueva').on('click', function(){
-      $('#modalUpsertReserva').modal('show');
-      $('#upsertReservaBody').html('<div class="text-muted">Cargando…</div>').load(urlUpsertReserva);
-    });
-        // Manejo del submit del form dentro del modal (delegado)
-        $('#upsertReservaBody').on('submit', '#formCrearReserva', function (e) {
-            e.preventDefault();
-            var $form = $(this);
-            var data = $form.serialize();
+            // importar masivo (botón azul claro)
+            $(document).on('click', '#inv-btn-import', function () {
+                abrirImportacion();
+            });
 
-            $.ajax({
-                url: $form.attr('action'),
-                type: 'POST',
-                data: data
-            })
-                .done(function (r) {
-                    if (r && r.ok) {
-                        $('#modalUpsertReserva').modal('hide');
-                        // refresca tabla
-                        if (typeof cargarTabla === 'function') cargarTabla();
-                        if (window.PNotify) new PNotify({ title: 'Reserva', text: 'Reserva creada correctamente', type: 'success', styling: 'bootstrap3' });
-                    } else {
-                        // si el server devolvió el parcial con validaciones, vuelves a renderizar
-                        $('#upsertReservaBody').html(r);
-                    }
-                })
-                .fail(function (xhr) {
-                    var msg = xhr.responseText || 'No se pudo crear la reserva';
-                    if (window.PNotify) new PNotify({ title: 'Error', text: msg, type: 'error', styling: 'bootstrap3' });
-                });
+            // registrar movimiento (botón naranjo)
+            $(document).on('click', '#inv-btn-move', function () {
+                abrirMovimiento(null);
+            });
+
+            // por si la tabla trae un botón con class inv-action-edit y data-id
+            $(document).on('click', '.inv-action-edit', function () {
+                var id = $(this).data('id');
+                abrirModalInventario(id);
+            });
         });
-    // ===== INIT =====
-    $(function(){
-      cargarDashboardView(); // solo el parcial de KPIs
-      cargarTabla();         // la tabla con el rango inicial
-    });
+
+        function cargarDashboard() {
+            $.get('@Url.Action("Resumen", "Inventario")', function (html) {
+                $('#contenedor-dashboard').html(html);
+            }).fail(function () {
+                $('#contenedor-dashboard').html('<div class="alert alert-danger">No se pudo cargar el dashboard.</div>');
+            });
+        }
+
+        function cargarTabla(filtros) {
+            filtros = filtros || {};
+            $.get('@Url.Action("Tabla", "Inventario")', filtros, function (html) {
+                $('#contenedor-tabla').html(html);
+            }).fail(function () {
+                $('#contenedor-tabla').html('<div class="alert alert-danger">No se pudo cargar el inventario.</div>');
+            });
+        }
     </script>
+
+    <!-- modal global del inventario -->
+    <div class="modal fade" id="modalInventario" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" id="modalInventarioContent">
+                <!-- aquí se cargan los partials -->
+            </div>
+        </div>
+    </div>
 }

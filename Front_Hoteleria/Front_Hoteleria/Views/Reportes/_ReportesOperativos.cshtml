@@ -1,0 +1,309 @@
+﻿@model Front_Hoteleria.Dto.Reportes.ReportesOperativoDto
+
+<style>
+    .report-block {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(15, 23, 42, .04);
+        padding: 20px 20px 10px 20px;
+        margin-top: 20px;
+    }
+
+    .report-block h4 {
+        font-size: 16px;
+        color: #4a5568;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 10px;
+    }
+
+    .report-block label {
+        font-weight: 600;
+        color: #475569;
+    }
+
+    .report-block .form-control {
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        height: 38px;
+    }
+
+    .btn-report {
+        border-radius: 6px;
+        border: none;
+        color: #fff;
+        font-weight: 500;
+        padding: 8px 16px;
+        margin-right: 8px;
+    }
+    .btn-genera { background: #1d6fb8; }
+    .btn-pdf    { background: #109e71; }
+    .btn-excel  { background: #14a3c7; }
+    .btn-mail   { background: #e79d32; }
+</style>
+
+<div class="report-block">
+    <h4><i class="fa fa-clock-o"></i> Cierre de Cambio de Turno</h4>
+    <div class="row">
+        <div class="col-md-3">
+            <label>Fecha</label>
+            <input type="date" class="form-control" id="fechaTurno" />
+        </div>
+        <div class="col-md-3">
+            <label>Turno</label>
+            <select class="form-control" id="turnoSeleccionado">
+                <option value="manana">Mañana (07:00 - 15:00)</option>
+                <option value="tarde">Tarde (15:00 - 23:00)</option>
+                <option value="noche">Noche (23:00 - 07:00)</option>
+            </select>
+        </div>
+        <div class="col-md-6" style="margin-top:25px;">
+            <button class="btn-report btn-genera" id="btnGenerarCierre">
+                <i class="fa fa-file-text-o"></i> Generar Cierre
+            </button>
+            <button class="btn-report btn-pdf" onclick="exportarPDF('cierre')">
+                <i class="fa fa-file-pdf-o"></i> Exportar PDF
+            </button>
+            <button class="btn-report btn-excel" onclick="exportarExcel('cierre')">
+                <i class="fa fa-file-excel-o"></i> Exportar Excel
+            </button>
+        </div>
+    </div>
+    <div id="resultadoCierre" style="margin-top:20px;"></div>
+</div>
+
+<div class="report-block">
+    <h4><i class="fa fa-calendar"></i> Reporte Diario de Operaciones</h4>
+    <div class="row">
+        <div class="col-md-4">
+            <label>Fecha del Reporte</label>
+            <input type="date" class="form-control" id="fechaReporte" />
+        </div>
+        <div class="col-md-8" style="margin-top:25px;">
+            <button class="btn-report btn-genera" id="btnGenerarReporte">
+                <i class="fa fa-file-text-o"></i> Generar Reporte
+            </button>
+            <button class="btn-report btn-pdf" onclick="exportarPDF('diario')">
+                <i class="fa fa-file-pdf-o"></i> Exportar PDF
+            </button>
+            <button class="btn-report btn-excel" onclick="exportarExcel('diario')">
+                <i class="fa fa-file-excel-o"></i> Exportar Excel
+            </button>
+            <button class="btn-report btn-mail" onclick="enviarEmailReporte()">
+                <i class="fa fa-envelope"></i> Enviar por Email
+            </button>
+        </div>
+    </div>
+    <div id="resultadoReporte" style="margin-top:20px;"></div>
+</div>
+
+<div class="report-block">
+    <h4><i class="fa fa-search"></i> Auditoría de Ocupación</h4>
+    <div class="row">
+        <div class="col-md-3">
+            <label>Fecha Desde</label>
+            <input type="date" class="form-control" id="auditFechaDesde" />
+        </div>
+        <div class="col-md-3">
+            <label>Fecha Hasta</label>
+            <input type="date" class="form-control" id="auditFechaHasta" />
+        </div>
+        <div class="col-md-6" style="margin-top:25px;">
+            <button class="btn-report btn-genera" id="btnGenerarAuditoria">
+                <i class="fa fa-search"></i> Generar Auditoría
+            </button>
+            <button class="btn-report btn-pdf" onclick="exportarPDF('auditoria')">
+                <i class="fa fa-file-pdf-o"></i> Exportar PDF
+            </button>
+            <button class="btn-report btn-excel" onclick="exportarExcel('auditoria')">
+                <i class="fa fa-file-excel-o"></i> Exportar Excel
+            </button>
+        </div>
+    </div>
+    <div id="resultadoAuditoria" style="margin-top:20px;"></div>
+</div>
+
+@section scripts {
+    <script src="~/vendors/pnotify/dist/pnotify.js"></script>
+    <script src="~/vendors/pnotify/dist/pnotify.buttons.js"></script>
+    <script>
+        var datosReporte = {};
+
+        $(function () {
+            var hoy = new Date().toISOString().slice(0, 10);
+            $('#fechaTurno').val(hoy);
+            $('#fechaReporte').val(hoy);
+            var semana = new Date();
+            semana.setDate(semana.getDate() - 7);
+            $('#auditFechaDesde').val(semana.toISOString().slice(0, 10));
+            $('#auditFechaHasta').val(hoy);
+        });
+
+        $('#btnGenerarCierre').on('click', function () {
+            var fecha = $('#fechaTurno').val();
+            var turno = $('#turnoSeleccionado').val();
+            if (!fecha) {
+                new PNotify({ title: 'Fecha requerida', text: 'Seleccione la fecha', type: 'warning', styling: 'bootstrap3' });
+                return;
+            }
+            $.post('@Url.Action("GenerarCierreTurno","Reportes")', { fecha: fecha, turno: turno }, function (r) {
+                if (!r.ok) {
+                    new PNotify({ title: 'Error', text: r.message, type: 'error', styling: 'bootstrap3' });
+                    return;
+                }
+                var d = r.data;
+                datosReporte.cierre = d;
+                var html = '<div class="panel panel-default">' +
+                    '<div class="panel-heading"><strong>Cierre de Turno</strong></div>' +
+                    '<div class="panel-body">' +
+                    '<p><strong>Fecha:</strong> ' + (d.CierreFecha || fecha) + '</p>' +
+                    '<p><strong>Turno:</strong> ' + (d.CierreTurnoTexto || turno) + '</p>' +
+                    '<ul>' +
+                    '<li>Check-ins: ' + (d.CierreCheckins || 0) + '</li>' +
+                    '<li>Check-outs: ' + (d.CierreCheckouts || 0) + '</li>' +
+                    '<li>No Shows: ' + (d.CierreNoShows || 0) + '</li>' +
+                    '<li>Servicios: ' + (d.CierreServicios || 0) + '</li>' +
+                    '<li>Incidencias: ' + (d.CierreIncidencias || 0) + '</li>' +
+                    '</ul>' +
+                    '<h5>Habitaciones</h5>' +
+                    '<ul>' +
+                    '<li>Ocupadas: ' + (d.CierreHabOcupadas || 0) + '</li>' +
+                    '<li>Disponibles: ' + (d.CierreHabDisponibles || 0) + '</li>' +
+                    '<li>Bloqueadas: ' + (d.CierreHabBloqueadas || 0) + '</li>' +
+                    '<li>En limpieza: ' + (d.CierreHabLimpieza || 0) + '</li>' +
+                    '</ul>' +
+                    '<p><strong>Observaciones:</strong> ' + (d.CierreObservaciones || '') + '</p>' +
+                    '</div></div>';
+                $('#resultadoCierre').html(html);
+                new PNotify({ title: 'OK', text: 'Cierre generado', type: 'success', styling: 'bootstrap3' });
+            });
+        });
+
+        $('#btnGenerarReporte').on('click', function () {
+            var fecha = $('#fechaReporte').val();
+            if (!fecha) {
+                new PNotify({ title: 'Fecha requerida', text: 'Seleccione la fecha', type: 'warning', styling: 'bootstrap3' });
+                return;
+            }
+            $.post('@Url.Action("GenerarReporteDiario","Reportes")', { fecha: fecha }, function (r) {
+                if (!r.ok) {
+                    new PNotify({ title: 'Error', text: r.message, type: 'error', styling: 'bootstrap3' });
+                    return;
+                }
+                var d = r.data;
+                datosReporte.diario = d;
+
+                var html = '<div class="panel panel-default">' +
+                    '<div class="panel-heading"><strong>Reporte Diario</strong></div>' +
+                    '<div class="panel-body">' +
+                    '<p><strong>Fecha:</strong> ' + (d.RepFecha || fecha) + '</p>' +
+                    '<div class="row">' +
+                    '<div class="col-md-6">' +
+                    '<h5>Ocupación</h5>' +
+                    '<table class="table table-striped">' +
+                    '<tr><td>% Ocupación</td><td>' + (d.RepPorcOcupacion || 0) + '%</td></tr>' +
+                    '<tr><td>Ocupadas</td><td>' + (d.RepHabOcupadas || 0) + ' / ' + (d.RepHabTotales || 0) + '</td></tr>' +
+                    '<tr><td>Disponibles</td><td>' + (d.RepHabDisponibles || 0) + '</td></tr>' +
+                    '<tr><td>Bloqueadas</td><td>' + (d.RepHabBloqueadas || 0) + '</td></tr>' +
+                    '</table>' +
+                    '</div>' +
+                    '<div class="col-md-6">' +
+                    '<h5>Actividad</h5>' +
+                    '<table class="table table-striped">' +
+                    '<tr><td>Check-ins</td><td>' + (d.RepCheckins || 0) + '</td></tr>' +
+                    '<tr><td>Check-outs</td><td>' + (d.RepCheckouts || 0) + '</td></tr>' +
+                    '<tr><td>No Shows</td><td>' + (d.RepNoShows || 0) + '</td></tr>' +
+                    '<tr><td>Extensiones</td><td>' + (d.RepExtensiones || 0) + '</td></tr>' +
+                    '</table>' +
+                    '</div>' +
+                    '</div>' +
+                    '<h5>Piezas bloqueadas</h5><ul>';
+                if (d.RepPiezasBloqueadas && d.RepPiezasBloqueadas.length) {
+                    d.RepPiezasBloqueadas.forEach(function (x) { html += '<li>' + x + '</li>'; });
+                } else {
+                    html += '<li>Sin piezas bloqueadas</li>';
+                }
+                html += '</ul>' +
+                    '<h5>Observaciones</h5><p>' + (d.RepObservaciones || '') + '</p>' +
+                    '</div></div>';
+
+                $('#resultadoReporte').html(html);
+                new PNotify({ title: 'OK', text: 'Reporte generado', type: 'success', styling: 'bootstrap3' });
+            });
+        });
+
+        $('#btnGenerarAuditoria').on('click', function () {
+            var fd = $('#auditFechaDesde').val();
+            var fh = $('#auditFechaHasta').val();
+            if (!fd || !fh) {
+                new PNotify({ title: 'Fechas requeridas', text: 'Seleccione el rango', type: 'warning', styling: 'bootstrap3' });
+                return;
+            }
+            $.post('@Url.Action("GenerarAuditoria","Reportes")', { fechaDesde: fd, fechaHasta: fh }, function (r) {
+                if (!r.ok) {
+                    new PNotify({ title: 'Error', text: r.message, type: 'error', styling: 'bootstrap3' });
+                    return;
+                }
+                var d = r.data;
+                datosReporte.auditoria = d;
+
+                var html = '<div class="panel panel-default">' +
+                    '<div class="panel-heading"><strong>Auditoría de Ocupación</strong></div>' +
+                    '<div class="panel-body">' +
+                    '<p><strong>Período:</strong> ' + (d.AuditDesde || fd) + ' al ' + (d.AuditHasta || fh) + '</p>' +
+                    '<table class="table table-bordered">' +
+                    '<tr><th>Ocupación promedio</th><td>' + (d.AuditOcupacionPromedio || 0) + '%</td></tr>' +
+                    '<tr><th>No Shows</th><td>' + (d.AuditNoShows || 0) + '</td></tr>' +
+                    '<tr><th>Satisfacción</th><td>' + (d.AuditSatisfaccion || 0) + '/5</td></tr>' +
+                    '</table>';
+
+                if (d.AuditDetalle && d.AuditDetalle.length) {
+                    html += '<h5>Desglose diario</h5><table class="table table-striped"><thead><tr><th>Fecha</th><th>Ocupación</th><th>Check-ins</th><th>Check-outs</th><th>No Shows</th></tr></thead><tbody>';
+                    d.AuditDetalle.forEach(function (x) {
+                        html += '<tr><td>' + x.Fecha + '</td><td>' + x.Ocupacion + '%</td><td>' + x.Checkins + '</td><td>' + x.Checkouts + '</td><td>' + x.NoShows + '</td></tr>';
+                    });
+                    html += '</tbody></table>';
+                }
+
+                if (d.AuditRecomendaciones && d.AuditRecomendaciones.length) {
+                    html += '<h5>Recomendaciones</h5><ul>';
+                    d.AuditRecomendaciones.forEach(function (x) { html += '<li>' + x + '</li>'; });
+                    html += '</ul>';
+                }
+
+                html += '</div></div>';
+
+                $('#resultadoAuditoria').html(html);
+                new PNotify({ title: 'OK', text: 'Auditoría generada', type: 'success', styling: 'bootstrap3' });
+            });
+        });
+
+        // reutilizamos los nombres de tu maqueta
+        function exportarPDF(tipo) {
+            if (!datosReporte[tipo]) {
+                new PNotify({ title: 'Generar primero', text: 'Genere el reporte antes de exportar', type: 'warning', styling: 'bootstrap3' });
+                return;
+            }
+            new PNotify({ title: 'PDF', text: 'Simulación de exportación PDF', type: 'info', styling: 'bootstrap3' });
+        }
+
+        function exportarExcel(tipo) {
+            if (!datosReporte[tipo]) {
+                new PNotify({ title: 'Generar primero', text: 'Genere el reporte antes de exportar', type: 'warning', styling: 'bootstrap3' });
+                return;
+            }
+            new PNotify({ title: 'Excel', text: 'Simulación de exportación Excel', type: 'info', styling: 'bootstrap3' });
+        }
+
+        function enviarEmailReporte() {
+            if (!datosReporte.diario) {
+                new PNotify({ title: 'Generar primero', text: 'Genere el reporte diario antes de enviar', type: 'warning', styling: 'bootstrap3' });
+                return;
+            }
+            new PNotify({ title: 'Email', text: 'Simulación de envío de email', type: 'success', styling: 'bootstrap3' });
+        }
+    </script>
+}

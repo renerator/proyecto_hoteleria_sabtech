@@ -1,73 +1,102 @@
-﻿@Model Front_Hoteleria.Dto.Servicio.ServicioDashboardDto
+﻿@model Front_Hoteleria.Dto.ServiciosPersonal.ServiciosPersonalKpiDto
 
 @{
-    var totalServicios = Model?.TotalServicios ?? 231809;
-    var totalDesayunos = Model?.TotalDesayunos ?? 897;
-    var totalLimpieza = Model?.TotalLimpieza ?? 650;
-    var totalTickets = Model?.TotalTickets ?? 111569;
+    // si el controller, por lo que sea, mandó null, acá lo arreglamos
+    var kpi = Model ?? new Front_Hoteleria.Dto.ServiciosPersonal.ServiciosPersonalKpiDto();
 }
 
-<div class="row top_tiles" style="margin:10px 0 20px 0;">
-    <div class="col-md-3 col-sm-6 col-xs-12">
-        <div class="tile-stats">
-            <div class="count">@totalServicios</div>
-            <h3>Total Servicios</h3>
+<style>
+    .sp-topbar {
+        margin-bottom: 20px;
+    }
+
+    .sp-title {
+        font-size: 26px;
+        font-weight: 600;
+        color: #304156;
+    }
+
+    .sp-subtitle {
+        color: #97a0af;
+        margin-top: 3px;
+    }
+
+    .sp-kpi-row {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .sp-kpi-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        flex: 1 1 220px;
+        box-shadow: 0 2px 6px rgba(0,0,0,.04);
+        border-left: 4px solid #f39c12;
+    }
+
+    .sp-kpi-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: #f39c12;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 20px;
+        margin-right: 15px;
+    }
+
+    .sp-kpi-text small {
+        display: block;
+        color: #8f9bb3;
+        font-size: 13px;
+        margin-bottom: 3px;
+    }
+
+    .sp-kpi-number {
+        font-size: 28px;
+        font-weight: 700;
+        color: #243b53;
+    }
+</style>
+
+<div class="sp-topbar">
+   
+    <div class="sp-subtitle">Visualice rápidamente las solicitudes del día.</div>
+</div>
+
+<div class="sp-kpi-row">
+    <div class="sp-kpi-card">
+        <div class="sp-kpi-icon"><i class="fa fa-exclamation-triangle"></i></div>
+        <div class="sp-kpi-text">
+            <small>Solicitudes Urgentes</small>
+            <div class="sp-kpi-number">@((kpi.SolicitudesUrgentes))</div>
         </div>
     </div>
-    <div class="col-md-3 col-sm-6 col-xs-12">
-        <div class="tile-stats">
-            <div class="count">@totalDesayunos</div>
-            <h3>Total Desayunos</h3>
+    <div class="sp-kpi-card">
+        <div class="sp-kpi-icon"><i class="fa fa-cogs"></i></div>
+        <div class="sp-kpi-text">
+            <small>Servicios Activos</small>
+            <div class="sp-kpi-number">@((kpi.ServiciosActivos))</div>
         </div>
     </div>
-    <div class="col-md-3 col-sm-6 col-xs-12">
-        <div class="tile-stats">
-            <div class="count">@totalLimpieza</div>
-            <h3>Total Limpieza</h3>
+    <div class="sp-kpi-card">
+        <div class="sp-kpi-icon"><i class="fa fa-check"></i></div>
+        <div class="sp-kpi-text">
+            <small>Servicios Completados</small>
+            <div class="sp-kpi-number">@((kpi.ServiciosCompletados))</div>
         </div>
     </div>
-    <div class="col-md-3 col-sm-6 col-xs-12">
-        <div class="tile-stats">
-            <div class="count">@totalTickets</div>
-            <h3>Tickets Ingresados</h3>
+    <div class="sp-kpi-card">
+        <div class="sp-kpi-icon"><i class="fa fa-plus"></i></div>
+        <div class="sp-kpi-text">
+            <small>Solicitudes Nuevas</small>
+            <div class="sp-kpi-number">@((kpi.SolicitudesNuevas))</div>
         </div>
     </div>
 </div>
-
-<div class="x_panel">
-    <div class="x_title">
-        <h2>Demanda de Servicios <small>Gráfico por aumento de horario</small></h2>
-        <div class="filter">
-            <div id="reportrangeServicios" class="pull-right" style="background:#fff; cursor:pointer; padding:5px 10px; border:1px solid #ccc">
-                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-                <span>September 21, 2025 - October 20, 2025</span> <b class="caret"></b>
-            </div>
-        </div>
-        <div class="clearfix"></div>
-    </div>
-    <div class="x_content">
-        <div style="height: 350px">
-            <canvas id="serviciosChart" height="120"></canvas>
-        </div>
-    </div>
-</div>
-
-<script src="@Url.Content("~/vendors/Chart.js/dist/Chart.min.js")"></script>
-<script>
-    (function () {
-        var ctx = document.getElementById('serviciosChart');
-        if (!ctx || typeof Chart === 'undefined') return;
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16'],
-                datasets: [{
-                    label: 'Registrations',
-                    fill: true,
-                    data: [2, 9, 6, 10, 16, 6, 10, 7, 11, 25, 9, 12, 6, 5, 6, 9]
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true } } }
-        });
-    })();
-</script>

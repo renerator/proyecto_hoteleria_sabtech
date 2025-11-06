@@ -1,37 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using Front_Hoteleria.Dto.Calendario;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Front_Hoteleria.Dto.Reserva;
 
 namespace Front_Hoteleria.Services.Calendario
 {
     public interface ICalendarioService
     {
-        // GET /api/Reservas/ReservasDisponibles?vigencia={vigencia}
-        Task<List<ReservaDto>> ReservasDisponiblesAsync(int vigencia, string bearer = null);
+        Task<CalendarioKpiDto> ResumenAsync(string bearer = null);
 
-        // GET /api/Reservas/dashboardReservas
-        Task<ReservaDashboardDto> DashboardReservasAsync(string bearer = null);
+        Task<List<CalendarioEventoDto>> ListarAsync(
+            string habitacion = null,
+            string estado = null,
+            string bearer = null);
 
-        // POST /api/Reservas/SolicitaReserva
-        Task<bool> CrearReservaAsync(ReservaDto dto, string bearer = null);
+        Task<CalendarioEventoDto> ObtenerPorIdAsync(string id, string bearer = null);
 
-        // POST /api/Reservas/ConfirmarReserva
-        Task<bool> ConfirmarReservaAsync(ReservaDto dto, string bearer = null);
+        Task<bool> CrearAsync(CalendarioEventoDto dto, string bearer = null);
 
-        // PUT /api/Reservas/ModificaReserva
-        Task<bool> ModificarReservaAsync(ReservaDto dto, string bearer = null);
+        Task<bool> ActualizarAsync(CalendarioEventoDto dto, string bearer = null);
 
-        // DELETE /api/Reservas/EliminaReserva?idReserva={id}
-        Task<bool> EliminarReservaAsync(int idReserva, string bearer = null);
+        Task<bool> EliminarAsync(string id, string bearer = null);
 
-        // GET /api/Reservas/BuscarReservas?criterio={texto}
-        Task<List<ReservaDto>> BuscarReservasAsync(string criterio, string bearer = null);
+        Task<List<string>> ListarHabitacionesAsync(string bearer = null);
+        Task<bool> BloquearHabitacionAsync(CalendarioBloqueoDto dto, string bearer = null);
+        Task<bool> ProgramarMantenimientoAsync(CalendarioMantenimientoDto dto, string bearer = null);
 
-        Task<List<ReservaTrabajadorDto>> ReservasDisponiblesTrabajadorAsync(ReservaTrabajadorDto ResevaTrabajador,string bearer = null);
-        // Front_Hoteleria.Services.Reservas.IReservaService
-        Task<bool> CrearReservaTrabajadorAsync(ReservaTrabajadorDto dto, string bearer = null);
-
-        // Si luego necesitas bitácora:
-        // Task<bool> CrearBitacoraReservaAsync(BitacoraReservaDto dto, string bearer = null);
     }
 }

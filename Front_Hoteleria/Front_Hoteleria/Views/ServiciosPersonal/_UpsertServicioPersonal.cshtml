@@ -1,71 +1,421 @@
-﻿@Model Front_Hoteleria.Dto.Servicio.ServicioDto
+﻿@* Modales + scripts *@
 
-@Html.AntiForgeryToken()
-<form id="frmUpsertServicio" method="post">
-    <input type="hidden" name="IdServicio" value="@(Model?.IdServicio ?? 0)" />
-    <div class="row">
-        <div class="col-md-4">
-            <label>Habitación</label>
-            <input name="NumeroHabitacion" value="@(Model?.NumeroHabitacion ?? "")" class="form-control" placeholder="0001" />
-        </div>
-        <div class="col-md-4">
-            <label>Tipo de Servicio</label>
-            <input name="NombreServicio" value="@(Model?.NombreServicio ?? "")" class="form-control" placeholder="Limpieza / Desayuno / …" />
-        </div>
-        <div class="col-md-4">
-            <label>Prioridad</label>
-            <select name="Prioridad" class="form-control">
-                @{
-                    var prio = Model?.Prioridad ?? "Normal";
-                    string Sel(string v) => prio == v ? "selected" : "";
-                }
-                <option @Sel("Baja")>Baja</option>
-                <option @Sel("Media")>Media</option>
-                <option @Sel("Alta")>Alta</option>
-                <option @Sel("Urgente")>Urgente</option>
-                <option @Sel("Normal")>Normal</option>
-            </select>
-        </div>
-        <div class="col-md-4">
-            <label>Fecha</label>
-            <input name="Fecha" value="@(Model?.Fecha?.ToString("yyyy-MM-dd") ?? "")" class="form-control" placeholder="dd-mm-aaaa" />
-        </div>
-        <div class="col-md-4">
-            <label>Hora</label>
-            <input name="Hora" value="@(Model?.Hora ?? "")" class="form-control" placeholder="hh:mm" />
-        </div>
-        <div class="col-md-12">
-            <label>Comentarios</label>
-            <textarea name="Comentarios" class="form-control" rows="3">@Model?.Comentarios</textarea>
+<!-- Modal Evidencia Fotográfica -->
+<div class="modal fade" id="evidenciaFotograficaModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-camera"></i> Evidencia Fotográfica - Servicio Realizado</h4>
+            </div>
+            <div class="modal-body">
+                <form id="evidenciaForm">
+                    <input type="hidden" id="evidenciaServicioId" />
+                    <div class="form-group">
+                        <label>Descripción del Trabajo Realizado:</label>
+                        <textarea id="descripcionTrabajo" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Evidencia Fotográfica:</label>
+                        <input type="file" class="form-control" id="evidenciaFotos" multiple accept="image/*" onchange="previsualizarImagenes(this)">
+                        <small class="text-muted">Seleccione una o más fotos (JPG/PNG)</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Previsualización</label>
+                        <div id="previewImagenes" class="row">
+                            <div class="col-md-12">
+                                <p class="text-muted">Las imágenes seleccionadas aparecerán aquí…</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Observaciones Adicionales</label>
+                        <textarea id="observaciones" class="form-control" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+                <button class="btn btn-success" onclick="procesarEvidenciaFotografica()"><i class="fa fa-check"></i> Marcar como Realizado</button>
+            </div>
         </div>
     </div>
-    <hr />
-    <div class="text-right">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Guardar</button>
+</div>
+
+<!-- Modal Iniciar Solicitud -->
+<div class="modal fade" id="iniciarSolicitudModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-play"></i> Iniciar Solicitud</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="inicioSolicitudId" />
+                <div class="form-group">
+                    <label><strong>Solicitud:</strong></label>
+                    <p id="inicioTipoSolicitud" class="form-control-static"></p>
+                </div>
+                <div class="form-group">
+                    <label><strong>Ubicación:</strong></label>
+                    <p id="inicioUbicacion" class="form-control-static"></p>
+                </div>
+                <div class="form-group">
+                    <label>Tiempo Estimado</label>
+                    <select id="tiempoEstimado" class="form-control">
+                        <option value="">Seleccione</option>
+                        <option>15 min</option>
+                        <option>30 min</option>
+                        <option>1 hora</option>
+                        <option>1.5 horas</option>
+                        <option>2 horas</option>
+                        <option>Más de 2 horas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Observaciones iniciales</label>
+                    <textarea id="observacionesInicio" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="alert alert-info">
+                    <i class="fa fa-info-circle"></i> Luego podrás adjuntar evidencia y notificar al huésped.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button class="btn btn-success" onclick="confirmarInicioSolicitud()"><i class="fa fa-play"></i> Iniciar</button>
+            </div>
+        </div>
     </div>
-</form>
+</div>
 
-<script>
-(function(){
-    var urlPost = '@Url.Action("UpsertServicio","Servicios")';
-    function token(){ return $('input[name="__RequestVerificationToken"]').val(); }
+<!-- Modal Notificación Huésped -->
+<div class="modal fade" id="notificacionHuespedModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-bell"></i> Notificar al Huésped</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="notificacionServicioId" />
+                <div class="panel panel-info">
+                    <div class="panel-heading"><h4 class="panel-title"><i class="fa fa-info-circle"></i> Información del servicio</h4></div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Servicio:</strong> <span id="notificacionTipoServicio"></span><br />
+                                <strong>Ubicación:</strong> <span id="notificacionUbicacion"></span><br />
+                                <strong>Huésped:</strong> <span id="notificacionHuesped"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Descripción:</strong><br />
+                                <em id="notificacionDescripcion"></em><br />
+                                <strong>Fotos:</strong> <small id="notificacionArchivos"></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    $('#frmUpsertServicio').on('submit', function(e){
-        e.preventDefault();
-        $.ajax({
-            url: urlPost, type:'POST',
-            headers: { 'RequestVerificationToken': token() },
-            data: $(this).serialize(),
-            success: function(){
-                $('#modalUpsert').modal('hide');
-                // recargar tabla si existe
-                if (window.$) { $('#frmFiltrosServicios').trigger('submit'); }
-            },
-            error: function(xhr){
-                alert(xhr.responseText || 'No se pudo guardar.');
+                <div class="form-group">
+                    <label>Método de notificación</label>
+                    <select id="metodoNotificacion" class="form-control" onchange="cambiarMetodoNotificacion()">
+                        <option value="email">Email</option>
+                        <option value="whatsapp">WhatsApp</option>
+                        <option value="sistema">Notificación interna</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label id="labelEmailHuesped">Email del huésped</label>
+                    <input type="email" id="emailHuesped" class="form-control" placeholder="ejemplo@mail.com" />
+                </div>
+                <div class="form-group">
+                    <label>Mensaje personalizado</label>
+                    <textarea id="mensajePersonalizado" rows="4" class="form-control" placeholder="Mensaje adicional..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Vista previa</label>
+                    <div id="previewMensaje" class="panel panel-default" style="background:#f8fafc; white-space:pre-line; padding:10px;">
+                        <em>El mensaje aparecerá aquí…</em>
+                    </div>
+                </div>
+                <div class="alert alert-success">
+                    <i class="fa fa-check-circle"></i> El huésped será notificado con los datos del servicio completado.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                <button class="btn btn-success" onclick="enviarNotificacionHuesped()"><i class="fa fa-send"></i> Enviar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/vendors/pnotify/dist/pnotify.js"></script>
+    <script src="~/vendors/pnotify/dist/pnotify.buttons.js"></script>
+
+    <script>
+        var solicitudesOriginales = [];
+        var datosReporte = {}; // por si luego quieres exportar
+
+        $(function () {
+            if (typeof PNotify !== "undefined") {
+                PNotify.prototype.options.styling = "bootstrap3";
             }
+            inicializarDatosSolicitudes();
+            ordenarSolicitudes();
         });
-    });
-})();
-</script>
+
+        function inicializarDatosSolicitudes() {
+            $('#solicitudesPendientesTable tbody tr').each(function () {
+                var fila = $(this);
+                var datos = {
+                    elemento: fila,
+                    id: fila.find('td').eq(0).text().trim(),
+                    tipo: fila.find('td').eq(1).text().trim(),
+                    ubicacion: fila.find('td').eq(2).text().trim(),
+                    prioridad: fila.find('td').eq(3).text().trim(),
+                    estado: fila.find('td').eq(4).text().trim(),
+                    fecha: fila.find('td').eq(5).text().trim(),
+                    asignado: fila.find('td').eq(6).text().trim(),
+                    clasePrioridad: fila.hasClass('priority-high') ? 'alta' : fila.hasClass('priority-medium') ? 'media' : 'baja',
+                    fechaObj: new Date(fila.find('td').eq(5).text().trim())
+                };
+                solicitudesOriginales.push(datos);
+            });
+        }
+
+        function obtenerDatosFila(fila) {
+            var $fila = $(fila);
+            return {
+                elemento: $fila,
+                id: $fila.find('td').eq(0).text().trim(),
+                tipo: $fila.find('td').eq(1).text().trim(),
+                ubicacion: $fila.find('td').eq(2).text().trim(),
+                prioridad: $fila.find('td').eq(3).text().trim(),
+                estado: $fila.find('td').eq(4).text().trim(),
+                fecha: $fila.find('td').eq(5).text().trim(),
+                asignado: $fila.find('td').eq(6).text().trim(),
+                clasePrioridad: $fila.hasClass('priority-high') ? 'alta' : $fila.hasClass('priority-medium') ? 'media' : 'baja',
+                fechaObj: new Date($fila.find('td').eq(5).text().trim())
+            };
+        }
+
+        function ordenarSolicitudes() {
+            var orden = $('#ordenarPor').val();
+            var tbody = $('#solicitudesPendientesTable tbody');
+            var filas = tbody.find('tr:visible').toArray();
+
+            filas.sort(function (a, b) {
+                var da = obtenerDatosFila(a);
+                var db = obtenerDatosFila(b);
+                switch (orden) {
+                    case 'fecha-asc': return db.fechaObj - da.fechaObj;
+                    case 'fecha-desc': return da.fechaObj - db.fechaObj;
+                    case 'prioridad-desc':
+                        var pr = { alta: 3, media: 2, baja: 1 };
+                        return pr[db.clasePrioridad] - pr[da.clasePrioridad];
+                    case 'prioridad-asc':
+                        var pr2 = { alta: 3, media: 2, baja: 1 };
+                        return pr2[da.clasePrioridad] - pr2[db.clasePrioridad];
+                    case 'ubicacion-asc': return da.ubicacion.localeCompare(db.ubicacion);
+                    case 'tipo-asc': return da.tipo.localeCompare(db.tipo);
+                    default: return 0;
+                }
+            });
+
+            tbody.empty();
+            $(filas).each(function () { tbody.append(this); });
+            actualizarClasesFilas();
+        }
+
+        function filtrarSolicitudes() {
+            var fp = $('#filtrarPrioridad').val();
+            var fe = $('#filtrarEstado').val();
+            var ub = $('#buscarUbicacion').val().toLowerCase();
+
+            $('#solicitudesPendientesTable tbody tr').each(function () {
+                var d = obtenerDatosFila(this);
+                var show = true;
+
+                if (fp !== 'todas' && d.clasePrioridad !== fp) show = false;
+
+                if (fe !== 'todos') {
+                    if (fe === 'sin-asignar' && d.asignado !== 'Sin asignar') show = false;
+                    if (fe === 'asignado' && d.asignado !== 'Personal Actual') show = false;
+                    if (fe === 'en-progreso' && d.estado !== 'En Progreso') show = false;
+                }
+
+                if (ub && !d.ubicacion.toLowerCase().includes(ub)) show = false;
+
+                $(this).toggle(show);
+            });
+
+            ordenarSolicitudes();
+        }
+
+        function actualizarClasesFilas() {
+            $('#solicitudesPendientesTable tbody tr:visible').each(function (i) {
+                $(this).removeClass('even odd').addClass(i % 2 === 0 ? 'even' : 'odd');
+            });
+        }
+
+        function limpiarFiltros() {
+            $('#filtrarPrioridad').val('todas');
+            $('#filtrarEstado').val('todos');
+            $('#buscarUbicacion').val('');
+            $('#ordenarPor').val('fecha-asc');
+            filtrarSolicitudes();
+        }
+
+        function asignarSolicitud(id) {
+            var fila = $('tr[data-solicitud-id="' + id + '"]');
+            var colAsig = fila.find('td').eq(6);
+            if (colAsig.text().trim() !== 'Sin asignar') {
+                new PNotify({ title: 'Solicitud ya asignada', text: 'Esta solicitud ya tiene personal.', type: 'warning' });
+                return;
+            }
+            colAsig.html('<span class="text-success">Personal Actual</span>');
+            fila.find('td').eq(7).html('<button class="btn btn-success btn-sp-sm" onclick="iniciarSolicitud(\'' + id + '\')"><i class="fa fa-play"></i> Iniciar</button>');
+
+            // actualizar cards
+            var nuevas = parseInt($('#spNuevas').text() || "0");
+            if (nuevas > 0) $('#spNuevas').text(nuevas - 1);
+            $('#spActivos').text(parseInt($('#spActivos').text() || "0") + 1);
+
+            new PNotify({ title: 'Asignado', text: 'Solicitud ' + id + ' asignada a usted.', type: 'success' });
+        }
+
+        function iniciarSolicitud(id) {
+            var fila = $('tr[data-solicitud-id="' + id + '"]');
+            $('#inicioSolicitudId').val(id);
+            $('#inicioTipoSolicitud').text(fila.find('td').eq(1).text());
+            $('#inicioUbicacion').text(fila.find('td').eq(2).text());
+            $('#iniciarSolicitudModal').modal('show');
+        }
+
+        function confirmarInicioSolicitud() {
+            var id = $('#inicioSolicitudId').val();
+            var fila = $('tr[data-solicitud-id="' + id + '"]');
+            fila.find('.maintenance-status').removeClass('status-pending status-urgent').addClass('status-in-progress').text('En Progreso');
+            fila.find('td').eq(7).find('button').prop('disabled', true).removeClass('btn-success').addClass('btn-warning').html('<i class="fa fa-clock-o"></i> En progreso');
+            $('#iniciarSolicitudModal').modal('hide');
+            new PNotify({ title: 'Solicitud iniciada', text: 'Se inició la solicitud ' + id, type: 'success' });
+        }
+
+        function marcarComoRealizado(id) {
+            $('#evidenciaServicioId').val(id);
+            $('#evidenciaFotograficaModal').modal('show');
+        }
+
+        function previsualizarImagenes(input) {
+            var preview = $('#previewImagenes');
+            preview.empty();
+            if (input.files && input.files.length) {
+                for (var i = 0; i < input.files.length; i++) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        preview.append('<div class="col-md-3"><img src="' + e.target.result + '" class="img-thumbnail" style="max-height:100px;margin:5px;"></div>');
+                    }
+                    reader.readAsDataURL(input.files[i]);
+                }
+            }
+        }
+
+        function procesarEvidenciaFotografica() {
+            var id = $('#evidenciaServicioId').val();
+            var desc = $('#descripcionTrabajo').val();
+            if (!desc.trim()) {
+                new PNotify({ title: 'Descripción requerida', text: 'Agregue descripción del trabajo', type: 'error' });
+                return;
+            }
+
+            // marcar en la tabla de servicios como completado
+            var fila = $('tr[data-servicio-id="' + id + '"]');
+            fila.find('.sp-badge, .badge').removeClass('badge-warning badge-info').addClass('badge-success').text('Completado');
+            fila.find('button').prop('disabled', true);
+
+            // actualizar card
+            $('#spCompletados').text(parseInt($('#spCompletados').text() || "0") + 1);
+            var act = parseInt($('#spActivos').text() || "0");
+            if (act > 0) $('#spActivos').text(act - 1);
+
+            // preparar datos para notificar
+            mostrarModalNotificacionHuesped({
+                id: id,
+                tipo: fila.find('td').eq(1).text(),
+                ubicacion: fila.find('td').eq(3).text()
+            }, desc, []);
+
+            $('#evidenciaFotograficaModal').modal('hide');
+            $('#descripcionTrabajo').val('');
+            $('#evidenciaFotos').val('');
+            $('#previewImagenes').empty();
+
+            new PNotify({ title: 'Servicio completado', text: 'El servicio ' + id + ' fue completado.', type: 'success' });
+        }
+
+        function mostrarModalNotificacionHuesped(info, desc, files) {
+            $('#notificacionServicioId').val(info.id);
+            $('#notificacionTipoServicio').text(info.tipo);
+            $('#notificacionUbicacion').text(info.ubicacion);
+            $('#notificacionHuesped').text('Huésped de ' + info.ubicacion);
+            $('#notificacionDescripcion').text(desc);
+            $('#notificacionArchivos').text(files.join(', '));
+            $('#metodoNotificacion').val('email');
+            $('#emailHuesped').prop('disabled', false).val('');
+            actualizarPreviewMensaje();
+            $('#notificacionHuespedModal').modal('show');
+        }
+
+        function cambiarMetodoNotificacion() {
+            var metodo = $('#metodoNotificacion').val();
+            if (metodo === 'email') {
+                $('#labelEmailHuesped').text('Email del huésped');
+                $('#emailHuesped').prop('disabled', false).attr('placeholder', 'ejemplo@mail.com');
+            } else if (metodo === 'whatsapp') {
+                $('#labelEmailHuesped').text('Teléfono del huésped');
+                $('#emailHuesped').prop('disabled', false).attr('placeholder', '+56 9 1234 5678');
+            } else {
+                $('#labelEmailHuesped').text('Notificación interna');
+                $('#emailHuesped').prop('disabled', true).val('Notificación automática');
+            }
+            actualizarPreviewMensaje();
+        }
+
+        function generarMensajeNotificacion(servicioId, personalizado) {
+            var servicio = $('#notificacionTipoServicio').text();
+            var ubic = $('#notificacionUbicacion').text();
+            var msg = "Estimado/a huésped,\n\n" +
+                "Le informamos que su solicitud de " + servicio +
+                " en " + ubic + " ha sido completada exitosamente.\n" +
+                "Fecha: " + new Date().toLocaleDateString() + "\n" +
+                "Hora: " + new Date().toLocaleTimeString() + "\n\n";
+            if (personalizado && personalizado.trim()) {
+                msg += "Mensaje del personal:\n" + personalizado + "\n\n";
+            }
+            msg += "Gracias por su preferencia.\nEquipo del hotel.";
+            return msg;
+        }
+
+        function actualizarPreviewMensaje() {
+            var id = $('#notificacionServicioId').val();
+            if (!id) return;
+            var pers = $('#mensajePersonalizado').val();
+            var msg = generarMensajeNotificacion(id, pers);
+            $('#previewMensaje').text(msg);
+        }
+
+        $('#mensajePersonalizado').on('input', actualizarPreviewMensaje);
+
+        function enviarNotificacionHuesped() {
+            var metodo = $('#metodoNotificacion').val();
+            if ((metodo === 'email' || metodo === 'whatsapp') && !$('#emailHuesped').val().trim()) {
+                new PNotify({ title: 'Dato faltante', text: 'Ingrese el contacto del huésped', type: 'error' });
+                return;
+            }
+            new PNotify({ title: 'Notificación enviada', text: 'El huésped ha sido notificado.', type: 'success' });
+            $('#notificacionHuespedModal').modal('hide');
+        }
+    </script>
+}

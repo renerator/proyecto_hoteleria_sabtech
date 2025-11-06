@@ -1,0 +1,210 @@
+﻿@model Front_Hoteleria.Dto.Reportes.ReportesKpiDto
+
+<style>
+    .right_col {
+        background: #f2f4f7;
+    }
+
+    .report-kpi-row {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .report-kpi-card {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(15, 23, 42, .04);
+        padding: 20px 20px 16px 20px;
+        flex: 1 1 230px;
+        position: relative;
+        min-height: 140px;
+    }
+
+        .report-kpi-card h4 {
+            font-size: 16px;
+            margin: 0;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .report-kpi-card .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 12px;
+            line-height: 1;
+        }
+
+        .report-kpi-card .kpi-footer {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            margin-top: 6px;
+            color: #94a3b8;
+        }
+
+        .report-kpi-card.kpi-ocupacion .kpi-value {
+            color: #0f6fc7;
+        }
+
+        .report-kpi-card.kpi-disponibles .kpi-value {
+            color: #16a34a;
+        }
+
+        .report-kpi-card.kpi-bloqueadas .kpi-value {
+            color: #ef4444;
+        }
+
+        .report-kpi-card.kpi-noshow .kpi-value {
+            color: #f59e0b;
+        }
+
+        .report-kpi-card .kpi-icon {
+            position: absolute;
+            right: 18px;
+            top: 18px;
+            font-size: 30px;
+            color: #cbd5e1;
+        }
+
+    .report-chart-card {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(15, 23, 42, .04);
+        padding: 18px 18px 12px 18px;
+        margin-top: 20px;
+    }
+
+        .report-chart-card h4 {
+            font-size: 15px;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+            .report-chart-card h4 i {
+                color: #64748b;
+            }
+</style>
+
+<div class="report-kpi-row">
+    <div class="report-kpi-card kpi-ocupacion">
+        <i class="fa fa-bed kpi-icon"></i>
+        <h4>% Ocupación Hoy</h4>
+        <div class="kpi-value">
+            @{
+                if (Model.TotalHabitaciones > 0)
+                {
+                    var p = (decimal)Model.HabitacionesOcupadas / Model.TotalHabitaciones * 100;
+                    @p.ToString("0")@Html.Raw("%")
+                }
+                else
+                {
+                    @("0%");
+                }
+            }
+        </div>
+        <div class="kpi-footer">HABITACIONES OCUPADAS</div>
+    </div>
+
+    <div class="report-kpi-card kpi-disponibles">
+        <i class="fa fa-check-circle kpi-icon"></i>
+        <h4>Habitaciones Disponibles</h4>
+        <div class="kpi-value">@Model.HabitacionesDisponibles</div>
+        <div class="kpi-footer">LISTAS PARA OCUPAR</div>
+    </div>
+
+    <div class="report-kpi-card kpi-bloqueadas">
+        <i class="fa fa-ban kpi-icon"></i>
+        <h4>Piezas Bloqueadas</h4>
+        <div class="kpi-value">@Model.HabitacionesBloqueadas</div>
+        <div class="kpi-footer">MANTENIMIENTO/REPARACIÓN</div>
+    </div>
+
+    <div class="report-kpi-card kpi-noshow">
+        <i class="fa fa-user-times kpi-icon"></i>
+        <h4>No Show Hoy</h4>
+        <div class="kpi-value">@Model.NoShowHoy</div>
+        <div class="kpi-footer">NO SE PRESENTARON</div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="report-chart-card">
+            <h4><i class="fa fa-area-chart"></i> Ocupación Últimos 7 Días</h4>
+            <canvas id="ocupacionChart" height="80"></canvas>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="report-chart-card">
+            <h4><i class="fa fa-pie-chart"></i> Distribución de Estados</h4>
+            <canvas id="estadosChart"></canvas>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        (function () {
+            var labels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+                (Model.Labels != null && Model.Labels.Length > 0)
+                    ? Model.Labels
+                    : new string[] { "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom" }
+            ));
+
+            var data7 = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+                (Model.Ocupacion7Dias != null && Model.Ocupacion7Dias.Length > 0)
+                    ? Model.Ocupacion7Dias
+                    : new decimal[] { 65, 72, 68, 75, 80, 85, 70 }
+            ));
+
+            var ctx = document.getElementById('ocupacionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '% Ocupación',
+                        data: data7,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        fill: true,
+                        tension: .4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            var ctx2 = document.getElementById('estadosChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ocupadas', 'Disponibles', 'Bloqueadas'],
+                    datasets: [{
+                        data: [@Model.HabitacionesOcupadas, @Model.HabitacionesDisponibles, @Model.HabitacionesBloqueadas],
+                        backgroundColor: ['#3498db', '#2ecc71', '#e74c3c']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        })();
+    </script>
+}

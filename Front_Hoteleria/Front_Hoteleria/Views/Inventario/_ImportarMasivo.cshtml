@@ -1,0 +1,110 @@
+﻿@{
+    Layout = null;
+}
+
+<style>
+    .inv-import-info {
+        background: #4aa3df;
+        color: #fff;
+        padding: 14px 16px;
+        border-radius: 4px;
+        margin-bottom: 18px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+        .inv-import-info i {
+            font-size: 18px;
+        }
+
+    .inv-import-footer .btn {
+        min-width: 140px;
+    }
+</style>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Importación Masiva de Inventario</h4>
+</div>
+
+<div class="modal-body">
+    @* form para subir archivo *@
+    @using (Html.BeginForm("Importar", "Inventario", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmImportarInv" }))
+    {
+        <div class="inv-import-info">
+            <i class="fa fa-info-circle"></i>
+            <div>
+                <strong>Instrucciones:</strong>
+                Sube un archivo Excel (.xlsx) con las columnas:
+                <em>Nombre, Categoría, Habitación, Valor, Marca, Modelo, Descripción</em>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Archivo Excel *</label>
+            <input type="file" name="Archivo" id="invArchivo" class="form-control" required />
+        </div>
+
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" name="Sobrescribir" value="true" />
+                Sobrescribir artículos existentes (mismo ID)
+            </label>
+        </div>
+
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" name="Validar" value="true" checked="checked" />
+                Validar datos antes de importar
+            </label>
+        </div>
+    }
+</div>
+
+<div class="modal-footer inv-import-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+    <button type="button" class="btn btn-success" id="btnDescargarPlantilla">
+        Descargar Plantilla
+    </button>
+    <button type="button" class="btn btn-primary" id="btnProcesarImportacion">
+        Procesar Importación
+    </button>
+</div>
+
+<script>
+    // descargar plantilla (puedes apuntarlo a una acción real)
+    $('#btnDescargarPlantilla').off('click').on('click', function () {
+        // si tienes una acción real:
+        // window.location = '@Url.Action("DescargarPlantilla","Inventario")';
+        alert('Aquí descargas la plantilla Excel.');
+    });
+
+    // procesar importación
+    $('#btnProcesarImportacion').off('click').on('click', function () {
+        var form = $('#frmImportarInv')[0];
+        var data = new FormData(form);
+
+        $.ajax({
+            url: '@Url.Action("Importar", "Inventario")',
+            type: 'POST',
+            data: data,
+            contentType: false,
+            processData: false,
+            success: function (r) {
+                if (r && r.ok) {
+                    $('#modalInventario').modal('hide');
+                    // recargo la tabla
+                    $.get('@Url.Action("Tabla","Inventario")', function (html) {
+                        $('#contenedor-tabla').html(html);
+                    });
+                } else {
+                    alert(r && r.msg ? r.msg : 'No se pudo importar el archivo.');
+                }
+            },
+            error: function () {
+                alert('Error al procesar la importación.');
+            }
+        });
+    });
+</script>

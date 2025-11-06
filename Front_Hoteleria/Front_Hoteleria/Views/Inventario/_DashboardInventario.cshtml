@@ -1,44 +1,278 @@
-﻿@Model Front_Hoteleria.Dto.Reserva.ReservaDashboardDto
+﻿@model Front_Hoteleria.Dto.Inventario.InventarioKpiDto
 
-@{
-    int totalConfirmadas = Convert.ToInt32(Model?.TotalConfirmadas ?? 0);
-    int totalRechazadas = Convert.ToInt32(Model?.TotalRechazadas ?? 0);
-    int totalServicios = Convert.ToInt32(Model?.TotalServicios ?? 0);
-
-    // Fallback para el nombre de “Nuevas Hoy”
-    int nuevasHoy = 0;
-    if (Model != null)
-    {
-        var t = Model.GetType();
-        var p = t.GetProperty("NuevasHoy") ?? t.GetProperty("NuevasHoys") ?? t.GetProperty("NuevasReservas");
-        var v = p?.GetValue(Model, null);
-        nuevasHoy = v != null ? Convert.ToInt32(v) : 0;
+<style>
+    .inv-top-box {
+        background: #f8f9fb;
+        padding: 0;
+        border-radius: 6px;
+        margin-bottom: 15px;
     }
-}
 
-<div class="row">
-    <div class="col-sm-3">
-        <div class="well text-center">
-            <div style="font-size:28px;font-weight:700">@totalConfirmadas.ToString("N0")</div>
-            <div class="text-muted" style="text-transform:uppercase;letter-spacing:.5px">Total Confirmadas</div>
-        </div>
+    /* KPIs azul */
+    .inv-kpi-strip {
+        background: #2c6da5;
+        border-radius: 8px;
+        padding: 22px 18px;
+        display: flex;
+        gap: 15px;
+        color: #fff;
+        margin-bottom: 16px;
+    }
+
+        .inv-kpi-strip .kpi {
+            flex: 1;
+            text-align: center;
+            /*border-right: 1px solid rgba(255,255,255,.25);*/
+        }
+
+            .inv-kpi-strip .kpi:last-child {
+                border-right: none;
+            }
+
+        .inv-kpi-strip .kpi-num {
+            font-size: 30px;
+            font-weight: 600;
+            line-height: 1;
+            margin-bottom: 3px;
+        }
+
+        .inv-kpi-strip .kpi-label {
+            font-size: 13px;
+            opacity: .9;
+        }
+
+    /* Acciones rápidas */
+    .inv-quick-actions {
+        background: #fff;
+        border: 1px solid #e4e8ef;
+        border-radius: 6px;
+        padding: 18px 18px 14px 18px;
+        margin-bottom: 18px;
+    }
+
+        .inv-quick-actions h4 {
+            font-size: 18px;
+            color: #64748b;
+            margin: 0 0 14px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .inv-quick-actions .btn {
+            border: none;
+            border-radius: 6px;
+            padding: 8px 20px;
+            font-weight: 500;
+            margin-right: 10px;
+            margin-bottom: 8px;
+        }
+
+    .inv-qa-add {
+        background: #199f65;
+        color: #fff;
+    }
+
+    .inv-qa-import {
+        background: #51b7d9;
+        color: #fff;
+    }
+
+    .inv-qa-move {
+        background: #e8a343;
+        color: #fff;
+    }
+
+    .inv-qa-report {
+        background: #1f6fb6;
+        color: #fff;
+    }
+
+    .inv-qa-refresh {
+        background: #fff;
+        color: #000;
+        border: 1px solid #e1e5ec;
+    }
+
+    /* Filtros */
+    .inv-filter-box {
+        background: #fff;
+        border: 1px solid #e4e8ef;
+        border-radius: 6px;
+        padding: 14px 18px 14px 18px;
+    }
+
+        .inv-filter-box h4 {
+            font-size: 18px;
+            margin: 0 0 15px 0;
+            color: #4b5563;
+        }
+
+    .inv-filter-row {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+        .inv-filter-row .form-group {
+            min-width: 220px;
+            margin-bottom: 10px;
+        }
+
+        .inv-filter-row label {
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .inv-filter-row .btn-primary {
+            background: #1f6fb6;
+            border-color: #1f6fb6;
+            padding: 7px 16px;
+            font-weight: 500;
+        }
+
+        .inv-filter-row .btn-outline {
+            background: #fff;
+            border: 1px solid #d5dbe3;
+            padding: 7px 14px;
+        }
+</style>
+
+<!-- KPIs -->
+<div class="inv-kpi-strip">
+    <div class="kpi">
+        <div class="kpi-num">@Model.TotalItems</div>
+        <div class="kpi-label">Artículos Totales</div>
     </div>
-    <div class="col-sm-3">
-        <div class="well text-center">
-            <div style="font-size:28px;font-weight:700">@totalRechazadas.ToString("N0")</div>
-            <div class="text-muted" style="text-transform:uppercase;letter-spacing:.5px">Total Rechazadas</div>
-        </div>
+    <div class="kpi">
+        <div class="kpi-num">@Model.Disponibles</div>
+        <div class="kpi-label">Disponibles</div>
     </div>
-    <div class="col-sm-3">
-        <div class="well text-center">
-            <div style="font-size:28px;font-weight:700">@totalServicios.ToString("N0")</div>
-            <div class="text-muted" style="text-transform:uppercase;letter-spacing:.5px">Total Servicios</div>
-        </div>
+    <div class="kpi">
+        <div class="kpi-num">@Model.Faltantes</div>
+        <div class="kpi-label">Faltantes</div>
     </div>
-    <div class="col-sm-3">
-        <div class="well text-center">
-            <div style="font-size:28px;font-weight:700">@nuevasHoy.ToString("N0")</div>
-            <div class="text-muted" style="text-transform:uppercase;letter-spacing:.5px">Nuevas Hoy</div>
+    <div class="kpi">
+        <div class="kpi-num">@Model.EnMantenimiento</div>
+        <div class="kpi-label">En Mantenimiento</div>
+    </div>
+</div>
+
+<!-- Acciones rápidas -->
+<div class="inv-quick-actions">
+    <h4><i class="fa fa-bolt"></i> Acciones Rápidas</h4>
+    <button type="button" class="btn inv-qa-add" id="inv-btn-add">
+        <i class="fa fa-plus"></i> Agregar Artículo
+    </button>
+    <button type="button" class="btn inv-qa-import" id="inv-btn-import">
+        <i class="fa fa-upload"></i> Importar Masivo
+    </button>
+    <button type="button" class="btn inv-qa-move" id="inv-btn-move">
+        <i class="fa fa-exchange"></i> Registrar Movimiento
+    </button>
+    <button type="button" class="btn inv-qa-report" id="inv-btn-report">
+        <i class="fa fa-file-pdf-o"></i> Generar Reporte
+    </button>
+    <button type="button" class="btn inv-qa-refresh" id="inv-btn-refresh">
+        <i class="fa fa-refresh"></i> Actualizar
+    </button>
+</div>
+
+<!-- Filtros -->
+<div class="inv-filter-box">
+    <h4>Filtros de Inventario</h4>
+    <div class="clearfix"></div>
+    <div class="inv-filter-row">
+        <div class="form-group">
+            <label for="inv-fil-categoria">Categoría:</label>
+            <select id="inv-fil-categoria" class="form-control">
+                <option value="">Todas las categorías</option>
+                <option value="ropa_cama">Ropa de Cama</option>
+                <option value="electrodomesticos">Electrodomésticos</option>
+                <option value="muebles">Muebles</option>
+                <option value="decoracion">Decoración</option>
+                <option value="tecnologia">Tecnología</option>
+                <option value="limpieza">Limpieza</option>
+                <option value="otros">Otros</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="inv-fil-estado">Estado:</label>
+            <select id="inv-fil-estado" class="form-control">
+                <option value="">Todos los estados</option>
+                <option value="disponible">Disponible</option>
+                <option value="faltante">Faltante</option>
+                <option value="mantenimiento">Mantenimiento</option>
+                <option value="dañado">Dañado</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="inv-fil-habitacion">Habitación:</label>
+            <select id="inv-fil-habitacion" class="form-control">
+                <option value="">Todas las habitaciones</option>
+                @for (int i = 1; i <= 20; i++)
+                {
+                    var room = i.ToString("D4");
+                    <option value="@room">@room</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label>&nbsp;</label><br />
+            <button type="button" class="btn btn-primary" id="inv-fil-aplicar">
+                <i class="fa fa-filter"></i> Aplicar Filtros
+            </button>
+            <button type="button" class="btn btn-outline" id="inv-fil-limpiar">
+                <i class="fa fa-times">Limpiar</i>
+            </button>
         </div>
     </div>
 </div>
+
+<script>
+    // Cargar tabla al entrar con filtros por defecto
+    $(function () {
+        invCargarTabla(); // sin filtros
+
+        $('#inv-fil-aplicar').on('click', function () {
+            invCargarTabla();
+        });
+
+        $('#inv-fil-limpiar').on('click', function () {
+            $('#inv-fil-categoria').val('');
+            $('#inv-fil-estado').val('');
+            $('#inv-fil-habitacion').val('');
+            invCargarTabla();
+        });
+
+        // botones rápidos (los que abren modal van a la acción Upsert)
+        $('#inv-btn-add').on('click', function () {
+            $.get('@Url.Action("Upsert", "Inventario")', function (html) {
+                $('#modalInventarioContent').html(html);
+                $('#modalInventario').modal('show');
+            });
+        });
+
+        $('#inv-btn-refresh').on('click', function () {
+            // recargo KPIs
+            $.get('@Url.Action("Resumen", "Inventario")', function (html) {
+                $('#contenedor-dashboard').html(html);
+            });
+            // recargo tabla con lo que haya en filtros
+            invCargarTabla();
+        });
+    });
+
+    function invCargarTabla() {
+        var filtros = {
+            categoria: $('#inv-fil-categoria').val(),
+            estado: $('#inv-fil-estado').val(),
+            habitacion: $('#inv-fil-habitacion').val()
+        };
+
+        $.get('@Url.Action("Tabla","Inventario")', filtros, function (html) {
+            $('#contenedor-tabla').html(html);
+        });
+    }
+</script>

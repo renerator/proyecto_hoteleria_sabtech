@@ -1,16 +1,13 @@
-using Front_Hoteleria.Dto.Reserva;
+using Front_Hoteleria.Dto.Inventario;
 using Front_Hoteleria.Services.Inventario;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Security.Policy;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
 
 namespace Front_Hoteleria.Controllers
 {
@@ -19,118 +16,176 @@ namespace Front_Hoteleria.Controllers
         private readonly IInventarioService _api;
 
         public InventarioController() : this(new InventarioService()) { }
-        public InventarioController(IInventarioService api) { _api = api; }
 
-        // -------------------------------
-        //  TOKEN & PERFIL
-        // -------------------------------
+        public InventarioController(IInventarioService api)
+        {
+            _api = api;
+        }
+
         private string GetBearer()
         {
             try
             {
                 return (Session["Token"] as string)
-                       ?? (Request.Cookies["access_token"] != null ? Request.Cookies["access_token"].Value : null);
+                       ?? (Request.Cookies["access_token"] != null
+                           ? Request.Cookies["access_token"].Value
+                           : null);
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[GetBearer] Error leyendo token: {ex}");
+                Trace.TraceError("[InventarioController.GetBearer] " + ex);
                 return null;
             }
         }
 
-        // -------------------------------
-        //  INDEX
-        // -------------------------------
+        // GET: /Inventario
         [HttpGet]
         public ActionResult Index()
         {
-            if (!(Session["Token"] is string tok) || string.IsNullOrWhiteSpace(tok))
-                return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-
-            var perfil = Session["IdPerfil"];
-            if (perfil == null)
-                return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-
-            switch (perfil)
-            {
-                case 4: return View("~/Views/Inventario/Index.cshtml");
-                
-                default: return RedirectToAction("Login", "Account");
-            }
+            // igual que contratos: solo devuelve la vista
+            return View("~/Views/Inventario/Index.cshtml");
         }
 
-
-
-        public async Task<ActionResult> TablaPartial(
-            DateTime? fechaDesde,
-            DateTime? fechaHasta,
-            int? idEstadoReserva,
-            int? idtiporeserva)
+        // PANEL (kpi)
+        // GET: /Inventario/Resumen
+        [HttpGet]
+        public async Task<ActionResult> Resumen()
         {
+            var token = GetBearer();
+
+            var dto = await _api.ResumenAsync(token);
+            if (dto == null)
+            {
+                dto = new InventarioKpiDto
+                {
+                    TotalItems = 156,
+                    Disponibles = 142,
+                    Faltantes = 3,
+                    EnMantenimiento = 11
+                };
+            }
+
+            // tu parcial: ~/Views/Inventario/_DashboardInventario.cshtml
+            return PartialView("~/Views/Inventario/_DashboardInventario.cshtml", dto);
+        }
+        // GET: /Inventario/Ver?id=INV-001
+        [HttpGet]
+        public async Task<ActionResult> Ver(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "Id requerido");
+
+            var token = GetBearer();
+            if (string.IsNullOrWhiteSpace(token))
+                return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada");
+
             try
             {
-                var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult(401, "Sesión expirada");
+                // 1) intentar traer desde la API
+                var item = await _api.GetByIdAsync(id, token);
 
-                var filtro = new ReservaTrabajadorDto
+                // 2) si la API NO devolvió nada, armamos uno en duro solo para maqueta
+                if (item == null)
                 {
-                    FechaDesde = fechaDesde,
-                    FechaHasta = fechaHasta,
-                    IdEstadoReserva = idEstadoReserva ?? 0, // 0 = no filtra (según tu SP)
-                    IdTipoReserva = idtiporeserva ?? 0
-                };
+                    item = new Front_Hoteleria.Dto.Inventario.InventarioItemDto
+                    {
+                        Id = id,
+                        Nombre = "TV Samsung 55\" Smart",
+                        Categoria = "Tecnología",
+                        Habitacion = "0002",
+                        Estado = "Disponible",
+                        Valor = 850m,
+                        Marca = "Samsung",
+                        Modelo = "55UN7300",
+                        Serie = "SN123456789",
+                        Descripcion = "Artículo en buen estado, funcionando correctamente.",
+                        UltimoMovimientoFecha = DateTime.Today.AddDays(-2),
+                        UltimoMovimientoDescripcion = "15/12/2024 - Verificación"
+                    };
+                }
 
-                var data = 0; // await _api.ReservasDisponiblesTrabajadorAsync(filtro, token);
+                // 3) historial: primero API
+                var historial = await _api.GetMovimientosAsync(item.Id, token);
 
-                // TIP: el partial debe estar tipado a List<ReservaTrabajadorDto>
-                return PartialView("~/Views/Reservas/_TablaReserva.cshtml", data);
+                // 4) si la API no devolvió historial, ponemos una lista en duro
+                if (historial == null || historial.Count == 0)
+                {
+                    historial = new List<Front_Hoteleria.Dto.Inventario.InventarioMovimientoPostDto>
+            {
+                new Front_Hoteleria.Dto.Inventario.InventarioMovimientoPostDto
+                {
+                    // ajusta estos nombres a los reales de tu DTO
+                    FechaMovimiento = DateTime.Today.AddDays(-2),
+                    TipoMovimiento = "Verificación",
+                    HabitacionDesde = "0002",
+                    HabitacionHasta = "0002",
+                    Responsable = "Admin",
+                    Motivo = "Control rutinario del inventario"
+                },
+                new Front_Hoteleria.Dto.Inventario.InventarioMovimientoPostDto
+                {
+                    FechaMovimiento = DateTime.Today.AddDays(-10),
+                    TipoMovimiento = "Traslado",
+                    HabitacionDesde = "0001",
+                    HabitacionHasta = "0002",
+                    Responsable = "Bodega",
+                    Motivo = "Reubicación del artículo"
+                }
+            };
+                }
+
+                ViewBag.Historial = historial;
+
+                // 5) devolvemos el modal
+                return PartialView("~/Views/Inventario/_VerInventario.cshtml", item);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError($"[TablaReserva] {ex}");
-                return new HttpStatusCodeResult(500, "Error al cargar reservas");
+                System.Diagnostics.Trace.TraceError("[InventarioController.Ver] " + ex);
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al obtener el artículo");
             }
         }
+
+        // GET: /Inventario/RegistrarMovimiento
         [HttpGet]
-        public async Task<ActionResult> Upsert()
+        public ActionResult RegistrarMovimiento(string id)
         {
-            var token = GetBearer();
-            if (string.IsNullOrWhiteSpace(token))
-                return new HttpStatusCodeResult(401);
+            // si quieres, aquí podrías traer la lista real de artículos desde tu servicio
+            // y pasarla con ViewBag.Articulos
+            ViewBag.ArticuloId = id;  // para preseleccionar
 
-            // Rellena combos (ajusta a tu servicio)
-            ViewBag.Habitaciones = new SelectList(new[]
-                {
-        new { Id = 1, Nombre = "Individual" },
-        new { Id = 2, Nombre = "Grupal" },
-        new { Id = 3, Nombre = "Corporativa" }
-    }, "Id", "Nombre");
-            ViewBag.TiposReserva = new SelectList(new[]
-            {
-        new { Id = 1, Nombre = "Individual" },
-        new { Id = 2, Nombre = "Grupal" },
-        new { Id = 3, Nombre = "Corporativa" }
-    }, "Id", "Nombre");
+            return PartialView("~/Views/Inventario/_RegistrarMovimiento.cshtml");
+        }
 
-            ViewBag.IdTrabajador = Session["IdTrabajador"];
+        // POST: /Inventario/RegistrarMovimiento
+        [HttpPost]
+        public ActionResult RegistrarMovimiento(InventarioMovimientoPostDto dto)
+        {
+            // aquí llamarías a tu API para registrar el movimiento
+            // por ahora devolvemos OK
+            return Json(new { ok = true });
+        }
+        [HttpGet]
+        public ActionResult Importar()
+        {
+            return PartialView("~/Views/Inventario/_ImportarMasivo.cshtml");
+        }
 
-            var Dto = new Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
-            {
-                FechaDesde = DateTime.Today,
-                FechaHasta = DateTime.Today.AddDays(1),
-                IdEstadoReserva = 1
-            };
-
-            return PartialView("~/Views/Reservas/_UpsertReserva.cshtml", Dto);
+        // opcional: para que el JS de arriba funcione
+        [HttpPost]
+        public ActionResult Importar(HttpPostedFileBase Archivo, bool? Sobrescribir, bool? Validar)
+        {
+            // aquí procesas el Excel...
+            // por ahora devolvemos OK
+            return Json(new { ok = true });
         }
 
 
-        // ReservasController
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CrearReserva(Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto dto)
+        // TABLA
+        // GET: /Inventario/Tabla
+        [HttpGet]
+        [ActionName("Tabla")]
+        public async Task<ActionResult> Tabla(string criterio, string categoria, string estado, string habitacion)
         {
             try
             {
@@ -138,82 +193,136 @@ namespace Front_Hoteleria.Controllers
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada");
 
-                // saneos mínimos
-                if (dto == null) return new HttpStatusCodeResult(400, "Datos inválidos");
-                if (dto.IdHabitacion <= 0 || !dto.FechaDesde.HasValue || !dto.FechaHasta.HasValue)
-                    return new HttpStatusCodeResult(400, "Campos obligatorios faltantes");
+                var lista = await _api.ListarAsync(criterio, categoria, estado, habitacion, token);
 
-                if (dto.IdEstadoReserva == 0) dto.IdEstadoReserva = 1; // Ingresada
+                // si la api no trae nada, metemos datos de demo para que veas diseño
+                if (lista == null || !lista.Any())
+                {
+                    lista = new List<InventarioItemDto>
+                    {
+                        new InventarioItemDto {
+                            Id = "INV-001",
+                            Nombre = "Sábanas Blancas King Size",
+                            Categoria = "ropa_cama",
+                            Habitacion = "0001",
+                            Estado = "disponible",
+                            Valor = 45,
+                            UltimoMovimientoFecha = DateTime.Today.AddDays(-1),
+                            UltimoMovimientoDescripcion = "Ingreso"
+                        },
+                        new InventarioItemDto {
+                            Id = "INV-002",
+                            Nombre = "TV Samsung 55\" Smart",
+                            Categoria = "tecnologia",
+                            Habitacion = "0002",
+                            Estado = "mantenimiento",
+                            Valor = 850,
+                            UltimoMovimientoFecha = DateTime.Today.AddDays(-5),
+                            UltimoMovimientoDescripcion = "Reparación"
+                        },
+                        new InventarioItemDto {
+                            Id = "INV-003",
+                            Nombre = "Lámpara de Mesa LED",
+                            Categoria = "decoracion",
+                            Habitacion = "0003",
+                            Estado = "faltante",
+                            Valor = 120,
+                            UltimoMovimientoFecha = DateTime.Today.AddDays(-7),
+                            UltimoMovimientoDescripcion = "Reporte de pérdida"
+                        }
+                    };
+                }
 
-                var ok = true;// await _api.CrearReservaTrabajadorAsync(dto, token);
-                if (!ok) return new HttpStatusCodeResult(500, "No se pudo crear la reserva.");
+                // ~/Views/Inventario/_TablaInventario.cshtml
+                return PartialView("~/Views/Inventario/_TablaInventario.cshtml", lista);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[InventarioController.Tabla] " + ex);
+                return new HttpStatusCodeResult(500, "Error al cargar inventario");
+            }
+        }
 
-                // Respuesta para manejar por JS
+        [HttpGet]
+        public async Task<ActionResult> Upsert(string id)
+        {
+            var token = GetBearer();
+            if (string.IsNullOrWhiteSpace(token))
+                return new HttpStatusCodeResult(401, "Sesión expirada");
+
+            Front_Hoteleria.Dto.Inventario.InventarioItemDto dto = null;
+
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                // intentar traer de la API
+                dto = await _api.GetByIdAsync(id, token);
+            }
+
+            // si la API no devolvió nada, armamos uno en duro para que el modal se vea completo
+            if (dto == null)
+            {
+                dto = new Front_Hoteleria.Dto.Inventario.InventarioItemDto
+                {
+                    Id = id,
+                    Nombre = "TV Samsung 55\" Smart",
+                    Categoria = "tecnologia",
+                    Habitacion = "0002",
+                    Estado = "disponible",
+                    Valor = 850,
+                    Marca = "Samsung",
+                    Modelo = "55UN7300",
+                    Serie = "SN123456789",
+                    Descripcion = "Artículo en buen estado, funcionando correctamente"
+                };
+            }
+
+            // este es el modal de editar que hicimos antes
+            return PartialView("~/Views/Inventario/_UpsertInventario.cshtml", dto);
+        }
+
+
+        [HttpPost]
+        public async Task<ActionResult> Guardar(InventarioItemDto dto)
+        {
+            if (dto == null)
+                return Json(new { ok = false, msg = "Datos vacíos" });
+
+            var token = GetBearer();
+
+            try
+            {
+                bool ok;
+                if (!string.IsNullOrWhiteSpace(dto.Id))
+                    ok = await _api.ActualizarAsync(dto, token);
+                else
+                    ok = await _api.CrearAsync(dto, token);
+
+                if (!ok)
+                    return Json(new { ok = false, msg = "No se pudo guardar en la API" });
+
                 return Json(new { ok = true });
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError($"[CrearReserva] {ex}");
-                return new HttpStatusCodeResult(500, "Error al crear la reserva.");
+                Trace.TraceError("[InventarioController.Guardar] " + ex);
+                return Json(new { ok = false, msg = "Error inesperado al guardar" });
             }
         }
 
-        // ===== DASHBOARD VIEW (PARCIAL) =====
-        // SIN parámetros de fecha
-        [HttpGet]
-        public async Task<ActionResult> Dashboard()
-        {
-            try
-            {
-                var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
-
-                // Llama al servicio SIN parámetros de fecha (usa null, null)
-
-                var dto = new ReservaDashboardDto();
-                dto = new ReservaDashboardDto(); // await _api.DashboardReservasAsync(token)
-                         
-
-                // Devuelve el parcial fuertemente tipado con el DTO
-                return PartialView("~/Views/Reservas/_DashboardReserva.cshtml", dto);
-
-            }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[Dashboard] Error HTTP: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.BadGateway, "No se pudo comunicar con la API de dashboard.");
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[Dashboard] Timeout: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta de dashboard excedió el tiempo de espera.");
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[Dashboard] Error: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al cargar el dashboard.");
-            }
-        }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Eliminar(int idHabitacion)
+        public async Task<ActionResult> Eliminar(string id)
         {
+            var token = GetBearer();
             try
             {
-                var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized);
-
-                var ok = true; // await _api.EliminarReservaAsync(idHabitacion, token);
-                if (!ok) return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "No se pudo eliminar.");
-                return new HttpStatusCodeResult((int)HttpStatusCode.OK);
+                var ok = await _api.EliminarAsync(id, token);
+                return Json(new { ok });
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[Eliminar] Error: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al eliminar la reserva.");
+                Trace.TraceError("[InventarioController.Eliminar] " + ex);
+                return Json(new { ok = false, msg = "Error al eliminar" });
             }
         }
     }

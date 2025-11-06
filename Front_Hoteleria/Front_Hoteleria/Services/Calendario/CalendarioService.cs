@@ -1,4 +1,4 @@
-﻿using Front_Hoteleria.Dto.Reserva;
+﻿using Front_Hoteleria.Dto.Calendario;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,8 +9,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
-
 
 namespace Front_Hoteleria.Services.Calendario
 {
@@ -24,12 +22,13 @@ namespace Front_Hoteleria.Services.Calendario
                           ?? ConfigurationManager.AppSettings["ApiBaseUrl"];
 
             if (string.IsNullOrWhiteSpace(baseUrl))
-                throw new InvalidOperationException("Falta Api.BaseUrl en Web.config (o ApiBaseUrl).");
+                throw new InvalidOperationException("Falta Api.BaseUrl en Web.config");
 
-            if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var baseUri))
-                throw new InvalidOperationException("Api.BaseUrl no es una URL válida: " + baseUrl);
-
-            _http = new HttpClient { BaseAddress = baseUri, Timeout = TimeSpan.FromSeconds(30) };
+            _http = new HttpClient
+            {
+                BaseAddress = new Uri(baseUrl),
+                Timeout = TimeSpan.FromSeconds(30)
+            };
             _http.DefaultRequestHeaders.Accept.Clear();
             _http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
@@ -38,242 +37,305 @@ namespace Front_Hoteleria.Services.Calendario
         {
             _http.DefaultRequestHeaders.Authorization = null;
             if (!string.IsNullOrWhiteSpace(bearer))
-                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
+                _http.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", bearer);
         }
-
-        // GET /api/Reservas/ReservasDisponibles?vigencia={vigencia}
-        public async Task<List<ReservaDto>> ReservasDisponiblesAsync(int vigencia, string bearer = null)
+        public async Task<List<string>> ListarHabitacionesAsync(string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
-                using (var resp = await _http.GetAsync($"/api/Reservas/ReservasDisponibles?vigencia={vigencia}"))
+                // ruta ejemplo, ajústala a tu API real
+                using (var resp = await _http.GetAsync("/api/calendario/habitaciones"))
                 {
-                    if ((int)resp.StatusCode == 204) return new List<ReservaDto>();
-                    resp.EnsureSuccessStatusCode();
+                    if (!resp.IsSuccessStatusCode)
+                        throw new Exception("no ok");
+
                     var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<ReservaDto>>(json) ?? new List<ReservaDto>();
+                    return JsonConvert.DeserializeObject<List<string>>(json);
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                Trace.TraceError($"[ReservasDisponiblesAsync] {ex}");
-                return new List<ReservaDto>();
+                // datos de demo
+                var list = new List<string>();
+                for (int i = 1; i <= 20; i++)
+                    list.Add(i.ToString("D4"));
+                return list;
             }
         }
 
-        // GET /api/Reservas/dashboardReservas
-        public async Task<ReservaDashboardDto> DashboardReservasAsync(string bearer = null)
-        {
-            try
-            {
-                SetBearer(bearer);
-                using (var resp = await _http.GetAsync("/api/Reservas/dashboardReservas"))
-                {
-                    if ((int)resp.StatusCode == 204) return new ReservaDashboardDto();
-                    resp.EnsureSuccessStatusCode();
-                    var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<ReservaDashboardDto>(json) ?? new ReservaDashboardDto();
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[DashboardReservasAsync] {ex}");
-                return new ReservaDashboardDto();
-            }
-        }
-
-        // POST /api/Reservas/SolicitaReserva
-        public async Task<bool> CrearReservaAsync(ReservaDto dto, string bearer = null)
+        public async Task<bool> BloquearHabitacionAsync(CalendarioBloqueoDto dto, string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
                 var json = JsonConvert.SerializeObject(dto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                 var resp = await _http.PostAsync("/api/Reservas/SolicitaReserva", content);
-                return resp.IsSuccessStatusCode;
+
+                // ruta ejemplo
+                using (var resp = await _http.PostAsync("/api/calendario/bloqueos", content))
+                {
+                    return resp.IsSuccessStatusCode;
+                }
             }
-            catch (Exception ex)
+            catch
             {
-                Trace.TraceError($"[CrearReservaAsync] {ex}");
-                return false;
+                // en maqueta devolvemos true
+                return true;
             }
         }
-
-        // POST /api/Reservas/ConfirmarReserva
-        public async Task<bool> ConfirmarReservaAsync(ReservaDto dto, string bearer = null)
+        public async Task<bool> ProgramarMantenimientoAsync(CalendarioMantenimientoDto dto, string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
                 var json = JsonConvert.SerializeObject(dto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var resp = await _http.PostAsync("/api/Reservas/ConfirmarReserva", content);
-                return resp.IsSuccessStatusCode;
+
+                // ajusta la ruta a la de tu API real
+                using (var resp = await _http.PostAsync("/api/calendario/mantenimientos", content))
+                {
+                    // si tu API aún no existe, devolvemos true igual
+                    return resp.IsSuccessStatusCode;
+                }
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[ConfirmarReservaAsync] {ex}");
-                return false;
+                System.Diagnostics.Trace.TraceError("[CalendarioService.ProgramarMantenimientoAsync] " + ex);
+                return true; // para la maqueta
             }
         }
 
-        // PUT /api/Reservas/ModificaReserva
-        public async Task<bool> ModificarReservaAsync(ReservaDto dto, string bearer = null)
+        public async Task<CalendarioKpiDto> ResumenAsync(string bearer = null)
+        {
+            try
+            {
+                SetBearer(bearer);
+                using (var resp = await _http.GetAsync("/api/Calendario/resumen"))
+                {
+                    if (resp.StatusCode == HttpStatusCode.NoContent)
+                        return GetDummyKpi();
+
+                    resp.EnsureSuccessStatusCode();
+                    var json = await resp.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<CalendarioKpiDto>(json)
+                           ?? GetDummyKpi();
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[CalendarioService.ResumenAsync] " + ex);
+                return GetDummyKpi();
+            }
+        }
+
+        public async Task<List<CalendarioEventoDto>> ListarAsync(
+            string habitacion = null,
+            string estado = null,
+            string bearer = null)
+        {
+            try
+            {
+                SetBearer(bearer);
+                var qs = new List<string>();
+                if (!string.IsNullOrWhiteSpace(habitacion))
+                    qs.Add("habitacion=" + Uri.EscapeDataString(habitacion));
+                if (!string.IsNullOrWhiteSpace(estado))
+                    qs.Add("estado=" + Uri.EscapeDataString(estado));
+
+                var url = "/api/Calendario";
+                if (qs.Count > 0)
+                    url += "?" + string.Join("&", qs);
+
+                using (var resp = await _http.GetAsync(url))
+                {
+                    if (resp.StatusCode == HttpStatusCode.NoContent)
+                        return GetDummyEvents();
+
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[CalendarioService.ListarAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return GetDummyEvents();
+                    }
+
+                    var json = await resp.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<List<CalendarioEventoDto>>(json)
+                           ?? GetDummyEvents();
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[CalendarioService.ListarAsync] " + ex);
+                return GetDummyEvents();
+            }
+        }
+
+        public async Task<CalendarioEventoDto> ObtenerPorIdAsync(string id, string bearer = null)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return null;
+
+            try
+            {
+                SetBearer(bearer);
+                using (var resp = await _http.GetAsync($"/api/Calendario/{id}"))
+                {
+                    if (resp.StatusCode == HttpStatusCode.NotFound ||
+                        resp.StatusCode == HttpStatusCode.NoContent)
+                        return null;
+
+                    resp.EnsureSuccessStatusCode();
+                    var json = await resp.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<CalendarioEventoDto>(json);
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[CalendarioService.ObtenerPorIdAsync] " + ex);
+                return null;
+            }
+        }
+
+        public async Task<bool> CrearAsync(CalendarioEventoDto dto, string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
                 var json = JsonConvert.SerializeObject(dto);
-               var content = new StringContent(json, Encoding.UTF8, "application/json");
-                 var resp = await _http.PutAsync("/api/Reservas/ModificaReserva", content);
-                return resp.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[ModificarReservaAsync] {ex}");
-                return false;
-            }
-        }
-
-        // DELETE /api/Reservas/EliminaReserva?idReserva={id}
-        public async Task<bool> EliminarReservaAsync(int idReserva, string bearer = null)
-        {
-            try
-            {
-                SetBearer(bearer);
-                 var resp = await _http.DeleteAsync($"/api/Reservas/EliminaReserva?idReserva={idReserva}");
-                if (resp.IsSuccessStatusCode) return true;
-
-                var error = await resp.Content.ReadAsStringAsync();
-                Trace.TraceWarning($"[EliminarReservaAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {error}");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[EliminarReservaAsync] {ex}");
-                return false;
-            }
-        }
-
-        // GET /api/Reservas/BuscarReservas?criterio={texto}
-        public async Task<List<ReservaDto>> BuscarReservasAsync(string criterio, string bearer = null)
-        {
-            try
-            {
-                SetBearer(bearer);
-                var url = $"/api/Reservas/BuscarReservas?criterio={Uri.EscapeDataString(criterio ?? string.Empty)}";
-                 var resp = await _http.GetAsync(url);
-                if ((int)resp.StatusCode == 204) return new List<ReservaDto>();
-
-                resp.EnsureSuccessStatusCode();
-                var json = await resp.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<ReservaDto>>(json) ?? new List<ReservaDto>();
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[BuscarReservasAsync] {ex}");
-                return new List<ReservaDto>();
-            }
-        }
-
-       
-
-
-
-public async Task<List<ReservaTrabajadorDto>> ReservasDisponiblesTrabajadorAsync(ReservaTrabajadorDto reservaTrabajador, string bearer = null)
-    {
-        try
-        {
-            SetBearer(bearer);
-
-            reservaTrabajador = new ReservaTrabajadorDto();
-
-            var basePath = "/api/Reservas/ReservasTrabajadorDisponibles";
-            var sb = new StringBuilder(basePath);
-            var first = true;
-
-            // helper inline para agregar pares key=value
-            Action<string, string> add = (k, v) =>
-            {
-                if (string.IsNullOrEmpty(v)) return;
-                sb.Append(first ? "?" : "&");
-                sb.Append(k).Append("=").Append(Uri.EscapeDataString(v));
-                first = false;
-            };
-
-            if (reservaTrabajador.FechaDesde.HasValue)
-                add("FechaDesde", reservaTrabajador.FechaDesde.Value.ToString("o")); // ISO-8601
-
-            if (reservaTrabajador.FechaHasta.HasValue)
-                add("FechaHasta", reservaTrabajador.FechaHasta.Value.ToString("o")); // ISO-8601
-                                                                                     // Si quieres cierre inclusivo del día:
-                                                                                     // add("FechaHasta", reservaTrabajador.FechaHasta.Value.Date.AddDays(1).AddTicks(-1).ToString("o"));
-
-            if (reservaTrabajador.IdEstadoReserva > 0)
-                add("idEstadoReserva", reservaTrabajador.IdEstadoReserva.ToString());
-
-            if (reservaTrabajador.IdTipoReserva > 0)
-                add("idtiporeserva", reservaTrabajador.IdTipoReserva.ToString());
-
-            var url = sb.ToString();
-
-            using (var resp = await _http.GetAsync(url))
-            {
-                if (resp.StatusCode == HttpStatusCode.NoContent)
-                    return new List<ReservaTrabajadorDto>();
-
-                resp.EnsureSuccessStatusCode();
-
-                var json = await resp.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<ReservaTrabajadorDto>>(json)
-                       ?? new List<ReservaTrabajadorDto>();
-            }
-        }
-        catch (HttpRequestException httpEx)
-        {
-            Trace.TraceError($"[ReservasDisponiblesTrabajadorAsync] HTTP: {httpEx}");
-            return new List<ReservaTrabajadorDto>();
-        }
-        catch (JsonException jsonEx)
-        {
-            Trace.TraceError($"[ReservasDisponiblesTrabajadorAsync] JSON: {jsonEx}");
-            return new List<ReservaTrabajadorDto>();
-        }
-        catch (Exception ex)
-        {
-            Trace.TraceError($"[ReservasDisponiblesTrabajadorAsync] {ex}");
-            return new List<ReservaTrabajadorDto>();
-        }
-    }
-        public async Task<bool> CrearReservaTrabajadorAsync(ReservaTrabajadorDto dto, string bearer = null)
-        {
-            try
-            {
-                SetBearer(bearer);
-
-                // Ajusta la ruta si tu API usa otra: p.ej. "/api/Reservas/CrearReserva"
-                var url = "/api/Reservas/CreaReservaTrabajador";
-
-                var payload = JsonConvert.SerializeObject(dto);
-                using (var content = new StringContent(payload, Encoding.UTF8, "application/json"))
-                using (var resp = await _http.PostAsync(url, content))
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                using (var resp = await _http.PostAsync("/api/Calendario", content))
                 {
-                    if (resp.StatusCode == HttpStatusCode.NoContent) return true;
-                    if (!resp.IsSuccessStatusCode) return false;
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[CalendarioService.CrearAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return false;
+                    }
                     return true;
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError($"[CrearReservaAsync] {ex}");
+                Trace.TraceError("[CalendarioService.CrearAsync] " + ex);
                 return false;
             }
         }
 
+        public async Task<bool> ActualizarAsync(CalendarioEventoDto dto, string bearer = null)
+        {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Id))
+                return false;
 
-        // Si más adelante usas bitácora:
-        // public async Task<bool> CrearBitacoraReservaAsync(BitacoraReservaDto dto, string bearer = null) { ... }
+            try
+            {
+                SetBearer(bearer);
+                var json = JsonConvert.SerializeObject(dto);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                using (var resp = await _http.PutAsync($"/api/Calendario/{dto.Id}", content))
+                {
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[CalendarioService.ActualizarAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[CalendarioService.ActualizarAsync] " + ex);
+                return false;
+            }
+        }
+
+        public async Task<bool> EliminarAsync(string id, string bearer = null)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return false;
+
+            try
+            {
+                SetBearer(bearer);
+                using (var resp = await _http.DeleteAsync($"/api/Calendario/{id}"))
+                {
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[CalendarioService.EliminarAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[CalendarioService.EliminarAsync] " + ex);
+                return false;
+            }
+        }
+
+        // ======== datos dummy ========
+        private CalendarioKpiDto GetDummyKpi() => new CalendarioKpiDto
+        {
+            TotalHabitaciones = 20,
+            OcupadasHoy = 89,
+            EnMantenimiento = 12,
+            EnSanitizacion = 8
+        };
+
+        private List<CalendarioEventoDto> GetDummyEvents()
+        {
+            var hoy = DateTime.Today;
+            return new List<CalendarioEventoDto>
+            {
+                new CalendarioEventoDto {
+                    Id = "CAL-001",
+                    HabitacionId = "0001",
+                    HabitacionNombre = "0001",
+                    Titulo = "Ocupada",
+                    FechaInicio = hoy.AddDays(1),
+                    FechaFin = hoy.AddDays(3),
+                    Tipo = "occupied",
+                    Descripcion = "Reserva confirmada",
+                    Color = "#d9534f"
+                },
+                new CalendarioEventoDto {
+                    Id = "CAL-002",
+                    HabitacionId = "0002",
+                    HabitacionNombre = "0002",
+                    Titulo = "Mantenimiento",
+                    FechaInicio = hoy.AddDays(2),
+                    FechaFin = hoy.AddDays(2),
+                    Tipo = "maintenance",
+                    Descripcion = "Mantenimiento preventivo",
+                    Color = "#f0ad4e"
+                },
+                new CalendarioEventoDto {
+                    Id = "CAL-003",
+                    HabitacionId = "0003",
+                    HabitacionNombre = "0003",
+                    Titulo = "Sanitización",
+                    FechaInicio = hoy.AddDays(2).AddHours(10),
+                    FechaFin = hoy.AddDays(2).AddHours(14),
+                    Tipo = "sanitization",
+                    Descripcion = "Limpieza profunda",
+                    Color = "#5bc0de"
+                },
+                new CalendarioEventoDto {
+                    Id = "CAL-004",
+                    HabitacionId = "0005",
+                    HabitacionNombre = "0005",
+                    Titulo = "Bloqueada",
+                    FechaInicio = hoy.AddDays(3),
+                    FechaFin = hoy.AddDays(5),
+                    Tipo = "blocked",
+                    Descripcion = "Reparación de plomería",
+                    Color = "#6c757d"
+                }
+            };
+        }
     }
 }

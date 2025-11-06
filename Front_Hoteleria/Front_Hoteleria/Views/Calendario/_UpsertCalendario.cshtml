@@ -1,0 +1,148 @@
+﻿@model Front_Hoteleria.Dto.Calendario.CalendarioEventoDto
+@{
+    Layout = null;
+    var habitaciones = ViewBag.Habitaciones as List<string> ?? new List<string>();
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">@((string.IsNullOrWhiteSpace(Model.Id) ? "Crear Nuevo Evento" : "Editar Evento"))</h4>
+</div>
+<div class="modal-body">
+    <form id="frmCalendario" autocomplete="off">
+        @Html.HiddenFor(m => m.Id)
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Título del Evento *</label>
+                    @Html.TextBoxFor(m => m.Titulo, new { @class = "form-control", required = "required", placeholder = "Ej: Limpieza profunda" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Habitación *</label>
+                    <select name="HabitacionId" class="form-control" required>
+                        <option value="">Seleccionar habitación...</option>
+                        @foreach (var h in habitaciones)
+                        {
+                            <option value="@h" @(Model.HabitacionId == h ? "selected" : "")>Habitación @h</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Fecha Inicio *</label>
+                    <input type="date" name="FechaInicio" class="form-control"
+                           value="@Model.FechaInicio.ToString("yyyy-MM-dd")" required />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Fecha Fin *</label>
+                    <input type="date" name="FechaFin" class="form-control"
+                           value="@Model.FechaFin.ToString("yyyy-MM-dd")" required />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- tipo -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Tipo de Evento *</label>
+                    <select name="Tipo" class="form-control" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="maintenance" @(Model.Tipo == "maintenance" ? "selected" : "")>Mantenimiento</option>
+                        <option value="sanitization" @(Model.Tipo == "sanitization" ? "selected" : "")>Sanitización</option>
+                        <option value="blocked" @(Model.Tipo == "blocked" ? "selected" : "")>Bloqueo</option>
+                        <option value="occupied" @(Model.Tipo == "occupied" ? "selected" : "")>Ocupada</option>
+                        <option value="reserved" @(Model.Tipo == "reserved" ? "selected" : "")>Reservada</option>
+                        <option value="other" @(Model.Tipo == "other" ? "selected" : "")>Otro</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- prioridad -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Prioridad</label>
+                    <!-- lo mando como campo normal, así no revienta si el dto aún no lo tiene -->
+                    <select name="Prioridad" id="cal-prioridad" class="form-control">
+                        <option value="low">Baja</option>
+                        <option value="medium" selected>Media</option>
+                        <option value="high">Alta</option>
+                        <option value="urgent">Urgente</option>
+                    </select>
+                </div>
+            </div>
+
+           
+        </div>
+
+        <div class="form-group">
+            <label>Descripción</label>
+            @Html.TextAreaFor(m => m.Descripcion, 3, 50, new { @class = "form-control", placeholder = "Descripción del evento..." })
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+    <button type="button" class="btn btn-primary" id="btnGuardarCalendario">Guardar</button>
+</div>
+
+<script>
+    (function () {
+        // mapa de colores por prioridad
+        var coloresPorPrioridad = {
+            'low':    '#2d99ff',  // azul
+            'medium': '#1abc9c',  // verde
+            'high':   '#f39c12',  // naranjo
+            'urgent': '#e74c3c'   // rojo
+        };
+
+        var $selPrioridad = $('#cal-prioridad');
+        var $inpColor = $('#cal-color');
+
+        // si el color es el default, lo ajusto a la prioridad inicial
+        // (si estás editando y ya hay color personalizado, lo dejamos)
+        var colorActual = $inpColor.val();
+        if (colorActual === '#2d99ff' || colorActual === '#000000') {
+            var pr = $selPrioridad.val();
+            if (coloresPorPrioridad[pr]) {
+                $inpColor.val(coloresPorPrioridad[pr]);
+            }
+        }
+
+        // cuando cambie la prioridad, cambio el color
+        $selPrioridad.on('change', function () {
+            var p = $(this).val();
+            if (coloresPorPrioridad[p]) {
+                $inpColor.val(coloresPorPrioridad[p]);
+            }
+        });
+
+        // guardar
+        $('#btnGuardarCalendario').off('click').on('click', function () {
+            $.post('@Url.Action("Guardar","Calendario")', $('#frmCalendario').serialize(), function (r) {
+                if (r.ok) {
+                    $('#modalCalendario').modal('hide');
+
+                    $.get('@Url.Action("Tabla","Calendario")', function (html) {
+                        $('#contenedor-tabla').html(html);
+                        if (window.renderCalendarioMaster)
+                            window.renderCalendarioMaster();
+                    });
+                } else {
+                    alert(r.msg || 'No se pudo guardar el evento');
+                }
+            }).fail(function () {
+                alert('Error al guardar el evento');
+            });
+        });
+    })();
+</script>

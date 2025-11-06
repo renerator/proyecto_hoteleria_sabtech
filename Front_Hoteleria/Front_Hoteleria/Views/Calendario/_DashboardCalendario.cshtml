@@ -1,0 +1,211 @@
+﻿@model Front_Hoteleria.Dto.Calendario.CalendarioKpiDto
+<style>
+    /* barra azul oscuro */
+    .cal-kpi-strip {
+        background: #24394b;
+        border-radius: 8px;
+        padding: 18px 12px 16px 12px;
+        display: flex;
+        gap: 0;
+        color: #fff;
+        margin-bottom: 20px;
+    }
+    .cal-kpi-strip .kpi {
+        flex: 1;
+        text-align: center;
+    }
+    .cal-kpi-strip .kpi-number {
+        font-size: 30px;
+        font-weight: 600;
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+    .cal-kpi-strip .kpi-label {
+        font-size: 13px;
+        opacity: .95;
+    }
+
+    /* bloque verde de filtro */
+    .cal-filter-box {
+        background: #e7f5e8;
+        border: 1px solid #cbe4cb;
+        border-radius: 6px;
+        padding: 14px 16px 10px 16px;
+        margin-bottom: 18px;
+    }
+    .cal-filter-box h5 {
+        margin: 0 0 12px 0;
+        font-weight: 600;
+        color: #4b5563;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* FILA DE FILTROS: misma fila, ocupando todo */
+    .cal-filter-row {
+        display: flex;
+        gap: 16px;
+        width: 100%;
+    }
+    .cal-filter-row .form-group {
+        flex: 1 1 0;
+        margin-bottom: 0;
+    }
+    .cal-filter-row .form-control {
+        width: 100%;
+    }
+
+    /* acciones */
+    .cal-actions-bar {
+        background: #fff;
+        border: 1px solid #e1e5ec;
+        border-radius: 6px;
+        padding: 14px 16px;
+        margin-bottom: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
+    .cal-actions-left .btn {
+        margin-right: 10px;
+        margin-bottom: 6px;
+    }
+    .cal-actions-right .btn {
+        margin-left: 6px;
+    }
+
+    /* leyenda */
+    .cal-legend {
+        margin-bottom: 16px;
+    }
+    .cal-legend-title {
+        font-weight: 600;
+        color: #4b5563;
+        margin-bottom: 6px;
+    }
+    .cal-legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-right: 20px;
+        margin-bottom: 6px;
+    }
+    .cal-legend-color {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        display: inline-block;
+    }
+    .cal-legend-available { background: #1abc9c; }
+    .cal-legend-occupied { background: #d9534f; }
+    .cal-legend-maintenance { background: #f0ad4e; }
+    .cal-legend-sanitization { background: #5bc0de; }
+    .cal-legend-blocked { background: #6c757d; }
+    .cal-legend-reserved { background: #295a8d; }
+
+    /* responsive */
+   @@media (max-width: 768px) {
+        .cal-kpi-strip { flex-direction: column; }
+        .cal-filter-row { flex-direction: column; }
+        .cal-actions-bar { flex-direction: column; align-items: flex-start; }
+    }
+</style>
+
+<!-- KPIs -->
+<div class="cal-kpi-strip">
+    <div class="kpi">
+        <div class="kpi-number">@Model.TotalHabitaciones</div>
+        <div class="kpi-label">Habitaciones Totales</div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-number">@Model.OcupadasHoy</div>
+        <div class="kpi-label">Ocupadas Hoy</div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-number">@Model.EnMantenimiento</div>
+        <div class="kpi-label">En Mantenimiento</div>
+    </div>
+    <div class="kpi">
+        <div class="kpi-number">@Model.EnSanitizacion</div>
+        <div class="kpi-label">En Sanitización</div>
+    </div>
+</div>
+
+<!-- Filtros en una sola fila -->
+<div class="cal-filter-box">
+    <h5><i class="fa fa-bed"></i> Filtro por Habitación:</h5>
+    <div class="cal-filter-row">
+        <div class="form-group">
+            <select id="cal-fil-habitacion" class="form-control">
+                <option value="">Todas las habitaciones</option>
+                @for (int i = 1; i <= 20; i++)
+                {
+                    var room = i.ToString("D4");
+                    <option value="@room">@room</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <select id="cal-fil-estado" class="form-control">
+                <option value="">Todos los estados</option>
+                <option value="available">Disponible</option>
+                <option value="occupied">Ocupada</option>
+                <option value="maintenance">Mantenimiento</option>
+                <option value="sanitization">Sanitización</option>
+                <option value="blocked">Bloqueada</option>
+                <option value="reserved">Reservada</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones Rápidas -->
+<div class="cal-actions-bar">
+    <div class="cal-actions-left">
+        <button type="button" class="btn btn-primary" id="cal-btn-nuevo">
+            <i class="fa fa-plus"></i> Nuevo Evento
+        </button>
+        <button type="button" class="btn btn-success" id="cal-btn-bloquear">
+            <i class="fa fa-ban"></i> Bloquear Habitación
+        </button>
+        <button type="button" class="btn btn-warning" id="cal-btn-mant" style="color:#fff;">
+            <i class="fa fa-wrench"></i> Programar Mantenimiento
+        </button>
+        <button type="button" class="btn btn-info" id="cal-btn-sanit">
+            <i class="fa fa-shower"></i> Programar Sanitización
+        </button>
+    </div>
+    <div class="cal-actions-right">
+        <button type="button" class="btn btn-default" id="cal-btn-exportar">
+            <i class="fa fa-file-excel-o"></i> Exportar Calendario
+        </button>
+        <button type="button" class="btn btn-default" id="cal-btn-refresh">
+            <i class="fa fa-refresh"></i> Actualizar
+        </button>
+    </div>
+</div>
+
+<!-- Leyenda -->
+<div class="cal-legend">
+    <div class="cal-legend-title">Leyenda de Estados:</div>
+    <div class="cal-legend-item">
+        <span class="cal-legend-color cal-legend-available"></span> Disponible
+    </div>
+    <div class="cal-legend-item">
+        <span class="cal-legend-color cal-legend-occupied"></span> Ocupada
+    </div>
+    <div class="cal-legend-item">
+        <span class="cal-legend-color cal-legend-maintenance"></span> Mantenimiento
+    </div>
+    <div class="cal-legend-item">
+        <span class="cal-legend-color cal-legend-sanitization"></span> Sanitización
+    </div>
+    <div class="cal-legend-item">
+        <span class="cal-legend-color cal-legend-blocked"></span> Bloqueada
+    </div>
+    <div class="cal-legend-item">
+        <span class="cal-legend-color cal-legend-reserved"></span> Reservada
+    </div>
+</div>
