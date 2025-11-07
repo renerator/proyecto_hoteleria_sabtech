@@ -93,10 +93,18 @@ namespace Front_Hoteleria.Controllers
         [HttpGet]
         public async Task<ActionResult> ProgramarMantenimiento(string habitacionId = null)
         {
+            List<string> habitaciones = null;
             var token = GetBearer();
 
-            // intentamos pedir lista de habitaciones a la API
-            var habitaciones = await _api.ListarHabitacionesAsync(token);
+            try
+            {
+                habitaciones = await _api.ListarHabitacionesAsync(token);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("[CalendarioController.ProgramarMantenimiento] " + ex);
+            }
+
             if (habitaciones == null || habitaciones.Count == 0)
             {
                 habitaciones = new List<string>();
@@ -110,11 +118,14 @@ namespace Front_Hoteleria.Controllers
             {
                 HabitacionId = habitacionId,
                 FechaInicio = DateTime.Today,
-                DuracionDias = 1
+                DuracionDias = 1,
+                Tipo = "preventive"
             };
 
+            // Asegúrate de que esta ruta exista exactamente así
             return PartialView("~/Views/Calendario/_ProgramarMantenimiento.cshtml", dto);
         }
+
 
         // ====== POST: /Calendario/ProgramarMantenimiento
         [HttpPost]
@@ -137,6 +148,67 @@ namespace Front_Hoteleria.Controllers
                 return Json(new { ok = false, msg = "Error al programar mantenimiento" });
             }
         }
+
+        [HttpGet]
+        public async Task<ActionResult> ProgramarSanitizacion(string habitacionId = null)
+        {
+            var token = GetBearer();
+            List<string> habitaciones = null;
+
+            try
+            {
+                habitaciones = await _api.ListarHabitacionesAsync(token);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("[CalendarioController.ProgramarSanitizacion] " + ex);
+            }
+
+            if (habitaciones == null || habitaciones.Count == 0)
+            {
+                habitaciones = new List<string>();
+                for (int i = 1; i <= 20; i++)
+                    habitaciones.Add(i.ToString("D4"));
+            }
+
+            ViewBag.Habitaciones = habitaciones;
+
+            var dto = new CalendarioSanitizacionDto
+            {
+                HabitacionId = habitacionId,
+                FechaInicio = DateTime.Today,
+                DuracionHoras = 4,
+                Tipo = "routine"
+            };
+
+            return PartialView("~/Views/Calendario/_ProgramarSanitizacion.cshtml", dto);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ProgramarSanitizacion(CalendarioSanitizacionDto dto)
+        {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.HabitacionId))
+                return Json(new { ok = false, msg = "Datos incompletos" });
+
+            var token = GetBearer();
+
+            try
+            {
+                // si tu API aún no tiene este endpoint, simula OK
+                var okApi = await _api.ProgramarSanitizacionAsync(dto, token);
+                if (!okApi)
+                {
+                    // maqueta: igual devolvemos ok
+                }
+                return Json(new { ok = true });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("[CalendarioController.ProgramarSanitizacion] " + ex);
+                return Json(new { ok = false, msg = "Error al programar la sanitización" });
+            }
+        }
+
         // ====== NUEVO: POST /Calendario/Bloquear
         [HttpPost]
         public async Task<ActionResult> Bloquear(CalendarioBloqueoDto dto)

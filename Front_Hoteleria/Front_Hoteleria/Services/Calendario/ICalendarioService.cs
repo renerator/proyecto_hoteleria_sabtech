@@ -25,5 +25,7 @@ namespace Front_Hoteleria.Services.Calendario
         Task<bool> BloquearHabitacionAsync(CalendarioBloqueoDto dto, string bearer = null);
         Task<bool> ProgramarMantenimientoAsync(CalendarioMantenimientoDto dto, string bearer = null);
 
+        Task<bool> ProgramarSanitizacionAsync(CalendarioSanitizacionDto dto, string bearer = null);
+
     }
 }

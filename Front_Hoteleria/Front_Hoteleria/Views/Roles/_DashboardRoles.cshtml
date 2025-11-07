@@ -1,0 +1,43 @@
+﻿@model Front_Hoteleria.Dto.Roles.RolesKpiDto
+
+<style>
+    .roles-stats {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: #fff;
+        border-radius: 10px;
+        padding: 20px 18px;
+        margin-bottom: 20px;
+    }
+
+        .roles-stats h3 {
+            margin: 0;
+            font-size: 30px;
+            font-weight: 600;
+        }
+
+        .roles-stats p {
+            margin: 4px 0 0 0;
+            opacity: .9;
+        }
+</style>
+
+<div class="roles-stats">
+    <div class="row">
+        <div class="col-md-3 text-center">
+            <h3>@Model.TotalRoles</h3>
+            <p>Roles Definidos</p>
+        </div>
+        <div class="col-md-3 text-center">
+            <h3>@Model.Administradores</h3>
+            <p>Administradores</p>
+        </div>
+        <div class="col-md-3 text-center">
+            <h3>@Model.Supervisores</h3>
+            <p>Supervisores</p>
+        </div>
+        <div class="col-md-3 text-center">
+            <h3>@Model.Trabajadores</h3>
+            <p>Trabajadores</p>
+        </div>
+    </div>
+</div>

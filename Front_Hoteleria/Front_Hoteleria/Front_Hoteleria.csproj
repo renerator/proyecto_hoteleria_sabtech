@@ -145,10 +145,14 @@
     <Compile Include="Controllers\ServiciosController.cs" />
     <Compile Include="Controllers\ServiciosDisponiblesController.cs" />
     <Compile Include="Dto\Calendario\CalendarioBloqueoDto.cs" />
+    <Compile Include="Dto\Calendario\CalendarioSanitizacionDto.cs" />
     <Compile Include="Dto\Calendario\CalendarioMantenimientoDto.cs" />
     <Compile Include="Dto\Calendario\CalendarioKpiDto.cs" />
     <Compile Include="Dto\Calendario\CalendarioHabitacionDto.cs" />
     <Compile Include="Dto\Calendario\CalendarioEventoDto.cs" />
+    <Compile Include="Dto\Campamentos\CampamentoAreaDto.cs" />
+    <Compile Include="Dto\Campamentos\CampamentoDto.cs" />
+    <Compile Include="Dto\Campamentos\CampamentoKpiDto.cs" />
     <Compile Include="Dto\Checkin\CheckinAccionDto.cs" />
     <Compile Include="Dto\Checkin\CheckinKpiDto.cs" />
     <Compile Include="Dto\Checkin\CheckinExtensionDto.cs" />
@@ -173,6 +177,13 @@
     <Compile Include="Dto\Reserva\ReservaTrabajadorDto.cs" />
     <Compile Include="Dto\Reserva\ReservaDashboardDto.cs" />
     <Compile Include="Dto\Reserva\ReservaDto.cs" />
+    <Compile Include="Dto\Roles\AsignacionRolDto.cs" />
+    <Compile Include="Dto\Roles\RolPermisoDto.cs" />
+    <Compile Include="Dto\Roles\TrabajadorDto.cs" />
+    <Compile Include="Dto\Roles\RolAsignacionDetalleDto.cs" />
+    <Compile Include="Dto\Roles\RolAsignacionDto.cs" />
+    <Compile Include="Dto\Roles\RolDto.cs" />
+    <Compile Include="Dto\Roles\RolesKpiDto.cs" />
     <Compile Include="Dto\ServicioCategoria\ServicioCategoriaDto.cs" />
     <Compile Include="Dto\ServicioEstado\ServicioEstadoDto.cs" />
     <Compile Include="Dto\ServicioPersonal\ServiciosPersonalDto.cs" />
@@ -4682,9 +4693,9 @@
     <Content Include="Views\Campamentos\_TablaCampamentos.cshtml" />
     <Content Include="Views\Campamentos\_UpsertCampamentos.cshtml" />
     <Content Include="Views\Campamentos\Index.cshtml" />
-    <Content Include="Views\Roles\_DashboardReserva.cshtml" />
-    <Content Include="Views\Roles\_TablaReserva.cshtml" />
-    <Content Include="Views\Roles\_UpsertReserva.cshtml" />
+    <Content Include="Views\Roles\_DashboardRoles.cshtml" />
+    <Content Include="Views\Roles\_TablaRoles.cshtml" />
+    <Content Include="Views\Roles\_AsignacionesRoles.cshtml" />
     <Content Include="Views\Roles\Index.cshtml" />
     <Content Include="Views\ServiciosDisponibles\_ImportarMasivo.cshtml" />
     <Content Include="Views\ServiciosDisponibles\_ConfigurarServicios.cshtml" />
@@ -4708,7 +4719,11 @@
     <Content Include="Views\Inventario\_RegistrarMovimiento.cshtml" />
     <Content Include="Views\Inventario\_VerInventario.cshtml" />
     <Content Include="Views\Calendario\_BloquearHabitacion.cshtml" />
-    <Content Include="Views\Calendario\ProgramarMantenimiento.cshtml" />
+    <Content Include="Views\Calendario\_ProgramarMantenimiento.cshtml" />
+    <Content Include="Views\Calendario\_ProgramarSanitizacion.cshtml" />
+    <Content Include="Views\Roles\_CrearRol.cshtml" />
+    <Content Include="Views\Reportes\_AsignarRol.cshtml" />
+    <Content Include="Views\Roles\_MatrizPermisos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\vendors\devbridge-autocomplete\src\jquery.autocomplete.d.ts" />

@@ -1,57 +1,143 @@
-﻿@Model IEnumerable<Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto>
+﻿@model IEnumerable<Front_Hoteleria.Dto.Campamentos.CampamentoDto>
+<style>
+    .camp-list-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #374151;
+    }
 
-<table id="tablaReservas" class="table table-striped table-bordered" style="width:100%">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Rut</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Fecha Desde</th>
-            <th>Fecha Hasta</th>
-            <th>Habitación</th>
-            <th>Estado</th>
-            <th>Total</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model != null && Model.Any())
-        {
-            foreach (var item in Model)
+    .camp-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 16px 16px 4px 16px;
+        margin-bottom: 16px;
+    }
+
+    .camp-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .camp-card h4 {
+        margin: 0;
+        font-size: 18px;
+        color: #1f2937;
+    }
+
+    .camp-subtitle {
+        font-size: 12px;
+        color: #6b7280;
+        margin-left: 6px;
+    }
+
+    .camp-badge {
+        padding: 6px 16px;
+        border-radius: 30px;
+        color: #fff;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .camp-badge-active {
+        background: #1abc9c;
+    }
+
+    .camp-badge-maint {
+        background: #f0ad4e;
+    }
+
+    .camp-badge-inactive {
+        background: #d9534f;
+    }
+
+    .camp-progress {
+        margin-top: 10px;
+        margin-bottom: 12px;
+    }
+
+    .camp-area-line {
+        background: #f5f7fa;
+        border-left: 4px solid #0b6ef3;
+        border-radius: 4px;
+        padding: 8px 10px 5px 10px;
+        margin-bottom: 8px;
+    }
+
+    .camp-area-name {
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .camp-action-btns .btn {
+        margin-left: 6px;
+    }
+</style>
+
+<h3 class="camp-list-title">Campamentos Registrados</h3>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">No hay campamentos registrados (maqueta).</div>
+}
+else
+{
+    foreach (var c in Model)
+    {
+        var pct = c.Capacidad > 0 ? (int)Math.Round((c.OcupacionActual * 100.0) / c.Capacidad) : 0;
+        var badgeClass = c.Estado == "active"
+            ? "camp-badge camp-badge-active"
+            : c.Estado == "maintenance"
+                ? "camp-badge camp-badge-maint"
+                : "camp-badge camp-badge-inactive";
+        var badgeText = c.Estado == "active"
+            ? "Activo"
+            : c.Estado == "maintenance"
+                ? "Mantenimiento"
+                : "Inactivo";
+        <div class="camp-card">
+            <div class="camp-card-header">
+                <div>
+                    <h4>@c.Nombre <span class="camp-subtitle">@c.Codigo</span></h4>
+                    <p><strong>Ubicación:</strong> @c.Ubicacion</p>
+                    <p><strong>Encargado:</strong> @c.Encargado</p>
+                    <p><strong>Ocupación:</strong> @c.OcupacionActual/@c.Capacidad (@pct%)</p>
+                </div>
+                <div class="text-right camp-action-btns">
+                    <span class="@badgeClass">@badgeText</span><br /><br />
+                    <button type="button" class="btn btn-info btn-sm">
+                        <i class="fa fa-eye"></i> Ver
+                    </button>
+                    <button type="button" class="btn btn-warning btn-sm camp-btn-editar" data-id="@c.Id">
+                        <i class="fa fa-edit"></i> Editar
+                    </button>
+                </div>
+            </div>
+
+            <div class="camp-progress">
+                <div class="progress" style="margin-bottom:4px;">
+                    <div class="progress-bar" role="progressbar" style="width:@pct%"></div>
+                </div>
+            </div>
+
+            @if (c.Areas != null && c.Areas.Any())
             {
-                <tr>
-
-                    <td>@item.IdReserva</td>
-                    <td>@item.dniTrabajador"</td>
-                    <td>@item.Nombres</td>
-                    <td>@item.Apellidos</td>
-
-
-                    <td>@(item.FechaDesde?.ToString("dd/MM/yyyy"))</td>
-                    <td>@(item.FechaHasta?.ToString("dd/MM/yyyy"))</td>
-                    <td>@item.Habitacion</td>
-                    <td>@item.EstadoReserva</td>
-                    <td>@item.Totales</td>
-
-                    <td>—</td>  @* Placeholder si no viene Total *@
-                    <td>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-info btn-sm btn-res-editar" data-id="@item.IdReserva">
-                                <i class="fa fa-pencil"></i>
-                            </button>
-                            <button type="button" class="btn btn-danger btn-sm btn-res-eliminar" data-id="@item.IdReserva">
-                                <i class="fa fa-trash"></i>
-                            </button>
+                <p><strong>Áreas Comunes:</strong></p>
+                <div class="row">
+                    @foreach (var a in c.Areas)
+                    {
+                        <div class="col-md-4">
+                            <div class="camp-area-line">
+                                <div class="camp-area-name">@a.Nombre</div>
+                                <small>Capacidad: @a.Capacidad | Estado: @a.Estado</small>
+                            </div>
                         </div>
-                    </td>
-                </tr>
+                    }
+                </div>
             }
-        }
-        else
-        {
-            <tr><td colspan="9" class="text-center text-muted">No se encontraron reservas.</td></tr>
-        }
-    </tbody>
-</table>
-
+        </div>
+    }
+}

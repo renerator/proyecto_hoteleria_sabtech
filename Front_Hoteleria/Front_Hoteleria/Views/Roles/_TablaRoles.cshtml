@@ -1,0 +1,112 @@
+﻿@model List<Front_Hoteleria.Dto.Roles.RolDto>
+
+<style>
+    .role-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background: #fff;
+        transition: all 0.2s ease;
+    }
+
+        .role-card:hover {
+            box-shadow: 0 3px 8px rgba(0,0,0,.08);
+            transform: translateY(-1px);
+        }
+
+    .role-badge {
+        display: inline-block;
+        background: #5cb85c;
+        color: #fff;
+        padding: 4px 9px;
+        border-radius: 12px;
+        font-size: 11px;
+        margin-right: 4px;
+        margin-bottom: 4px;
+    }
+
+        .role-badge.admin {
+            background: #d9534f;
+        }
+
+        .role-badge.supervisor {
+            background: #f0ad4e;
+        }
+
+        .role-badge.worker {
+            background: #5bc0de;
+        }
+
+    .role-status {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 10px;
+        font-size: 11px;
+        color: #fff;
+    }
+
+        .role-status.active {
+            background: #26B99A;
+        }
+
+        .role-status.inactive {
+            background: #d9534f;
+        }
+</style>
+
+@if (Model == null || !Model.Any())
+{
+    <p>No hay roles registrados.</p>
+}
+else
+{
+    foreach (var r in Model)
+    {
+        <div class="role-card">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4>@r.Nombre <small>@r.Codigo</small></h4>
+                    <p>@r.Descripcion</p>
+                    <p>
+                        <strong>Usuarios asignados:</strong> @r.UsuariosAsignados
+                        @if (!string.IsNullOrWhiteSpace(r.Estado))
+                        {
+                            <span class="role-status @(r.Estado)">
+                                @(r.Estado == "active" ? "Activo" : r.Estado)
+                            </span>
+                        }
+                    </p>
+                    <div>
+                        @if (r.Permisos != null && r.Permisos.Any())
+                        {
+                            foreach (var p in r.Permisos.Take(5))
+                            {
+                                <span class="role-badge">@p</span>
+                            }
+                            if (r.Permisos.Count > 5)
+                            {
+                                <span class="text-muted">... y @(r.Permisos.Count - 5) más</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">Sin permisos asignados.</span>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-4 text-right">
+                    <button type="button" class="btn btn-sm btn-info">
+                        <i class="fa fa-eye"></i> Ver
+                    </button>
+                    <button type="button" class="btn btn-sm btn-warning">
+                        <i class="fa fa-edit"></i> Editar
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+}

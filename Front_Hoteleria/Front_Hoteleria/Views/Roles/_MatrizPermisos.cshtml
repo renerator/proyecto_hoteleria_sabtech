@@ -1,0 +1,113 @@
+﻿@{
+    Layout = null;
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Matriz de Permisos por Rol</h4>
+</div>
+<div class="modal-body">
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Módulo</th>
+                    <th class="text-center">Administrador</th>
+                    <th class="text-center">Supervisor</th>
+                    <th class="text-center">Trabajador</th>
+                    <th class="text-center">Invitado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><i class="fa fa-home"></i> Habitaciones</td>
+                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                    <td class="text-center"><span class="badge bg-blue">Lectura</span></td>
+                    <td class="text-center"><span class="badge bg-blue">Lectura</span></td>
+                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                </tr>
+                <tr>
+                    <td><i class="fa fa-calendar"></i> Reservas</td>
+                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                    <td class="text-center"><span class="badge bg-blue">Lectura</span></td>
+                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                </tr>
+                <tr>
+                    <td><i class="fa fa-wrench"></i> Servicios</td>
+                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                    <td class="text-center"><span class="badge" style="background:#f0ad4e;">Limitado</span></td>
+                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                </tr>
+                <tr>
+                    <td><i class="fa fa-building"></i> Campamentos</td>
+                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                    <td class="text-center"><span class="badge bg-blue">Lectura</span></td>
+                    <td class="text-center"><span class="badge bg-blue">Lectura</span></td>
+                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                </tr>
+                <tr>
+                    <td><i class="fa fa-file-text"></i> Contratos</td>
+                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                    <td class="text-center"><span class="badge bg-blue">Lectura</span></td>
+                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                </tr>
+                <tr>
+                    <td><i class="fa fa-users"></i> Dotaciones</td>
+                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                    <td class="text-center"><span class="badge bg-blue">Lectura</span></td>
+                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                </tr>
+                <tr>
+                    <td><i class="fa fa-shield"></i> Roles</td>
+                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                </tr>
+                <tr>
+                    <td><i class="fa fa-bar-chart"></i> Reportes</td>
+                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                    <td class="text-center"><span class="badge bg-green">Completo</span></td>
+                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                    <td class="text-center"><span class="badge bg-red">Sin acceso</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row" style="margin-top:15px;">
+        <div class="col-md-12">
+            <h5>Leyenda de Permisos:</h5>
+            <p>
+                <span class="badge bg-green">Completo</span> - Acceso total (crear, leer, editar, eliminar)
+            </p>
+            <p>
+                <span class="badge bg-blue">Lectura</span> - Solo visualización
+            </p>
+            <p>
+                <span class="badge" style="background:#f0ad4e;">Limitado</span> - Acceso restringido
+            </p>
+            <p>
+                <span class="badge bg-red">Sin acceso</span> - Sin permisos
+            </p>
+        </div>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+    <button type="button" class="btn btn-primary" id="btnExportarMatriz">
+        <i class="fa fa-file-excel-o"></i> Exportar Matriz
+    </button>
+</div>
+
+<script>
+    $('#btnExportarMatriz').off('click').on('click', function () {
+        alert('Matriz exportada (demo).');
+    });
+</script>

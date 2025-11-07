@@ -1,44 +1,110 @@
-﻿@Model Front_Hoteleria.Dto.Reserva.ReservaDashboardDto
-
-@{
-    int totalConfirmadas = Convert.ToInt32(Model?.TotalConfirmadas ?? 0);
-    int totalRechazadas = Convert.ToInt32(Model?.TotalRechazadas ?? 0);
-    int totalServicios = Convert.ToInt32(Model?.TotalServicios ?? 0);
-
-    // Fallback para el nombre de “Nuevas Hoy”
-    int nuevasHoy = 0;
-    if (Model != null)
-    {
-        var t = Model.GetType();
-        var p = t.GetProperty("NuevasHoy") ?? t.GetProperty("NuevasHoys") ?? t.GetProperty("NuevasReservas");
-        var v = p?.GetValue(Model, null);
-        nuevasHoy = v != null ? Convert.ToInt32(v) : 0;
+﻿@model Front_Hoteleria.Dto.Campamentos.CampamentoKpiDto
+<style>
+    /* barra azul oscuro de KPIs */
+    .camp-kpi-strip {
+        background: #23384a;
+        border-radius: 8px;
+        padding: 18px 12px 16px 12px;
+        display: flex;
+        gap: 0;
+        color: #fff;
+        margin-bottom: 20px;
     }
-}
 
-<div class="row">
-    <div class="col-sm-3">
-        <div class="well text-center">
-            <div style="font-size:28px;font-weight:700">@totalConfirmadas.ToString("N0")</div>
-            <div class="text-muted" style="text-transform:uppercase;letter-spacing:.5px">Total Confirmadas</div>
-        </div>
+        .camp-kpi-strip .kpi {
+            flex: 1;
+            text-align: center;
+        }
+
+        .camp-kpi-strip .kpi-number {
+            font-size: 30px;
+            font-weight: 600;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .camp-kpi-strip .kpi-label {
+            font-size: 13px;
+            opacity: .95;
+        }
+
+    /* barra de acciones */
+    .camp-actions-bar {
+        background: #fff;
+        border: 1px solid #e2e5ec;
+        border-radius: 6px;
+        padding: 12px 16px;
+        margin-bottom: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .camp-actions-left .btn {
+        margin-right: 10px;
+        margin-bottom: 6px;
+    }
+
+    .camp-actions-right .btn {
+        margin-left: 6px;
+    }
+
+    #camp-btn-nuevo {
+        background: #1f6fb2;
+        border-color: #1f6fb2;
+    }
+
+    #camp-btn-area {
+        background: #1abc9c;
+        border-color: #1abc9c;
+    }
+
+    #camp-btn-infra {
+        background: #3bb3d6;
+        border-color: #3bb3d6;
+    }
+</style>
+
+<!-- KPIs -->
+<div class="camp-kpi-strip">
+    <div class="kpi">
+        <div class="kpi-number">@Model.CampamentosActivos</div>
+        <div class="kpi-label">Campamentos Activos</div>
     </div>
-    <div class="col-sm-3">
-        <div class="well text-center">
-            <div style="font-size:28px;font-weight:700">@totalRechazadas.ToString("N0")</div>
-            <div class="text-muted" style="text-transform:uppercase;letter-spacing:.5px">Total Rechazadas</div>
-        </div>
+    <div class="kpi">
+        <div class="kpi-number">@Model.AreasComunes</div>
+        <div class="kpi-label">Áreas Comunes</div>
     </div>
-    <div class="col-sm-3">
-        <div class="well text-center">
-            <div style="font-size:28px;font-weight:700">@totalServicios.ToString("N0")</div>
-            <div class="text-muted" style="text-transform:uppercase;letter-spacing:.5px">Total Servicios</div>
-        </div>
+    <div class="kpi">
+        <div class="kpi-number">@Model.Habitaciones</div>
+        <div class="kpi-label">Habitaciones</div>
     </div>
-    <div class="col-sm-3">
-        <div class="well text-center">
-            <div style="font-size:28px;font-weight:700">@nuevasHoy.ToString("N0")</div>
-            <div class="text-muted" style="text-transform:uppercase;letter-spacing:.5px">Nuevas Hoy</div>
-        </div>
+    <div class="kpi">
+        <div class="kpi-number">@Model.TasaUtilizacion</div>
+        <div class="kpi-label">Tasa de Utilización</div>
+    </div>
+</div>
+
+<!-- acciones -->
+<div class="camp-actions-bar">
+    <div class="camp-actions-left">
+        <button type="button" class="btn btn-primary" id="camp-btn-nuevo">
+            <i class="fa fa-plus"></i> Nuevo Campamento
+        </button>
+        <button type="button" class="btn btn-success" id="camp-btn-area">
+            <i class="fa fa-building"></i> Nueva Área Común
+        </button>
+        <button type="button" class="btn btn-info" id="camp-btn-infra">
+            <i class="fa fa-cogs"></i> Gestionar Infraestructura
+        </button>
+    </div>
+    <div class="camp-actions-right">
+        <button type="button" class="btn btn-warning" id="camp-btn-exportar">
+            <i class="fa fa-file-excel-o"></i> Exportar Reporte
+        </button>
+        <button type="button" class="btn btn-default" id="camp-btn-refresh">
+            <i class="fa fa-refresh"></i> Actualizar
+        </button>
     </div>
 </div>

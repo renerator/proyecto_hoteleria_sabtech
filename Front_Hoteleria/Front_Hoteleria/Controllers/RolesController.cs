@@ -1,16 +1,13 @@
-using Front_Hoteleria.Dto.Reserva;
+using Front_Hoteleria.Dto.Roles;
 using Front_Hoteleria.Services.Roles;
+using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
 
 namespace Front_Hoteleria.Controllers
 {
@@ -19,202 +16,306 @@ namespace Front_Hoteleria.Controllers
         private readonly IRolesService _api;
 
         public RolesController() : this(new RolesService()) { }
-        public RolesController(IRolesService api) { _api = api; }
 
-        // -------------------------------
-        //  TOKEN & PERFIL
-        // -------------------------------
+        public RolesController(IRolesService api)
+        {
+            _api = api;
+        }
+
         private string GetBearer()
         {
             try
             {
                 return (Session["Token"] as string)
-                       ?? (Request.Cookies["access_token"] != null ? Request.Cookies["access_token"].Value : null);
+                       ?? (Request.Cookies["access_token"] != null
+                           ? Request.Cookies["access_token"].Value
+                           : null);
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[GetBearer] Error leyendo token: {ex}");
+                Trace.TraceError("[RolesController.GetBearer] " + ex);
                 return null;
             }
         }
 
-        // -------------------------------
-        //  INDEX
-        // -------------------------------
+        // GET: /Roles
         [HttpGet]
         public ActionResult Index()
         {
-            if (!(Session["Token"] is string tok) || string.IsNullOrWhiteSpace(tok))
-                return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-
-            var perfil = Session["IdPerfil"];
-            if (perfil == null)
-                return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-
-            switch (perfil)
-            {
-                case 4: return View("~/Views/Roles/Index.cshtml");
-                
-                default: return RedirectToAction("Login", "Account");
-            }
+            // vista principal: ~/Views/Roles/Index.cshtml
+            return View("~/Views/Roles/Index.cshtml");
         }
 
-
-
-public async Task<ActionResult> TablaPartial(
-    DateTime? fechaDesde,
-    DateTime? fechaHasta,
-    int? idEstadoReserva,
-    int? idtiporeserva)
-    {
-        try
-        {
-            var token = GetBearer();
-            if (string.IsNullOrWhiteSpace(token))
-                return new HttpStatusCodeResult(401, "Sesión expirada");
-
-            var filtro = new ReservaTrabajadorDto
-            {
-                FechaDesde = fechaDesde,
-                FechaHasta = fechaHasta,
-                IdEstadoReserva = idEstadoReserva ?? 0, // 0 = no filtra (según tu SP)
-                IdTipoReserva = idtiporeserva ?? 0
-            };
-
-            var data = await _api.ReservasDisponiblesTrabajadorAsync(filtro, token);
-
-            // TIP: el partial debe estar tipado a List<ReservaTrabajadorDto>
-            return PartialView("~/Views/Reservas/_TablaReserva.cshtml", data);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Trace.TraceError($"[TablaReserva] {ex}");
-            return new HttpStatusCodeResult(500, "Error al cargar reservas");
-        }
-    }
+        // ====== KPIs (panel superior) ======
         [HttpGet]
-        public async Task<ActionResult> Upsert()
+        public async Task<ActionResult> Resumen()
         {
             var token = GetBearer();
-            if (string.IsNullOrWhiteSpace(token))
-                return new HttpStatusCodeResult(401);
+            var dto = await _api.ResumenAsync(token);
 
-            // Rellena combos (ajusta a tu servicio)
-            ViewBag.Habitaciones = new SelectList(new[]
+            if (dto == null)
+            {
+                dto = new RolesKpiDto
                 {
-        new { Id = 1, Nombre = "Individual" },
-        new { Id = 2, Nombre = "Grupal" },
-        new { Id = 3, Nombre = "Corporativa" }
-    }, "Id", "Nombre");
-            ViewBag.TiposReserva = new SelectList(new[]
-            {
-        new { Id = 1, Nombre = "Individual" },
-        new { Id = 2, Nombre = "Grupal" },
-        new { Id = 3, Nombre = "Corporativa" }
-    }, "Id", "Nombre");
+                    TotalRoles = 5,
+                    Administradores = 3,
+                    Supervisores = 8,
+                    Trabajadores = 145
+                };
+            }
 
-            ViewBag.IdTrabajador = Session["IdTrabajador"];
-
-            var Dto = new Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
-            {
-                FechaDesde = DateTime.Today,
-                FechaHasta = DateTime.Today.AddDays(1),
-                IdEstadoReserva = 1
-            };
-
-            return PartialView("~/Views/Reservas/_UpsertReserva.cshtml", Dto);
+            // ~/Views/Roles/_DashboardRoles.cshtml
+            return PartialView("~/Views/Roles/_DashboardRoles.cshtml", dto);
         }
 
-
-        // ReservasController
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CrearReserva(Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto dto)
+        // ====== TABLA / LISTA ======
+        // GET: /Roles/Tabla?criterio=admin
+        [HttpGet]
+        public async Task<ActionResult> Tabla(string criterio)
         {
             try
             {
                 var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada");
+                var lista = await _api.ListarAsync(criterio, token);
 
-                // saneos mínimos
-                if (dto == null) return new HttpStatusCodeResult(400, "Datos inválidos");
-                if (dto.IdHabitacion <= 0  || !dto.FechaDesde.HasValue || !dto.FechaHasta.HasValue)
-                    return new HttpStatusCodeResult(400, "Campos obligatorios faltantes");
+                // si la api no respondió, metemos datos demo
+                if (lista == null || !lista.Any())
+                {
+                    lista = new List<RolDto>
+                    {
+                        new RolDto {
+                            Id = 1,
+                            Nombre = "Administrador",
+                            Codigo = "ADMIN",
+                            Descripcion = "Acceso completo a todas las funcionalidades",
+                            UsuariosAsignados = 3,
+                            Permisos = BuildDefaultPermisos()
+                        },
+                        new RolDto {
+                            Id = 2,
+                            Nombre = "Supervisor",
+                            Codigo = "SUPERVISOR",
+                            Descripcion = "Acceso de supervisión a operaciones diarias",
+                            UsuariosAsignados = 8,
+                            Permisos = BuildDefaultPermisos().Where(p => p.Codigo != "roles").ToList()
+                        },
+                        new RolDto {
+                            Id = 3,
+                            Nombre = "Trabajador",
+                            Codigo = "WORKER",
+                            Descripcion = "Acceso básico para operaciones",
+                            UsuariosAsignados = 145,
+                            Permisos = new List<RolPermisoDto>
+                            {
+                                new RolPermisoDto{ Codigo="rooms", Nombre="Gestión de Habitaciones", Habilitado=true },
+                                new RolPermisoDto{ Codigo="services", Nombre="Gestión de Servicios", Habilitado=true },
+                            }
+                        }
+                    };
+                }
 
-                if (dto.IdEstadoReserva == 0) dto.IdEstadoReserva = 1; // Ingresada
+                // ~/Views/Roles/_TablaRoles.cshtml
+                return PartialView("~/Views/Roles/_TablaRoles.cshtml", lista);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[RolesController.Tabla] " + ex);
+                return new HttpStatusCodeResult(500, "Error al cargar roles");
+            }
+        }
 
-                var ok = await _api.CrearReservaTrabajadorAsync(dto, token);
-                if (!ok) return new HttpStatusCodeResult(500, "No se pudo crear la reserva.");
+        // ====== GET: crear (muestra modal) ======
+        [HttpGet]
+        public ActionResult Crear()
+        {
+            // acá simulas traer los permisos desde la API
+            var dto = new RolDto
+            {
+                Permisos = BuildDefaultPermisos()
+            };
 
-                // Respuesta para manejar por JS
+            return PartialView("~/Views/Roles/_CrearRol.cshtml", dto);
+        }
+
+        // ====== GET: editar ======
+        [HttpGet]
+        public async Task<ActionResult> Editar(int id)
+        {
+            if (id==0)
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "Id requerido");
+
+            var token = GetBearer();
+            var dto = await _api.ObtenerPorIdAsync(id, token);
+
+            if (dto == null)
+            {
+                // si no lo encontró, armamos uno en duro
+                dto = new RolDto
+                {
+                    Id = id,
+                    Nombre = "Rol Demo",
+                    Codigo = "codigo",
+                    Descripcion = "Rol de demostración",
+                    Permisos = BuildDefaultPermisos()
+                };
+            }
+            else
+            {
+                // por seguridad, si la API no mandó la lista completa de permisos,
+                // la completamos con las que usamos en la UI
+                dto.Permisos = MergePermisos(dto.Permisos, BuildDefaultPermisos());
+            }
+
+            return PartialView("~/Views/Roles/_CrearRol.cshtml", dto);
+        }
+
+        // ====== POST: guardar (crear o actualizar) ======
+        [HttpPost]
+        public async Task<ActionResult> Guardar(RolDto dto)
+        {
+            if (dto == null)
+                return Json(new { ok = false, msg = "Datos vacíos" });
+
+            var token = GetBearer();
+
+            try
+            {
+                bool ok;
+                if (dto.Id >0)
+                    ok = await _api.ActualizarAsync(dto, token);
+                else
+                    ok = await _api.CrearAsync(dto, token);
+
+                if (!ok)
+                    return Json(new { ok = false, msg = "No se pudo guardar en la API" });
+
                 return Json(new { ok = true });
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError($"[CrearReserva] {ex}");
-                return new HttpStatusCodeResult(500, "Error al crear la reserva.");
+                Trace.TraceError("[RolesController.Guardar] " + ex);
+                return Json(new { ok = false, msg = "Error inesperado al guardar" });
             }
         }
 
-        // ===== DASHBOARD VIEW (PARCIAL) =====
-        // SIN parámetros de fecha
+        // ====== GET: /Roles/Asignar  (muestra el modal) ======
         [HttpGet]
-        public async Task<ActionResult> Dashboard()
+        public async Task<ActionResult> Asignar()
         {
+            // si tuvieras API, aquí la llamas. Ahora: datos en duro
+
+            // trabajadores de ejemplo
+            var trabajadores = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "1", Text = "Juan Pérez - Constructora ABC" },
+        new SelectListItem { Value = "2", Text = "María González - Servicios Mineros" },
+        new SelectListItem { Value = "3", Text = "Carlos Méndez - Contratista Sur" },
+    };
+            ViewBag.Trabajadores = trabajadores;
+
+            // roles de ejemplo (los mismos que usas en la tabla)
+            var roles = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "1", Text = "Administrador (ADMIN)" },
+        new SelectListItem { Value = "2", Text = "Supervisor (SUPERVISOR)" },
+        new SelectListItem { Value = "3", Text = "Trabajador (WORKER)" },
+        new SelectListItem { Value = "4", Text = "Invitado (GUEST)" },
+        new SelectListItem { Value = "5", Text = "Supervisor de Mantenimiento (SUP_MANT)" },
+    };
+            ViewBag.Roles = roles;
+
+            var dto = new AsignacionRolDto
+            {
+                FechaInicio = DateTime.Today,
+                FechaFin = DateTime.Today.AddMonths(1)
+            };
+
+            return PartialView("~/Views/Roles/_AsignacionesRoles.cshtml", dto);
+        }
+
+        // ====== POST: /Roles/Asignar  (guarda la asignación) ======
+        [HttpPost]
+        public async Task<ActionResult> Asignar(AsignacionRolDto dto)
+        {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.TrabajadorId) || dto.RolId == 0)
+                return Json(new { ok = false, msg = "Complete trabajador y rol." });
+
             try
             {
-                var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
+                // aquí llamarías al servicio real:
+                // var token = GetBearer();
+                // var okApi = await _api.AsignarRolAsync(dto, token);
 
-                // Llama al servicio SIN parámetros de fecha (usa null, null)
-
-                var dto = new ReservaDashboardDto();
-                 dto = await _api.DashboardReservasAsync(token)
-                          ?? new ReservaDashboardDto();
-
-                // Devuelve el parcial fuertemente tipado con el DTO
-                return PartialView("~/Views/Reservas/_DashboardReserva.cshtml", dto);
-                
-            }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[Dashboard] Error HTTP: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.BadGateway, "No se pudo comunicar con la API de dashboard.");
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[Dashboard] Timeout: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta de dashboard excedió el tiempo de espera.");
+                // demo: siempre ok
+                return Json(new { ok = true });
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[Dashboard] Error: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al cargar el dashboard.");
+                Trace.TraceError("[RolesController.Asignar POST] " + ex);
+                return Json(new { ok = false, msg = "Error al asignar el rol." });
             }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Eliminar(int idHabitacion)
+        [HttpGet]
+        public ActionResult MatrizPermisos()
         {
+            return PartialView("~/Views/Roles/_MatrizPermisos.cshtml");
+        }
+
+
+        // ====== POST: eliminar ======
+        [HttpPost]
+        public async Task<ActionResult> Eliminar(int id)
+        {
+            var token = GetBearer();
             try
             {
-                var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized);
-
-                var ok = await _api.EliminarReservaAsync(idHabitacion, token);
-                if (!ok) return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "No se pudo eliminar.");
-                return new HttpStatusCodeResult((int)HttpStatusCode.OK);
+                var ok = await _api.EliminarAsync(id, token);
+                return Json(new { ok });
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[Eliminar] Error: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al eliminar la reserva.");
+                Trace.TraceError("[RolesController.Eliminar] " + ex);
+                return Json(new { ok = false, msg = "Error al eliminar" });
             }
+        }
+
+        // ===== helpers internos =====
+        private static List<RolPermisoDto> BuildDefaultPermisos()
+        {
+            return new List<RolPermisoDto>
+            {
+                new RolPermisoDto{ Codigo = "rooms",       Nombre = "Gestión de Habitaciones",      Habilitado = true },
+                new RolPermisoDto{ Codigo = "reservations",Nombre = "Gestión de Reservas",          Habilitado = true },
+                new RolPermisoDto{ Codigo = "services",    Nombre = "Gestión de Servicios",         Habilitado = true },
+                new RolPermisoDto{ Codigo = "camps",       Nombre = "Gestión de Campamentos",       Habilitado = true },
+                new RolPermisoDto{ Codigo = "contracts",   Nombre = "Gestión de Contratos",         Habilitado = true },
+                new RolPermisoDto{ Codigo = "staff",       Nombre = "Gestión de Dotaciones",        Habilitado = true },
+                new RolPermisoDto{ Codigo = "roles",       Nombre = "Gestión de Roles",             Habilitado = true },
+                new RolPermisoDto{ Codigo = "reports",     Nombre = "Reportes y Estadísticas",      Habilitado = true },
+            };
+        }
+
+        // completa permisos que vengan de la API con los que necesita la UI
+        private static List<RolPermisoDto> MergePermisos(List<RolPermisoDto> actuales, List<RolPermisoDto> basePermisos)
+        {
+            if (actuales == null || actuales.Count == 0)
+                return basePermisos;
+
+            var dict = actuales.ToDictionary(p => p.Codigo, p => p, StringComparer.OrdinalIgnoreCase);
+
+            foreach (var p in basePermisos)
+            {
+                if (!dict.ContainsKey(p.Codigo))
+                    actuales.Add(new RolPermisoDto
+                    {
+                        Codigo = p.Codigo,
+                        Nombre = p.Nombre,
+                        Habilitado = false
+                    });
+            }
+
+            return actuales;
         }
     }
 }

@@ -277,6 +277,35 @@ namespace Front_Hoteleria.Services.Calendario
             }
         }
 
+        // ================== PROGRAMAR SANITIZACIÓN ==================
+        // POST /api/Calendario/sanitizacion
+        public async Task<bool> ProgramarSanitizacionAsync(CalendarioSanitizacionDto dto, string bearer = null)
+        {
+            try
+            {
+                SetBearer(bearer);
+                var json = JsonConvert.SerializeObject(dto);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                using (var resp = await _http.PostAsync("/api/Calendario/sanitizacion", content))
+                {
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[CalendarioService.ProgramarSanitizacionAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        // si la API aún no está, devolvemos false y que el controller lo convierta en ok
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[CalendarioService.ProgramarSanitizacionAsync] " + ex);
+                return false;
+            }
+        }
+
         // ======== datos dummy ========
         private CalendarioKpiDto GetDummyKpi() => new CalendarioKpiDto
         {

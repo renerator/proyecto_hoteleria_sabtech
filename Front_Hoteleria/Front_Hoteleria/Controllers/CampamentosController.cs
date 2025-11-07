@@ -1,16 +1,12 @@
-using Front_Hoteleria.Dto.Reserva;
+using Front_Hoteleria.Dto.Campamentos;
 using Front_Hoteleria.Services.Campamentos;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
 
 namespace Front_Hoteleria.Controllers
 {
@@ -19,201 +15,231 @@ namespace Front_Hoteleria.Controllers
         private readonly ICampamentosService _api;
 
         public CampamentosController() : this(new CampamentosService()) { }
-        public CampamentosController(ICampamentosService api) { _api = api; }
 
-        // -------------------------------
-        //  TOKEN & PERFIL
-        // -------------------------------
+        public CampamentosController(ICampamentosService api)
+        {
+            _api = api;
+        }
+
         private string GetBearer()
         {
             try
             {
                 return (Session["Token"] as string)
-                       ?? (Request.Cookies["access_token"] != null ? Request.Cookies["access_token"].Value : null);
+                    ?? (Request.Cookies["access_token"] != null
+                        ? Request.Cookies["access_token"].Value
+                        : null);
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[GetBearer] Error leyendo token: {ex}");
+                Trace.TraceError("[CampamentosController.GetBearer] " + ex);
                 return null;
             }
         }
 
-        // -------------------------------
-        //  INDEX
-        // -------------------------------
         [HttpGet]
         public ActionResult Index()
         {
-            if (!(Session["Token"] is string tok) || string.IsNullOrWhiteSpace(tok))
-                return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-
-            var perfil = Session["IdPerfil"];
-            if (perfil == null)
-                return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-
-            switch (perfil)
-            {
-                case 4: return View("~/Views/Campamentos/Index.cshtml");
-              
-                default: return RedirectToAction("Login", "Account");
-            }
+            return View("~/Views/Campamentos/Index.cshtml");
         }
 
-
-
-public async Task<ActionResult> TablaPartial(
-    DateTime? fechaDesde,
-    DateTime? fechaHasta,
-    int? idEstadoReserva,
-    int? idtiporeserva)
-    {
-        try
-        {
-            var token = GetBearer();
-            if (string.IsNullOrWhiteSpace(token))
-                return new HttpStatusCodeResult(401, "Sesión expirada");
-
-            var filtro = new ReservaTrabajadorDto
-            {
-                FechaDesde = fechaDesde,
-                FechaHasta = fechaHasta,
-                IdEstadoReserva = idEstadoReserva ?? 0, // 0 = no filtra (según tu SP)
-                IdTipoReserva = idtiporeserva ?? 0
-            };
-
-            var data = await _api.ReservasDisponiblesTrabajadorAsync(filtro, token);
-
-            // TIP: el partial debe estar tipado a List<ReservaTrabajadorDto>
-            return PartialView("~/Views/Reservas/_TablaReserva.cshtml", data);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Trace.TraceError($"[TablaReserva] {ex}");
-            return new HttpStatusCodeResult(500, "Error al cargar reservas");
-        }
-    }
+        // ===== KPI =====
         [HttpGet]
-        public async Task<ActionResult> Upsert()
+        public async Task<ActionResult> Resumen()
         {
             var token = GetBearer();
-            if (string.IsNullOrWhiteSpace(token))
-                return new HttpStatusCodeResult(401);
+            var dto = await _api.ResumenAsync(token);
 
-            // Rellena combos (ajusta a tu servicio)
-            ViewBag.Habitaciones = new SelectList(new[]
+            if (dto == null)
+            {
+                dto = new CampamentoKpiDto
                 {
-        new { Id = 1, Nombre = "Individual" },
-        new { Id = 2, Nombre = "Grupal" },
-        new { Id = 3, Nombre = "Corporativa" }
-    }, "Id", "Nombre");
-            ViewBag.TiposReserva = new SelectList(new[]
-            {
-        new { Id = 1, Nombre = "Individual" },
-        new { Id = 2, Nombre = "Grupal" },
-        new { Id = 3, Nombre = "Corporativa" }
-    }, "Id", "Nombre");
+                    CampamentosActivos= 22,
+                    AreasComunes =22,
+                    Habitaciones=1,
+                   TasaUtilizacion =6
+                 };
+            }
 
-            ViewBag.IdTrabajador = Session["IdTrabajador"];
-
-            var Dto = new Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto
-            {
-                FechaDesde = DateTime.Today,
-                FechaHasta = DateTime.Today.AddDays(1),
-                IdEstadoReserva = 1
-            };
-
-            return PartialView("~/Views/Reservas/_UpsertReserva.cshtml", Dto);
+            return PartialView("~/Views/Campamentos/_DashboardCampamentos.cshtml", dto);
         }
 
-
-        // ReservasController
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CrearReserva(Front_Hoteleria.Dto.Reserva.ReservaTrabajadorDto dto)
-        {
-            try
-            {
-                var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada");
-
-                // saneos mínimos
-                if (dto == null) return new HttpStatusCodeResult(400, "Datos inválidos");
-                if (dto.IdHabitacion <= 0  || !dto.FechaDesde.HasValue || !dto.FechaHasta.HasValue)
-                    return new HttpStatusCodeResult(400, "Campos obligatorios faltantes");
-
-                if (dto.IdEstadoReserva == 0) dto.IdEstadoReserva = 1; // Ingresada
-
-                var ok = await _api.CrearReservaTrabajadorAsync(dto, token);
-                if (!ok) return new HttpStatusCodeResult(500, "No se pudo crear la reserva.");
-
-                // Respuesta para manejar por JS
-                return Json(new { ok = true });
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Trace.TraceError($"[CrearReserva] {ex}");
-                return new HttpStatusCodeResult(500, "Error al crear la reserva.");
-            }
-        }
-
-        // ===== DASHBOARD VIEW (PARCIAL) =====
-        // SIN parámetros de fecha
+        // ===== TABLA (lista) =====
         [HttpGet]
-        public async Task<ActionResult> Dashboard()
+        public async Task<ActionResult> Tabla(string criterio, string estado)
         {
             try
             {
                 var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
+                var lista = await _api.ListarAsync(criterio, estado, token);
 
-                // Llama al servicio SIN parámetros de fecha (usa null, null)
-
-                var dto = new ReservaDashboardDto();
-                 dto = await _api.DashboardReservasAsync(token)
-                          ?? new ReservaDashboardDto();
-
-                // Devuelve el parcial fuertemente tipado con el DTO
-                return PartialView("~/Views/Reservas/_DashboardReserva.cshtml", dto);
-                
-            }
-            catch (HttpRequestException ex)
+                // 1) si la API no devolvió nada, metemos datos de demo
+                if (lista == null || !lista.Any())
+                {
+                    lista = new List<CampamentoDto>
             {
-                Trace.TraceError($"[Dashboard] Error HTTP: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.BadGateway, "No se pudo comunicar con la API de dashboard.");
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[Dashboard] Timeout: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta de dashboard excedió el tiempo de espera.");
+                new CampamentoDto
+                {
+                    Id = "CAMP-001",
+                    Nombre = "Campamento Norte",
+                    Codigo = "CAMP-N-001",
+                    Ubicacion = "Sector Norte, Mina Escondida",
+                    Encargado = "Juan Pérez",
+                    Capacidad = 200,
+                    OcupacionActual = 156,
+                    Estado = "active",
+                    Areas = new List<CampamentoAreaDto>
+                    {
+                        new CampamentoAreaDto { Nombre = "Comedor Principal", Capacidad = 100, Estado = "active" },
+                        new CampamentoAreaDto { Nombre = "Lavandería Central", Capacidad = 50, Estado = "active" },
+                        new CampamentoAreaDto { Nombre = "Sala de Recreación", Capacidad = 30, Estado = "maintenance" },
+                    }
+                },
+                new CampamentoDto
+                {
+                    Id = "CAMP-002",
+                    Nombre = "Campamento Sur",
+                    Codigo = "CAMP-S-002",
+                    Ubicacion = "Sector Sur, Mina Los Pelambres",
+                    Encargado = "María González",
+                    Capacidad = 150,
+                    OcupacionActual = 120,
+                    Estado = "active",
+                    Areas = new List<CampamentoAreaDto>
+                    {
+                        new CampamentoAreaDto { Nombre = "Comedor Sur", Capacidad = 80, Estado = "active" },
+                        new CampamentoAreaDto { Nombre = "Gimnasio", Capacidad = 20, Estado = "active" }
+                    }
+                },
+                new CampamentoDto
+                {
+                    Id = "CAMP-003",
+                    Nombre = "Campamento Mantenimiento",
+                    Codigo = "CAMP-M-003",
+                    Ubicacion = "Planta Central",
+                    Encargado = "Pedro Silva",
+                    Capacidad = 80,
+                    OcupacionActual = 35,
+                    Estado = "maintenance",
+                    Areas = new List<CampamentoAreaDto>
+                    {
+                        new CampamentoAreaDto { Nombre = "Taller", Capacidad = 15, Estado = "active" }
+                    }
+                },
+                new CampamentoDto
+                {
+                    Id = "CAMP-004",
+                    Nombre = "Campamento Antiguo",
+                    Codigo = "CAMP-A-004",
+                    Ubicacion = "Sector Antiguo",
+                    Encargado = "Sin asignar",
+                    Capacidad = 60,
+                    OcupacionActual = 0,
+                    Estado = "inactive",
+                    Areas = new List<CampamentoAreaDto>()
+                }
+            };
+                }
+
+                // 2) filtramos por criterio (nombre, código o ubicación)
+                if (!string.IsNullOrWhiteSpace(criterio))
+                {
+                    criterio = criterio.Trim().ToLower();
+                    lista = lista
+                        .Where(c =>
+                            (c.Nombre ?? "").ToLower().Contains(criterio) ||
+                            (c.Codigo ?? "").ToLower().Contains(criterio) ||
+                            (c.Ubicacion ?? "").ToLower().Contains(criterio))
+                        .ToList();
+                }
+
+                // 3) filtramos por estado si viene
+                if (!string.IsNullOrWhiteSpace(estado))
+                {
+                    estado = estado.Trim().ToLower();
+                    lista = lista
+                        .Where(c => (c.Estado ?? "").ToLower() == estado)
+                        .ToList();
+                }
+
+                return PartialView("~/Views/Campamentos/_TablaCampamentos.cshtml", lista);
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[Dashboard] Error: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al cargar el dashboard.");
+                Trace.TraceError("[CampamentosController.Tabla] " + ex);
+                return new HttpStatusCodeResult(500, "Error al cargar campamentos");
+            }
+        }
+
+
+        // ===== FORM (modal) =====
+        [HttpGet]
+        public async Task<ActionResult> Upsert(string id)
+        {
+            var token = GetBearer();
+            CampamentoDto dto = null;
+
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                dto = await _api.ObtenerPorIdAsync(id, token);
+            }
+
+            if (dto == null)
+            {
+                dto = new CampamentoDto
+                {
+                    Id = id,
+                    Estado = "active",
+                    Capacidad = 200,
+                    OcupacionActual = 0
+                };
+            }
+
+            return PartialView("~/Views/Campamentos/_UpsertCampamentos.cshtml", dto);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Guardar(CampamentoDto dto)
+        {
+            if (dto == null)
+                return Json(new { ok = false, msg = "Datos vacíos" });
+
+            var token = GetBearer();
+
+            try
+            {
+                bool ok;
+                if (string.IsNullOrWhiteSpace(dto.Id))
+                    ok = await _api.CrearAsync(dto, token);
+                else
+                    ok = await _api.ActualizarAsync(dto, token);
+
+                if (!ok)
+                    ok = true; // maqueta
+
+                return Json(new { ok });
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[CampamentosController.Guardar] " + ex);
+                return Json(new { ok = false, msg = "Error inesperado al guardar" });
             }
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Eliminar(int idHabitacion)
+        public async Task<ActionResult> Eliminar(string id)
         {
+            var token = GetBearer();
             try
             {
-                var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized);
-
-                var ok = await _api.EliminarReservaAsync(idHabitacion, token);
-                if (!ok) return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "No se pudo eliminar.");
-                return new HttpStatusCodeResult((int)HttpStatusCode.OK);
+                var ok = await _api.EliminarAsync(id, token);
+                if (!ok) ok = true; // maqueta
+                return Json(new { ok });
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[Eliminar] Error: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al eliminar la reserva.");
+                Trace.TraceError("[CampamentosController.Eliminar] " + ex);
+                return Json(new { ok = false, msg = "Error al eliminar" });
             }
         }
     }

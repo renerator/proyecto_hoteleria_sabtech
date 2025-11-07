@@ -87,12 +87,24 @@
                     $('#modalCalendario').modal('show');
                 });
             });
+           // 🔧 botón "Programar Mantenimiento"
             $(document).on('click', '#cal-btn-mant', function () {
-                $.get('@Url.Action("ProgramarMantenimiento","Calendario")', function (html) {
-                    $('#modalCalendarioContent').html(html);
-                    $('#modalCalendario').modal('show');
-                });
+                $.get('@Url.Action("ProgramarMantenimiento", "Calendario")')
+                    .done(function (html) {
+                        $('#modalCalendarioContent').html(html);
+                        $('#modalCalendario').modal('show');
+                    })
+                    .fail(function (xhr) {
+                        // 👇 aquí vamos a ver el error real que está devolviendo MVC
+                        alert(
+                            'No se pudo abrir el formulario de mantenimiento.\n\n' +
+                            'Status: ' + xhr.status + '\n' +
+                            'Detalle: ' + xhr.responseText
+                        );
+                    });
             });
+
+
 
             // bloquear habitación (es lo mismo que upsert, pero le ponemos tipo blocked)
                    $(document).on('click', '#cal-btn-bloquear', function () {
@@ -103,15 +115,17 @@
         });
 
 
-           
 
-            // programar sanitización
-            $(document).on('click', '#cal-btn-sanit', function () {
-                $.get('@Url.Action("Upsert","Calendario")', { tipo: 'sanitization' }, function (html) {
-                    $('#modalCalendarioContent').html(html);
-                    $('#modalCalendario').modal('show');
-                });
+
+           $(document).on('click', '#cal-btn-sanit', function () {
+            $.get('@Url.Action("ProgramarSanitizacion","Calendario")', function (html) {
+                $('#modalCalendarioContent').html(html);
+                $('#modalCalendario').modal('show');
+            }).fail(function () {
+                alert('No se pudo abrir el formulario de sanitización.');
             });
+        });
+
 
             // filtros
             $(document).on('click', '#cal-fil-aplicar', function () {
@@ -142,6 +156,7 @@
 
         });
     </script>
+  
 
     <!-- modal global -->
     <div class="modal fade" id="modalCalendario" tabindex="-1" role="dialog">

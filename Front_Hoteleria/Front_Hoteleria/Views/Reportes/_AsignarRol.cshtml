@@ -1,0 +1,87 @@
+﻿@model Front_Hoteleria.Dto.Roles.AsignacionRolDto
+@{
+    Layout = null;
+    var trabajadores = ViewBag.Trabajadores as List<System.Web.Mvc.SelectListItem> ?? new List<System.Web.Mvc.SelectListItem>();
+    var roles = ViewBag.Roles as List<System.Web.Mvc.SelectListItem> ?? new List<System.Web.Mvc.SelectListItem>();
+    var fi = (Model.FechaInicio ?? DateTime.Today).ToString("yyyy-MM-dd");
+    var ff = (Model.FechaFin ?? DateTime.Today).ToString("yyyy-MM-dd");
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Asignar Rol a Trabajador</h4>
+</div>
+<div class="modal-body">
+    <form id="frmAsignarRol" autocomplete="off">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Trabajador *</label>
+                    <select name="TrabajadorId" class="form-control" required>
+                        <option value="">Seleccionar trabajador...</option>
+                        @foreach (var t in trabajadores)
+                        {
+                            <option value="@t.Value">@t.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Rol *</label>
+                    <select name="RolId" class="form-control" required>
+                        <option value="">Seleccionar rol...</option>
+                        @foreach (var r in roles)
+                        {
+                            <option value="@r.Value">@r.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Fecha de Inicio</label>
+                    <input type="date" name="FechaInicio" class="form-control" value="@fi" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Fecha de Vencimiento</label>
+                    <input type="date" name="FechaFin" class="form-control" value="@ff" />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Observaciones</label>
+            <textarea name="Observaciones" class="form-control" rows="2"
+                      placeholder="Observaciones sobre la asignación...">@Model.Observaciones</textarea>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+    <button type="button" class="btn btn-primary" id="btnGuardarAsignacion">Asignar Rol</button>
+</div>
+
+<script>
+    $('#btnGuardarAsignacion').off('click').on('click', function () {
+        $.post('@Url.Action("Asignar","Roles")',
+            $('#frmAsignarRol').serialize(),
+            function (r) {
+                if (r.ok) {
+                    $('#modalRoles').modal('hide');
+                    // si quieres refrescar la lista de asignaciones:
+                    if (window.cargarAsignaciones) window.cargarAsignaciones();
+                } else {
+                    alert(r.msg || 'No se pudo asignar el rol.');
+                }
+            }
+        ).fail(function () {
+            alert('Error al asignar el rol.');
+        });
+    });
+</script>

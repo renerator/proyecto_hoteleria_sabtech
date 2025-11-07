@@ -1,38 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using Front_Hoteleria.Dto.Campamentos;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Front_Hoteleria.Dto.Reserva;
 
 namespace Front_Hoteleria.Services.Campamentos
-
 {
     public interface ICampamentosService
     {
-        // GET /api/Reservas/ReservasDisponibles?vigencia={vigencia}
-        Task<List<ReservaDto>> ReservasDisponiblesAsync(int vigencia, string bearer = null);
-
-        // GET /api/Reservas/dashboardReservas
-        Task<ReservaDashboardDto> DashboardReservasAsync(string bearer = null);
-
-        // POST /api/Reservas/SolicitaReserva
-        Task<bool> CrearReservaAsync(ReservaDto dto, string bearer = null);
-
-        // POST /api/Reservas/ConfirmarReserva
-        Task<bool> ConfirmarReservaAsync(ReservaDto dto, string bearer = null);
-
-        // PUT /api/Reservas/ModificaReserva
-        Task<bool> ModificarReservaAsync(ReservaDto dto, string bearer = null);
-
-        // DELETE /api/Reservas/EliminaReserva?idReserva={id}
-        Task<bool> EliminarReservaAsync(int idReserva, string bearer = null);
-
-        // GET /api/Reservas/BuscarReservas?criterio={texto}
-        Task<List<ReservaDto>> BuscarReservasAsync(string criterio, string bearer = null);
-
-        Task<List<ReservaTrabajadorDto>> ReservasDisponiblesTrabajadorAsync(ReservaTrabajadorDto ResevaTrabajador,string bearer = null);
-        // Front_Hoteleria.Services.Reservas.IReservaService
-        Task<bool> CrearReservaTrabajadorAsync(ReservaTrabajadorDto dto, string bearer = null);
-
-        // Si luego necesitas bitácora:
-        // Task<bool> CrearBitacoraReservaAsync(BitacoraReservaDto dto, string bearer = null);
+        Task<CampamentoKpiDto> ResumenAsync(string bearer = null);
+        Task<List<CampamentoDto>> ListarAsync(string criterio = null, string estado = null, string bearer = null);
+        Task<CampamentoDto> ObtenerPorIdAsync(string id, string bearer = null);
+        Task<bool> CrearAsync(CampamentoDto dto, string bearer = null);
+        Task<bool> ActualizarAsync(CampamentoDto dto, string bearer = null);
+        Task<bool> EliminarAsync(string id, string bearer = null);
     }
 }

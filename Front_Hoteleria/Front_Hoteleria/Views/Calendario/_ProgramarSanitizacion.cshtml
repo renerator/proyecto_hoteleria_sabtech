@@ -1,0 +1,121 @@
+﻿@model Front_Hoteleria.Dto.Calendario.CalendarioSanitizacionDto
+@{
+    Layout = null;
+    var habitaciones = ViewBag.Habitaciones as List<string> ?? new List<string>();
+
+    var fechaInicioStr = (Model.FechaInicio ?? DateTime.Today).ToString("yyyy-MM-dd");
+    var horas = Model.DuracionHoras > 0 ? Model.DuracionHoras : 4;
+}
+
+<style>
+    #modalCalendario .cal-sanit-modal .modal-body {
+        padding: 15px 18px 5px 18px;
+    }
+
+    #modalCalendario .cal-sanit-modal .form-group {
+        margin-bottom: 12px;
+    }
+</style>
+
+<div class="cal-sanit-modal">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Programar Sanitización</h4>
+    </div>
+    <div class="modal-body">
+        <form id="frmSanitizacion" autocomplete="off">
+            <div class="form-group">
+                <label>Habitación *</label>
+                <select name="HabitacionId" class="form-control" required>
+                    <option value="">Seleccionar habitación...</option>
+                    @foreach (var h in habitaciones)
+                    {
+                        <option value="@h" @(Model.HabitacionId == h ? "selected" : "")>@h</option>
+                    }
+                </select>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label>Fecha de Inicio *</label>
+                        <input type="date"
+                               name="FechaInicio"
+                               class="form-control"
+                               value="@fechaInicioStr"
+                               required />
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label>Duración (horas) *</label>
+                        <input type="number"
+                               name="DuracionHoras"
+                               class="form-control"
+                               min="1"
+                               max="24"
+                               value="@horas"
+                               required />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Tipo de Sanitización *</label>
+                <select name="Tipo" class="form-control" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="routine" @(Model.Tipo == "routine" ? "selected" : "")>Rutinaria</option>
+                    <option value="deep" @(Model.Tipo == "deep" ? "selected" : "")>Profunda</option>
+                    <option value="disinfection" @(Model.Tipo == "disinfection" ? "selected" : "")>Desinfección</option>
+                    <option value="post_checkout" @(Model.Tipo == "post_checkout" ? "selected" : "")>Post Check-out</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Personal Asignado</label>
+                <input type="text"
+                       name="Personal"
+                       class="form-control"
+                       value="@Model.Personal"
+                       placeholder="Ej: Equipo de Limpieza A" />
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-info" id="btnGuardarSanitizacion">
+            Programar Sanitización
+        </button>
+    </div>
+</div>
+
+<script>
+    // achicar el modal como el de mantenimiento
+    $('#modalCalendario .modal-dialog')
+        .removeClass('modal-lg')
+        .css({
+            width: '540px',
+            'max-width': '95%'
+        });
+
+    $('#btnGuardarSanitizacion').off('click').on('click', function () {
+        $.post('@Url.Action("ProgramarSanitizacion","Calendario")',
+            $('#frmSanitizacion').serialize(),
+            function (r) {
+                if (r.ok) {
+                    $('#modalCalendario').modal('hide');
+
+                    // recargar calendario/tabla
+                    $.get('@Url.Action("Tabla","Calendario")', function (html) {
+                        $('#contenedor-tabla').html(html);
+                        if (window.renderCalendarioMaster) window.renderCalendarioMaster();
+                    });
+                } else {
+                    alert(r.msg || 'No se pudo programar la sanitización.');
+                }
+            }
+        ).fail(function (xhr) {
+            alert('Error al programar la sanitización: ' + xhr.status);
+        });
+    });
+</script>

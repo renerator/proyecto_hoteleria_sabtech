@@ -1,0 +1,180 @@
+﻿@model Front_Hoteleria.Dto.Roles.RolDto
+@{
+    Layout = null;
+}
+
+<style>
+    .rol-permisos-box {
+        background: #f6f7f9;
+        border: 1px solid #e3e6eb;
+        border-radius: 8px;
+        padding: 15px 0 0 0;
+        margin-top: 10px;
+    }
+
+    .rol-perm-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid #eaecef;
+    }
+
+        .rol-perm-row:last-child {
+            border-bottom: none;
+        }
+
+    .rol-perm-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #4b5563;
+        font-size: 14px;
+    }
+
+    /* toggle */
+    .rol-toggle {
+        position: relative;
+        display: inline-block;
+        width: 48px;
+        height: 24px;
+    }
+
+        .rol-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .rol-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #d1d5db;
+        transition: .3s;
+        border-radius: 9999px;
+    }
+
+        .rol-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            top: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 9999px;
+            box-shadow: 0 1px 2px rgba(0,0,0,.15);
+        }
+
+    .rol-toggle input:checked + .rol-slider {
+        background-color: #1c7ed6;
+    }
+
+        .rol-toggle input:checked + .rol-slider:before {
+            transform: translateX(23px);
+        }
+</style>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Crear Nuevo Rol</h4>
+</div>
+
+<div class="modal-body">
+    <form id="frmRol" autocomplete="off">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Nombre del Rol *</label>
+                    <input type="text"
+                           name="Nombre"
+                           class="form-control"
+                           placeholder="Ej: Supervisor de Mantenimiento"
+                           required />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Código del Rol *</label>
+                    <input type="text"
+                           name="Codigo"
+                           class="form-control"
+                           placeholder="Ej: SUP_MANT"
+                           required />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Descripción</label>
+            <textarea name="Descripcion"
+                      class="form-control"
+                      rows="3"
+                      placeholder="Descripción del rol y sus responsabilidades..."></textarea>
+        </div>
+
+        <label>Permisos del Rol:</label>
+        <div class="rol-permisos-box">
+            @if (Model.Permisos != null && Model.Permisos.Count > 0)
+            {
+                for (int i = 0; i < Model.Permisos.Count; i++)
+                {
+                    var p = Model.Permisos[i];
+                    <div class="rol-perm-row">
+                        <div class="rol-perm-label">
+                            @* puedes poner un ícono según el código si quieres *@
+                            <span>@p.Nombre</span>
+                        </div>
+
+                        <label class="rol-toggle">
+                            <input type="checkbox"
+                                   name="Permisos[@i].Habilitado"
+                                   value="true" />
+                            <span class="rol-slider"></span>
+                        </label>
+
+                        @* campos ocultos para que lleguen al POST *@
+                        <input type="hidden" name="Permisos[@i].Codigo" value="@p.Codigo" />
+                        <input type="hidden" name="Permisos[@i].Nombre" value="@p.Nombre" />
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="rol-perm-row">
+                    <span class="text-muted">No hay permisos configurados.</span>
+                </div>
+            }
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+    <button type="button" class="btn btn-primary" id="btnGuardarRol">Crear Rol</button>
+</div>
+
+<script>
+    // guardar rol por ajax
+    $('#btnGuardarRol').off('click').on('click', function () {
+        $.post('@Url.Action("Guardar", "Roles")', $('#frmRol').serialize(), function (r) {
+            if (r && r.ok) {
+                $('#modalRoles').modal('hide');
+
+                // si tienes una tabla/lista de roles, acá la recargas
+                if (window.recargarRoles) {
+                    window.recargarRoles();
+                }
+            } else {
+                alert(r.msg || 'No se pudo crear el rol.');
+            }
+        }).fail(function () {
+            alert('Error al crear el rol.');
+        });
+    });
+</script>
