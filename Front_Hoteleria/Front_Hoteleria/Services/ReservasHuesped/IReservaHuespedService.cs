@@ -1,11 +1,12 @@
 ﻿using Front_Hoteleria.Dto.Reserva;
+using Front_Hoteleria.Dto.EstadoReserva;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Front_Hoteleria.Services.PanelPrincipal
+namespace Front_Hoteleria.Services.ReservasHuesped
 {
-    public interface IPanelPrincipalService
+    public interface IReservaHuespedService
     {
         // GET /api/Reservas/ReservasDisponibles?vigencia={vigencia}
         Task<List<ReservaDto>> ReservasDisponiblesAsync(int vigencia, string bearer = null);
@@ -34,6 +35,11 @@ namespace Front_Hoteleria.Services.PanelPrincipal
 
         // Si luego necesitas bitácora:
         // Task<bool> CrearBitacoraReservaAsync(BitacoraReservaDto dto, string bearer = null);
+
         Task<ReservaDashboardPanelPrincipalDto> DashboardReservasPanelPrincipalAsync(DateTime? desde, DateTime? hasta, string bearer = null);
+
+        Task<List<EstadoReservaDto>> GetListaEstadoReservas(string bearer = null);
+
+
     }
 }

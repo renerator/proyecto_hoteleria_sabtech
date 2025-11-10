@@ -1,44 +1,79 @@
-﻿@Model Front_Hoteleria.Dto.Reserva.ReservaDashboardDto
+﻿@model Front_Hoteleria.Dto.Reserva.ReservaKPIDto
 
 @{
-    int totalConfirmadas = Convert.ToInt32(Model?.TotalConfirmadas ?? 0);
-    int totalRechazadas = Convert.ToInt32(Model?.TotalRechazadas ?? 0);
-    int totalServicios = Convert.ToInt32(Model?.TotalServicios ?? 0);
-
-    // Fallback para el nombre de “Nuevas Hoy”
-    int nuevasHoy = 0;
-    if (Model != null)
-    {
-        var t = Model.GetType();
-        var p = t.GetProperty("NuevasHoy") ?? t.GetProperty("NuevasHoys") ?? t.GetProperty("NuevasReservas");
-        var v = p?.GetValue(Model, null);
-        nuevasHoy = v != null ? Convert.ToInt32(v) : 0;
-    }
+    // valores por defecto si el controller no mandó nada
+    var pendientes = Model != null ? Model.Pendientes : 7;
+    var rechazadas = Model != null ? Model.Rechazadas : 0;
 }
 
-<div class="row">
-    <div class="col-sm-3">
-        <div class="well text-center">
-            <div style="font-size:28px;font-weight:700">@totalConfirmadas.ToString("N0")</div>
-            <div class="text-muted" style="text-transform:uppercase;letter-spacing:.5px">Total Confirmadas</div>
-        </div>
+<style>
+    .dash-reserva-row {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .dash-card {
+        flex: 1;
+        background: #fff;
+        border: 1px solid #eef0f3;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,.03);
+        min-height: 150px;
+        /* 👇 esto centra todo */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .dash-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+
+        .dash-icon.warning {
+            background: #fff1cc;
+            color: #d99200;
+        }
+
+        .dash-icon.danger {
+            background: #fcd6d9;
+            color: #c52227;
+        }
+
+    .dash-number {
+        font-size: 38px;
+        font-weight: 700;
+        color: #192a3e;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+
+    .dash-title {
+        font-size: .8rem;
+        letter-spacing: .04rem;
+        color: #5b6b82;
+        text-transform: uppercase;
+    }
+</style>
+
+<div class="dash-reserva-row">
+    <div class="dash-card">
+        <div class="dash-icon warning"><i class="fa fa-clock-o"></i></div>
+        <div class="dash-number">@pendientes</div>
+        <div class="dash-title">Reservas pendientes de asignar</div>
     </div>
-    <div class="col-sm-3">
-        <div class="well text-center">
-            <div style="font-size:28px;font-weight:700">@totalRechazadas.ToString("N0")</div>
-            <div class="text-muted" style="text-transform:uppercase;letter-spacing:.5px">Total Rechazadas</div>
-        </div>
-    </div>
-    <div class="col-sm-3">
-        <div class="well text-center">
-            <div style="font-size:28px;font-weight:700">@totalServicios.ToString("N0")</div>
-            <div class="text-muted" style="text-transform:uppercase;letter-spacing:.5px">Total Servicios</div>
-        </div>
-    </div>
-    <div class="col-sm-3">
-        <div class="well text-center">
-            <div style="font-size:28px;font-weight:700">@nuevasHoy.ToString("N0")</div>
-            <div class="text-muted" style="text-transform:uppercase;letter-spacing:.5px">Nuevas Hoy</div>
-        </div>
+    <div class="dash-card">
+        <div class="dash-icon danger"><i class="fa fa-times-circle"></i></div>
+        <div class="dash-number">@rechazadas</div>
+        <div class="dash-title">Reservas rechazadas hoy</div>
     </div>
 </div>

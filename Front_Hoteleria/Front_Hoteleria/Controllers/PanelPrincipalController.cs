@@ -1,5 +1,5 @@
 ﻿using Front_Hoteleria.Dto.Reserva;
-using Front_Hoteleria.Services.Reservas;
+using Front_Hoteleria.Services.PanelPrincipal;
 using System;
 using System.Diagnostics;
 using System.Net;
@@ -11,10 +11,10 @@ namespace Front_Hoteleria.Controllers
 {
     public class PanelPrincipalController : Controller
     {
-        private readonly IReservaService _api;
+        private readonly IPanelPrincipalService _api;
 
-        public PanelPrincipalController() : this(new ReservaService()) { }
-        public PanelPrincipalController(IReservaService api) { _api = api; }
+        public PanelPrincipalController() : this(new PanelPrincipalService()) { }
+        public PanelPrincipalController(IPanelPrincipalService api) { _api = api; }
 
         private string GetBearer()
         {

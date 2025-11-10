@@ -96,14 +96,16 @@
                 cargarTabla();
                 cargarAsignaciones();
             });
-                        $(document).on('click', '#rol-btn-asignar', function () {
-                $.get('@Url.Action("Asignar","Roles")', function (html) {
-                    $('#modalRolesContent').html(html);
-                    $('#modalRoles').modal('show');
-                }).fail(function () {
-                    alert('No se pudo abrir el formulario de asignación.');
-                });
+
+
+            $(document).on('click', '#rol-btn-asignar', function () {
+            $.get('@Url.Action("Asignar","Roles")', function (html) {
+                $('#modalRolesContent').html(html);
+                $('#modalRoles').modal('show');
+            }).fail(function () {
+                alert('No se pudo abrir el formulario de asignación.');
             });
+        });
 
             // buscar
             $('#rol-btn-buscar').on('click', function () {

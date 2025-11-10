@@ -29,12 +29,23 @@
             {
                 <div class="col-md-3 left_col">
                     <div class="left_col scroll-view">
+
+                        <!-- Título del sitio (arriba de la barra lateral) -->
+                        <div class="navbar nav_title" style="border:0;">
+                            <a href="@Url.Action("Index","Home")" class="site_title">
+                                <i class="fa fa-building"></i> <span>Hoteleria</span>
+                            </a>
+                        </div>
+
+                        <div class="clearfix"></div>
+
                         <!-- profile -->
                         <div class="profile clearfix">
                             <div class="profile_pic">
                                 <img src="~/images/img.jpg" alt="..." class="img-circle profile_img">
                             </div>
                             <div class="profile_info">
+
                                 <span>Bienvenido,</span>
                                 <h2>@(Session["Usuario"] ?? "Invitado")</h2>
                             </div>

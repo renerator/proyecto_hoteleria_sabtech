@@ -1,0 +1,94 @@
+﻿@model Front_Hoteleria.Dto.Reserva.ReservaDto
+
+@using (Html.BeginForm("Rechazar", "Reservas", FormMethod.Post, new { id = "formRechazarReserva" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("IdReserva", Model.Id)
+
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+        <h4 class="modal-title"><i class="fa fa-times-circle"></i> Rechazar Reserva</h4>
+    </div>
+    <div class="modal-body" style="background:#f9f9f9;">
+        <div class="alert alert-warning" style="margin-bottom:20px;">
+            <strong>Atención:</strong> Esta acción rechazará la reserva y se enviará un email al huésped.
+        </div>
+
+        <div class="panel panel-default" style="border-radius:4px;">
+            <div class="panel-heading" style="background:#f5f5f5;">
+                <strong>Detalles de la Reserva</strong>
+            </div>
+            <div class="panel-body">
+                <p><strong>ID Reserva:</strong><br /> @Model.Id</p>
+                <p><strong>Huésped:</strong><br /> @Model.HuespedNombre</p>
+                <p><strong>Email:</strong><br /> @Model.HuespedEmail</p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Motivo de Rechazo <span class="text-danger">*</span></label>
+            <select class="form-control" name="Motivo" id="motivoRechazo">
+                <option value="">Seleccione un motivo...</option>
+                <option value="sin_disponibilidad">Sin disponibilidad en las fechas solicitadas</option>
+                <option value="tipo_habitacion">Tipo de habitación no disponible</option>
+                <option value="capacidad_insuficiente">Capacidad insuficiente para el número de huéspedes</option>
+                <option value="mantenimiento">Habitaciones en mantenimiento</option>
+                <option value="politicas">No cumple con políticas del establecimiento</option>
+                <option value="otros">Otros motivos</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="grupoOtroMotivo" style="display:none;">
+            <label>Especifique el motivo</label>
+            <input type="text" class="form-control" id="otroMotivoTxt" placeholder="Describa el motivo..." />
+        </div>
+
+        <div class="form-group">
+            <label>Observaciones adicionales</label>
+            <textarea class="form-control" name="Observaciones" rows="3" placeholder="Información adicional que se incluirá en el email..."></textarea>
+        </div>
+    </div>
+    <div class="modal-footer" style="background:#fff;">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-danger"><i class="fa fa-times"></i> Confirmar Rechazo</button>
+    </div>
+}
+
+<script>
+    // mostrar caja de "otros"
+    $('#motivoRechazo').on('change', function () {
+        if ($(this).val() === 'otros') {
+            $('#grupoOtroMotivo').show();
+        } else {
+            $('#grupoOtroMotivo').hide();
+            $('#otroMotivoTxt').val('');
+        }
+    });
+
+    // submit ajax
+    $('#formRechazarReserva').on('submit', function (e) {
+        e.preventDefault();
+        var $f = $(this);
+
+        // si eligió "otros", mandamos ese texto como motivo
+        if ($('#motivoRechazo').val() === 'otros') {
+            // reasignamos al select el texto escrito
+            var txt = $('#otroMotivoTxt').val();
+            if (txt) {
+                // lo mandamos en Observaciones también
+                $f.append($('<input>', { type: 'hidden', name: 'Motivo', value: txt }));
+            }
+        }
+
+        $.post($f.attr('action'), $f.serialize(), function (r) {
+            if (r && r.ok) {
+                $('#modalRechazarReserva').modal('hide');
+                // recargar tabla/dashboard
+                if (typeof cargarTabla === 'function') cargarTabla();
+                if (typeof cargarDashboard === 'function') cargarDashboard();
+            } else {
+                alert(r.msg || 'No se pudo rechazar la reserva.');
+            }
+        });
+    });
+</script>

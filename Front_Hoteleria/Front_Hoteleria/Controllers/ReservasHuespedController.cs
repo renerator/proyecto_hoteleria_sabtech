@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Policy;
 using System.Threading.Tasks;
@@ -81,7 +82,7 @@ public async Task<ActionResult> TablaPartial(
                 IdTipoReserva = idtiporeserva ?? 0
             };
 
-            var data = await _api.ReservasDisponiblesTrabajadorAsync(filtro, token);
+                var data = true;// await _api.ReservasDisponiblesTrabajadorAsync(filtro, token);
 
             // TIP: el partial debe estar tipado a List<ReservaTrabajadorDto>
             return PartialView("~/Views/Reservas/_TablaReserva.cshtml", data);
@@ -145,7 +146,7 @@ public async Task<ActionResult> TablaPartial(
 
                 if (dto.IdEstadoReserva == 0) dto.IdEstadoReserva = 1; // Ingresada
 
-                var ok = await _api.CrearReservaTrabajadorAsync(dto, token);
+                var ok = true; // await _api.CrearReservaTrabajadorAsync(dto, token);
                 if (!ok) return new HttpStatusCodeResult(500, "No se pudo crear la reserva.");
 
                 // Respuesta para manejar por JS
@@ -171,8 +172,8 @@ public async Task<ActionResult> TablaPartial(
 
                 // Llama al servicio SIN parámetros de fecha (usa null, null)
 
-                var dto = new ReservaDashboardDto();
-                 dto = await _api.DashboardReservasAsync(token)
+                var dto = new ReservaDashboardDto()
+                 //dto = await _api.DashboardReservasAsync(token)
                           ?? new ReservaDashboardDto();
 
                 // Devuelve el parcial fuertemente tipado con el DTO
@@ -206,7 +207,7 @@ public async Task<ActionResult> TablaPartial(
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized);
 
-                var ok = await _api.EliminarReservaAsync(idHabitacion, token);
+                var ok = true; // await _api.EliminarReservaAsync(idHabitacion, token);
                 if (!ok) return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "No se pudo eliminar.");
                 return new HttpStatusCodeResult((int)HttpStatusCode.OK);
             }

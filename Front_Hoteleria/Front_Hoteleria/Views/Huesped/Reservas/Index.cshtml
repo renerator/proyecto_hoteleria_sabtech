@@ -2,97 +2,172 @@
     ViewBag.Title = "Mis Reservas";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="page-title">
-    <h2>Mis Reservas</h2>
-    <p>Gestiona tus solicitudes de reserva</p>
-</div>
 
 @Html.AntiForgeryToken()
 
-<div class="x_panel">
-    <div class="x_title">
-        <h3><i class="fa fa-plus"></i> Nueva Reserva</h3>
-        <div class="clearfix"></div>
+<div class="row">
+    <!-- columna principal -->
+    <div class="col-md-9 col-sm-8">
+        <div class="page-title">
+            <h2>Mis Reservas</h2>
+            <p>Gestiona tus solicitudes de reserva</p>
+        </div>
+
+        <!-- NUEVA RESERVA -->
+        <div class="x_panel">
+            <div class="x_title">
+                <h3><i class="fa fa-plus"></i> Nueva Reserva</h3>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content text-center" style="padding:25px 10px;">
+                <p>¿Necesita hacer una nueva reserva? Haga clic en el botón para iniciar el proceso.</p>
+                <button id="btnNueva" class="btn btn-success btn-lg" style="padding:10px 40px;">
+                    <i class="fa fa-plus"></i> Crear Nueva Reserva
+                </button>
+            </div>
+        </div>
+
+        <!-- BUSCAR -->
+        <div class="x_panel">
+            <div class="x_title">
+                <h3><i class="fa fa-search"></i> Buscar Mis Reservas</h3>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <form id="frmFiltro" class="form-inline" onsubmit="return false;">
+                    <div class="form-group" style="margin-right:10px;">
+                        <label style="display:block;">ID de Reserva:</label>
+                        <input name="Codigo" class="form-control" placeholder="Ej: RES001" />
+                    </div>
+                    <div class="form-group" style="margin-right:10px;">
+                        <label style="display:block;">Estado:</label>
+                        <select name="Estado" class="form-control">
+                            <option value="">Todos los estados</option>
+                            <option value="1">Pendiente</option>
+                            <option value="2">Aprobada</option>
+                            <option value="3">Rechazada</option>
+                            <option value="4">Completada</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-right:10px;">
+                        <label style="display:block;">Fecha Desde:</label>
+                        <input name="Desde" type="date" class="form-control" />
+                    </div>
+                    <div class="form-group" style="margin-right:10px;">
+                        <label style="display:block;">Fecha Hasta:</label>
+                        <input name="Hasta" type="date" class="form-control" />
+                    </div>
+                    <div style="margin-top:25px;">
+                        <button id="btnBuscar" class="btn btn-primary">
+                            <i class="fa fa-search"></i> Buscar Reservas
+                        </button>
+                        <button id="btnLimpiar" class="btn btn-default">
+                            <i class="fa fa-refresh"></i> Limpiar
+                        </button>
+                        <button id="btnTodas" class="btn btn-info">
+                            <i class="fa fa-list"></i> Ver Todas
+                        </button>
+                    </div>
+                </form>
+
+                <div id="divTabla" class="table-responsive" style="margin-top:14px;"></div>
+            </div>
+        </div>
     </div>
-    <div class="x_content text-center">
-        <p>¿Necesita hacer una nueva reserva? Haga clic en el botón para iniciar el proceso.</p>
-        <button id="btnNueva" class="btn btn-success btn-lg">
-            <i class="fa fa-plus"></i> Crear Nueva Reserva
-        </button>
+
+    <!-- columna derecha -->
+    <div class="col-md-3 col-sm-4">
+        <!-- stats -->
+        <div class="x_panel">
+            <div class="x_title">
+                <h3><i class="fa fa-bar-chart"></i> Mis Estadísticas</h3>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content" style="padding-top:0;">
+                <p><strong>2</strong> Reservas</p>
+                <p><strong>1</strong> Pendientes</p>
+                <p><strong>1</strong> Aprobadas</p>
+            </div>
+        </div>
+        <!-- próximas fechas -->
+        <div class="x_panel">
+            <div class="x_title">
+                <h3><i class="fa fa-calendar"></i> Próximas Fechas</h3>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content" style="padding-top:0;">
+                <p><strong>15 Ene 2024</strong><br />Check-in RES001</p>
+                <p><strong>20 Ene 2024</strong><br />Check-out RES001</p>
+                <p><strong>25 Ene 2024</strong><br />Check-in RES002</p>
+            </div>
+        </div>
+        <!-- info -->
+        <div class="x_panel">
+            <div class="x_title">
+                <h3><i class="fa fa-info-circle"></i> Información</h3>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content" style="padding-top:0;">
+                <p><strong>Check-in:</strong> 15:00</p>
+                <p><strong>Check-out:</strong> 12:00</p>
+                <p><strong>WiFi:</strong> Gratuito</p>
+                <p><strong>Recepción:</strong> 24/7</p>
+                <p><strong>Emergencias:</strong> <span class="text-danger">+56 9 1234 5678</span></p>
+                <hr />
+                <p><strong><i class="fa fa-sign-in"></i> Check-in/Check-out</strong></p>
+                <p>
+                    <button class="btn btn-success btn-block btn-sm">✔ Realizar Check-in</button>
+                    <button class="btn btn-warning btn-block btn-sm" style="margin-top:5px;">✖ Realizar Check-out</button>
+                </p>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="x_panel">
-    <div class="x_title">
-        <h3><i class="fa fa-search"></i> Buscar Mis Reservas</h3>
-        <div class="clearfix"></div>
-    </div>
-    <div class="x_content">
-        <form id="frmFiltro" class="form-inline" onsubmit="return false;">
-            <div class="form-group">
-                <label>ID de Reserva:</label>
-                <input name="Codigo" class="form-control" placeholder="Ej: RES001" />
-            </div>
-            <div class="form-group">
-                <label>Estado:</label>
-                <select name="Estado" class="form-control">
-                    <option value="">Todos</option>
-                    <option value="1">Pendiente</option>
-                    <option value="2">Aprobada</option>
-                    <option value="3">Rechazada</option>
-                    <option value="4">Completada</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Desde:</label>
-                <input name="Desde" class="form-control" placeholder="yyyy-mm-dd" />
-            </div>
-            <div class="form-group">
-                <label>Hasta:</label>
-                <input name="Hasta" class="form-control" placeholder="yyyy-mm-dd" />
-            </div>
-            <button id="btnBuscar" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
-            <button id="btnTodas" class="btn btn-default"><i class="fa fa-list"></i> Ver Todas</button>
-        </form>
-
-        <div id="divTabla" class="table-responsive" style="margin-top:14px"></div>
-    </div>
-</div>
-
-<!-- Modal upsert (cuerpo se carga por AJAX) -->
+<!-- modal -->
 <div id="modalUpsert" class="modal fade" tabindex="-1">
-    <div class="modal-dialog"><div class="modal-content" id="modalBody"></div></div>
+    <div class="modal-dialog">
+        <div class="modal-content" id="modalBody"></div>
+    </div>
 </div>
 
 @section scripts{
     <script>
-(function(){
-  function antix() { return $('input[name="__RequestVerificationToken"]').val(); }
+(function () {
 
-  // abrir modal nueva
-  $('#btnNueva').on('click', function(){
-      $('#modalBody').html('<div class="p-3">Cargando…</div>');
-      $('#modalUpsert').modal('show');
-      $.get('@Url.Action("Nueva","ReservasHuesped")', function(html){ $('#modalBody').html(html); });
-  });
+    function antix() { return $('input[name="__RequestVerificationToken"]').val(); }
 
-  // cargar tabla
-  function cargarTabla(f) {
-     var data = $('#frmFiltro').serialize();
-     $.ajax({
-        url: '@Url.Action("Tabla","ReservasHuesped")',
-        method: 'POST',
-        headers: { 'RequestVerificationToken': antix() },
-        data: data,
-        success: function(html){ $('#divTabla').html(html); },
-        error: function(){ $('#divTabla').html('<div class="text-danger">No se pudo cargar el listado.</div>'); }
-     });
-  }
-  $('#btnBuscar').on('click', function(){ cargarTabla(); });
-  $('#btnTodas').on('click', function(){ $('#frmFiltro')[0].reset(); cargarTabla(); });
+    // abrir modal nueva
+    $('#btnNueva').on('click', function () {
+        $('#modalBody').html('<div class="p-3">Cargando…</div>');
+        $('#modalUpsert').modal('show');
+        $.get('@Url.Action("Nueva","ReservasHuesped")', function (html) {
+            $('#modalBody').html(html);
+        });
+    });
 
-  // primera carga
-  cargarTabla();
+    function cargarTabla() {
+        var data = $('#frmFiltro').serialize();
+        $.ajax({
+            url: '@Url.Action("Tabla","ReservasHuesped")',
+            type: 'POST',
+            data: data,
+            headers: { 'RequestVerificationToken': antix() },
+            success: function (html) {
+                $('#divTabla').html(html);
+            },
+            error: function () {
+                $('#divTabla').html('<div class="text-danger">No se pudo cargar el listado.</div>');
+            }
+        });
+    }
+
+    $('#btnBuscar').on('click', function () { cargarTabla(); });
+    $('#btnTodas').on('click', function () { $('#frmFiltro')[0].reset(); cargarTabla(); });
+    $('#btnLimpiar').on('click', function () { $('#frmFiltro')[0].reset(); });
+
+    // primera carga
+    cargarTabla();
 
 })();
     </script>

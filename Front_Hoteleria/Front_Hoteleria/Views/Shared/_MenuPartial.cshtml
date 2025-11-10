@@ -1,39 +1,188 @@
 ﻿@using System.Linq
 @model List<Front_Hoteleria.Dto.MenuDTO>
 
-<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
-    <div class="menu_section">
-        <h3>Menú Usuario</h3>
-        <ul class="nav side-menu">
-            @foreach (var item in (Model ?? new List<Front_Hoteleria.Dto.MenuDTO>()))
-            {
-                var hijos = item.SubMenu ?? Enumerable.Empty<Front_Hoteleria.Dto.MenuDTO>();
-                var tieneHijos = hijos.Any();
+@{
+    // 1) Opción A: detectar si existe un menú raíz llamado "Huésped"
+    var menuHuesped = (Model ?? new List<Front_Hoteleria.Dto.MenuDTO>())
+                      .FirstOrDefault(x => x.Titulo == "Huésped");
 
-                <li class="@(tieneHijos ? "has-children" : null)">
-                    <a href="@(tieneHijos ? "javascript:;" : (item.Url ?? "#"))" title="@(item.Url ?? "")">
-                        <i class="@item.Icono"></i> @(item.Titulo ?? "")
-                        @if (tieneHijos)
-                        {<span class="fa fa-chevron-down"></span>}
-                    </a>
+    // 2) Opción B: si desde el controller te mandas un flag, esto manda más:
+    bool esHuesped = ViewBag.EsHuesped != null
+                     ? (bool)ViewBag.EsHuesped
+                     : menuHuesped != null; // fallback
+}
 
-                    @if (tieneHijos)
-                    {
-                        <ul class="nav child_menu">
-                            @foreach (var sub in hijos)
-                            {
-                                <li>
-                                    <a href="@(sub.Url ?? "#")" title="@(sub.Url ?? "")">
-                                        @(sub.Titulo ?? "")
-                                    </a>
-                                </li>
-                            }
-                        </ul>
-                    }
-                </li>
+@if (esHuesped)
+{
+    /* ============================
+       MENÚ ESTILO HUÉSPED
+       ============================ */
+    <style>
+        #sidebar-menu .menu-user-custom {
+            margin: 0;
+            padding: 0;
+        }
+
+            #sidebar-menu .menu-user-custom h3 {
+                margin: 0;
+                padding: 12px 18px 0 18px;
+                font-weight: 600;
+                color: #fff;
             }
-        </ul>
+
+            /* “2 renglones” de aire debajo del título */
+            #sidebar-menu .menu-user-custom .menu-title-gap {
+                height: 16px;
+            }
+
+            #sidebar-menu .menu-user-custom ul.nav.side-menu {
+                margin: 0;
+                padding: 0;
+            }
+
+                #sidebar-menu .menu-user-custom ul.nav.side-menu > li {
+                    list-style: none;
+                    background: #3d5162;
+                    margin: 0 0 8px 0;
+                    position: relative;
+                    width: 100%;
+                }
+
+                    #sidebar-menu .menu-user-custom ul.nav.side-menu > li > a {
+                        display: flex;
+                        align-items: center;
+                        gap: 14px;
+                        padding: 14px 18px 14px 28px;
+                        color: #fff;
+                        text-decoration: none;
+                        width: 100%;
+                        margin: 0 !important;
+                        box-sizing: border-box;
+                    }
+
+            /* icono normal */
+            #sidebar-menu .menu-user-custom .menu-icon {
+                width: 26px;
+                text-align: center;
+                font-size: 20px;
+            }
+
+            /* franja a la izquierda */
+            #sidebar-menu .menu-user-custom ul.nav.side-menu > li::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 6px;
+                height: 100%;
+                background: transparent;
+            }
+
+            /* colores por opción */
+            #sidebar-menu .menu-user-custom ul.nav.side-menu > li.menu-reservas::before,
+            #sidebar-menu .menu-user-custom ul.nav.side-menu > li.menu-servicios::before {
+                background: #12c2a5;
+            }
+
+            #sidebar-menu .menu-user-custom ul.nav.side-menu > li.menu-reclamos::before {
+                background: #f39c12;
+            }
+
+            /* iconos del mismo color */
+            #sidebar-menu .menu-user-custom ul.nav.side-menu > li.menu-reservas .menu-icon,
+            #sidebar-menu .menu-user-custom ul.nav.side-menu > li.menu-servicios .menu-icon {
+                color: #12c2a5;
+            }
+
+            #sidebar-menu .menu-user-custom ul.nav.side-menu > li.menu-reclamos .menu-icon {
+                color: #f39c12;
+            }
+
+            #sidebar-menu .menu-user-custom ul.nav.side-menu > li > a:hover {
+                background: #435c6e;
+            }
+    </style>
+
+    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+        <div class="menu_section menu-user-custom">
+            <h3>MENÚ USUARIO</h3>
+            <div class="menu-title-gap"></div>
+            <ul class="nav side-menu">
+                @{
+                    var submenus = menuHuesped?.SubMenu ?? Enumerable.Empty<Front_Hoteleria.Dto.MenuDTO>();
+                }
+
+                @foreach (var sub in submenus)
+                {
+                    var liClass = "";
+                    var iconClass = "fa fa-angle-right";
+
+                    if (sub.Titulo == "Reservas")
+                    {
+                        liClass = "menu-reservas";
+                        iconClass = "fa fa-calendar";
+                    }
+                    else if (sub.Titulo == "Servicios")
+                    {
+                        liClass = "menu-servicios";
+                        iconClass = "fa fa-cogs";
+                    }
+                    else if (sub.Titulo == "Reclamos")
+                    {
+                        liClass = "menu-reclamos";
+                        iconClass = "fa fa-comments";
+                    }
+
+                    <li class="@liClass">
+                        <a href="@(sub.Url ?? "#")" title="@(sub.Url ?? "")">
+                            <i class="menu-icon @iconClass"></i>
+                            <span>@sub.Titulo</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
     </div>
-</div>
+}
+else
+{
+    /* ============================
+       MENÚ NORMAL (ADMIN / OTROS)
+       ============================ */
+    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+        <div class="menu_section">
+            <h3>Menú Usuario</h3>
+            <ul class="nav side-menu">
+                @foreach (var item in (Model ?? new List<Front_Hoteleria.Dto.MenuDTO>()))
+                {
+                    var hijos = item.SubMenu ?? Enumerable.Empty<Front_Hoteleria.Dto.MenuDTO>();
+                    var tieneHijos = hijos.Any();
 
+                    <li class="@(tieneHijos ? "has-children" : null)">
+                        <a href="@(tieneHijos ? "javascript:;" : (item.Url ?? "#"))" title="@(item.Url ?? "")">
+                            <i class="@item.Icono"></i> @(item.Titulo ?? "")
+                            @if (tieneHijos)
+                            {
+                                <span class="fa fa-chevron-down"></span>
+                            }
+                        </a>
 
+                        @if (tieneHijos)
+                        {
+                            <ul class="nav child_menu">
+                                @foreach (var sub in hijos)
+                                {
+                                    <li>
+                                        <a href="@(sub.Url ?? "#")" title="@(sub.Url ?? "")">
+                                            @(sub.Titulo ?? "")
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}

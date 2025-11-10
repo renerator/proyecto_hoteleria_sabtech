@@ -1,0 +1,59 @@
+﻿@* SIN MODELO *@
+<div class="panel panel-info" style="border:0; box-shadow:none;">
+    <div class="panel-heading" style="background:#2980b9; color:#fff; border-radius:4px 4px 0 0;">
+        <h4 style="margin:0;">
+            <i class="fa fa-undo"></i> Mis Solicitudes Anteriores
+        </h4>
+    </div>
+    <div class="panel-body" style="background:#fff; border:1px solid #d9edf7; border-top:0; border-radius:0 0 4px 4px;">
+        <div class="table-responsive">
+            <table class="table" id="solicitudesTable" style="margin-bottom:0;">
+                <thead>
+                    <tr style="background:#2980b9; color:#fff;">
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Categoría</th>
+                        <th>Asunto</th>
+                        <th>Estado</th>
+                        <th>Respuesta</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- fila dummy 1 -->
+                    <tr>
+                        <td>20-10-2025</td>
+                        <td>⚠️ reclamo</td>
+                        <td>🔧 servicios</td>
+                        <td>WiFi lento</td>
+                        <td><span class="label label-info" style="background:#2980b9;">En Revisión</span></td>
+                        <td>Pendiente</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm btn-ver-detalle" data-solicitud-id="sug_ejemplo_1">
+                                <i class="fa fa-eye"></i> Ver
+                            </button>
+                        </td>
+                    </tr>
+                    <!-- fila dummy 2 -->
+                    <tr>
+                        <td>19-10-2025</td>
+                        <td>💡 sugerencia</td>
+                        <td>🏠 habitacion</td>
+                        <td>Mejora en la limpieza</td>
+                        <td><span class="label label-success">Respondido</span></td>
+                        <td>
+                            <button class="btn btn-info btn-sm btn-ver-respuesta" data-solicitud-id="sug_ejemplo_2">
+                                <i class="fa fa-eye"></i> Ver
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-warning btn-sm btn-ver-detalle" data-solicitud-id="sug_ejemplo_2">
+                                <i class="fa fa-eye"></i> Ver
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

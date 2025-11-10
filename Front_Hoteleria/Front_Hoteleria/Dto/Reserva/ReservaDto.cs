@@ -1,25 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Front_Hoteleria.Dto.Reserva
+﻿namespace Front_Hoteleria.Dto.Reserva
 {
     public class ReservaDto
     {
+        // lo usas en la tabla
+        public string Codigo { get; set; }   // ej: RES-001
 
-        public int IdReserva { get; set; }
-        public int IdHabitacion { get; set; }
-        public int IdTrabajador { get; set; }
-        public DateTime? FechaDesde { get; set; }
-        public DateTime? FechaHasta { get; set; }
-        public bool? QuiereTransporte { get; set; }
-        public DateTime? FechaCheckIN { get; set; }
-        public DateTime? FechaCheckOut { get; set; }
-        public int IdEstadoReserva { get; set; }
-        public string MotivoReserva { get; set; }
-        public string Nombre { get; set; }
-        public string Apellido { get; set; }
-        public int? Totales { get; set; }
+        // si la API usa Id, déjalo también
+        public string Id { get; set; }
+
+        public System.DateTime FechaEntrada { get; set; }
+        public System.DateTime FechaSalida { get; set; }
+
+        public string HuespedNombre { get; set; }
+        public string HuespedEmail { get; set; }
+        public string HuespedTelefono { get; set; }
+
+        // en la tabla usas TipoHabitacionNombre
+        public string TipoHabitacionNombre { get; set; }
+
+        public string HabitacionAsignada { get; set; }
+        public int CantidadPersonas { get; set; }
+
+        // pendiente | confirmada | rechazada
+        public string Estado { get; set; }
+
+        public string Observaciones { get; set; }
     }
 }

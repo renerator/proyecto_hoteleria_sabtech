@@ -1,485 +1,232 @@
 ﻿@{
-    ViewBag.Title = "Gestión de Reservas | Sabtech Group";
+    ViewBag.Title = "Gestión de Reservas";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- ====== CSS (VENDORS LOCALES) ====== -->
-<link href="~/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-<link href="~/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
-<link href="~/vendors/nprogress/nprogress.css" rel="stylesheet" />
-<link href="~/vendors/iCheck/skins/flat/green.css" rel="stylesheet" />
-<link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
-<link href="~/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet" />
-<link href="~/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet" />
-<link href="~/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet" />
-<link href="~/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet" />
-<link href="~/vendors/pnotify/dist/pnotify.css" rel="stylesheet" />
-<link href="~/vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet" />
-<link href="~/vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet" />
-<link href="~/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
-<link href="~/build/css/custom.min.css" rel="stylesheet" />
-
 <style>
-    .reservations-stats, .top-services, .reservations-table {
+    .reservas-wrapper {
+        background: transparent;
+    }
+
+    /* contenedor general debajo del título */
+    .dash-wrapper-reserva {
+        margin-bottom: 20px;
+    }
+
+    /* panel blanco genérico (para filtros y tabla) */
+    .card-white {
         background: #fff;
         border: 1px solid #e5e5e5;
-        border-radius: 4px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1)
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,.03);
+        margin-bottom: 20px;
     }
 
-    .reservations-stats, .top-services {
-        padding: 25px;
-        margin-bottom: 30px
-    }
-
-    .table-header {
-        background: #f8f9fa;
-        padding: 20px;
-        border-bottom: 1px solid #e5e5e5
-    }
-
-        .table-header h4 {
-            margin: 0;
-            font-weight: 600;
-            font-size: 1.3rem;
-            color: #2c3e50
-        }
-
-    .filter-panel {
-        background: #f8f9fa;
-        border: 1px solid #e5e5e5;
-        border-radius: 4px;
-        padding: 20px;
-        margin-bottom: 30px
-    }
-
-    .filter-title {
-        color: #2c3e50;
+    /* título de filtros */
+    .filtros-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #6b7b8a;
         margin-bottom: 15px;
-        font-weight: 600
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
-    .date-range-picker {
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 8px;
-        width: 100%
-    }
-    /* Contenedor simple para el dashboard de KPIs */
-    .kpi-container {
-        padding: 25px;
-        border-top: 1px solid #e5e5e5
-    }
+        .filtros-title i {
+            font-size: 18px;
+            color: #6b7b8a;
+        }
 </style>
 
 <div class="right_col" role="main">
-    <div class="">
-        <div class="page-title">
+    <div class="reservas-wrapper">
+        <!-- título -->
+        <div class="page-title" style="margin-bottom:15px;">
             <div class="title_left">
-                <h3>Gestión de Reservas</h3>
-                <small>Control completo del sistema de reservas</small>
-            </div>
-            <div class="title_right">
-                <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Buscar reserva...">
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="button">Go!</button>
-                        </span>
-                    </div>
-                </div>
+                <h3 style="margin-bottom:0;">Gestión de Reservas</h3>
+                <small>Administración de reservas pendientes de asignación</small>
             </div>
         </div>
-
+        <!-- 👇 esto obliga a que lo que sigue vaya debajo del título -->
         <div class="clearfix"></div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="reservations-table">
-                    <div class="table-header">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h4><i class="fa fa-list"></i> Gestión de Reservas</h4>
-                            </div>
-                            <div class="col-md-4 text-right">
-                                <button type="button" class="btn btn-success btn-sm" id="btnNueva">
-                                    <i class="fa fa-plus"></i> Nueva Reserva
-                                </button>
-                                <button type="button" class="btn btn-info btn-sm" id="refreshDataBtn">
-                                    <i class="fa fa-refresh"></i> Actualizar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ====== DASHBOARD (PARCIAL CON 4 KPIs) ====== -->
-                    <div class="kpi-container">
-                        <div id="dashContainerReserva">
-                            <div class="text-muted">Cargando dashboard…</div>
-                        </div>
-                    </div>
-
-                    <!-- ====== FILTROS ====== -->
-                    <div class="filter-panel" style="margin:0;border-radius:0;border-top:1px solid #e5e5e5">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Rango de Fechas:</label>
-                                    <input type="text" class="date-range-picker" id="dateRange" placeholder="Seleccionar rango...">
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Estado:</label>
-                                    <select class="form-control" id="EstadosFilter">
-                                        <option value="">Todos los estados</option>
-
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Habitación:</label>
-                                    <select class="form-control" id="HabitacionesFilter">
-                                        <option value="">Todas las habitaciones</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Tipo:</label>
-                                    <select class="form-control" id="TipoHabitacionFilter">
-                                        <option value="">Todos los tipos</option>
-
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>&nbsp;</label><br />
-                                    @Html.AntiForgeryToken()
-                                    <button type="button" class="btn btn-primary btn-sm" id="applyFiltersBtn">
-                                        <i class="fa fa-search"></i> Aplicar Filtros
-                                    </button>
-                                    <button type="button" class="btn btn-default btn-sm" id="clearFiltersBtn">
-                                        <i class="fa fa-times"></i> Limpiar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ====== TABLA (PARCIAL) ====== -->
-                    <div class="reservations-table-content" style="padding:25px">
-                        <div id="tablaReservaContainer">
-                            <div class="text-muted">Cargando reservas…</div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+        <!-- DASHBOARD: SIN panel blanco -->
+        <div id="dashContainerReserva" class="dash-wrapper-reserva">
+            <div class="p-3">Cargando dashboard…</div>
         </div>
 
+        <!-- FILTROS (aquí sí va el panel blanco) -->
+        <div class="card-white" style="padding: 20px 20px 5px 20px;">
+            @Html.AntiForgeryToken()
+
+            <div class="filtros-title">
+                <i class="fa fa-filter"></i> Filtros de Búsqueda
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label>Fecha Inicio</label>
+                    <input type="date" class="form-control" id="filtroFechaInicio" />
+                </div>
+                <div class="col-md-3">
+                    <label>Fecha Fin</label>
+                    <input type="date" class="form-control" id="filtroFechaFin" />
+                </div>
+                <div class="col-md-3">
+                    <label>Estado</label>
+                    <select class="form-control" id="filtroEstado">
+                        <option value="">Todos</option>
+                        <option value="pendiente" selected>Pendiente</option>
+                        <option value="confirmada">Confirmada</option>
+                        <option value="rechazada">Rechazada</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>&nbsp;</label><br />
+                    <button class="btn btn-primary" id="btnBuscarReservas">
+                        <i class="fa fa-search"></i> Buscar
+                    </button>
+                    <button class="btn btn-success" id="btnNuevaReserva">
+                        <i class="fa fa-plus"></i> Crear Nueva Reserva
+                    </button>
+                </div>
+            </div>
+            <br />
+        </div>
+
+        <!-- TABLA -->
+        <div id="tablaReservaContainer" class="card-white" style="padding:0;">
+            <div class="p-3">Cargando reservas…</div>
+        </div>
     </div>
 </div>
 
-<!-- Modal para Nueva Reserva -->
+<!-- MODAL -->
 <div class="modal fade" id="modalUpsertReserva" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h4 class="modal-title">Nueva / Editar Reserva</h4>
-            </div>
-            <div class="modal-body" id="upsertReservaBody"><div class="text-muted">Cargando…</div></div>
+        <div class="modal-content" id="upsertReservaBody">
+            <div class="p-3">Cargando…</div>
+        </div>
+    </div>
+</div>
+<!-- modal asignar -->
+<div class="modal fade" id="modalAsignarReserva" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="asignarReservaBody">
+            <div class="p-3">Cargando…</div>
+        </div>
+    </div>
+</div>
+<!-- modal rechazar -->
+<div class="modal fade" id="modalRechazarReserva" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" id="rechazarReservaBody">
+            <div class="p-3">Cargando…</div>
         </div>
     </div>
 </div>
 
-@section Scripts{
+@section scripts{
     <script>
-$(function () {
-  // 0) Sanidad básica y logging
-  if (!window.jQuery) { console.error('jQuery no está cargado'); return; }
-  var comboUrl = '@Url.Action("EstadoReservaCombo", "Reservas")';
-  console.log('URL combo ->', comboUrl);
+        // endpoints
+        const urlDash   = '@Url.Action("Dashboard","Reservas")';
+        const urlTabla  = '@Url.Action("TablaPartial","Reservas")';
+        const urlUpsert = '@Url.Action("Upsert","Reservas")';
 
-  // 1) Poblar combo con GET JSON
-  $.ajax({
-    url: comboUrl,
-    type: 'GET',
-    dataType: 'json'
-  })
-  .done(function (resp) {
-    console.log('Resp combo', resp);
-    if (!resp || !resp.ok) {
-      console.warn('Respuesta no OK del combo');
-      return;
-    }
-    var $sel = $('#EstadosFilter');
-    $sel.find('option:not([value=""])').remove();
-    resp.data.forEach(function (o) {
-      $sel.append($('<option>').val(o.value).text(o.text).attr('data-id', o.id));
-    });
-  })
-  .fail(function (xhr, status, err) {
-    console.error('Fallo combo', status, xhr.status, xhr.responseText);
-    // Visualiza si es 401 o 404 para saber si fue auth o ruta:
-    // 401 => sesión/token; 404 => URL/Controller/Action
-  });
-
-  // 2) Filtro DataTable (columna "Habitación" == índice 6; ajusta si cambió)
-  var table = $.fn.dataTable.isDataTable('#tablaDashAdm')
-    ? $('#tablaDashAdm').DataTable()
-    : null;
-
-  $('#EstadosFilter').on('change', function () {
-    if (!table) {
-      // Si inicializas la tabla luego, puedes mover este código a un callback post-init
-      console.warn('DataTable aún no está inicializada');
-      return;
-    }
-    var val = this.value;
-    if (val) {
-      table.column(6)                               // índice de la columna "Habitación"
-           .search('^' + $.fn.dataTable.util.escapeRegex(val) + '$', true, false)
-           .draw();
-    } else {
-      table.column(6).search('').draw();
-    }
-  });
-});
-    </script>
-
-    <script>
-$(function () {
-  // 0) Sanidad básica y logging
-  if (!window.jQuery) { console.error('jQuery no está cargado'); return; }
-  var comboUrl = '@Url.Action("TipoHabitacionesCombo", "Reservas")';
-  console.log('URL combo ->', comboUrl);
-
-  // 1) Poblar combo con GET JSON
-  $.ajax({
-    url: comboUrl,
-    type: 'GET',
-    dataType: 'json'
-  })
-  .done(function (resp) {
-    console.log('Resp combo', resp);
-    if (!resp || !resp.ok) {
-      console.warn('Respuesta no OK del combo');
-      return;
-    }
-      var $sel = $('#TipoHabitacionFilter');
-    $sel.find('option:not([value=""])').remove();
-    resp.data.forEach(function (o) {
-      $sel.append($('<option>').val(o.value).text(o.text).attr('data-id', o.id));
-    });
-  })
-  .fail(function (xhr, status, err) {
-    console.error('Fallo combo', status, xhr.status, xhr.responseText);
-    // Visualiza si es 401 o 404 para saber si fue auth o ruta:
-    // 401 => sesión/token; 404 => URL/Controller/Action
-  });
-
-  // 2) Filtro DataTable (columna "Habitación" == índice 6; ajusta si cambió)
-  var table = $.fn.dataTable.isDataTable('#tablaDashAdm')
-    ? $('#tablaDashAdm').DataTable()
-    : null;
-
-    $('#TipoHabitacionFilter').on('change', function () {
-    if (!table) {
-      // Si inicializas la tabla luego, puedes mover este código a un callback post-init
-      console.warn('DataTable aún no está inicializada');
-      return;
-    }
-    var val = this.value;
-    if (val) {
-      table.column(6)                               // índice de la columna "Habitación"
-           .search('^' + $.fn.dataTable.util.escapeRegex(val) + '$', true, false)
-           .draw();
-    } else {
-      table.column(6).search('').draw();
-    }
-  });
-});
-    </script>
-    <script>
-$(function () {
-  // 0) Sanidad básica y logging
-  if (!window.jQuery) { console.error('jQuery no está cargado'); return; }
-  var comboUrl = '@Url.Action("HabitacionesCombo","Reservas")';
-  console.log('URL combo ->', comboUrl);
-
-  // 1) Poblar combo con GET JSON
-  $.ajax({
-    url: comboUrl,
-    type: 'GET',
-    dataType: 'json'
-  })
-  .done(function (resp) {
-    console.log('Resp combo', resp);
-    if (!resp || !resp.ok) {
-      console.warn('Respuesta no OK del combo');
-      return;
-    }
-      var $sel = $('#HabitacionesFilter');
-    $sel.find('option:not([value=""])').remove();
-    resp.data.forEach(function (o) {
-      $sel.append($('<option>').val(o.value).text(o.text).attr('data-id', o.id));
-    });
-  })
-  .fail(function (xhr, status, err) {
-    console.error('Fallo combo', status, xhr.status, xhr.responseText);
-    // Visualiza si es 401 o 404 para saber si fue auth o ruta:
-    // 401 => sesión/token; 404 => URL/Controller/Action
-  });
-
-  // 2) Filtro DataTable (columna "Habitación" == índice 6; ajusta si cambió)
-  var table = $.fn.dataTable.isDataTable('#tablaDashAdm')
-    ? $('#tablaDashAdm').DataTable()
-    : null;
-
-    $('#HabitacionesFilter').on('change', function () {
-    if (!table) {
-      // Si inicializas la tabla luego, puedes mover este código a un callback post-init
-      console.warn('DataTable aún no está inicializada');
-      return;
-    }
-    var val = this.value;
-    if (val) {
-      table.column(6)                               // índice de la columna "Habitación"
-           .search('^' + $.fn.dataTable.util.escapeRegex(val) + '$', true, false)
-           .draw();
-    } else {
-      table.column(6).search('').draw();
-    }
-  });
-});
-    </script>
-    <script>
-    // ===== ENDPOINTS =====
-    const urlTablaReserva  = '@Url.Action("TablaPartial","Reservas")';
-    const urlDashboardView = '@Url.Action("Dashboard","Reservas")';
-    const urlUpsertReserva = '@Url.Action("Upsert","Reservas")';
-    const urlEliminar      = '@Url.Action("Eliminar","Reservas")';
-
-    function token(){ return $('input[name="__RequestVerificationToken"]').first().val(); }
-    if (window.PNotify) { PNotify.prototype.options.styling = "bootstrap3"; }
-
-    // ===== DATE RANGE para la tabla =====
-    $('#dateRange').daterangepicker({
-      startDate: moment().startOf('month'),
-      endDate: moment().endOf('day'),
-      locale:{ format:'DD/MM/YYYY', applyLabel:'Aplicar', cancelLabel:'Cancelar' }
-    });
-
-    // ===== DASHBOARD (carga del parcial con manejo de error) =====
-    function cargarDashboardView(){
-      $('#dashContainerReserva').html('<div class="text-muted">Cargando dashboard…</div>');
-      $('#dashContainerReserva').load(urlDashboardView, function(responseText, textStatus, xhr){
-        if (textStatus === 'error' || (xhr && xhr.status >= 400)) {
-          const code = (xhr && xhr.status) ? ` (${xhr.status})` : '';
-          const msg  = (xhr && xhr.statusText) ? xhr.statusText : 'Error';
-          const body = (xhr && xhr.responseText) ? $('<div>').text(xhr.responseText).html() : '';
-          $('#dashContainerReserva').html(
-            `<div class="text-danger">
-               <strong>No se pudo cargar el dashboard${code}:</strong> ${msg}<br/>
-               <small>${body}</small><br/>
-               <button type="button" class="btn btn-link p-0" id="retryDashboardBtn">Reintentar</button>
-             </div>`
-          );
-          if (window.PNotify) {
-            new PNotify({ title:'Dashboard', text:`Error${code}: ${msg}`, type:'error', styling:'bootstrap3' });
-          }
+        function getToken() {
+            return $('input[name="__RequestVerificationToken"]').val();
         }
-      });
-    }
-    $(document).on('click', '#retryDashboardBtn', function(){ cargarDashboardView(); });
 
-    // ===== TABLA =====
-    function initDataTable(){
-      const $t = $('#tablaReservas').length ? $('#tablaReservas') : $('#reservationsTable');
-      if(!$t.length) return;
-      $t.DataTable({
-        destroy:true, responsive:true, pageLength:25, order:[[0,'desc']],
-        columnDefs:[{ orderable:false, targets:8 }],
-        language:{
-          sProcessing:"Procesando...", sLengthMenu:"Mostrar _MENU_ registros", sZeroRecords:"No se encontraron resultados",
-          sEmptyTable:"Ningún dato disponible en esta tabla", sInfo:"Mostrando _START_ a _END_ de _TOTAL_",
-          sInfoEmpty:"Mostrando 0 a 0 de 0", sInfoFiltered:"(filtrado de _MAX_ registros)", sSearch:"Buscar:",
-          oPaginate:{ sFirst:"Primero", sLast:"Último", sNext:"Siguiente", sPrevious:"Anterior" }
+        function cargarDashboard() {
+            $('#dashContainerReserva').load(urlDash);
         }
-      });
-    }
+        const urlAsignar = '@Url.Action("Asignar","Reservas")';
 
-    function buildTablaPayload(){
-      let fechaDesdeISO=null, fechaHastaISO=null;
-      const picker=$('#dateRange').data('daterangepicker');
-      if(picker){
-        fechaDesdeISO = picker.startDate.clone().startOf('day').toISOString();
-        fechaHastaISO = picker.endDate.clone().endOf('day').toISOString();
-      }
-      return { __RequestVerificationToken: token(), fechaDesde: fechaDesdeISO, fechaHasta: fechaHastaISO };
-    }
-
-    function cargarTabla(){
-      $('#tablaReservaContainer').html('<div class="text-muted">Cargando reservas…</div>');
-      $.ajax({
-        url: urlTablaReserva, type:'POST', data: buildTablaPayload(),
-        success: function(html){ $('#tablaReservaContainer').html(html); initDataTable(); },
-        error: function(xhr){
-          const msg = (xhr.status===401) ? 'Sesión expirada. Vuelva a iniciar sesión.' : 'No se pudo cargar el listado.';
-          $('#tablaReservaContainer').html('<div class="text-danger">'+msg+'</div>');
+        function abrirModalAsignar(id) {
+            $('#modalAsignarReserva').modal('show');
+            $('#asignarReservaBody').html('<div class="p-3">Cargando…</div>');
+            $.get(urlAsignar, { id: id }, function (html) {
+                $('#asignarReservaBody').html(html);
+            });
         }
-      });
-    }
+        const urlRechazar = '@Url.Action("Rechazar","Reservas")';
 
-    // ===== BOTONES =====
-    $('#refreshDataBtn').on('click', function(){
-      cargarDashboardView();
-      cargarTabla();
-      new PNotify({ title:'Datos Actualizados', text:'La información ha sido actualizada correctamente', type:'success' });
+function abrirModalRechazar(id) {
+    $('#modalRechazarReserva').modal('show');
+    $('#rechazarReservaBody').html('<div class="p-3">Cargando…</div>');
+    $.get(urlRechazar, { id: id }, function (html) {
+        $('#rechazarReservaBody').html(html);
     });
+}
 
-    $('#btnNueva').on('click', function(){
-      $('#modalUpsertReserva').modal('show');
-      $('#upsertReservaBody').html('<div class="text-muted">Cargando…</div>').load(urlUpsertReserva);
-    });
-        // Manejo del submit del form dentro del modal (delegado)
-        $('#upsertReservaBody').on('submit', '#formCrearReserva', function (e) {
-            e.preventDefault();
-            var $form = $(this);
-            var data = $form.serialize();
+// para los botones que genera la tabla por AJAX
+$(document).on('click', '.btn-rechazar-reserva', function () {
+    var id = $(this).data('id');
+    abrirModalRechazar(id);
+});
 
-            $.ajax({
-                url: $form.attr('action'),
-                type: 'POST',
-                data: data
-            })
-                .done(function (r) {
-                    if (r && r.ok) {
-                        $('#modalUpsertReserva').modal('hide');
-                        // refresca tabla
-                        if (typeof cargarTabla === 'function') cargarTabla();
-                        if (window.PNotify) new PNotify({ title: 'Reserva', text: 'Reserva creada correctamente', type: 'success', styling: 'bootstrap3' });
-                    } else {
-                        // si el server devolvió el parcial con validaciones, vuelves a renderizar
-                        $('#upsertReservaBody').html(r);
-                    }
+        // escucha los botones que se crean en la tabla
+        $(document).on('click', '.btn-asignar-reserva', function () {
+            var id = $(this).data('id');
+            abrirModalAsignar(id);
+        });
+
+        function cargarTabla() {
+            var data = {
+                __RequestVerificationToken: getToken(),
+                fechaDesde: $('#filtroFechaInicio').val(),
+                fechaHasta: $('#filtroFechaFin').val(),
+                estado: $('#filtroEstado').val()
+            };
+
+            $('#tablaReservaContainer').html('<div class="p-3">Cargando reservas…</div>');
+
+            $.post(urlTabla, data)
+                .done(function (html) {
+                    $('#tablaReservaContainer').html(html);
                 })
                 .fail(function (xhr) {
-                    var msg = xhr.responseText || 'No se pudo crear la reserva';
-                    if (window.PNotify) new PNotify({ title: 'Error', text: msg, type: 'error', styling: 'bootstrap3' });
+                    $('#tablaReservaContainer').html('<div class="p-3 text-danger">No se pudo cargar la tabla (' + xhr.status + ')</div>');
                 });
+        }
+
+        function abrirModalReserva(id) {
+            $('#modalUpsertReserva').modal('show');
+            $('#upsertReservaBody').html('<div class="p-3">Cargando…</div>');
+            $.get(urlUpsert, { id: id }, function (html) {
+                $('#upsertReservaBody').html(html);
+            });
+        }
+
+        $(function () {
+            var hoy = new Date().toISOString().slice(0, 10);
+            $('#filtroFechaInicio').val(hoy);
+            $('#filtroFechaFin').val(hoy);
+
+            cargarDashboard();
+            cargarTabla();
+
+            $('#btnBuscarReservas').on('click', function () {
+                cargarTabla();
+            });
+
+            $('#btnNuevaReserva').on('click', function () {
+                abrirModalReserva(null);
+            });
+
+            $('#modalUpsertReserva').on('submit', '#formReserva', function (e) {
+                e.preventDefault();
+                var $f = $(this);
+                $.post($f.attr('action'), $f.serialize(), function (r) {
+                    if (r && r.ok) {
+                        $('#modalUpsertReserva').modal('hide');
+                        cargarDashboard();
+                        cargarTabla();
+                    } else {
+                        $('#upsertReservaBody').html(r);
+                    }
+                });
+            });
         });
-    // ===== INIT =====
-    $(function(){
-      cargarDashboardView(); // solo el parcial de KPIs
-      cargarTabla();         // la tabla con el rango inicial
-    });
     </script>
 }

@@ -16,8 +16,11 @@ namespace Front_Hoteleria.Dto.Calendario
         public DateTime FechaFin { get; set; }
 
         // mantenimiento, sanitizacion, blocked, occupied, reserved...
+        public string TotalHabitaciones { get; set; }
+        public string OcupadasHoy { get; set; }
+        public string EnMantenimiento { get; set; }
+        public string EnSanitizacion { get; set; }
         public string Tipo { get; set; }
-
         public string Descripcion { get; set; }
 
         // opcional: color que se pintará en el calendario

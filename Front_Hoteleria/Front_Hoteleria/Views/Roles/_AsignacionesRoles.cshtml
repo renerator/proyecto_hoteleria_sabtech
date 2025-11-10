@@ -47,7 +47,8 @@ else
                             <strong>@a.TrabajadorNombre</strong><br />
                             <small>
                                 <span class="role-badge">@a.RolNombre</span>
-                                | Asignado: @a.FechaAsignacion.ToString("dd/MM/yyyy")
+                                | Asignado: @a.FechaAsignacion?.ToString("dd/MM/yyyy") ?? ""
+
                                 | Por: @a.AsignadoPor
                             </small>
                         </div>

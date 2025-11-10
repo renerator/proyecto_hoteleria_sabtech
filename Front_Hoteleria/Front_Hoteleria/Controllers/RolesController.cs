@@ -199,11 +199,12 @@ namespace Front_Hoteleria.Controllers
         }
 
         // ====== GET: /Roles/Asignar  (muestra el modal) ======
-        [HttpGet]
-        public async Task<ActionResult> Asignar()
-        {
-            // si tuvieras API, aquí la llamas. Ahora: datos en duro
+        
 
+        // GET: /Roles/Asignar  (muestra el modal)
+        [HttpGet]
+        public ActionResult Asignar()
+        {
             // trabajadores de ejemplo
             var trabajadores = new List<SelectListItem>
     {
@@ -213,7 +214,7 @@ namespace Front_Hoteleria.Controllers
     };
             ViewBag.Trabajadores = trabajadores;
 
-            // roles de ejemplo (los mismos que usas en la tabla)
+            // roles de ejemplo
             var roles = new List<SelectListItem>
     {
         new SelectListItem { Value = "1", Text = "Administrador (ADMIN)" },
@@ -230,31 +231,21 @@ namespace Front_Hoteleria.Controllers
                 FechaFin = DateTime.Today.AddMonths(1)
             };
 
-            return PartialView("~/Views/Roles/_AsignacionesRoles.cshtml", dto);
+            // 👈 OJO: ahora apuntamos al modal nuevo, no al listado
+            return PartialView("~/Views/Roles/_AsignarRol.cshtml", dto);
         }
 
-        // ====== POST: /Roles/Asignar  (guarda la asignación) ======
+        // POST: /Roles/Asignar
         [HttpPost]
-        public async Task<ActionResult> Asignar(AsignacionRolDto dto)
+        public ActionResult Asignar(AsignacionRolDto dto)
         {
             if (dto == null || string.IsNullOrWhiteSpace(dto.TrabajadorId) || dto.RolId == 0)
                 return Json(new { ok = false, msg = "Complete trabajador y rol." });
 
-            try
-            {
-                // aquí llamarías al servicio real:
-                // var token = GetBearer();
-                // var okApi = await _api.AsignarRolAsync(dto, token);
-
-                // demo: siempre ok
-                return Json(new { ok = true });
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("[RolesController.Asignar POST] " + ex);
-                return Json(new { ok = false, msg = "Error al asignar el rol." });
-            }
+            // aquí iría la llamada real al API
+            return Json(new { ok = true });
         }
+
 
         [HttpGet]
         public ActionResult MatrizPermisos()

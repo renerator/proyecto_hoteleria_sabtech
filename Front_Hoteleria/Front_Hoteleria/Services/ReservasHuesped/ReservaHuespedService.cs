@@ -1,4 +1,8 @@
-﻿using Front_Hoteleria.Dto.Reserva;
+﻿using Front_Hoteleria.Dto.EstadoReserva;
+using Front_Hoteleria.Dto.Inventario;
+using Front_Hoteleria.Dto.Reserva;
+using Front_Hoteleria.Services.ReservasHuesped;
+using Front_Hoteleria.Dto.TipoHabitacion;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,13 +17,14 @@ using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 
 
-namespace Front_Hoteleria.Services.PanelPrincipal
+namespace Front_Hoteleria.Services.ReservasHuesped
+
 {
-    public class PanelPrincipalService : IPanelPrincipalService
+    public class ReservaHuespedService : IReservaHuespedService
     {
         private static readonly HttpClient _http;
 
-        static PanelPrincipalService()
+        static ReservaHuespedService()
         {
             var baseUrl = ConfigurationManager.AppSettings["Api.BaseUrl"]
                           ?? ConfigurationManager.AppSettings["ApiBaseUrl"];
@@ -84,6 +89,38 @@ namespace Front_Hoteleria.Services.PanelPrincipal
             }
         }
 
+        public async Task<ReservaDashboardPanelPrincipalDto> DashboardReservasPanelPrincipalAsync(DateTime? desde, DateTime? hasta, string bearer = null)
+        {
+            try
+            {
+
+                SetBearer(bearer);
+                var url = "api/Reservas/dashboardReservasPanelPrincipal";
+                if (desde.HasValue || hasta.HasValue)
+                {
+                    var qs = new List<string>(2);
+                    if (desde.HasValue)
+                        qs.Add("desde=" + Uri.EscapeDataString(desde.Value.ToString("o", CultureInfo.InvariantCulture)));
+                    if (hasta.HasValue)
+                        qs.Add("hasta=" + Uri.EscapeDataString(hasta.Value.ToString("o", CultureInfo.InvariantCulture)));
+
+                    url += "?" + string.Join("&", qs);
+                }
+                using (var resp = await _http.GetAsync(url))
+                {
+                    if ((int)resp.StatusCode == 204) return new ReservaDashboardPanelPrincipalDto();
+                    resp.EnsureSuccessStatusCode();
+                    var json = await resp.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<ReservaDashboardPanelPrincipalDto > (json) ?? new ReservaDashboardPanelPrincipalDto();
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[DashboardReservasAsync] {ex}");
+                return new ReservaDashboardPanelPrincipalDto();
+            }
+        }
+
         // POST /api/Reservas/SolicitaReserva
         public async Task<bool> CrearReservaAsync(ReservaDto dto, string bearer = null)
         {
@@ -144,7 +181,7 @@ namespace Front_Hoteleria.Services.PanelPrincipal
             try
             {
                 SetBearer(bearer);
-                 var resp = await _http.DeleteAsync($"/api/Reservas/EliminaReserva?idReserva={idReserva}");
+                var resp = await _http.DeleteAsync($"/api/Reservas/EliminaReserva?idReserva={idReserva}");
                 if (resp.IsSuccessStatusCode) return true;
 
                 var error = await resp.Content.ReadAsStringAsync();
@@ -187,7 +224,7 @@ public async Task<List<ReservaTrabajadorDto>> ReservasDisponiblesTrabajadorAsync
     {
         try
         {
-            SetBearer(bearer);
+          
 
             reservaTrabajador = new ReservaTrabajadorDto();
 
@@ -251,8 +288,7 @@ public async Task<List<ReservaTrabajadorDto>> ReservasDisponiblesTrabajadorAsync
         public async Task<bool> CrearReservaTrabajadorAsync(ReservaTrabajadorDto dto, string bearer = null)
         {
             try
-            {
-                SetBearer(bearer);
+            { 
 
                 // Ajusta la ruta si tu API usa otra: p.ej. "/api/Reservas/CrearReserva"
                 var url = "/api/Reservas/CreaReservaTrabajador";
@@ -272,35 +308,39 @@ public async Task<List<ReservaTrabajadorDto>> ReservasDisponiblesTrabajadorAsync
                 return false;
             }
         }
-        public async Task<ReservaDashboardPanelPrincipalDto> DashboardReservasPanelPrincipalAsync(DateTime? desde, DateTime? hasta, string bearer = null)
+
+        public async Task<List<EstadoReservaDto>> GetListaEstadoReservas(string bearer = null)
         {
             try
             {
-
                 SetBearer(bearer);
-                var url = "api/Reservas/dashboardReservasPanelPrincipal";
-                if (desde.HasValue || hasta.HasValue)
-                {
-                    var qs = new List<string>(2);
-                    if (desde.HasValue)
-                        qs.Add("desde=" + Uri.EscapeDataString(desde.Value.ToString("o", CultureInfo.InvariantCulture)));
-                    if (hasta.HasValue)
-                        qs.Add("hasta=" + Uri.EscapeDataString(hasta.Value.ToString("o", CultureInfo.InvariantCulture)));
+                var url = "/api/Reservas/ListarEstadoReserva";
+        
 
-                    url += "?" + string.Join("&", qs);
-                }
                 using (var resp = await _http.GetAsync(url))
                 {
-                    if ((int)resp.StatusCode == 204) return new ReservaDashboardPanelPrincipalDto();
+                    if ((int)resp.StatusCode == 204) // NoContent
+                        return new List<EstadoReservaDto>();
+
                     resp.EnsureSuccessStatusCode();
                     var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<ReservaDashboardPanelPrincipalDto>(json) ?? new ReservaDashboardPanelPrincipalDto();
+                    return JsonConvert.DeserializeObject<List<EstadoReservaDto>>(json) ?? new List<EstadoReservaDto>();
                 }
+            }
+            catch (HttpRequestException ex)
+            {
+                Trace.TraceError($"[HabitacionesDisponiblesAsync] Error HTTP: {ex}");
+                return new List<EstadoReservaDto>();
+            }
+            catch (TaskCanceledException ex)
+            {
+                Trace.TraceError($"[HabitacionesDisponiblesAsync] Timeout: {ex}");
+                return new List<EstadoReservaDto>();
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[DashboardReservasAsync] {ex}");
-                return new ReservaDashboardPanelPrincipalDto();
+                Trace.TraceError($"[HabitacionesDisponiblesAsync] Error inesperado: {ex}");
+                return new List<EstadoReservaDto>();
             }
         }
 
