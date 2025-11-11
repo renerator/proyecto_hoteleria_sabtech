@@ -1,19 +1,24 @@
 ﻿
 using DemoBackend.Dto.Habitacion;
 using DemoBackend.Models.Bodega;
+using DemoBackend.Models.Calendario;
+using DemoBackend.Models.Campamentos;
+using DemoBackend.Models.Contratos;
+using DemoBackend.Models.Dotaciones;
 using DemoBackend.Models.EstadoReserva;
 using DemoBackend.Models.Habitacion;
 using DemoBackend.Models.HabitacionInsumo;
 using DemoBackend.Models.Insumos;
+using DemoBackend.Models.Inventario;
 using DemoBackend.Models.Mantenedores;
 using DemoBackend.Models.Menu;
-
 using DemoBackend.Models.OrdenTrabajo;
 using DemoBackend.Models.Reserva;
 using DemoBackend.Models.Servicio;
+using DemoBackend.Models.ServicioCategoria;
 using DemoBackend.Models.ServicioEstado;
 using DemoBackend.Models.ServicioPrioridad;
-using DemoBackend.Models.ServicioCategoria;
+using DemoBackend.Models.ServiciosPersonal;
 using DemoBackend.Models.SolicitudServicio;
 using DemoBackend.Models.TipoHabitacion;
 using DemoBackend.Models.Trabajador;
@@ -54,11 +59,37 @@ namespace DemoBackend.Models
         public virtual DbSet<TipoHabitacionModels> TipoHabiatacion { get; set; }
         public virtual DbSet<EstadoReservaModels> EstadoReserva { get; set; }
         public virtual DbSet<OrdenTrabajoModels> ListaOrdenTrabajo { get; set; }
+
+        public DbSet<CalendarioEventosModels> CalendarioEventos { get; set; }
+        public DbSet<CalendarioBloqueosModels> CalendarioBloqueos { get; set; }
+        public DbSet<CalendarioMantenimientosModels> CalendarioMantenimientos { get; set; }
+        public DbSet<CalendarioSanitizacionModels> CalendarioSanitizacion { get; set; }
+
+        public DbSet<CampamentosModels> Campamentos { get; set; }
+        public DbSet<CampamentoAreasModels> CampamentoAreas { get; set; }
+
+        public DbSet<ContratosModels> Contratos { get; set; }
+        public DbSet<ContratoTrabajadoresModels> ContratoTrabajadores { get; set; }
+
+        public DbSet<DotacionesModels> Dotaciones { get; set; }
+
+        public DbSet<InventarioModels> Inventario { get; set; }
+        public DbSet<InventarioMovimientosModels> InventarioMovimientos { get; set; }
+
+        public DbSet<ServiciosPersonalModels> ServiciosPersonal { get; set; }
+        public DbSet<CampamentoKPIModels> CampamentoKPI { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<ReservaDashboardKPI>(eb =>
+            {
+                eb.HasNoKey();     // <- clave
+                eb.ToView(null);   // <- no está mapeado a vista/tabla
+            });
+
+            modelBuilder.Entity<CampamentoKPIModels>(eb =>
             {
                 eb.HasNoKey();     // <- clave
                 eb.ToView(null);   // <- no está mapeado a vista/tabla

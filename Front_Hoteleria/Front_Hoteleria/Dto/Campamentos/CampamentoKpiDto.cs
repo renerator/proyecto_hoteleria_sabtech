@@ -5,6 +5,6 @@
         public int CampamentosActivos { get; set; }
         public int AreasComunes { get; set; }
         public int Habitaciones { get; set; }
-        public int TasaUtilizacion { get; set; } // %
+        public decimal TasaUtilizacion { get; set; } // %
     }
 }

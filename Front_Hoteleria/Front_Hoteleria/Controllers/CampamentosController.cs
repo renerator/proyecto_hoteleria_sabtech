@@ -26,13 +26,11 @@ namespace Front_Hoteleria.Controllers
             try
             {
                 return (Session["Token"] as string)
-                    ?? (Request.Cookies["access_token"] != null
-                        ? Request.Cookies["access_token"].Value
-                        : null);
+                       ?? (Request.Cookies["access_token"] != null ? Request.Cookies["access_token"].Value : null);
             }
             catch (Exception ex)
             {
-                Trace.TraceError("[CampamentosController.GetBearer] " + ex);
+                Trace.TraceError($"[GetBearer] Error leyendo token: {ex}");
                 return null;
             }
         }
@@ -50,17 +48,6 @@ namespace Front_Hoteleria.Controllers
             var token = GetBearer();
             var dto = await _api.ResumenAsync(token);
 
-            if (dto == null)
-            {
-                dto = new CampamentoKpiDto
-                {
-                    CampamentosActivos= 22,
-                    AreasComunes =22,
-                    Habitaciones=1,
-                   TasaUtilizacion =6
-                 };
-            }
-
             return PartialView("~/Views/Campamentos/_DashboardCampamentos.cshtml", dto);
         }
 
@@ -74,72 +61,7 @@ namespace Front_Hoteleria.Controllers
                 var lista = await _api.ListarAsync(criterio, estado, token);
 
                 // 1) si la API no devolvió nada, metemos datos de demo
-                if (lista == null || !lista.Any())
-                {
-                    lista = new List<CampamentoDto>
-            {
-                new CampamentoDto
-                {
-                    Id = "CAMP-001",
-                    Nombre = "Campamento Norte",
-                    Codigo = "CAMP-N-001",
-                    Ubicacion = "Sector Norte, Mina Escondida",
-                    Encargado = "Juan Pérez",
-                    Capacidad = 200,
-                    OcupacionActual = 156,
-                    Estado = "active",
-                    Areas = new List<CampamentoAreaDto>
-                    {
-                        new CampamentoAreaDto { Nombre = "Comedor Principal", Capacidad = 100, Estado = "active" },
-                        new CampamentoAreaDto { Nombre = "Lavandería Central", Capacidad = 50, Estado = "active" },
-                        new CampamentoAreaDto { Nombre = "Sala de Recreación", Capacidad = 30, Estado = "maintenance" },
-                    }
-                },
-                new CampamentoDto
-                {
-                    Id = "CAMP-002",
-                    Nombre = "Campamento Sur",
-                    Codigo = "CAMP-S-002",
-                    Ubicacion = "Sector Sur, Mina Los Pelambres",
-                    Encargado = "María González",
-                    Capacidad = 150,
-                    OcupacionActual = 120,
-                    Estado = "active",
-                    Areas = new List<CampamentoAreaDto>
-                    {
-                        new CampamentoAreaDto { Nombre = "Comedor Sur", Capacidad = 80, Estado = "active" },
-                        new CampamentoAreaDto { Nombre = "Gimnasio", Capacidad = 20, Estado = "active" }
-                    }
-                },
-                new CampamentoDto
-                {
-                    Id = "CAMP-003",
-                    Nombre = "Campamento Mantenimiento",
-                    Codigo = "CAMP-M-003",
-                    Ubicacion = "Planta Central",
-                    Encargado = "Pedro Silva",
-                    Capacidad = 80,
-                    OcupacionActual = 35,
-                    Estado = "maintenance",
-                    Areas = new List<CampamentoAreaDto>
-                    {
-                        new CampamentoAreaDto { Nombre = "Taller", Capacidad = 15, Estado = "active" }
-                    }
-                },
-                new CampamentoDto
-                {
-                    Id = "CAMP-004",
-                    Nombre = "Campamento Antiguo",
-                    Codigo = "CAMP-A-004",
-                    Ubicacion = "Sector Antiguo",
-                    Encargado = "Sin asignar",
-                    Capacidad = 60,
-                    OcupacionActual = 0,
-                    Estado = "inactive",
-                    Areas = new List<CampamentoAreaDto>()
-                }
-            };
-                }
+               
 
                 // 2) filtramos por criterio (nombre, código o ubicación)
                 if (!string.IsNullOrWhiteSpace(criterio))
@@ -174,42 +96,45 @@ namespace Front_Hoteleria.Controllers
 
         // ===== FORM (modal) =====
         [HttpGet]
-        public async Task<ActionResult> Upsert(string id)
+        public async Task<ActionResult> Upsert(int IdCampamento, bool soloLectura = false)
         {
             var token = GetBearer();
             CampamentoDto dto = null;
 
-            if (!string.IsNullOrWhiteSpace(id))
+            if (IdCampamento > 0)
             {
-                dto = await _api.ObtenerPorIdAsync(id, token);
+                dto = await _api.ObtenerPorIdAsync(IdCampamento, token);
             }
 
             if (dto == null)
             {
                 dto = new CampamentoDto
                 {
-                    Id = id,
+                    IdCampamento = IdCampamento,
                     Estado = "active",
-                    Capacidad = 200,
+                    Capacidad = 1,
                     OcupacionActual = 0
                 };
             }
 
+            ViewBag.SoloLectura = soloLectura;
             return PartialView("~/Views/Campamentos/_UpsertCampamentos.cshtml", dto);
         }
+
 
         [HttpPost]
         public async Task<ActionResult> Guardar(CampamentoDto dto)
         {
+            var token = GetBearer();
             if (dto == null)
                 return Json(new { ok = false, msg = "Datos vacíos" });
 
-            var token = GetBearer();
+            
 
             try
             {
                 bool ok;
-                if (string.IsNullOrWhiteSpace(dto.Id))
+                if (dto.IdCampamento==0)
                     ok = await _api.CrearAsync(dto, token);
                 else
                     ok = await _api.ActualizarAsync(dto, token);
@@ -227,12 +152,12 @@ namespace Front_Hoteleria.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Eliminar(string id)
+        public async Task<ActionResult> Eliminar(int IdCampamento)
         {
             var token = GetBearer();
             try
             {
-                var ok = await _api.EliminarAsync(id, token);
+                var ok = await _api.EliminarAsync(IdCampamento, token);
                 if (!ok) ok = true; // maqueta
                 return Json(new { ok });
             }

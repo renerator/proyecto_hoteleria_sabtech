@@ -5,16 +5,16 @@ namespace Front_Hoteleria.Dto.Inventario
 {
     public class InventarioItemDto
     {
-        public string Id { get; set; }              // INV-001
+        public int IdArticulo { get; set; }             // INV-001
         public string Nombre { get; set; }          // TV Samsung...
         public string Categoria { get; set; }       // tecnologia, ropa_cama...
         public string Habitacion { get; set; }      // 0001
         public string Estado { get; set; }          // disponible, faltante, mantenimiento, danado
-        public decimal? Valor { get; set; }
+        public int Valor { get; set; }
         public string Marca { get; set; }
         public string Modelo { get; set; }
         public string Serie { get; set; }
-        public string Descripcion { get; set; }
+        public string Observaciones { get; set; }
 
         public DateTime FechaCompra { get; set; }
         

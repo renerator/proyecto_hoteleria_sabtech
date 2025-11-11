@@ -86,6 +86,24 @@ namespace DemoBackend
 
                 services.AddTransient<IBodegaService, BodegaService>();
                 services.AddTransient<IInsumoService, InsumoService>();
+                // ====== Servicios Hotelería nuevos ======
+                // Calendario
+                services.AddTransient<DemoBackend.Services.Calendario.ICalendarioService, DemoBackend.Services.CalendarioService>();
+
+                // Campamentos
+                services.AddTransient<DemoBackend.Services.Campamentos.ICampamentosService, DemoBackend.Services.CampamentosService>();
+
+                // Contratos
+                services.AddTransient<DemoBackend.Services.Contratos.IContratosService, DemoBackend.Services.ContratosService>();
+
+                // Dotaciones
+                services.AddTransient<DemoBackend.Services.Dotaciones.IDotacionesService, DemoBackend.Services.DotacionesService>();
+
+                // Inventario
+                services.AddTransient<DemoBackend.Services.Inventario.IInventarioService, DemoBackend.Services.InventarioService>();
+
+                // Servicios al personal
+                services.AddTransient<DemoBackend.Services.ServiciosPersonal.IServiciosPersonalService, DemoBackend.Services.ServiciosPersonalService>();
 
 
                 //auditoria registro

@@ -1,3 +1,4 @@
+using Front_Hoteleria.Dto.Campamentos;
 using Front_Hoteleria.Dto.Inventario;
 using Front_Hoteleria.Services.Inventario;
 using System;
@@ -70,9 +71,9 @@ namespace Front_Hoteleria.Controllers
         }
         // GET: /Inventario/Ver?id=INV-001
         [HttpGet]
-        public async Task<ActionResult> Ver(string id)
+        public async Task<ActionResult> Ver(int id)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (id==0)
                 return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "Id requerido");
 
             var token = GetBearer();
@@ -84,28 +85,10 @@ namespace Front_Hoteleria.Controllers
                 // 1) intentar traer desde la API
                 var item = await _api.GetByIdAsync(id, token);
 
-                // 2) si la API NO devolvió nada, armamos uno en duro solo para maqueta
-                if (item == null)
-                {
-                    item = new Front_Hoteleria.Dto.Inventario.InventarioItemDto
-                    {
-                        Id = id,
-                        Nombre = "TV Samsung 55\" Smart",
-                        Categoria = "Tecnología",
-                        Habitacion = "0002",
-                        Estado = "Disponible",
-                        Valor = 850m,
-                        Marca = "Samsung",
-                        Modelo = "55UN7300",
-                        Serie = "SN123456789",
-                        Descripcion = "Artículo en buen estado, funcionando correctamente.",
-                        UltimoMovimientoFecha = DateTime.Today.AddDays(-2),
-                        UltimoMovimientoDescripcion = "15/12/2024 - Verificación"
-                    };
-                }
+                
 
                 // 3) historial: primero API
-                var historial = await _api.GetMovimientosAsync(item.Id, token);
+                var historial = await _api.GetMovimientosAsync(item.IdArticulo, token);
 
                 // 4) si la API no devolvió historial, ponemos una lista en duro
                 if (historial == null || historial.Count == 0)
@@ -198,39 +181,7 @@ namespace Front_Hoteleria.Controllers
                 // si la api no trae nada, metemos datos de demo para que veas diseño
                 if (lista == null || !lista.Any())
                 {
-                    lista = new List<InventarioItemDto>
-                    {
-                        new InventarioItemDto {
-                            Id = "INV-001",
-                            Nombre = "Sábanas Blancas King Size",
-                            Categoria = "ropa_cama",
-                            Habitacion = "0001",
-                            Estado = "disponible",
-                            Valor = 45,
-                            UltimoMovimientoFecha = DateTime.Today.AddDays(-1),
-                            UltimoMovimientoDescripcion = "Ingreso"
-                        },
-                        new InventarioItemDto {
-                            Id = "INV-002",
-                            Nombre = "TV Samsung 55\" Smart",
-                            Categoria = "tecnologia",
-                            Habitacion = "0002",
-                            Estado = "mantenimiento",
-                            Valor = 850,
-                            UltimoMovimientoFecha = DateTime.Today.AddDays(-5),
-                            UltimoMovimientoDescripcion = "Reparación"
-                        },
-                        new InventarioItemDto {
-                            Id = "INV-003",
-                            Nombre = "Lámpara de Mesa LED",
-                            Categoria = "decoracion",
-                            Habitacion = "0003",
-                            Estado = "faltante",
-                            Valor = 120,
-                            UltimoMovimientoFecha = DateTime.Today.AddDays(-7),
-                            UltimoMovimientoDescripcion = "Reporte de pérdida"
-                        }
-                    };
+                    
                 }
 
                 // ~/Views/Inventario/_TablaInventario.cshtml
@@ -244,42 +195,30 @@ namespace Front_Hoteleria.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Upsert(string id)
+        public async Task<ActionResult> Upsert(int id = 0, bool soloLectura = false)
         {
             var token = GetBearer();
-            if (string.IsNullOrWhiteSpace(token))
-                return new HttpStatusCodeResult(401, "Sesión expirada");
+            InventarioItemDto dto = null;
 
-            Front_Hoteleria.Dto.Inventario.InventarioItemDto dto = null;
-
-            if (!string.IsNullOrWhiteSpace(id))
+            // si viene un id > 0 intento ir a la API
+            if (id > 0 && !string.IsNullOrWhiteSpace(token))
             {
-                // intentar traer de la API
                 dto = await _api.GetByIdAsync(id, token);
             }
 
-            // si la API no devolvió nada, armamos uno en duro para que el modal se vea completo
+            // si no hay API o no devolvió nada, maqueto
             if (dto == null)
             {
-                dto = new Front_Hoteleria.Dto.Inventario.InventarioItemDto
+                dto = new InventarioItemDto
                 {
-                    Id = id,
-                    Nombre = "TV Samsung 55\" Smart",
-                    Categoria = "tecnologia",
-                    Habitacion = "0002",
-                    Estado = "disponible",
-                    Valor = 850,
-                    Marca = "Samsung",
-                    Modelo = "55UN7300",
-                    Serie = "SN123456789",
-                    Descripcion = "Artículo en buen estado, funcionando correctamente"
+                    IdArticulo = 0
+
                 };
             }
 
-            // este es el modal de editar que hicimos antes
+            ViewBag.SoloLectura = soloLectura;
             return PartialView("~/Views/Inventario/_UpsertInventario.cshtml", dto);
         }
-
 
         [HttpPost]
         public async Task<ActionResult> Guardar(InventarioItemDto dto)
@@ -292,7 +231,7 @@ namespace Front_Hoteleria.Controllers
             try
             {
                 bool ok;
-                if (!string.IsNullOrWhiteSpace(dto.Id))
+                if (dto.IdArticulo>0)
                     ok = await _api.ActualizarAsync(dto, token);
                 else
                     ok = await _api.CrearAsync(dto, token);
@@ -311,7 +250,7 @@ namespace Front_Hoteleria.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> Eliminar(string id)
+        public async Task<ActionResult> Eliminar(int id)
         {
             var token = GetBearer();
             try
