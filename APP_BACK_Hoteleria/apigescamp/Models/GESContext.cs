@@ -12,6 +12,7 @@ using DemoBackend.Models.Insumos;
 using DemoBackend.Models.Inventario;
 using DemoBackend.Models.Mantenedores;
 using DemoBackend.Models.Menu;
+using DemoBackend.Models.Empresa;
 using DemoBackend.Models.OrdenTrabajo;
 using DemoBackend.Models.Reserva;
 using DemoBackend.Models.Servicio;
@@ -43,6 +44,8 @@ namespace DemoBackend.Models
         public virtual DbSet<ReservaModels> ListaReservas { get; set; }
         public virtual DbSet<HabitacionInsumoModels> ListaHabitacionInsumo { get; set; }
         public virtual DbSet<ReservaDashboardKPI> Dashboard { get; set; }
+
+        public virtual DbSet<EmpresaModels> Empresa { get; set; }
 
         public virtual DbSet<ReservaDashboardPanelPrincipalModel> DashboardPanelPrincipal { get; set; }
         public virtual DbSet<ReservaDashboardKPI> ReservaTrabajador { get; set; }
