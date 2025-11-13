@@ -11,5 +11,6 @@ namespace DemoBackend.Services.Campamentos
         bool ActualizarCampamento(CampamentoDto dto);
         bool EliminarCampamento(int idCampamento);
         CampamentoKpiDto GetKpi();
+        List<CampamentoDto> ListarCombo(bool? soloActivos, string? filtro);
     }
 }

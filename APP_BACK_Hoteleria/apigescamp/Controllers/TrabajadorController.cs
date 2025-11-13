@@ -13,12 +13,12 @@ namespace DemoBackend.Controllers
     [ApiController]
     [Route("api/[Controller]")]
     [Authorize]
-    public class UsuarioController : BaseController
+    public class TrabajadorController : BaseController
     {
         private readonly ITrabajadorService _trabajadorService;
         private readonly ILogger _logger;
 
-        public UsuarioController(ITrabajadorService trabajadorService, ILogger<UsuarioController> logger)
+        public TrabajadorController(ITrabajadorService trabajadorService, ILogger<TrabajadorController> logger)
         {
             _logger = logger;
             _trabajadorService = trabajadorService;
@@ -32,13 +32,13 @@ namespace DemoBackend.Controllers
         /// <response code="401">No autorizado</response>
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
-        [HttpGet("ListarUsuarios")]
-        public ActionResult<List<TrabajadorDto>> TrabajadoresDisponibles(int vigencia)
+        [HttpGet("ListarTrabajadores")]
+        public ActionResult<List<TrabajadorDto>> TrabajadoresDisponibles(int IdEmpresa)
         {
             _logger.LogInformation("GetListaTrabajador : Inicio proceso lista de Trabajador");
             try
             {
-                var lista = _trabajadorService.GetListaTrabajadorEstado(vigencia);
+                var lista = _trabajadorService.GetListaTrabajadorEstado(IdEmpresa);
                 if (lista.Count == 0)
                 {
                     _logger.LogInformation("GetListaTrabajador : Lista vacía");
@@ -98,7 +98,7 @@ namespace DemoBackend.Controllers
             }
         }
 
-        [HttpPost("CrearUsuario")]
+        [HttpPost("CrearTrabajador")]
         public ActionResult CrearTrabajador(TrabajadorDto trabajadorDto)
         {
             try
@@ -134,7 +134,7 @@ namespace DemoBackend.Controllers
         /// <response code="401">No autorizado</response>
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
-        [HttpPut("ModificaUsuario")]
+        [HttpPut("ModificaTrabajador")]
         public ActionResult ModificaTrabajador(TrabajadorDto trabajadorDto)
         {
             try
@@ -170,7 +170,7 @@ namespace DemoBackend.Controllers
         /// <response code="401">No autorizado</response>
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
-        [HttpDelete("EliminaUsuario")]
+        [HttpDelete("EliminaTrabajador")]
         public ActionResult EliminaTrabajador(int idUsuario)
         {
             try

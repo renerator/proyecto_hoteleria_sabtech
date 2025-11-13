@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace DemoBackend.Dto.Trabajador
+namespace Font_Hoteleria.Dto.Trabajadores
 {
-    public class TrabajadorDto
+    public class TrabajadoresDto
     {
         public int IdUsuario { get; set; }
         public int IdEmpresaContratista { get; set; }

@@ -81,7 +81,7 @@ namespace Front_Hoteleria.Controllers
             if (string.IsNullOrWhiteSpace(token))
                 return new HttpStatusCodeResult(401, "Sesión expirada.");
 
-            // usamos tu método que trae por id (el que devolvía List< ServicioDisponibleDto>)
+            // tu service devuelve una lista, tomamos el primero
             var lista = await _api.VerificaServicioPorId(
                 new ServicioDisponibleDto { IdServicio = id },
                 token
@@ -90,8 +90,7 @@ namespace Front_Hoteleria.Controllers
             var model = lista?.FirstOrDefault();
             if (model == null)
             {
-                // si no vino nada, mandamos un dto mínimo para que no rompa la vista
-                model = new  ServicioDisponibleDto
+                model = new ServicioDisponibleDto
                 {
                     IdServicio = id,
                     NombreServicio = "(no encontrado)",
@@ -99,6 +98,7 @@ namespace Front_Hoteleria.Controllers
                 };
             }
 
+            // OJO: ahora la vista está tipada a ServicioDisponibleDto
             return PartialView("~/Views/ServiciosDisponibles/_DetalleServicio.cshtml", model);
         }
 

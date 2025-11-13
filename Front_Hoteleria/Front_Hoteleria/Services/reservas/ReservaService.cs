@@ -99,15 +99,13 @@ namespace Front_Hoteleria.Services.Reservas
 
                 var qs = new List<string>();
                 if (!string.IsNullOrWhiteSpace(estado))
-                    qs.Add("estado=" + Uri.EscapeDataString(estado));
-                if (!string.IsNullOrWhiteSpace(habitacion))
-                    qs.Add("habitacion=" + Uri.EscapeDataString(habitacion));
+                    qs.Add("idEstadoReserva=" + 1);                
                 if (fechaDesde.HasValue)
                     qs.Add("fechaDesde=" + fechaDesde.Value.ToString("yyyy-MM-dd"));
                 if (fechaHasta.HasValue)
                     qs.Add("fechaHasta=" + fechaHasta.Value.ToString("yyyy-MM-dd"));
 
-                var url = "/api/Reservas";
+                var url = "/api/Reservas/ReservasDisponibles";
                 if (qs.Count > 0)
                     url += "?" + string.Join("&", qs);
 

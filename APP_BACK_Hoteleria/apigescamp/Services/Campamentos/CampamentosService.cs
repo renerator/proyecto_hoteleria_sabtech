@@ -178,9 +178,32 @@ namespace DemoBackend.Services
             return dto;
         }
 
+        // Services/CampamentosService.cs (agregar método)
+        public List<CampamentoDto> ListarCombo(bool? soloActivos, string? filtro)
+        {
+            const string sql = "HOT_CAMP_COMBO @SoloActivos,@Filtro";
+            var p = new[]
+            {
+        new SqlParameter("@SoloActivos", (object?)soloActivos ?? DBNull.Value),
+        new SqlParameter("@Filtro",      (object?)filtro ?? DBNull.Value)
+    };
+
+            var lista = _listaCampamentos.GetStoreProcedure(sql, p);
+
+            // devolvemos solo lo necesario para el combo
+            return lista.Select(c => new CampamentoDto
+            {
+                IdCampamento = c.IdCampamento,
+                Nombre = c.Nombre,
+                Codigo = c.Codigo
+            })
+                    .OrderBy(x => x.Nombre)
+                    .ToList();
+        }
 
 
         // podrías tener un SP extra, aquí lo calculo con lo que hay
-       
+
     }
+
 }

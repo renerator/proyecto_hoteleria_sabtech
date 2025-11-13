@@ -14,11 +14,11 @@ namespace Front_Hoteleria.Services.Inventario
             string habitacion = null,
             string bearer = null);
 
-        Task<InventarioItemDto> ObtenerPorIdAsync(string id, string bearer = null);
+        Task<InventarioItemDto> ObtenerPorIdAsync(int id, string bearer = null);
         Task<bool> CrearAsync(InventarioItemDto dto, string bearer = null);
         Task<bool> ActualizarAsync(InventarioItemDto dto, string bearer = null);
-        Task<bool> EliminarAsync(string id, string bearer = null);
-        Task<InventarioItemDto> GetByIdAsync(string id, string bearer = null);
-        Task<List<InventarioMovimientoPostDto>> GetMovimientosAsync(string id, string bearer = null);
+        Task<bool> EliminarAsync(int id, string bearer = null);
+        Task<InventarioItemDto> GetByIdAsync(int id, string bearer = null);
+        Task<List<InventarioMovimientoPostDto>> GetMovimientosAsync(int id, string bearer = null);
     }
 }

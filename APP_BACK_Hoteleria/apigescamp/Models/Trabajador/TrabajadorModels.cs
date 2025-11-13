@@ -14,9 +14,9 @@ namespace DemoBackend.Models.Trabajador
         [Column("idEmpresaContratista")]
         public int IdEmpresaContratista { get; set; }
 
-        [Column("DNITrabajador")]
+        [Column("RutTrabajador")]
         [StringLength(20)]
-        public string DNITrabajador { get; set; }
+        public string RutTrabajador { get; set; }
 
         [Column("NombresTrabajador")]
         [StringLength(100)]
@@ -51,9 +51,16 @@ namespace DemoBackend.Models.Trabajador
         [Column("Telefono")]
         [StringLength(10)]
         public string Telefono { get; set; }
-       
 
-        
+        [Column("Observaciones")]
+        [StringLength(400)]
+        public string Observaciones { get; set; }
+
+        [Column("NivelAcceso")]
+        public int NivelAcceso { get; set; }
+
+
+
     }
 }
 

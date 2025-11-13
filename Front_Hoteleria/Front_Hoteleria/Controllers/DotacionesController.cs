@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 
 namespace Front_Hoteleria.Controllers
@@ -42,6 +43,19 @@ namespace Front_Hoteleria.Controllers
         public ActionResult Index()
         {
             return View("~/Views/Dotaciones/Index.cshtml");
+        }
+        [HttpGet]
+        public ActionResult Importar()
+        {
+            return PartialView("~/Views/Dotaciones/_ImportarDotaciones.cshtml");
+        }
+
+        [HttpPost]
+        public ActionResult Importar(HttpPostedFileBase Archivo, bool? Sobrescribir)
+        {
+            // aquí mandas el archivo al backend o lo procesas
+            // por ahora respondemos OK
+            return Json(new { ok = true, msg = "Archivo recibido y procesado." });
         }
 
         // ================== DASHBOARD (lo que carga #dashDotContainer) ==================
@@ -101,56 +115,7 @@ namespace Front_Hoteleria.Controllers
                 Trace.TraceError("[DotacionesController.Tabla] error API: " + exApi);
             }
 
-            // 2) Si la API no trajo nada, usamos datos de prueba
-            if (lista == null || lista.Count == 0)
-            {
-                lista = new List<DotacionDto>
-        {
-            // Empresa 1
-            new DotacionDto
-            {
-                IdDotacion = 1,
-                IdEmpresa = 1,
-                Empresa = "Constructora ABC Ltda.",
-                RutEmpresa = "12.345.678-9",
-                Nombre = "Juan",
-                Apellido = "Pérez",
-                Rut = "12.345.678-9",
-                Cargo = "Supervisor",
-                TurnoCodigo = "day",
-                TurnoNombre = "Día"
-            },
-            new DotacionDto
-            {
-                IdDotacion = 2,
-                IdEmpresa = 1,
-                Empresa = "Constructora ABC Ltda.",
-                RutEmpresa = "12.345.678-9",
-                Nombre = "Carlos",
-                Apellido = "Méndez",
-                Rut = "11.222.333-4",
-                Cargo = "Operador",
-                TurnoCodigo = "night",
-                TurnoNombre = "Noche"
-            },
-
-            // Empresa 2
-            new DotacionDto
-            {
-                IdDotacion = 3,
-                IdEmpresa = 2,
-                Empresa = "Servicios Mineros XYZ S.A.",
-                RutEmpresa = "98.765.432-1",
-                Nombre = "María",
-                Apellido = "González",
-                Rut = "13.456.789-0",
-                Cargo = "Gerente",
-                TurnoCodigo = "maintenance",
-                TurnoNombre = "Mantenimiento"
-            }
-        };
-            }
-
+           
             // 3) Filtro por empresa (vale tanto para datos reales como de prueba)
             if (empresaId.HasValue)
             {
@@ -208,15 +173,6 @@ namespace Front_Hoteleria.Controllers
             return PartialView("~/Views/Dotaciones/_CargaMasivaDotacion.cshtml");
         }
 
-        // ================== MODAL: TURNOS ==================
-        // el Index hace $.get(urlTurnosDot, ...)
-        [HttpGet]
-        public ActionResult Turnos()
-        {
-            return PartialView("~/Views/Dotaciones/_TurnosDotacion.cshtml");
-        }
-
-        // opcional: guardar (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> Guardar(DotacionDto dto)
@@ -227,19 +183,23 @@ namespace Front_Hoteleria.Controllers
 
             var ok = false;
 
-            try
-            {
-                if (dto.IdDotacion == 0)
-                    ok = await _api.CrearAsync(dto, token);
-                else
-                    ok = await _api.ModificarAsync(dto, token);
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("[DotacionesController.Guardar] " + ex);
-            }
+            if (dto.IdDotacion == 0)
+                ok = await _api.CrearAsync(dto, token);
+            else
+                ok = await _api.ModificarAsync(dto, token);
 
             return Json(new { ok, message = ok ? "Dotación guardada." : "No se pudo guardar." });
         }
+
+
+        // ================== MODAL: TURNOS ==================
+        // el Index hace $.get(urlTurnosDot, ...)
+        [HttpGet]
+        public ActionResult Turnos()
+        {
+            return PartialView("~/Views/Dotaciones/_TurnosDotacion.cshtml");
+        }
+
+       
     }
 }

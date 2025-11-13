@@ -128,9 +128,9 @@ namespace Front_Hoteleria.Services.Inventario
 
         // ========== 3) OBTENER POR ID ==========
         // GET /api/Inventario/{id}
-        public async Task<InventarioItemDto> ObtenerPorIdAsync(string id, string bearer = null)
+        public async Task<InventarioItemDto> ObtenerPorIdAsync(int id, string bearer = null)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (id==0)
                 return null;
 
             try
@@ -164,7 +164,7 @@ namespace Front_Hoteleria.Services.Inventario
                 var json = JsonConvert.SerializeObject(dto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                using (var resp = await _http.PostAsync("/api/Inventario", content))
+                using (var resp = await _http.PostAsync("/api/Inventario/CrearInventario/", content))
                 {
                     if (!resp.IsSuccessStatusCode)
                     {
@@ -188,14 +188,14 @@ namespace Front_Hoteleria.Services.Inventario
         {
             try
             {
-                if (dto == null || string.IsNullOrWhiteSpace(dto.Id))
+                if (dto == null || dto.IdArticulo==0)
                     return false;
 
                 SetBearer(bearer);
                 var json = JsonConvert.SerializeObject(dto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                using (var resp = await _http.PutAsync($"/api/Inventario/{dto.Id}", content))
+                using (var resp = await _http.PutAsync($"/api/Inventario/ActualizarInventario/{dto.IdArticulo}", content))
                 {
                     if (!resp.IsSuccessStatusCode)
                     {
@@ -215,15 +215,15 @@ namespace Front_Hoteleria.Services.Inventario
 
         // ========== 6) ELIMINAR ==========
         // DELETE /api/Inventario/{id}
-        public async Task<bool> EliminarAsync(string id, string bearer = null)
+        public async Task<bool> EliminarAsync(int id, string bearer = null)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(id))
+                if (id==0)
                     return false;
 
                 SetBearer(bearer);
-                using (var resp = await _http.DeleteAsync($"/api/Inventario/{id}"))
+                using (var resp = await _http.DeleteAsync($"/api/Inventario/EliminarInventario/{id}"))
                 {
                     if (!resp.IsSuccessStatusCode)
                     {
@@ -244,9 +244,9 @@ namespace Front_Hoteleria.Services.Inventario
         // 1) OBTENER UN ARTÍCULO POR ID
         //    GET /api/Inventario/{id}
         // =========================================================
-        public async Task<InventarioItemDto> GetByIdAsync(string id, string bearer = null)
+        public async Task<InventarioItemDto> GetByIdAsync(int id, string bearer = null)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (id==0)
                 return null;
 
             try
@@ -254,7 +254,7 @@ namespace Front_Hoteleria.Services.Inventario
                 SetBearer(bearer);
 
                 // ruta asumida
-                var url = $"/api/Inventario/{Uri.EscapeDataString(id)}";
+                var url = $"/api/Inventario/{id}";
 
                 using (var resp = await _http.GetAsync(url))
                 {
@@ -279,11 +279,11 @@ namespace Front_Hoteleria.Services.Inventario
         // 2) LISTAR MOVIMIENTOS DEL ARTÍCULO
         //    GET /api/Inventario/{id}/movimientos
         // =========================================================
-        public async Task<List<InventarioMovimientoPostDto>> GetMovimientosAsync(string id, string bearer = null)
+        public async Task<List<InventarioMovimientoPostDto>> GetMovimientosAsync(int id, string bearer = null)
         {
             var listaVacia = new List<InventarioMovimientoPostDto>();
 
-            if (string.IsNullOrWhiteSpace(id))
+            if (id==0)
                 return listaVacia;
 
             try
@@ -291,7 +291,7 @@ namespace Front_Hoteleria.Services.Inventario
                 SetBearer(bearer);
 
                 // ruta asumida
-                var url = $"/api/Inventario/{Uri.EscapeDataString(id)}/movimientos";
+                var url = $"/api/Inventario/{id}/movimientos";
 
                 using (var resp = await _http.GetAsync(url))
                 {

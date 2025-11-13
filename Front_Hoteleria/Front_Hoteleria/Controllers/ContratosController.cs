@@ -1,5 +1,3 @@
-using Front_Hoteleria.Dto.Contrato;
-using Front_Hoteleria.Services.Contratos;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,22 +6,45 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
+using Front_Hoteleria.Dto.Contrato;
+using Front_Hoteleria.Services.Contratos;
+using Front_Hoteleria.Services.Empresa;
+using Front_Hoteleria.Services.Campamentos;
+using Front_Hoteleria.Services.Trabajadores; // <-- NUEVO servicio front de trabajadores
+
+using EmpresaDto = Front_Hoteleria.Dto.Empresa.EmpresaDto;
+using CampamentoDto = Front_Hoteleria.Dto.Campamentos.CampamentoDto;
+
+// OJO: tu DTO real de trabajadores está en *Font*_Hoteleria:
+using Font_Hoteleria.Dto.Trabajadores;
+using TrabajadoresDto = Font_Hoteleria.Dto.Trabajadores.TrabajadoresDto;
+
 namespace Front_Hoteleria.Controllers
 {
     public class ContratosController : Controller
     {
         private readonly IContratosService _api;
+        private readonly IEmpresaService _empService;
+        private readonly ICampamentosService _campService;
+        private readonly ITrabajadoresService _trabService; // <-- NUEVO
 
         // ctor por defecto
-        public ContratosController() : this(new ContratosService()) { }
+        public ContratosController()
+            : this(new ContratosService(), new EmpresaService(), new CampamentosService(), new TrabajadoresService()) { }
 
-        // ctor con inyección
-        public ContratosController(IContratosService api)
+        // ctor con DI
+        public ContratosController(
+            IContratosService api,
+            IEmpresaService empService,
+            ICampamentosService campService,
+            ITrabajadoresService trabService) // <-- NUEVO
         {
             _api = api;
+            _empService = empService;
+            _campService = campService;
+            _trabService = trabService;      // <-- NUEVO
         }
 
-        // leer el bearer igual que en dotaciones
         private string GetBearer()
         {
             try
@@ -40,41 +61,53 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
-        // GET: /Contratos
+        // ================== INDEX ==================
         [HttpGet]
         public ActionResult Index()
         {
-            // ~/Views/Contratos/Index.cshtml
             return View("~/Views/Contratos/Index.cshtml");
         }
 
-        // PANEL AZUL (KPI)
-        // GET: /Contratos/Resumen
+        // ================== DASHBOARD (KPI) ==================
+        // KPI: ahora suma trabajadores activos reales
         [HttpGet]
         public async Task<ActionResult> Resumen()
         {
             var token = GetBearer();
 
-            // intenta ir a la api
-            var dto = await _api.ResumenAsync(token);
-            if (dto == null)
+            var dto = await _api.ResumenAsync(token) ?? new ContratoKPIDto
             {
-                // datos en duro para ver diseño
-                dto = new ContratoKPIDto
+                ContratosActivos = 0,
+                EmpresasRegistradas = 0,
+                TrabajadoresActivos = 0,
+                VencenPronto = 0
+            };
+
+            try
+            {
+                var contratos = await _api.ListarAsync(null, token) ?? new List<ContratoDto>();
+                var empresaIds = contratos.Where(c => c.IdEmpresa > 0).Select(c => c.IdEmpresa.Value).Distinct().ToList();
+
+                var tareas = empresaIds.ToDictionary(id => id, id => _trabService.ListarAsync(id, token));
+                await Task.WhenAll(tareas.Values);
+
+                var totalActivos = 0;
+                foreach (var kv in tareas)
                 {
-                    ContratosActivos = 8,
-                    EmpresasRegistradas = 12,
-                    TrabajadoresActivos = 156,
-                    VencenPronto = 3
-                };
+                    var lista = kv.Value.Result;
+                    totalActivos += lista.Count(t => t.Estado);
+                }
+                dto.TrabajadoresActivos = totalActivos;
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceWarning("[ContratosController.Resumen] No se pudieron calcular trabajadores activos: " + ex);
             }
 
-            // ~/Views/Contratos/_ResumenContratos.cshtml
             return PartialView("~/Views/Contratos/_DashboardContrato.cshtml", dto);
         }
 
-        // LISTA / tarjetas
-        // GET: /Contratos/Tabla
+        // ================== TABLA ==================
         [HttpGet]
         [ActionName("Tabla")]
         public async Task<ActionResult> Tabla(string criterio)
@@ -85,87 +118,42 @@ namespace Front_Hoteleria.Controllers
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada");
 
-                // 1) intentamos traer de la API
-                var lista = await _api.ListarAsync(criterio, token);
+                // 1) Contratos
+                var lista = await _api.ListarAsync(criterio, token)
+                           ?? new List<ContratoDto>();
 
-                // 2) si la api no devolvió nada, armamos datos en duro para ver el diseño
-                if (lista == null || !lista.Any())
+                // 2) Catálogos (empresas, campamentos) para enriquecer nombres
+                var tEmpresas = _empService.ListarComboAsync(true, null, token);
+                var tCampamentos = _campService.ListarComboAsync(null, null, token);
+                await Task.WhenAll(tEmpresas, tCampamentos);
+
+                var empresas = tEmpresas.Result ?? new List<EmpresaDto>();
+                var campamentos = tCampamentos.Result ?? new List<Front_Hoteleria.Dto.Campamentos.CampamentoDto>();
+
+                var dicEmp = empresas.GroupBy(e => e.IdEmpresa).ToDictionary(g => g.Key, g => g.First());
+                var dicCamp = campamentos.GroupBy(c => c.IdCampamento).ToDictionary(g => g.Key, g => g.First());
+
+                foreach (var c in lista)
                 {
-                    lista = new List<ContratoDto>
+                    if (c == null) continue;
+
+                    if ((c.IdEmpresa ?? 0) > 0 && dicEmp.TryGetValue(c.IdEmpresa.Value, out var emp))
                     {
-                        new ContratoDto
-                        {
-                            IdContrato = 1,
-                            IdEmpresa = 1,
-                            Empresa = "Constructora ABC Ltda.",
-                            RutEmpresa = "12.345.678-9",
-                            NumeroContrato = "CONT-2024-001",
-                            FechaInicio = DateTime.Today.AddMonths(-2),
-                            FechaFin = DateTime.Today.AddMonths(10),
-                            Tipo = "indefinido",
-                            Valor = 1500000,
-                            IdCampamento = 1,
-                            Campamento = "Campamento Norte",
-                            MaximoTrabajadores = 50,
-                            Descripcion = "Contrato principal de construcción",
-                            Estado = "Activo",
-                            Trabajadores = new List<ContratoTrabajadorDto>
-                            {
-                                new ContratoTrabajadorDto
-                                {
-                                    IdTrabajador = 1,
-                                    Nombres = "Juan Pérez",
-                                    Rut = "12.345.678-9",
-                                    Cargo = "Supervisor",
-                                    NivelAcceso = "manager"
-                                },
-                                new ContratoTrabajadorDto
-                                {
-                                    IdTrabajador = 2,
-                                    Nombres = "Carlos Méndez",
-                                    Rut = "11.222.333-4",
-                                    Cargo = "Operador",
-                                    NivelAcceso = "worker"
-                                }
-                            }
-                        },
-                        new ContratoDto
-                        {
-                            IdContrato = 2,
-                            IdEmpresa = 2,
-                            Empresa = "Servicios Mineros XYZ S.A.",
-                            RutEmpresa = "98.765.432-1",
-                            NumeroContrato = "CONT-2024-002",
-                            FechaInicio = DateTime.Today.AddMonths(-1),
-                            FechaFin = DateTime.Today.AddDays(25),  // para que salga "vence pronto"
-                            Tipo = "proyecto",
-                            Valor = 800000,
-                            IdCampamento = 2,
-                            Campamento = "Campamento Sur",
-                            MaximoTrabajadores = 25,
-                            Descripcion = "Contrato de servicios de mantenimiento",
-                            Estado = "Activo",
-                            Trabajadores = new List<ContratoTrabajadorDto>
-                            {
-                                new ContratoTrabajadorDto
-                                {
-                                    IdTrabajador = 3,
-                                    Nombres = "María González",
-                                    Rut = "13.456.789-0",
-                                    Cargo = "Gerente",
-                                    NivelAcceso = "admin"
-                                }
-                            }
-                        }
-                    };
+                        c.Empresa = string.IsNullOrWhiteSpace(emp.Nombre) ? c.Empresa : emp.Nombre;
+                        c.RutEmpresa = string.IsNullOrWhiteSpace(emp.Rut) ? c.RutEmpresa : emp.Rut;
+                    }
+
+                    if ((c.IdCampamento ?? 0) > 0 && dicCamp.TryGetValue(c.IdCampamento.Value, out var camp))
+                    {
+                        c.Campamento = string.IsNullOrWhiteSpace(camp.Nombre) ? c.Campamento : camp.Nombre;
+                    }
                 }
 
-                // 3) si vino criterio, filtramos igual que en dotaciones
+                // 3) Filtrado por criterio (texto)
                 if (!string.IsNullOrWhiteSpace(criterio))
                 {
                     var f = criterio.ToLower().Trim();
-                    lista = lista
-                        .Where(c =>
+                    lista = lista.Where(c =>
                             (!string.IsNullOrWhiteSpace(c.Empresa) && c.Empresa.ToLower().Contains(f)) ||
                             (!string.IsNullOrWhiteSpace(c.NumeroContrato) && c.NumeroContrato.ToLower().Contains(f)) ||
                             (!string.IsNullOrWhiteSpace(c.RutEmpresa) && c.RutEmpresa.ToLower().Contains(f)) ||
@@ -174,7 +162,32 @@ namespace Front_Hoteleria.Controllers
                         .ToList();
                 }
 
-                // ~/Views/Contratos/_TablaContratos.cshtml
+                // 4) Traer TRABAJADORES por EmpresaContratista (IdEmpresa del contrato)
+                var empresaIds = lista
+                    .Where(c => c.IdEmpresa.HasValue && c.IdEmpresa.Value > 0)
+                    .Select(c => c.IdEmpresa.Value)
+                    .Distinct()
+                    .ToList();
+
+                var tareas = new Dictionary<int, Task<List<TrabajadoresDto>>>();
+                foreach (var idEmp in empresaIds)
+                {
+                    tareas[idEmp] = _trabService.ListarAsync(idEmp, token); // /api/Trabajador/ListarTrabajadores?IdEmpresa=...
+                }
+                await Task.WhenAll(tareas.Values);
+
+                // Diccionario final: EmpresaId -> Lista de trabajadores de esa empresa
+                var trabPorEmpresa = new Dictionary<int, List<TrabajadoresDto>>();
+                foreach (var kv in tareas)
+                {
+                    // Asegurar tipo correcto en ambos lados del '??'
+                    var listaTrab = kv.Value.Result ?? new List<TrabajadoresDto>();
+                    trabPorEmpresa[kv.Key] = listaTrab;
+                }
+
+                // 5) Enviar a la vista
+                ViewBag.TrabajadoresEmpresa = trabPorEmpresa;
+
                 return PartialView("~/Views/Contratos/_TablaContrato.cshtml", lista);
             }
             catch (Exception ex)
@@ -183,75 +196,114 @@ namespace Front_Hoteleria.Controllers
                 return new HttpStatusCodeResult(500, "Error al cargar contratos");
             }
         }
-        // GET: /Contratos/NuevoTrabajador
-        [HttpGet]
-        public ActionResult NuevoTrabajador(int? idContrato)
-        {
-            // puedes precargar el contrato si quieres, por ahora solo mando el id
-            var dto = new ContratoTrabajadorUpsertDto
-            {
-                IdContrato = idContrato
-            };
 
+
+
+        // ================== NUEVO TRABAJADOR (modal) ==================
+        [HttpGet]
+        public async Task<ActionResult> NuevoTrabajador(int? idContrato)
+        {
+            var dto = new ContratoTrabajadorUpsertDto { IdContrato = idContrato };
+
+            var token = GetBearer();
+
+            // Si llega idContrato, intentamos preseleccionar su empresa
+            int? empresaSeleccionada = null;
+            if (idContrato.HasValue && idContrato.Value > 0)
+            {
+                try
+                {
+                    var con = await _api.ObtenerPorIdAsync(idContrato.Value, token);
+                    empresaSeleccionada = con?.IdEmpresa;
+                }
+                catch { /* opcional log */ }
+            }
+
+            await CargarEmpresasEnViewBag(token, empresaSeleccionada);
             return PartialView("~/Views/Contratos/_UpsertTrabajador.cshtml", dto);
         }
 
-        // POST: /Contratos/GuardarTrabajador
+        private static int ParseNivelAccesoForm(string nivelForm)
+        {
+            if (string.IsNullOrWhiteSpace(nivelForm)) return 1;
+            if (int.TryParse(nivelForm, out var n))
+            {
+                if (n < 1) n = 1;
+                if (n > 4) n = 4;
+                return n;
+            }
+            switch (nivelForm.Trim().ToLowerInvariant())
+            {
+                case "admin": return 4;
+                case "manager": return 3;
+                case "worker": return 2;
+                case "guest":
+                default: return 1;
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult> GuardarTrabajador(ContratoTrabajadorUpsertDto dto)
         {
             if (dto == null)
                 return Json(new { ok = false, msg = "Datos vacíos" });
 
-            var token = GetBearer();
-
             try
             {
-                // acá iría la llamada real a la API, algo como:
-                // var ok = await _api.AgregarTrabajadorAsync(dto, token);
-                // demo:
-                var ok = true;
+                var token = GetBearer();
 
-                if (!ok)
-                    return Json(new { ok = false, msg = "No se pudo guardar en la API" });
+                var trabajador = new TrabajadoresDto
+                {
+                    IdUsuario = 0,
+                    IdEmpresaContratista = dto.IdEmpresa ?? 0,
+                    RutTrabajador = dto.Rut,
+                    NombresTrabajador = dto.Nombre,
+                    PaternoTrabajador = dto.Apellido,
+                    MaternoTrabajador = null,
+                    EmailTrabajador = dto.Email,
+                    CargoTrabajador = dto.Cargo,
+                    VIP = false,
+                    EsAdmin = string.Equals(dto.NivelAcceso, "admin", StringComparison.OrdinalIgnoreCase)
+                                          || dto.NivelAcceso == "4",
+                    Estado = true,
+                    Telefono = dto.Telefono,
+                    NivelAcceso = ParseNivelAccesoForm(dto.NivelAcceso),
+                    Observaciones = dto.Observaciones
+                };
 
-                return Json(new { ok = true });
+                var ok = await _trabService.CrearAsync(trabajador, token);
+                if (!ok) return Json(new { ok = false, msg = "No se pudo crear el trabajador en la API." });
+
+                return Json(new { ok = true, msg = "Trabajador creado exitosamente." });
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError("[ContratosController.GuardarTrabajador] " + ex);
+                Trace.TraceError("[ContratosController.GuardarTrabajador] " + ex);
                 return Json(new { ok = false, msg = "Error inesperado al guardar trabajador" });
             }
         }
 
-        // GET: /Contratos/NuevaEmpresa
+        // ================== NUEVA EMPRESA (modal simple) ==================
         [HttpGet]
         public ActionResult NuevaEmpresa()
         {
-            // solo para mostrar el modal vacío
             var dto = new EmpresaContratoDto();
             return PartialView("~/Views/Contratos/_UpsertEmpresa.cshtml", dto);
         }
 
-        // POST: /Contratos/GuardarEmpresa
         [HttpPost]
         public async Task<ActionResult> GuardarEmpresa(EmpresaContratoDto dto)
         {
             if (dto == null)
                 return Json(new { ok = false, msg = "Datos vacíos" });
 
-            var token = GetBearer();
-
+            // Aquí puedes mapear a tu DTO de creación si lo tienes ya implementado.
+            // Dejamos stub para mantener foco en trabajadores.
             try
             {
-                // aquí iría la llamada real a la API, algo como:
-                // var ok = await _api.CrearEmpresaAsync(dto, token);
-                // por ahora demo:
+                // TODO: llamada real a API de empresa
                 var ok = true;
-
-                if (!ok)
-                    return Json(new { ok = false, msg = "No se pudo guardar en la API" });
-
+                if (!ok) return Json(new { ok = false, msg = "No se pudo guardar en la API" });
                 return Json(new { ok = true });
             }
             catch (Exception ex)
@@ -261,8 +313,7 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
-        // MODAL (nuevo / editar / ver)
-        // GET: /Contratos/Upsert
+        // ================== UPSERT (modal) ==================
         [HttpGet]
         public async Task<ActionResult> Upsert(int? id, bool? soloLectura)
         {
@@ -271,7 +322,6 @@ namespace Front_Hoteleria.Controllers
 
             if (id.HasValue && id.Value > 0)
             {
-                // intentar traer de la api
                 dto = await _api.ObtenerPorIdAsync(id.Value, token);
             }
 
@@ -280,19 +330,22 @@ namespace Front_Hoteleria.Controllers
                 dto = new ContratoDto
                 {
                     IdContrato = id ?? 0,
-                    Estado = "Activo",
+                    Estado = true,
                     FechaInicio = DateTime.Today,
                     FechaFin = DateTime.Today.AddMonths(6)
                 };
             }
 
-            // le pasas por querystring ?soloLectura=true y en la vista ya lo capturaste
+            await CargarEmpresasEnViewBag(token, dto.IdEmpresa);
+            await CargarCampamentosEnViewBag(token, dto.IdCampamento);
+
+            ViewBag.SoloLectura = soloLectura == true;
             return PartialView("~/Views/Contratos/_UpsertContrato.cshtml", dto);
         }
 
-        // guardar (demo)
-        // POST: /Contratos/Guardar
+        // ================== GUARDAR CONTRATO ==================
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Guardar(ContratoDto dto)
         {
             if (dto == null)
@@ -302,15 +355,11 @@ namespace Front_Hoteleria.Controllers
 
             try
             {
-                bool ok;
-                if (dto.IdContrato > 0)
-                {
-                    ok = await _api.ActualizarAsync(dto, token);
-                }
-                else
-                {
-                    ok = await _api.CrearAsync(dto, token);
-                }
+                if (dto.IdContrato == 0 && !dto.Estado) dto.Estado = true;
+
+                var ok = dto.IdContrato > 0
+                    ? await _api.ActualizarAsync(dto, token)
+                    : await _api.CrearAsync(dto, token);
 
                 if (!ok)
                     return Json(new { ok = false, msg = "No se pudo guardar en la API" });
@@ -324,7 +373,7 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
-        // opcional: eliminar
+        // ================== ELIMINAR ==================
         [HttpPost]
         public async Task<ActionResult> Eliminar(int id)
         {
@@ -338,6 +387,67 @@ namespace Front_Hoteleria.Controllers
             {
                 Trace.TraceError("[ContratosController.Eliminar] " + ex);
                 return Json(new { ok = false, msg = "Error al eliminar" });
+            }
+        }
+
+        // ================== HELPERS: combos ==================
+        private async Task CargarEmpresasEnViewBag(string token, int? seleccionada)
+        {
+            try
+            {
+                var empresas = await _empService.ListarComboAsync(true, null, token)
+                               ?? new List<EmpresaDto>();
+
+                var items = empresas
+                    .OrderBy(e => e.Nombre)
+                    .Select(e => new SelectListItem
+                    {
+                        Value = e.IdEmpresa.ToString(),
+                        Text = string.IsNullOrWhiteSpace(e.Rut) ? e.Nombre : $"{e.Rut}-{e.Nombre} ",
+                        Selected = seleccionada.HasValue && e.IdEmpresa == seleccionada.Value
+                    })
+                    .ToList();
+
+                items.Insert(0, new SelectListItem { Value = "", Text = "Seleccionar empresa..." });
+                ViewBag.Empresas = items;
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[ContratosController.CargarEmpresasEnViewBag] " + ex);
+                ViewBag.Empresas = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "", Text = "Sin empresas disponibles" }
+                };
+            }
+        }
+
+        private async Task CargarCampamentosEnViewBag(string token, int? seleccionada)
+        {
+            try
+            {
+                var data = await _campService.ListarComboAsync(null, null, token)
+                           ?? new List<CampamentoDto>();
+
+                var items = data
+                    .OrderBy(x => x.Nombre)
+                    .Select(x => new SelectListItem
+                    {
+                        Value = x.IdCampamento.ToString(),
+                        Text = string.IsNullOrWhiteSpace(x.Codigo) ? (x.Nombre ?? "") : $"{x.Nombre} ({x.Codigo})",
+                        Selected = seleccionada.HasValue && x.IdCampamento == seleccionada.Value
+                    })
+                    .ToList();
+
+                items.Insert(0, new SelectListItem { Value = "", Text = "Seleccionar campamento..." });
+                ViewBag.Campamentos = items;
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[ContratosController.CargarCampamentosEnViewBag] " + ex);
+                ViewBag.Campamentos = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "", Text = "Sin campamentos disponibles" }
+                };
             }
         }
     }

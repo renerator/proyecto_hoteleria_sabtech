@@ -24,7 +24,9 @@ namespace Front_Hoteleria.Dto.Contrato
         public int? MaximoTrabajadores { get; set; }
         public string Descripcion { get; set; }
 
-        public string Estado { get; set; }        // Activo, Vencido, Pendiente, Suspendido
+        public int? IdTipoContrato { get; set; }
+        public string TipoContratoNombre { get; set; }
+        public bool Estado { get; set; }        // Activo, Vencido, Pendiente, Suspendido
 
         public List<ContratoTrabajadorDto> Trabajadores { get; set; } = new List<ContratoTrabajadorDto>();
     

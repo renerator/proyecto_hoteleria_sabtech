@@ -35,12 +35,12 @@ namespace DemoBackend.Controllers
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
         [HttpGet("ReservasDisponibles")]
-        public ActionResult<List<ReservaDto>> ReservasDisponibles(int vigencia)
+        public ActionResult<List<ReservaDto>> ReservasDisponibles(int idEstadoReserva, DateTime? fechaDesde, DateTime? fechaHasta)
         {
             _logger.LogInformation("GetListaReservas : Inicio proceso lista de Reservas");
             try
             {
-                var reservas = _reservaService.GetListaReservaEstado(vigencia);
+                var reservas = _reservaService.GetListaReservaEstado(idEstadoReserva, fechaDesde, fechaHasta);
                 if (reservas.Count == 0)
                 {
                     _logger.LogInformation("GetListaReservas : No se encontraron reservas.");

@@ -3,10 +3,12 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -114,7 +116,7 @@ namespace Front_Hoteleria.Services.Campamentos
                 return new List<CampamentoDto>
                 {
                     new CampamentoDto {
-                        Id = "CAMP-001",
+                        IdCampamento = 1,
                         Nombre = "Campamento Norte",
                         Codigo = "CAMP-N-001",
                         Ubicacion = "Sector Norte, Mina Escondida",
@@ -130,7 +132,7 @@ namespace Front_Hoteleria.Services.Campamentos
                         }
                     },
                     new CampamentoDto {
-                        Id = "CAMP-002",
+                        IdCampamento = 2,
                         Nombre = "Campamento Sur",
                         Codigo = "CAMP-S-002",
                         Ubicacion = "Sector Sur, Mina Los Pelambres",
@@ -149,9 +151,9 @@ namespace Front_Hoteleria.Services.Campamentos
         }
 
         // ===== OBTENER POR ID =====
-        public async Task<CampamentoDto> ObtenerPorIdAsync(string id, string bearer = null)
+        public async Task<CampamentoDto> ObtenerPorIdAsync(int id, string bearer = null)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (id==0)
                 return null;
 
             try
@@ -184,7 +186,7 @@ namespace Front_Hoteleria.Services.Campamentos
                 var json = JsonConvert.SerializeObject(dto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                using (var resp = await _http.PostAsync("/api/Campamentos", content))
+                using (var resp = await _http.PostAsync("/api/Campamentos/CrearCampamento", content))
                 {
                     if (!resp.IsSuccessStatusCode)
                     {
@@ -205,7 +207,7 @@ namespace Front_Hoteleria.Services.Campamentos
         // ===== ACTUALIZAR =====
         public async Task<bool> ActualizarAsync(CampamentoDto dto, string bearer = null)
         {
-            if (dto == null || string.IsNullOrWhiteSpace(dto.Id))
+            if (dto == null || dto.IdCampamento==0)
                 return false;
 
             try
@@ -214,7 +216,7 @@ namespace Front_Hoteleria.Services.Campamentos
                 var json = JsonConvert.SerializeObject(dto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                using (var resp = await _http.PutAsync($"/api/Campamentos/{dto.Id}", content))
+                using (var resp = await _http.PutAsync($"/api/Campamentos/EditarCampamento/{dto.IdCampamento}", content))
                 {
                     if (!resp.IsSuccessStatusCode)
                     {
@@ -233,15 +235,15 @@ namespace Front_Hoteleria.Services.Campamentos
         }
 
         // ===== ELIMINAR =====
-        public async Task<bool> EliminarAsync(string id, string bearer = null)
+        public async Task<bool> EliminarAsync(int id, string bearer = null)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (id==0)
                 return false;
 
             try
             {
                 SetBearer(bearer);
-                using (var resp = await _http.DeleteAsync($"/api/Campamentos/{id}"))
+                using (var resp = await _http.DeleteAsync($"/api/Campamentos/EliminarCampamento/{id}"))
                 {
                     if (!resp.IsSuccessStatusCode)
                     {
@@ -258,5 +260,51 @@ namespace Front_Hoteleria.Services.Campamentos
                 return false;
             }
         }
+
+        // Front_Hoteleria/Services/Campamentos/CampamentosService.cs
+        public async Task<List<CampamentoDto>> ListarComboAsync(
+            bool? soloActivos = null,
+            string filtro = null,
+            string bearer = null)
+        {
+            try
+            {
+                SetBearer(bearer);
+
+                var qs = new List<string>();
+                if (soloActivos.HasValue)
+                    qs.Add("soloActivos=" + (soloActivos.Value ? "true" : "false"));
+                if (!string.IsNullOrWhiteSpace(filtro))
+                    qs.Add("filtro=" + Uri.EscapeDataString(filtro));
+
+                var url = "/api/Campamentos/combo";
+                if (qs.Count > 0)
+                    url += "?" + string.Join("&", qs);
+
+                using (var resp = await _http.GetAsync(url))
+                {
+                    Trace.TraceInformation($"GET {resp?.RequestMessage?.RequestUri} -> {(int)resp.StatusCode}");
+
+                    if (resp.StatusCode == HttpStatusCode.NoContent)
+                        return new List<CampamentoDto>();
+
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[CampamentosService.ListarComboAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return new List<CampamentoDto>();
+                    }
+
+                    var json = await resp.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<List<CampamentoDto>>(json) ?? new List<CampamentoDto>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[CampamentosService.ListarComboAsync] " + ex);
+                return new List<CampamentoDto>();
+            }
+        }
+
     }
 }

@@ -13,7 +13,7 @@ namespace DemoBackend.Services.Reserva
     public interface IReservaService
     {
         List<ReservaDto> GetListaReserva();
-        List<ReservaDto> GetListaReservaEstado(int estado);
+        List<ReservaDto> GetListaReservaEstado(int idEstadoReserva, DateTime? fechaDesde, DateTime? fechaHasta);
         bool CrearReserva(ReservaDto reserva);
         bool ModificarReserva(ReservaDto reserva);
         bool EliminarReserva(ReservaDto reserva);

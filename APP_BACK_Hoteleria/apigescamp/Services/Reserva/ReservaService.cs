@@ -146,20 +146,26 @@ namespace DemoBackend.Services
 
             return _mapper.Map<List<ReservaDto>>(lista);
         }
-        public List<ReservaDto> GetListaReservaEstado(int idEstadoReserva)
+  
+public List<ReservaDto> GetListaReservaEstado(int idEstadoReserva, DateTime? fechaDesde, DateTime? fechaHasta)
+    {
+        // Opción A: Si tu repo ejecuta por nombre de SP (CommandType.StoredProcedure)
+        const string sql = "LISTADO_Reserva_Estado @idEstadoReserva,@fechaDesde,@fechaHasta";
+
+        var parametros = new[]
         {
-            string sql = "LISTADO_Reserva_Estado @idEstadoReserva";
-            var parametros = new SqlParameter[1];
-            parametros[0] = new SqlParameter("@idEstadoReserva", idEstadoReserva);
+        new SqlParameter("@idEstadoReserva", SqlDbType.Int)      { Value = idEstadoReserva },
+        new SqlParameter("@fechaDesde",      SqlDbType.DateTime) { Value = (object)fechaDesde ?? DBNull.Value, IsNullable = true },
+        new SqlParameter("@fechaHasta",      SqlDbType.DateTime) { Value = (object)fechaHasta ?? DBNull.Value, IsNullable = true }
+    };
 
-            var lista = _listaReserva.GetStoreProcedure(sql, parametros);
+        var lista = _listaReserva.GetStoreProcedure(sql, parametros);
+        return _mapper.Map<List<ReservaDto>>(lista);
+    }
 
 
-            return _mapper.Map<List<ReservaDto>>(lista);
-        }
 
-
-        public List<ReservaDto> VerificaReservaPorId(ReservaDto reserva)
+    public List<ReservaDto> VerificaReservaPorId(ReservaDto reserva)
         {
             string sql = "HOT_VERIFICA_ID_RESERVA @idReserva";
             var parametros = new SqlParameter[1];

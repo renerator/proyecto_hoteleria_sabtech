@@ -1,8 +1,9 @@
-using System.Collections.Generic;
 using DemoBackend.Dto.Campamentos;
 using DemoBackend.Services.Campamentos;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace DemoBackend.Controllers
 {
@@ -58,6 +59,17 @@ namespace DemoBackend.Controllers
         {
             if (_service.EliminarCampamento(IdCampamento)) return Ok("Campamento eliminado.");
             return StatusCode(500, "No se pudo eliminar.");
+        }
+
+        // GET /api/Campamentos/combo?soloActivos=true&filtro=sur
+        [HttpGet("combo")]
+        [ProducesResponseType(typeof(List<CampamentoDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public IActionResult Combo([FromQuery] bool? soloActivos = true, [FromQuery] string? filtro = null)
+        {
+            var data = _service.ListarCombo(soloActivos, filtro) ?? new List<CampamentoDto>();
+            if (data.Count == 0) return NoContent();
+            return Ok(data);
         }
     }
 }

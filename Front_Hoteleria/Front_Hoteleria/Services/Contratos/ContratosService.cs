@@ -149,12 +149,13 @@ namespace Front_Hoteleria.Services.Contratos
         {
             try
             {
+                dto.Estado = true;
                 SetBearer(bearer);
 
                 var json = JsonConvert.SerializeObject(dto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                using (var resp = await _http.PostAsync("/api/Contratos", content))
+                using (var resp = await _http.PostAsync("/api/Contratos/CrearContrato/", content))
                 {
                     if (!resp.IsSuccessStatusCode)
                     {
@@ -179,6 +180,7 @@ namespace Front_Hoteleria.Services.Contratos
         {
             try
             {
+                dto.Estado = true;
                 if (dto == null || dto.IdContrato <= 0)
                     return false;
 
@@ -187,7 +189,7 @@ namespace Front_Hoteleria.Services.Contratos
                 var json = JsonConvert.SerializeObject(dto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                using (var resp = await _http.PutAsync($"/api/Contratos/{dto.IdContrato}", content))
+                using (var resp = await _http.PutAsync($"/api/Contratos/ActualizarContrato/{dto.IdContrato}", content))
                 {
                     if (!resp.IsSuccessStatusCode)
                     {
@@ -216,7 +218,7 @@ namespace Front_Hoteleria.Services.Contratos
 
                 SetBearer(bearer);
 
-                using (var resp = await _http.DeleteAsync($"/api/Contratos/{id}"))
+                using (var resp = await _http.DeleteAsync($"/api/Contratos/EliminarContrato/{id}"))
                 {
                     if (!resp.IsSuccessStatusCode)
                     {

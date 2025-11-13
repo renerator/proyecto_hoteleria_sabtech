@@ -5,6 +5,8 @@ using DemoBackend.Models.Calendario;
 using DemoBackend.Models.Campamentos;
 using DemoBackend.Models.Contratos;
 using DemoBackend.Models.Dotaciones;
+using DemoBackend.Models.EmpresaContratista;
+
 using DemoBackend.Models.EstadoReserva;
 using DemoBackend.Models.Habitacion;
 using DemoBackend.Models.HabitacionInsumo;
@@ -12,7 +14,6 @@ using DemoBackend.Models.Insumos;
 using DemoBackend.Models.Inventario;
 using DemoBackend.Models.Mantenedores;
 using DemoBackend.Models.Menu;
-using DemoBackend.Models.Empresa;
 using DemoBackend.Models.OrdenTrabajo;
 using DemoBackend.Models.Reserva;
 using DemoBackend.Models.Servicio;
@@ -45,7 +46,8 @@ namespace DemoBackend.Models
         public virtual DbSet<HabitacionInsumoModels> ListaHabitacionInsumo { get; set; }
         public virtual DbSet<ReservaDashboardKPI> Dashboard { get; set; }
 
-        public virtual DbSet<EmpresaModels> Empresa { get; set; }
+        
+        public DbSet<EmpresaContratistaModels> EmpresasContratistas { get; set; }
 
         public virtual DbSet<ReservaDashboardPanelPrincipalModel> DashboardPanelPrincipal { get; set; }
         public virtual DbSet<ReservaDashboardKPI> ReservaTrabajador { get; set; }
