@@ -18,6 +18,24 @@ namespace DemoBackend.Dto.Reserva
 
         public string Nombres { get; set; }
         public string Apellidos { get; set; }
-        public string MotivoReserva { get; set; }
+        public string Observaciones { get; set; }
+
+        public string Huesped { get; set; }
+        public string TipoHabitacion { get; set; }
+
+        public int Huespedes { get; set; }
+
+        public string EstadoReserva { get; set; }
+        public string CorreoHuespedReserva { get; set; }
+        public string TelefonoHuespedReserva { get; set; }
+
+        public int IdReservaTipoHabitacion { get; set; }
+
+
+
+
+
+
+
     }
 }

@@ -71,38 +71,39 @@ namespace DemoBackend.Controllers
         /// <response code="401">No autorizado</response>
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
-        [HttpPost("SolicitaReserva")]
-        public ActionResult SolicitaReserva(ReservaDto ReservaDto)
+        [HttpPost("CrearReserva")]
+        public ActionResult SolicitaReserva(ReservaDto reservaDto)
         {
             try
             {
                 var grupoOK = false;
 
-                if (string.IsNullOrEmpty(ReservaDto.MotivoReserva))
+                // NUEVA RESERVA: IdReserva = 0  -> crear directo
+                if (reservaDto.IdReserva == 0)
                 {
-                    _logger.LogInformation($"PostCreaHabitacion: Vacio, no se graban datos, retorna OK.");
-                    return Ok("Status 200: Error de campos vacios");
+                    grupoOK = _reservaService.CrearReserva(reservaDto);
+
+                    if (grupoOK)
+                        return Ok("OK, Datos insertados");
+                    else
+                        return Ok("Datos no insertados");
+                }
+
+                // RESERVA CON ID (IdReserva > 0) -> validar si ya existe
+                var resu = _reservaService.VerificaReservaPorId(reservaDto);
+
+                if (resu != null && resu.Count > 0)
+                {
+                    return Ok("Status 200: No se puede crear la reserva, ya existe la reserva: " + reservaDto.IdReserva);
                 }
                 else
                 {
-                    var resu = _reservaService.VerificaReservaPorId(ReservaDto);
-                    if (resu.Count > 0)
-                    {
-                        return Ok("Status 200: No se puede crear el area, ya existe la reserva: " + ReservaDto.IdReserva);
-                    }
-                    else
-                    {
-                        grupoOK = _reservaService.CrearReserva(ReservaDto);
-                        if (grupoOK)
-                        {
-                            return Ok(grupoOK + " OK, Datos insertados");
-                        }
-                        else
-                        {
-                            return Ok(grupoOK + " Datos no insertados");
-                        }
+                    grupoOK = _reservaService.CrearReserva(reservaDto);
 
-                    }
+                    if (grupoOK)
+                        return Ok(grupoOK + " OK, Datos insertados");
+                    else
+                        return Ok(grupoOK + " Datos no insertados");
                 }
             }
             catch (Exception e)
@@ -112,6 +113,7 @@ namespace DemoBackend.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+
 
 
         [HttpGet("MuestraReserva")]
@@ -306,7 +308,7 @@ namespace DemoBackend.Controllers
                     FechaCheckIN = FechaCheckIN ?? null,
                     FechaCheckOut = FechaCheckOut ?? null,
 
-                    MotivoReserva = string.IsNullOrWhiteSpace(MotivoReserva) ? null : MotivoReserva!.Trim()
+                    Observaciones = string.IsNullOrWhiteSpace(MotivoReserva) ? null : MotivoReserva!.Trim()
                 };
 
                 var resultados = _reservaService.BuscaReservas(filtro);
@@ -325,10 +327,10 @@ namespace DemoBackend.Controllers
 
         // -------- DASHBOARD --------
         // Devuelve KPIs del dashboard (nuevas, servicios, checkin, checkout, pendientes, confirmadas, rechazadas, realizadas)
-        [HttpGet("dashboardReservas")]
-        public IActionResult Dashboard([FromQuery] DateTime? desde, [FromQuery] DateTime? hasta, [FromQuery] int idHabitacion, int idTipoReserva )
+        [HttpGet("Resumen")]
+        public IActionResult Dashboard()
         {
-            var data = _reservaService.ObtenerDashboard(desde, hasta, idHabitacion, idTipoReserva);
+            var data = _reservaService.ObtenerDashboard();
 
             // Evitar caché para “tiempo real”
             Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, proxy-revalidate";

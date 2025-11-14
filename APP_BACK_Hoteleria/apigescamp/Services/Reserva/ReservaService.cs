@@ -68,17 +68,49 @@ namespace DemoBackend.Services
         #region Reservas
         public bool CrearReserva(ReservaDto reserva)
         {
-            string sql = "HOT_CRE_Reserva @idHabitacion,@idTrabajador,@FechaDesde,@FechaHasta,@QuiereTransporte,@FechaCheckIN,@FechaCheckOut,@idEstadoReserva,@MotivoReserva";
-            var parametros = new SqlParameter[9];
+            // IMPORTANTE: mismo nombre que el SP y mismos parámetros en el texto
+            string sql = "HOT_CRE_Reserva " +
+                         "@idHabitacion," +
+                         "@FechaDesde," +
+                         "@FechaHasta," +
+                         "@QuiereTransporte," +
+                         "@FechaCheckIN," +
+                         "@FechaCheckOut," +
+                         "@idEstadoReserva," +
+                         "@Observaciones," +
+                         "@Huesped," +
+                         "@CorreoHuespedReserva," +
+                         "@TelefonoHuespedReserva";
+
+            // 11 parámetros (0..10) EXACTAMENTE los del SP
+            var parametros = new SqlParameter[11];
+
             parametros[0] = new SqlParameter("@idHabitacion", reserva.IdHabitacion);
-            parametros[1] = new SqlParameter("@idTrabajador", reserva.IdTrabajador);
-            parametros[2] = new SqlParameter("@FechaDesde", reserva.FechaDesde);
-            parametros[3] = new SqlParameter("@FechaHasta", reserva.FechaHasta);
-            parametros[4] = new SqlParameter("@QuiereTransporte", reserva.QuiereTransporte);
-            parametros[5] = new SqlParameter("@FechaCheckIN", (object?)reserva.FechaCheckIN ?? DBNull.Value);
-            parametros[6] = new SqlParameter("@FechaCheckOut", (object?)reserva.FechaCheckOut ?? DBNull.Value);
-            parametros[7] = new SqlParameter("@idEstadoReserva", reserva.IdEstadoReserva);
-            parametros[8] = new SqlParameter("@MotivoReserva", (object?)reserva.MotivoReserva ?? DBNull.Value);
+            parametros[1] = new SqlParameter("@FechaDesde", reserva.FechaDesde);
+            parametros[2] = new SqlParameter("@FechaHasta", reserva.FechaHasta);
+
+            // si QuiereTransporte es bool? en el DTO:
+            bool quiere = reserva.QuiereTransporte is bool b ? b : false;
+            parametros[3] = new SqlParameter("@QuiereTransporte", quiere);
+
+            parametros[4] = new SqlParameter("@FechaCheckIN",
+                                             (object?)reserva.FechaCheckIN ?? DBNull.Value);
+            parametros[5] = new SqlParameter("@FechaCheckOut",
+                                             (object?)reserva.FechaCheckOut ?? DBNull.Value);
+
+            parametros[6] = new SqlParameter("@idEstadoReserva", reserva.IdEstadoReserva);
+
+            parametros[7] = new SqlParameter("@Observaciones",
+                                             (object?)reserva.Observaciones ?? DBNull.Value);
+
+            parametros[8] = new SqlParameter("@Huesped",
+                                             (object?)reserva.Huesped ?? DBNull.Value);
+
+            parametros[9] = new SqlParameter("@CorreoHuespedReserva",
+                                             (object?)reserva.CorreoHuespedReserva ?? DBNull.Value);
+
+            parametros[10] = new SqlParameter("@TelefonoHuespedReserva",
+                                              (object?)reserva.TelefonoHuespedReserva ?? DBNull.Value);
 
             try
             {
@@ -87,10 +119,15 @@ namespace DemoBackend.Services
             }
             catch (Exception ex)
             {
-                Console.Write(ex);
+                Console.WriteLine(ex);
                 return false;
             }
         }
+
+
+
+
+
 
         public bool ModificarReserva(ReservaDto reserva)
         {
@@ -105,7 +142,7 @@ namespace DemoBackend.Services
             parametros[6] = new SqlParameter("@FechaCheckIN", (object?)reserva.FechaCheckIN ?? DBNull.Value);
             parametros[7] = new SqlParameter("@FechaCheckOut", (object?)reserva.FechaCheckOut ?? DBNull.Value);
             parametros[8] = new SqlParameter("@idEstadoReserva", reserva.IdEstadoReserva);
-            parametros[9] = new SqlParameter("@MotivoReserva", (object?)reserva.MotivoReserva ?? DBNull.Value);
+            parametros[9] = new SqlParameter("@Observaciones", (object?)reserva.Observaciones ?? DBNull.Value);
 
             try
             {
@@ -194,26 +231,26 @@ public List<ReservaDto> GetListaReservaEstado(int idEstadoReserva, DateTime? fec
             parametros[6] = new SqlParameter("@FechaCheckIN", (object?)reserva.FechaCheckIN ?? DBNull.Value);
             parametros[7] = new SqlParameter("@FechaCheckOut", (object?)reserva.FechaCheckOut ?? DBNull.Value);
             parametros[8] = new SqlParameter("@idEstadoReserva", reserva.IdEstadoReserva);
-            parametros[9] = new SqlParameter("@MotivoReserva", (object?)reserva.MotivoReserva ?? DBNull.Value);
+            parametros[9] = new SqlParameter("@MotivoReserva", (object?)reserva.Observaciones ?? DBNull.Value);
 
             var lista = _listaReserva.GetStoreProcedure(sql, parametros);
 
             return _mapper.Map<List<ReservaDto>>(lista);
         }
 
-        public ReservaDashboardDto ObtenerDashboard(DateTime? desde, DateTime? hasta, int idHabitacion, int idTipoReserva)
+        public ReservaDashboardDto ObtenerDashboard()
         {
             //var hoy = DateTime.Today;
             //var d = (desde ?? hoy).Date;
             //var h = (hasta ?? hoy).Date;
 
             // Nombre del SP correcto
-            string sql = "HOT_DASH_TotalesYEstados @Desde, @Hasta,@idHabitacion, @idTipoReserva";
-            var parametros = new SqlParameter[4];
-            parametros[0] = new SqlParameter("@Desde", (object?)desde ?? DBNull.Value);
-            parametros[1] = new SqlParameter("@Hasta", (object?)hasta ?? DBNull.Value);
-            parametros[2] = new SqlParameter("@idHabitacion", idHabitacion);
-            parametros[3] = new SqlParameter("@idTipoReserva", idTipoReserva);
+            string sql = "HOT_DASH_TotalesYEstados";
+            var parametros = new SqlParameter[0];
+            //parametros[0] = new SqlParameter("@Desde", (object?)desde ?? DBNull.Value);
+            //parametros[1] = new SqlParameter("@Hasta", (object?)hasta ?? DBNull.Value);
+            //parametros[2] = new SqlParameter("@idHabitacion", idHabitacion);
+            //parametros[3] = new SqlParameter("@idTipoReserva", idTipoReserva);
 
             var dto = new ReservaDashboardDto();
 
@@ -222,10 +259,10 @@ public List<ReservaDto> GetListaReservaEstado(int idEstadoReserva, DateTime? fec
                 var kpiRow = _listaReservaDashboard.GetStoreProcedure(sql, parametros).FirstOrDefault();
                 if (kpiRow != null)
                 {
-                    dto.TotalConfirmadas = kpiRow.TotalConfirmadas;
-                    dto.TotalRechazadas = kpiRow.TotalRechazadas;
-                    dto.TotalServicios = kpiRow.TotalServicios;
-                    dto.NuevasHoy = kpiRow.NuevasHoy;
+                    dto.ReservasPendientes = kpiRow.ReservasPendientes;
+                    dto.ReservasRechazadas = kpiRow.ReservasRechazadas;
+                    //dto.TotalServicios = kpiRow.TotalServicios;
+                    //dto.NuevasHoy = kpiRow.NuevasHoy;
 
 
                 }

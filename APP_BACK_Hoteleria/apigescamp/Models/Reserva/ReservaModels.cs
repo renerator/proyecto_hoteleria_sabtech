@@ -34,11 +34,25 @@ namespace DemoBackend.Models.Reserva
 
         [Column("idEstadoReserva")]
         public int IdEstadoReserva { get; set; }
-        [Column("MotivoReserva")]
-        public string MotivoReserva { get; set; }
+        [Column("Observaciones")]
+        public string Observaciones { get; set; }
 
         [Column("Totales")]
         public int? Totales { get; set; }
+
+        [Column("Huesped")]
+        public string Huesped { get; set; }
+
+        [Column("TipoHabitacion")]
+        public string TipoHabitacion { get; set; }
+
+        [Column("Huespedes")]
+        public int Huespedes { get; set; }
+        [Column("EstadoReserva")]
+        public string EstadoReserva { get; set; }
+
+        [Column("IdReservaTipoHabitacion")]
+        public int? IdReservaTipoHabitacion { get; set; }
     }
 }
 

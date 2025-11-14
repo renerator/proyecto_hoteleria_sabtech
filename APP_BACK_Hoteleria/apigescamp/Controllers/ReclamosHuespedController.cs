@@ -75,7 +75,7 @@ namespace DemoBackend.Controllers
             {
                 var grupoOK = false;
 
-                if (string.IsNullOrEmpty(ReservaDto.MotivoReserva))
+                if (string.IsNullOrEmpty(ReservaDto.Observaciones))
                 {
                     _logger.LogInformation($"PostCreaHabitacion: Vacio, no se graban datos, retorna OK.");
                     return Ok("Status 200: Error de campos vacios");
@@ -246,7 +246,7 @@ namespace DemoBackend.Controllers
             [FromQuery] DateTime? FechaCheckIN,
             [FromQuery] DateTime? FechaCheckOut,
             [FromQuery] int? idEstadoReserva,
-            [FromQuery] string? MotivoReserva)
+            [FromQuery] string? Observaciones)
         {
             try
             {
@@ -267,7 +267,7 @@ namespace DemoBackend.Controllers
                     FechaCheckIN = FechaCheckIN ?? null,
                     FechaCheckOut = FechaCheckOut ?? null,
 
-                    MotivoReserva = string.IsNullOrWhiteSpace(MotivoReserva) ? null : MotivoReserva!.Trim()
+                    Observaciones = string.IsNullOrWhiteSpace(Observaciones) ? null : Observaciones!.Trim()
                 };
 
                 var resultados = _reservaService.BuscaReservas(filtro);
@@ -289,7 +289,7 @@ namespace DemoBackend.Controllers
         [HttpGet("dashboardReservas")]
         public IActionResult Dashboard([FromQuery] DateTime? desde, [FromQuery] DateTime? hasta, [FromQuery] int idHabitacion, int idTipoReserva )
         {
-            var data = _reservaService.ObtenerDashboard(desde, hasta, idHabitacion, idTipoReserva);
+            var data = _reservaService.ObtenerDashboard();
 
             // Evitar caché para “tiempo real”
             Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, proxy-revalidate";

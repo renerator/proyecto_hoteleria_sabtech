@@ -21,8 +21,7 @@ namespace DemoBackend.Services.Reserva
 
         List<ReservaDto> BuscaReservas(ReservaDto reserva);
 
-        ReservaDashboardDto ObtenerDashboard(DateTime? desde, DateTime? hasta, int idHabitacion, int idTipoReserva);
-
+        ReservaDashboardDto ObtenerDashboard();
         bool CrearBitacoraReserva(BitacoraReservaDto dto);
 
         List<ReservaTrabajadorDto> GetListaReservaTrabajador(ReservaTrabajadorDto ReservaTrabajador);
