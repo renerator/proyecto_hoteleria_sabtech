@@ -1,151 +1,185 @@
 ﻿@model Front_Hoteleria.Dto.Inventario.InventarioItemDto
 @{
     Layout = null;
-    // helper para comparar string sin que reviente si viene null
-    Func<string, string, bool> isSel = (val, current) =>
-        !string.IsNullOrWhiteSpace(val) && string.Equals(val, current, StringComparison.OrdinalIgnoreCase);
+    bool soloLectura = ViewBag.SoloLectura != null && (bool)ViewBag.SoloLectura;
+    bool esNuevo = !soloLectura && Model.IdArticulo == 0;
+    bool esEditar = !soloLectura && Model.IdArticulo > 0;
+
+    string titulo = soloLectura
+        ? "Detalle del Artículo"
+        : (esNuevo ? "AGREGAR NUEVO ARTÍCULO AL INVENTARIO" : "EDITAR ARTÍCULO DEL INVENTARIO");
 }
 
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">&times;</button>
-    <h4 class="modal-title">Editar Artículo de Inventario</h4>
+    <h4 class="modal-title">@titulo</h4>
 </div>
 
 <div class="modal-body">
-    <form id="frmInventarioEdit" autocomplete="off">
-        @Html.HiddenFor(m => m.Id)
+    <form id="frmInventario" autocomplete="off">
+        @Html.HiddenFor(m => m.IdArticulo)
 
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
-                    <label>Nombre del Artículo *</label>
-                    @Html.TextBoxFor(m => m.Nombre,
-                        new { @class = "form-control", placeholder = "Ej: Sábanas Blancas King Size", required = "required" })
+                    <label>Nombre del artículo *</label>
+                    @if (soloLectura)
+                    {
+                        @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control", @readonly = "readonly" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control", required = "required" })
+                    }
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="form-group">
-                    <label>Categoría *</label>
-                    <select name="Categoria" class="form-control" required>
-                        <option value="">Seleccionar categoría...</option>
-                        <option value="ropa_cama" @(isSel("ropa_cama", Model.Categoria) ? "selected" : "")>Ropa de Cama</option>
-                        <option value="electrodomesticos" @(isSel("electrodomesticos", Model.Categoria) ? "selected" : "")>Electrodomésticos</option>
-                        <option value="muebles" @(isSel("muebles", Model.Categoria) ? "selected" : "")>Muebles</option>
-                        <option value="decoracion" @(isSel("decoracion", Model.Categoria) ? "selected" : "")>Decoración</option>
-                        <option value="tecnologia" @(isSel("tecnologia", Model.Categoria) ? "selected" : "")>Tecnología</option>
-                        <option value="limpieza" @(isSel("limpieza", Model.Categoria) ? "selected" : "")>Limpieza</option>
-                        <option value="otros" @(isSel("otros", Model.Categoria) ? "selected" : "")>Otros</option>
-                    </select>
+                    <label>Categoría</label>
+                    @if (soloLectura)
+                    {
+                        @Html.TextBoxFor(m => m.Categoria, new { @class = "form-control", @readonly = "readonly" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.Categoria, new { @class = "form-control" })
+                    }
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Habitación</label>
+                    @if (soloLectura)
+                    {
+                        @Html.TextBoxFor(m => m.Habitacion, new { @class = "form-control", @readonly = "readonly" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.Habitacion, new { @class = "form-control" })
+                    }
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="form-group">
-                    <label>Habitación *</label>
-                    <select name="Habitacion" class="form-control" required>
-                        <option value="">Seleccionar habitación...</option>
-                        @for (int i = 1; i <= 20; i++)
-                        {
-                            var room = i.ToString("D4");
-                            <option value="@room" @(isSel(room, Model.Habitacion) ? "selected" : "")>@room</option>
-                        }
-                    </select>
+                    <label>Estado</label>
+                    @if (soloLectura)
+                    {
+                        @Html.TextBoxFor(m => m.Estado, new { @class = "form-control", @readonly = "readonly" })
+                    }
+                    else
+                    {
+                        <select name="Estado" class="form-control">
+                            <option value="">-- seleccionar --</option>
+                            <option value="disponible" @(Model.Estado == "disponible" ? "selected" : "")>Disponible</option>
+                            <option value="faltante" @(Model.Estado == "faltante" ? "selected" : "")>Faltante</option>
+                            <option value="mantenimiento" @(Model.Estado == "mantenimiento" ? "selected" : "")>Mantenimiento</option>
+                            <option value="dañado" @(Model.Estado == "dañado" ? "selected" : "")>Dañado</option>
+                        </select>
+                    }
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="form-group">
-                    <label>Estado *</label>
-                    <select name="Estado" class="form-control" required>
-                        <option value="">Seleccionar estado...</option>
-                        <option value="disponible" @(isSel("disponible", Model.Estado) ? "selected" : "")>Disponible</option>
-                        <option value="faltante" @(isSel("faltante", Model.Estado) ? "selected" : "")>Faltante</option>
-                        <option value="mantenimiento" @(isSel("mantenimiento", Model.Estado) ? "selected" : "")>Mantenimiento</option>
-                        <option value="dañado" @(isSel("dañado", Model.Estado) ? "selected" : "")>Dañado</option>
-                    </select>
+                    <label>Valor</label>
+                    @if (soloLectura)
+                    {
+                        @Html.TextBoxFor(m => m.Valor, new { @class = "form-control", @readonly = "readonly" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.Valor, new { @class = "form-control", type = "number", step = "0.01" })
+                    }
                 </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label>Valor ($) *</label>
-                    <input type="number"
-                           name="Valor"
-                           class="form-control"
-                           step="0.01"
-                           min="0"
-                           value="@(Model.Valor.HasValue ? Model.Valor.Value.ToString("0.##") : "0")"
-                           required />
-                </div>
-            </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="form-group">
                     <label>Marca</label>
-                    @Html.TextBoxFor(m => m.Marca,
-                        new { @class = "form-control", placeholder = "Samsung, LG, etc." })
+                    @if (soloLectura)
+                    {
+                        @Html.TextBoxFor(m => m.Marca, new { @class = "form-control", @readonly = "readonly" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.Marca, new { @class = "form-control" })
+                    }
                 </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="form-group">
                     <label>Modelo</label>
-                    @Html.TextBoxFor(m => m.Modelo, new { @class = "form-control" })
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label>Número de Serie</label>
-                    @Html.TextBoxFor(m => m.Serie, new { @class = "form-control" })
+                    @if (soloLectura)
+                    {
+                        @Html.TextBoxFor(m => m.Modelo, new { @class = "form-control", @readonly = "readonly" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.Modelo, new { @class = "form-control" })
+                    }
                 </div>
             </div>
         </div>
 
         <div class="form-group">
-            <label>Descripción Detallada</label>
-            @Html.TextAreaFor(m => m.Descripcion, 3, 50,
-                new { @class = "form-control", placeholder = "Descripción detallada del artículo, características, estado, etc." })
+            <label>N° de Serie</label>
+            @if (soloLectura)
+            {
+                @Html.TextBoxFor(m => m.Serie, new { @class = "form-control", @readonly = "readonly" })
+            }
+            else
+            {
+                @Html.TextBoxFor(m => m.Serie, new { @class = "form-control" })
+            }
+        </div>
+
+        <div class="form-group">
+            <label>Observaciones</label>
+            @if (soloLectura)
+            {
+                @Html.TextAreaFor(m => m.Observaciones, 3, 50, new { @class = "form-control", @readonly = "readonly" })
+            }
+            else
+            {
+                @Html.TextAreaFor(m => m.Observaciones, 3, 50, new { @class = "form-control" })
+            }
         </div>
     </form>
 </div>
 
-<div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-    <button type="button" class="btn btn-warning" id="btnLimpiarInventarioEdit">Limpiar</button>
-    <button type="button" class="btn btn-success" id="btnActualizarInventario">Actualizar Artículo</button>
-</div>
+@if (!soloLectura)
+{
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btnGuardarInventario">Guardar</button>
+    </div>
 
-<script>
-    // limpiar
-    $('#btnLimpiarInventarioEdit').off('click').on('click', function () {
-        $('#frmInventarioEdit')[0].reset();
-    });
+    <script>
+        $('#btnGuardarInventario').off('click').on('click', function () {
+            $.post('@Url.Action("Guardar", "Inventario")',
+                $('#frmInventario').serialize(),
+                function (r) {
+                    if (r && r.ok) {
+                        // cerrar modal
+                        $('#modalInventario').modal('hide');
 
-    // actualizar (dejamos el endpoint como si ya existiera)
-    $('#btnActualizarInventario').off('click').on('click', function () {
-        var form = $('#frmInventarioEdit');
-        $.ajax({
-            url: '@Url.Action("Actualizar", "Inventario")',   // <-- asumimos que existe
-            type: 'POST',
-            data: form.serialize(),
-            success: function (r) {
-                if (r.ok) {
-                    $('#modalInventario').modal('hide');
-                    // recargar tabla
-                    $.get('@Url.Action("Tabla","Inventario")', function (html) {
-                        $('#contenedor-tabla').html(html);
-                    });
-                } else {
-                    alert(r.msg || 'No se pudo actualizar el artículo.');
+                        // recargar tabla
+                        $.get('@Url.Action("Tabla", "Inventario")', function (html) {
+                            $('#contenedor-tabla').html(html);
+                        });
+
+                        // recargar dashboard
+                        $.get('@Url.Action("Resumen", "Inventario")', function (html) {
+                            $('#contenedor-dashboard').html(html);
+                        });
+                    } else {
+                        alert(r.msg || 'No se pudo guardar el artículo.');
+                    }
                 }
-            },
-            error: function () {
-                alert('Error al actualizar el artículo.');
-            }
+            ).fail(function () {
+                alert('Error al guardar el artículo.');
+            });
         });
-    });
-</script>
+    </script>
+}

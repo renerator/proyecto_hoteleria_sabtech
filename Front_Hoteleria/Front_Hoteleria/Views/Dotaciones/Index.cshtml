@@ -135,45 +135,31 @@
 
 @section Scripts{
     <script>
-        // urls al controlador Dotaciones
+        // URLs reales según tu controller
         const urlDashDot   = '@Url.Action("Dashboard","Dotaciones")';
         const urlTablaDot  = '@Url.Action("Tabla","Dotaciones")';
         const urlUpsertDot = '@Url.Action("Upsert","Dotaciones")';
-        const urlCargaDot  = '@Url.Action("CargaMasiva","Dotaciones")';
+        const urlCargaDot  = '@Url.Action("CargaMasiva","Dotaciones")';   // <-- ESTA es la del modal de Excel
         const urlTurnosDot = '@Url.Action("Turnos","Dotaciones")';
 
-        // GET al dashboard
         function cargarDashboardDot() {
             $('#dashDotContainer').load(urlDashDot);
         }
 
-        // IMPORTANTE: aquí lo pasamos por querystring para que sea GET
         function cargarTablaDot(buscar) {
             var qs = '';
             if (buscar && buscar.length > 0) {
                 qs = '?criterio=' + encodeURIComponent(buscar);
             }
-            $('#tablaDotContainer').load(urlTablaDot + qs, function () {
-                var $t = $('#tablaDotaciones');
-                if ($t.length && $.fn.DataTable) {
-                    $t.DataTable({
-                        destroy: true,
-                        pageLength: 10,
-                        lengthChange: true,
-                        language: {
-                            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-                        }
-                    });
-                }
-            });
+            $('#tablaDotContainer').load(urlTablaDot + qs);
         }
+
 
         $(function () {
 
-            // búsqueda
+            // buscar
             $('#btnBuscarDot').on('click', function () {
-                var txt = $('#txtBuscarDot').val();
-                cargarTablaDot(txt);
+                cargarTablaDot($('#txtBuscarDot').val());
             });
             $('#txtBuscarDot').on('keyup', function (e) {
                 if (e.key === 'Enter') {
@@ -181,23 +167,30 @@
                 }
             });
 
-            // agregar
+           // botón "Agregar Trabajador"
             $('#btnNuevoDot').on('click', function () {
-                $.get(urlUpsertDot, function (html) {
+                $.get('@Url.Action("Upsert","Dotaciones")', function (html) {
+                    // metemos el formulario en el modal
                     $('#modalDot .modal-content').html(html);
+                    // lo mostramos
                     $('#modalDot').modal('show');
+                }).fail(function () {
+                    alert('No se pudo abrir el formulario de trabajador.');
                 });
             });
 
-            // carga masiva
+
+            // CARGA MASIVA EXCEL  ✅ usa DotacionesController.CargaMasiva()
             $('#btnCargaMasivaDot').on('click', function () {
                 $.get(urlCargaDot, function (html) {
                     $('#modalDot .modal-content').html(html);
                     $('#modalDot').modal('show');
+                }).fail(function (xhr) {
+                    alert('No se pudo abrir la carga masiva: ' + xhr.status);
                 });
             });
 
-            // turnos
+            // TURNOS
             $('#btnTurnosDot').on('click', function () {
                 $.get(urlTurnosDot, function (html) {
                     $('#modalDot .modal-content').html(html);
@@ -205,9 +198,10 @@
                 });
             });
 
-            // refrescar vista completa
+            // ACTUALIZAR
             $('#btnRefreshDot').on('click', function () {
-                location.reload();
+                cargarDashboardDot();
+                cargarTablaDot('');
             });
 
             // carga inicial

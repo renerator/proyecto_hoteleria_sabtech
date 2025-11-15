@@ -3,7 +3,7 @@
 @using (Html.BeginForm("Rechazar", "Reservas", FormMethod.Post, new { id = "formRechazarReserva" }))
 {
     @Html.AntiForgeryToken()
-    @Html.Hidden("IdReserva", Model.Id)
+    @Html.Hidden("IdReserva", Model.IdReserva)
 
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
@@ -19,9 +19,9 @@
                 <strong>Detalles de la Reserva</strong>
             </div>
             <div class="panel-body">
-                <p><strong>ID Reserva:</strong><br /> @Model.Id</p>
-                <p><strong>Huésped:</strong><br /> @Model.HuespedNombre</p>
-                <p><strong>Email:</strong><br /> @Model.HuespedEmail</p>
+                <p><strong>ID Reserva:</strong><br /> @Model.IdReserva</p>
+                <p><strong>Huésped:</strong><br /> @Model.NombreHuesped</p>
+                <p><strong>Email:</strong><br /> @Model.CorreoHuespedReserva</p>
             </div>
         </div>
 

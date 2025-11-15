@@ -10,6 +10,7 @@ using DemoBackend.Services.Autenticacion;
 using DemoBackend.Services.Habitacion;
 using DemoBackend.Services.HabitacionInsumo;
 using DemoBackend.Services.Mantenedores;
+using DemoBackend.Services.Empresa;
 using DemoBackend.Services.Menu;
 using DemoBackend.Services.Reserva;
 using DemoBackend.Services.OrdenTrabajo;
@@ -71,6 +72,7 @@ namespace DemoBackend
                 services.AddScoped(typeof(RepositoryGes.IGenericRepositoryEntity<>), typeof(GenericRepositoriesGes<>));
 
                 services.AddTransient<IAutenticacionService, AutenticacionService>();
+                services.AddTransient<IEmpresaService, EmpresaService>();
                 services.AddTransient<IMantenedoresService, MantenedoresService>();
                 services.AddTransient<IHabitacionService, HabitacionService>();
                 services.AddTransient<IReservaService, ReservaService>();

@@ -1,47 +1,70 @@
 ﻿@model Front_Hoteleria.Dto.Contrato.ContratoDto
-@{
-    // ?soloLectura=true
-    var soloLectura = string.Equals(
-        (Request["soloLectura"] ?? "").ToString(),
-        "true",
-        System.StringComparison.OrdinalIgnoreCase
-    );
+@using System.Globalization
+@using System.Web.Mvc
+@using System.Linq
 
+@{
+    bool soloLectura = (ViewBag.SoloLectura as bool?) ?? false;
     bool esEdicion = Model != null && Model.IdContrato > 0;
+
+    var valorContrato = Model?.Valor != null
+        ? Model.Valor.Value.ToString("0.##", CultureInfo.InvariantCulture)
+        : "";
+
+    Func<int?, string> nombreTipo = (id) =>
+    {
+        switch (id)
+        {
+            case 1: return "Temporal";
+            case 2: return "Indefinido";
+            case 3: return "Por Proyecto";
+            case 4: return "Servicio";
+            default: return "—";
+        }
+    };
+
+    var titulo = soloLectura
+        ? "Detalle del Contrato"
+        : (esEdicion ? "Editar Contrato" : "Crear Nuevo Contrato");
 }
 
 <div class="modal-header" style="background:#f5f8fb;">
     <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-    <h4 class="modal-title">
-        @(esEdicion ? "Editar Contrato" : "Crear Nuevo Contrato")
-    </h4>
+    <h4 class="modal-title">@titulo</h4>
 </div>
 
 <div class="modal-body">
-    <form id="frmContrato">
+    <form id="frmContrato" method="post" action="@Url.Action("Guardar","Contratos")" autocomplete="off">
+        @Html.AntiForgeryToken()
         <input type="hidden" name="IdContrato" value="@(Model?.IdContrato ?? 0)" />
 
-        <!-- fila 1 -->
+        <!-- Empresa + Nro Contrato -->
         <div class="row">
             <div class="col-md-6">
                 <label>Empresa *</label>
                 @if (soloLectura)
                 {
-                    <input type="text" class="form-control" value="@(Model?.Empresa ?? "")" readonly />
+                    var empItems = (IEnumerable<SelectListItem>)(ViewBag.Empresas ?? Enumerable.Empty<SelectListItem>());
+                    var selEmpItem = empItems.FirstOrDefault(x => x.Selected);
+                    var hiddenEmp = selEmpItem?.Value ?? (Model?.IdEmpresa > 0 ? Model.IdEmpresa.ToString() : "");
+                    var empText = !string.IsNullOrWhiteSpace(Model?.Empresa)
+                                      ? (string.IsNullOrWhiteSpace(Model?.RutEmpresa)
+                                            ? Model.Empresa
+                                            : $"{Model.RutEmpresa}-{Model.Empresa}")
+                                      : (empItems.FirstOrDefault(x => x.Value == hiddenEmp)?.Text ?? "—");
+
+                    <input type="text" class="form-control" value="@empText" readonly />
+                    <input type="hidden" name="IdEmpresa" value="@hiddenEmp" />
                 }
                 else
                 {
-                    <select name="IdEmpresa" class="form-control">
-                        <option value="">Seleccionar empresa...</option>
-                        <!-- demo / en vivo llenas desde el controller -->
-                        <option value="1" @(Model?.IdEmpresa == 1 ? "selected" : "")>Constructora ABC Ltda.</option>
-                        <option value="2" @(Model?.IdEmpresa == 2 ? "selected" : "")>Servicios Mineros XYZ S.A.</option>
-                        @* si viene empresa en el modelo y no está en la lista *@
-                        @if (Model?.IdEmpresa > 0 && Model?.Empresa != null && Model.IdEmpresa != 1 && Model.IdEmpresa != 2)
-                        {
-                            <option value="@Model.IdEmpresa" selected="selected">@Model.Empresa</option>
-                        }
-                    </select>
+                    var empresas = (IEnumerable<SelectListItem>)(ViewBag.Empresas ?? Enumerable.Empty<SelectListItem>());
+                    @Html.DropDownList(
+                        "IdEmpresa",
+                        empresas,
+                        
+                        new { @class = "form-control", id = "cmbEmpresas" }
+                    )
                 }
             </div>
             <div class="col-md-6">
@@ -49,13 +72,13 @@
                 <input type="text"
                        name="NumeroContrato"
                        class="form-control"
-                       placeholder="Ej: CONT-2024-001"
+                       placeholder="Ej: CONT-2025-001"
                        value="@(Model?.NumeroContrato ?? "")"
                        @(soloLectura ? "readonly" : "") />
             </div>
         </div>
 
-        <!-- fila 2 -->
+        <!-- Fechas -->
         <div class="row" style="margin-top:12px;">
             <div class="col-md-6">
                 <label>Fecha de Inicio *</label>
@@ -75,22 +98,24 @@
             </div>
         </div>
 
-        <!-- fila 3 -->
+        <!-- Tipo contrato + Valor -->
         <div class="row" style="margin-top:12px;">
             <div class="col-md-6">
                 <label>Tipo de Contrato *</label>
                 @if (soloLectura)
                 {
-                    <input type="text" class="form-control" value="@(Model?.Tipo ?? "")" readonly />
+                    <input type="text" class="form-control"
+                           value="@nombreTipo(Model?.IdTipoContrato)"
+                           readonly />
                 }
                 else
                 {
-                    <select name="Tipo" class="form-control">
+                    <select name="IdTipoContrato" id="cmbTipos" class="form-control">
                         <option value="">Seleccionar...</option>
-                        <option value="temporal" @(Model?.Tipo == "temporal" ? "selected" : "")>Temporal</option>
-                        <option value="indefinido" @(Model?.Tipo == "indefinido" ? "selected" : "")>Indefinido</option>
-                        <option value="proyecto" @(Model?.Tipo == "proyecto" ? "selected" : "")>Por Proyecto</option>
-                        <option value="servicio" @(Model?.Tipo == "servicio" ? "selected" : "")>Servicio</option>
+                        <option value="1" @(Model?.IdTipoContrato == 1 ? "selected" : "")>Temporal</option>
+                        <option value="2" @(Model?.IdTipoContrato == 2 ? "selected" : "")>Indefinido</option>
+                        <option value="3" @(Model?.IdTipoContrato == 3 ? "selected" : "")>Por Proyecto</option>
+                        <option value="4" @(Model?.IdTipoContrato == 4 ? "selected" : "")>Servicio</option>
                     </select>
                 }
             </div>
@@ -99,36 +124,43 @@
                 <input type="number"
                        name="Valor"
                        class="form-control"
-                       placeholder="Ej: 150000.00"
+                       placeholder="Ej: 1500.00"
                        step="0.01"
                        min="0"
-                       value="@(Model?.Valor ?? 0)"
+                       value="@valorContrato"
                        @(soloLectura ? "readonly" : "") />
             </div>
         </div>
 
-        <!-- fila 4 -->
+        <!-- Campamento + Máximo + Estado -->
         <div class="row" style="margin-top:12px;">
             <div class="col-md-6">
                 <label>Campamento Asignado</label>
                 @if (soloLectura)
                 {
-                    <input type="text" class="form-control" value="@(Model?.Campamento ?? "")" readonly />
+                    var campItems = (IEnumerable<SelectListItem>)(ViewBag.Campamentos ?? Enumerable.Empty<SelectListItem>());
+                    var selCampItem = campItems.FirstOrDefault(x => x.Selected);
+                    var hiddenCamp = selCampItem?.Value ?? (Model?.IdCampamento > 0 ? Model.IdCampamento.ToString() : "");
+                    var campText = !string.IsNullOrWhiteSpace(Model?.Campamento)
+                                      ? Model.Campamento
+                                      : (campItems.FirstOrDefault(x => x.Value == hiddenCamp)?.Text ?? "—");
+
+                    <input type="text" class="form-control" value="@campText" readonly />
+                    <input type="hidden" name="IdCampamento" value="@hiddenCamp" />
                 }
                 else
                 {
-                    <select name="IdCampamento" class="form-control">
-                        <option value="">Seleccionar campamento...</option>
-                        <option value="1" @(Model?.IdCampamento == 1 ? "selected" : "")>Campamento Norte</option>
-                        <option value="2" @(Model?.IdCampamento == 2 ? "selected" : "")>Campamento Sur</option>
-                        @if (Model?.IdCampamento > 0 && Model?.Campamento != null && Model.IdCampamento != 1 && Model.IdCampamento != 2)
-                        {
-                            <option value="@Model.IdCampamento" selected="selected">@Model.Campamento</option>
-                        }
-                    </select>
+                    var campamentos = (IEnumerable<SelectListItem>)(ViewBag.Campamentos ?? Enumerable.Empty<SelectListItem>());
+                    @Html.DropDownListFor(
+                        m => m.IdCampamento,
+                        campamentos,
+                       
+                        new { @class = "form-control", id = "cmbCampamentos" }
+                    )
                 }
             </div>
-            <div class="col-md-6">
+
+            <div class="col-md-3">
                 <label>Máximo de Trabajadores</label>
                 <input type="number"
                        name="MaximoTrabajadores"
@@ -138,9 +170,31 @@
                        value="@(Model?.MaximoTrabajadores ?? 0)"
                        @(soloLectura ? "readonly" : "") />
             </div>
+
+            <div class="col-md-3">
+                <label>Estado</label>
+                @if (soloLectura)
+                {
+                    <input type="text" class="form-control"
+                           value="@(Model?.Estado == true ? "Activo" : "Inactivo")"
+                           readonly />
+                }
+                else
+                {
+                    <div class="form-inline" style="display:flex;gap:8px;align-items:center;">
+                        <input type="hidden" name="Estado" value="false" />
+                        <input type="checkbox"
+                               id="chkEstado"
+                               name="Estado"
+                               value="true"
+                               @( (Model == null || !esEdicion) ? "checked" : (Model.Estado ? "checked" : "") ) />
+                        <label for="chkEstado" style="margin:0;">Activo</label>
+                    </div>
+                }
+            </div>
         </div>
 
-        <!-- fila 5 -->
+        <!-- Descripción -->
         <div class="row" style="margin-top:12px;">
             <div class="col-md-12">
                 <label>Descripción del Contrato</label>
@@ -151,32 +205,55 @@
                           @(soloLectura ? "readonly" : "")>@(Model?.Descripcion ?? "")</textarea>
             </div>
         </div>
+
+        <div class="text-right" style="margin-top:14px;">
+            <button type="button" class="btn btn-default" data-dismiss="modal">@(soloLectura ? "Cerrar" : "Cancelar")</button>
+            @if (!soloLectura)
+            {
+                <button type="submit" class="btn btn-primary" id="btnGuardarContrato">
+                    @(esEdicion ? "Guardar Cambios" : "Crear Contrato")
+                </button>
+            }
+        </div>
     </form>
 </div>
 
-<div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-    @if (!soloLectura)
-    {
-        <button type="button" class="btn btn-primary" id="btnGuardarContrato">
-            @(esEdicion ? "Guardar Cambios" : "Crear Contrato")
-        </button>
-    }
-</div>
-
 <script>
-    $('#btnGuardarContrato').off('click').on('click', function () {
-        var datos = $('#frmContrato').serialize();
-        $.post('@Url.Action("Guardar","Contratos")', datos, function (r) {
-            if (r && r.ok) {
-                $('#modalCon').modal('hide');
-                // recargar la tabla
-                if (typeof cargarTablaCon === 'function') {
-                    cargarTablaCon('');
+    (function () {
+        $(document).off('submit', '#frmContrato').on('submit', '#frmContrato', function (e) {
+            e.preventDefault();
+            var $form = $(this);
+
+            var idEmpresa = $form.find('[name="IdEmpresa"]').val();
+            var numero = $form.find('[name="NumeroContrato"]').val();
+            var tipoId = $form.find('[name="IdTipoContrato"]').val();
+            var ini = $form.find('[name="FechaInicio"]').val();
+            var fin = $form.find('[name="FechaFin"]').val();
+
+            if (!idEmpresa) { alert('Debe seleccionar una empresa.'); return; }
+            if (!numero) { alert('Debe ingresar el número de contrato.'); return; }
+            if (!tipoId) { alert('Debe seleccionar el tipo de contrato.'); return; }
+            if (!ini) { alert('Debe seleccionar la fecha de inicio.'); return; }
+            if (!fin) { alert('Debe seleccionar la fecha de vencimiento.'); return; }
+
+            $.ajax({
+                type: 'POST',
+                url: $form.attr('action'),
+                data: $form.serialize(),
+                success: function (r) {
+                    if (r && r.ok) {
+                        $('#modalCon').modal('hide');
+                        if (typeof cargarTablaCon === 'function') { cargarTablaCon(''); }
+                    } else {
+                        alert((r && (r.message || r.msg)) || 'No se pudo guardar el contrato');
+                    }
+                },
+                error: function (xhr) {
+                    var msg = 'Error al guardar.';
+                    try { msg += '\n' + (xhr.responseText || ''); } catch (e) { }
+                    alert(msg);
                 }
-            } else {
-                alert(r.msg || 'No se pudo guardar el contrato');
-            }
+            });
         });
-    });
+    })();
 </script>

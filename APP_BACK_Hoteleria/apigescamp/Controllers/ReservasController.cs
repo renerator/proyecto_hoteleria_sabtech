@@ -117,16 +117,16 @@ namespace DemoBackend.Controllers
 
 
         [HttpGet("MuestraReserva")]
-        public ActionResult<ReservaDto> MuestraReserva([FromQuery] int id)
+        public ActionResult<ReservaDto> MuestraReserva([FromQuery] int idReserva)
         {
-            _logger.LogInformation("GET MuestraReserva: inicio. Id={Id}", id);
+            _logger.LogInformation("GET MuestraReserva: inicio. IdReserva={IdReserva}", idReserva);
 
             try
             {
                 // armado del filtro que espera tu service
                 var filtro = new ReservaDto
                 {
-                    IdReserva = id
+                    IdReserva = idReserva
                 };
 
                 // tu service devuelve una LISTA (igual que el de servicios)
@@ -134,19 +134,19 @@ namespace DemoBackend.Controllers
 
                 if (items == null || items.Count == 0)
                 {
-                    _logger.LogInformation("GET MuestraReserva: sin resultados para Id={Id}.", id);
+                    _logger.LogInformation("GET MuestraReserva: sin resultados para IdReserva={IdReserva}.", idReserva);
                     return NoContent();
                 }
 
                 // devolvemos solo la primera coincidencia
                 var reserva = items.First();
 
-                _logger.LogInformation("GET MuestraReserva: 1 registro encontrado para Id={Id}.", id);
+                _logger.LogInformation("GET MuestraReserva: 1 registro encontrado para Id={Idreserva}.", idReserva);
                 return Ok(reserva);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "GET MuestraReserva: error para Id={Id}.", id);
+                _logger.LogError(e, "GET MuestraReserva: error para IdReserva={IdReserva}.", idReserva);
                 return StatusCode(500, "Error interno del servidor.");
             }
         }

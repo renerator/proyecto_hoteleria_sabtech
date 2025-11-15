@@ -1,5 +1,49 @@
 ﻿@model IEnumerable<Front_Hoteleria.Dto.Contrato.ContratoDto>
 
+@{
+    // Cast correcto del ViewBag con el tipo REAL
+    var trabPorEmpresa = ViewBag.TrabajadoresEmpresa
+        as Dictionary<int, List<Font_Hoteleria.Dto.Trabajadores.TrabajadoresDto>>
+        ?? new Dictionary<int, List<Font_Hoteleria.Dto.Trabajadores.TrabajadoresDto>>();
+
+    // Traductor de tipo de contrato
+    Func<int?, string> nombreTipo = (id) =>
+    {
+        switch (id)
+        {
+            case 1: return "Temporal";
+            case 2: return "Indefinido";
+            case 3: return "Por Proyecto";
+            case 4: return "Servicio";
+            default: return "—";
+        }
+    };
+
+    // Traductor de nivel de acceso
+    Func<int, string> nombreNivel = (n) =>
+    {
+        switch (n)
+        {
+            case 4: return "Administrador";
+            case 3: return "Supervisor";
+            case 2: return "Trabajador";
+            case 1:
+            default: return "Invitado";
+        }
+    };
+    Func<int, string> cssNivel = (n) =>
+    {
+        switch (n)
+        {
+            case 4: return "level-admin";
+            case 3: return "level-manager";
+            case 2: return "level-worker";
+            case 1:
+            default: return "level-guest";
+        }
+    };
+}
+
 @if (Model == null || !Model.Any())
 {
     <div class="alert alert-info">No hay contratos registrados.</div>
@@ -8,15 +52,16 @@ else
 {
     foreach (var c in Model)
     {
-        // aseguramos string
-        var estado = (c.Estado ?? "Activo").ToString().Trim();
+        bool activo = c.Estado;
+        string estadoTexto = activo ? "Activo" : "Inactivo";
+        string css = activo ? "status-active" : "status-suspended";
+        string tipoTexto = nombreTipo(c.IdTipoContrato);
 
-        // usamos string.Equals y StartsWith de string
-        var css =
-            string.Equals(estado, "Activo", System.StringComparison.OrdinalIgnoreCase) ? "status-active" :
-            estado.StartsWith("Venc", System.StringComparison.OrdinalIgnoreCase) ? "status-expired" :
-            estado.StartsWith("Pend", System.StringComparison.OrdinalIgnoreCase) ? "status-pending" :
-            "status-suspended";
+        // Buscar trabajadores por Empresa del contrato:
+        var idEmp = c.IdEmpresa ?? 0;
+        var workers = trabPorEmpresa.ContainsKey(idEmp)
+            ? trabPorEmpresa[idEmp]
+            : new List<Font_Hoteleria.Dto.Trabajadores.TrabajadoresDto>();
 
         <div class="contract-card">
             <div class="row">
@@ -25,31 +70,41 @@ else
                         @(c.NumeroContrato ?? "SIN CÓDIGO")
                         <small>@(c.Empresa ?? "Empresa no informada")</small>
                     </h4>
+
                     <p>
-                        <strong>Empresa:</strong> @c.Empresa (@c.RutEmpresa)
+                        <strong>Empresa:</strong>
+                        @c.Empresa
+                        @(string.IsNullOrWhiteSpace(c.RutEmpresa) ? "" : $" ({c.RutEmpresa})")
                     </p>
+
                     <p>
-                        <strong>Campamento:</strong> @(string.IsNullOrWhiteSpace(c.Campamento) ? "No asignado" : c.Campamento)
+                        <strong>Campamento:</strong>
+                        @(string.IsNullOrWhiteSpace(c.Campamento) ? "No asignado" : c.Campamento)
                     </p>
+
                     <p>
                         <strong>Período:</strong>
                         @((c.FechaInicio.HasValue ? c.FechaInicio.Value.ToString("dd-MM-yyyy") : "—"))
                         al
                         @((c.FechaFin.HasValue ? c.FechaFin.Value.ToString("dd-MM-yyyy") : "—"))
                     </p>
+
                     <p>
-                        <strong>Tipo:</strong> @(string.IsNullOrWhiteSpace(c.Tipo) ? "—" : c.Tipo)
+                        <strong>Tipo:</strong> @tipoTexto
                         |
                         <strong>Valor:</strong> @(c.Valor.HasValue ? ("$" + c.Valor.Value.ToString("N0")) : "—")
                     </p>
+
                     <p>
                         <strong>Trabajadores:</strong>
-                        @(c.Trabajadores != null ? c.Trabajadores.Count : 0) /
+                        @workers.Count
+                        /
                         @(c.MaximoTrabajadores.HasValue ? c.MaximoTrabajadores.Value.ToString() : "Sin límite")
                     </p>
                 </div>
+
                 <div class="col-md-4 text-right">
-                    <span class="contract-status @css">@estado</span>
+                    <span class="contract-status @css">@estadoTexto</span>
                     <br /><br />
                     <button type="button"
                             class="btn btn-sm btn-info btn-ver-contrato"
@@ -63,21 +118,30 @@ else
                     </button>
                 </div>
             </div>
+
             <div class="row" style="margin-top:10px;">
                 <div class="col-md-12">
-                    <h5>Trabajadores Asociados (@(c.Trabajadores != null ? c.Trabajadores.Count : 0)):</h5>
+                    <h5>Trabajadores Asociados (@workers.Count):</h5>
                     <div class="row">
-                        @if (c.Trabajadores != null && c.Trabajadores.Any())
+                        @if (workers.Any())
                         {
-                            foreach (var w in c.Trabajadores)
+                            foreach (var w in workers)
                             {
+                                var nombre = string.Format("{0} {1}",
+                                    (w.NombresTrabajador ?? "").Trim(),
+                                    (w.PaternoTrabajador ?? "").Trim()).Trim();
+
                                 <div class="col-md-4">
                                     <div class="worker-item">
-                                        <strong>@w.NombreCompleto</strong><br />
+                                        <strong>@(string.IsNullOrWhiteSpace(nombre) ? "—" : nombre)</strong>
+                                        <span class="access-level @(cssNivel(w.NivelAcceso))">
+                                            @nombreNivel(w.NivelAcceso)
+                                        </span>
+                                        <br />
                                         <small>
-                                            @w.Cargo
-                                            <span class="access-level level-@w.NivelAcceso">@w.NivelAcceso</span><br />
-                                            RUT: @w.Rut
+                                            @(string.IsNullOrWhiteSpace(w.CargoTrabajador) ? "Sin cargo" : w.CargoTrabajador)<br />
+                                            RUT: @(string.IsNullOrWhiteSpace(w.RutTrabajador) ? "—" : w.RutTrabajador)<br />
+                                            Tel: @(string.IsNullOrWhiteSpace(w.Telefono) ? "—" : w.Telefono)
                                         </small>
                                     </div>
                                 </div>
@@ -86,7 +150,7 @@ else
                         else
                         {
                             <div class="col-md-12">
-                                <p class="text-muted">No hay trabajadores asignados a este contrato.</p>
+                                <p class="text-muted">No hay trabajadores asociados a la empresa de este contrato.</p>
                             </div>
                         }
                     </div>
@@ -97,7 +161,7 @@ else
 }
 
 <script>
-    // botones internos del parcial
+    // Editar
     $(document)
         .off('click', '.btn-editar-contrato')
         .on('click', '.btn-editar-contrato', function () {
@@ -108,6 +172,7 @@ else
             });
         });
 
+    // Ver (solo lectura)
     $(document)
         .off('click', '.btn-ver-contrato')
         .on('click', '.btn-ver-contrato', function () {

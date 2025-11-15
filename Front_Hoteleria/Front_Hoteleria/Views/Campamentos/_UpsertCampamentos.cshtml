@@ -1,26 +1,49 @@
 ﻿@model Front_Hoteleria.Dto.Campamentos.CampamentoDto
 @{
     Layout = null;
+    bool soloLectura = ViewBag.SoloLectura != null && (bool)ViewBag.SoloLectura;
+    bool esNuevo = !soloLectura && Model.IdCampamento == 0;
+    bool esEditar = !soloLectura && Model.IdCampamento > 0;
+
+    string titulo = soloLectura
+        ? "VER CAMPAMENTO"
+        : (esNuevo ? "NUEVO CAMPAMENTO" : "EDITAR CAMPAMENTO");
 }
 
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal">&times;</button>
-    <h4 class="modal-title">@(string.IsNullOrWhiteSpace(Model.Id) ? "Nuevo Campamento" : "Editar Campamento")</h4>
+    <h4 class="modal-title">@titulo</h4>
 </div>
+
 <div class="modal-body">
     <form id="frmCamp" autocomplete="off">
-        @Html.HiddenFor(m => m.Id)
+        @Html.HiddenFor(m => m.IdCampamento)
+
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
                     <label>Nombre *</label>
-                    @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control", required = "required", placeholder = "Ej: Campamento Norte" })
+                    @if (soloLectura)
+                    {
+                        @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control", @readonly = "readonly" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control", required = "required", placeholder = "Ej: Campamento Norte" })
+                    }
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label>Código *</label>
-                    @Html.TextBoxFor(m => m.Codigo, new { @class = "form-control", required = "required", placeholder = "CAMP-N-001" })
+                    @if (soloLectura)
+                    {
+                        @Html.TextBoxFor(m => m.Codigo, new { @class = "form-control", @readonly = "readonly" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.Codigo, new { @class = "form-control", required = "required", placeholder = "CAMP-N-001" })
+                    }
                 </div>
             </div>
         </div>
@@ -29,67 +52,107 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label>Ubicación *</label>
-                    @Html.TextBoxFor(m => m.Ubicacion, new { @class = "form-control", required = "required" })
+                    @if (soloLectura)
+                    {
+                        @Html.TextBoxFor(m => m.Ubicacion, new { @class = "form-control", @readonly = "readonly" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.Ubicacion, new { @class = "form-control", required = "required" })
+                    }
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
                     <label>Capacidad *</label>
-                    @Html.TextBoxFor(m => m.Capacidad, new { @class = "form-control", type = "number", min = "1", required = "required" })
+                    @if (soloLectura)
+                    {
+                        @Html.TextBoxFor(m => m.Capacidad, new { @class = "form-control", @readonly = "readonly" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.Capacidad, new { @class = "form-control", type = "number", min = "1", required = "required" })
+                    }
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
                     <label>Estado</label>
-                    <select name="Estado" class="form-control">
-                        <option value="active" @(Model.Estado == "active" ? "selected" : "")>Activo</option>
-                        <option value="maintenance" @(Model.Estado == "maintenance" ? "selected" : "")>Mantenimiento</option>
-                        <option value="inactive" @(Model.Estado == "inactive" ? "selected" : "")>Inactivo</option>
-                    </select>
+                    @if (soloLectura)
+                    {
+                        @Html.TextBoxFor(m => m.Estado, new { @class = "form-control", @readonly = "readonly" })
+                    }
+                    else
+                    {
+                        <select name="Estado" class="form-control">
+                            <option value="active" @(Model.Estado == "active" ? "selected" : "")>Activo</option>
+                            <option value="maintenance" @(Model.Estado == "maintenance" ? "selected" : "")>Mantenimiento</option>
+                            <option value="inactive" @(Model.Estado == "inactive" ? "selected" : "")>Inactivo</option>
+                        </select>
+                    }
                 </div>
             </div>
         </div>
 
         <div class="form-group">
             <label>Encargado</label>
-            @Html.TextBoxFor(m => m.Encargado, new { @class = "form-control", placeholder = "Ej: Juan Pérez" })
+            @if (soloLectura)
+            {
+                @Html.TextBoxFor(m => m.Encargado, new { @class = "form-control", @readonly = "readonly" })
+            }
+            else
+            {
+                @Html.TextBoxFor(m => m.Encargado, new { @class = "form-control", placeholder = "Ej: Juan Pérez" })
+            }
         </div>
 
         <div class="form-group">
             <label>Descripción</label>
-            @Html.TextAreaFor(m => m.Descripcion, 3, 50, new { @class = "form-control" })
+            @if (soloLectura)
+            {
+                @Html.TextAreaFor(m => m.Descripcion, 3, 50, new { @class = "form-control", @readonly = "readonly" })
+            }
+            else
+            {
+                @Html.TextAreaFor(m => m.Descripcion, 3, 50, new { @class = "form-control" })
+            }
         </div>
     </form>
 </div>
-<div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-    <button type="button" class="btn btn-primary" id="btnGuardarCamp">Guardar</button>
-</div>
 
-<script>
-    $('#btnGuardarCamp').off('click').on('click', function () {
-        $.post('@Url.Action("Guardar", "Campamentos")',
-            $('#frmCamp').serialize(),
-            function (r) {
-                if (r.ok) {
-                    $('#modalCampamento').modal('hide');
+@if (!soloLectura)
+{
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btnGuardarCamp">Guardar</button>
+    </div>
 
-                    // recargar tabla
-                    $.get('@Url.Action("Tabla", "Campamentos")', function (html) {
-                        $('#contenedor-tabla-camp').html(html);
-                    });
+    <script>
+        $('#btnGuardarCamp').off('click').on('click', function () {
+            $.post('@Url.Action("Guardar", "Campamentos")',
+                $('#frmCamp').serialize(),
+                function (r) {
+                    if (r && r.ok) {
+                        // cerrar modal
+                        $('#modalCampamentos').modal('hide');
 
-                    // y los KPIs
-                    $.get('@Url.Action("Resumen", "Campamentos")', function (html) {
-                        $('#contenedor-dashboard-camp').html(html);
-                    });
+                        // recargar tabla
+                        $.get('@Url.Action("Tabla", "Campamentos")', function (html) {
+                            $('#contenedor-tabla-camp').html(html);
+                        });
 
-                } else {
-                    alert(r.msg || 'No se pudo guardar el campamento.');
+                        // recargar dashboard
+                        $.get('@Url.Action("Resumen", "Campamentos")', function (html) {
+                            $('#contenedor-dashboard-camp').html(html);
+                        });
+
+                    } else {
+                        alert(r.msg || 'No se pudo guardar el campamento.');
+                    }
                 }
-            }
-        ).fail(function () {
-            alert('Error al guardar campamento.');
+            ).fail(function () {
+                alert('Error al guardar campamento.');
+            });
         });
-    });
-</script>
+    </script>
+}

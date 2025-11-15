@@ -8,11 +8,9 @@ namespace Front_Hoteleria.Dto.Reserva
 
         public class ReservaKPIDto
     {
-            public int Pendientes { get; set; }
-            public int Confirmadas { get; set; }
-            public int Rechazadas { get; set; }
-            public int Total { get; set; }
-        }
+        public int? ReservasPendientes { get; set; }
+        public int? ReservasRechazadas { get; set; }
+    }
    
 
 

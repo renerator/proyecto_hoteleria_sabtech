@@ -56,7 +56,7 @@ namespace Front_Hoteleria.Services.Reservas
             try
             {
                 SetBearer(bearer);
-                using (var resp = await _http.GetAsync("/api/Reservas/resumen"))
+                using (var resp = await _http.GetAsync("/api/Reservas/Resumen"))
                 {
                     if (resp.StatusCode == HttpStatusCode.NoContent)
                         return new ReservaKPIDto();
@@ -74,10 +74,10 @@ namespace Front_Hoteleria.Services.Reservas
                 // demo por si la API cae
                 return new ReservaKPIDto
                 {
-                    Pendientes = 5,
-                    Confirmadas = 18,
-                    Rechazadas = 2,
-                    Total = 25
+                    //Pendientes = 5,
+                    //Confirmadas = 18,
+                    //Rechazadas = 2,
+                    //Total = 25
                 };
             }
         }
@@ -87,8 +87,8 @@ namespace Front_Hoteleria.Services.Reservas
         // GET /api/Reservas?estado=...&habitacion=...&fechaDesde=...&fechaHasta=...
         // =========================================================
         public async Task<List<ReservaDto>> ListarAsync(
-            string estado = null,
-            string habitacion = null,
+            int? estado = 0,
+            //string habitacion = null,
             DateTime? fechaDesde = null,
             DateTime? fechaHasta = null,
             string bearer = null)
@@ -98,8 +98,8 @@ namespace Front_Hoteleria.Services.Reservas
                 SetBearer(bearer);
 
                 var qs = new List<string>();
-                if (!string.IsNullOrWhiteSpace(estado))
-                    qs.Add("idEstadoReserva=" + 1);                
+                //if (!string.IsNullOrWhiteSpace(estado))
+                    qs.Add("idEstadoReserva=" + estado);                
                 if (fechaDesde.HasValue)
                     qs.Add("fechaDesde=" + fechaDesde.Value.ToString("yyyy-MM-dd"));
                 if (fechaHasta.HasValue)
@@ -138,21 +138,27 @@ namespace Front_Hoteleria.Services.Reservas
         // 3) OBTENER POR ID
         // GET /api/Reservas/{id}
         // =========================================================
-        public async Task<ReservaDto> ObtenerPorIdAsync(string id, string bearer = null)
+        public async Task<ReservaDto> ObtenerPorIdAsync(int idReserva, string bearer = null)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (idReserva == 0)
                 return null;
 
             try
             {
-                SetBearer(bearer);
-                using (var resp = await _http.GetAsync($"/api/Reservas/{Uri.EscapeDataString(id)}"))
+                if (!string.IsNullOrWhiteSpace(bearer))
+                    SetBearer(bearer);
+
+                // 👇 OJO: ahora con ?idReserva= en lugar de /{idReserva}
+                var url = $"/api/Reservas/MuestraReserva?idReserva={idReserva}";
+
+                using (var resp = await _http.GetAsync(url))
                 {
                     if (resp.StatusCode == HttpStatusCode.NotFound ||
                         resp.StatusCode == HttpStatusCode.NoContent)
                         return null;
 
                     resp.EnsureSuccessStatusCode();
+
                     var json = await resp.Content.ReadAsStringAsync();
                     return JsonConvert.DeserializeObject<ReservaDto>(json);
                 }
@@ -160,10 +166,11 @@ namespace Front_Hoteleria.Services.Reservas
             catch (Exception ex)
             {
                 Trace.TraceError("[ReservasService.ObtenerPorIdAsync] " + ex);
-                // buscamos en los demo
-                return DemoReservas().Find(r => r.Id == id);
+                // fallback demo
+                return DemoReservas().Find(r => r.IdReserva == idReserva);
             }
         }
+
 
         // =========================================================
         // 4) CREAR
@@ -177,7 +184,7 @@ namespace Front_Hoteleria.Services.Reservas
                 var json = JsonConvert.SerializeObject(dto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                using (var resp = await _http.PostAsync("/api/Reservas", content))
+                using (var resp = await _http.PostAsync("/api/Reservas/CrearReserva", content))
                 {
                     if (!resp.IsSuccessStatusCode)
                     {
@@ -201,7 +208,7 @@ namespace Front_Hoteleria.Services.Reservas
         // =========================================================
         public async Task<bool> ActualizarAsync(ReservaDto dto, string bearer = null)
         {
-            if (dto == null || string.IsNullOrWhiteSpace(dto.Id))
+            if (dto == null || dto.IdReserva==0)
                 return false;
 
             try
@@ -210,7 +217,7 @@ namespace Front_Hoteleria.Services.Reservas
                 var json = JsonConvert.SerializeObject(dto);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                using (var resp = await _http.PutAsync($"/api/Reservas/{Uri.EscapeDataString(dto.Id)}", content))
+                using (var resp = await _http.PutAsync($"/api/Reservas/{dto.IdReserva}", content))
                 {
                     if (!resp.IsSuccessStatusCode)
                     {
@@ -232,15 +239,15 @@ namespace Front_Hoteleria.Services.Reservas
         // 6) ELIMINAR
         // DELETE /api/Reservas/{id}
         // =========================================================
-        public async Task<bool> EliminarAsync(string id, string bearer = null)
+        public async Task<bool> EliminarAsync(int idReserva, string bearer = null)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (idReserva==0)
                 return false;
 
             try
             {
                 SetBearer(bearer);
-                using (var resp = await _http.DeleteAsync($"/api/Reservas/{Uri.EscapeDataString(id)}"))
+                using (var resp = await _http.DeleteAsync($"/api/Reservas/{idReserva}"))
                 {
                     if (!resp.IsSuccessStatusCode)
                     {
@@ -344,9 +351,9 @@ namespace Front_Hoteleria.Services.Reservas
             return new List<ReservaDto>
             {
                 new ReservaDto{
-                    Id = "RES-001",
-                    FechaEntrada = DateTime.Today.AddDays(1),
-                    FechaSalida = DateTime.Today.AddDays(3),
+                    IdReserva = 1,
+                    FechaDesde = DateTime.Today.AddDays(1),
+                    FechaHasta = DateTime.Today.AddDays(3),
                     HuespedNombre = "Juan Pérez",
                     HuespedEmail = "juan.perez@email.com",
                     HuespedTelefono = "+56912345678",
@@ -356,9 +363,9 @@ namespace Front_Hoteleria.Services.Reservas
                     Observaciones = "Cliente preferencial"
                 },
                 new ReservaDto{
-                    Id = "RES-002",
-                    FechaEntrada = DateTime.Today.AddDays(2),
-                    FechaSalida = DateTime.Today.AddDays(5),
+                    IdReserva = 1,
+                    FechaDesde = DateTime.Today.AddDays(2),
+                    FechaHasta = DateTime.Today.AddDays(5),
                     HuespedNombre = "María González",
                     HuespedEmail = "maria.g@email.com",
                     HuespedTelefono = "+56987654321",
@@ -367,9 +374,9 @@ namespace Front_Hoteleria.Services.Reservas
                     Estado = "confirmada"
                 },
                 new ReservaDto{
-                    Id = "RES-003",
-                    FechaEntrada = DateTime.Today.AddDays(4),
-                    FechaSalida = DateTime.Today.AddDays(6),
+                    IdReserva = 3,
+                    FechaDesde = DateTime.Today.AddDays(4),
+                    FechaHasta = DateTime.Today.AddDays(6),
                     HuespedNombre = "Carlos Rodríguez",
                     HuespedEmail = "carlos.r@email.com",
                     TipoHabitacionNombre = "Individual",

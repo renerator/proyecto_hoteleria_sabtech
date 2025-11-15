@@ -58,13 +58,13 @@
         <div class="panel-body" style="padding:15px 15px 5px 15px;">
             <div class="row">
                 <div class="col-md-6">
-                    <p><strong>ID Reserva:</strong><br /> @Model.Reserva.Id</p>
-                    <p><strong>Huésped:</strong><br /> @Model.Reserva.HuespedNombre</p>
-                    <p><strong>Email:</strong><br /> @Model.Reserva.HuespedEmail</p>
+                    <p><strong>ID Reserva:</strong><br /> @Model.Reserva.IdReserva</p>
+                    <p><strong>Huésped:</strong><br /> @Model.Reserva.NombreHuesped</p>
+                    <p><strong>Email:</strong><br /> @Model.Reserva.CorreoHuespedReserva</p>
                 </div>
                 <div class="col-md-6">
-                    <p><strong>Fecha Check-In:</strong><br /> @Model.Reserva.FechaEntrada.ToString("dd/MM/yyyy")</p>
-                    <p><strong>Fecha Check-Out:</strong><br /> @Model.Reserva.FechaSalida.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Fecha Check-In:</strong><br /> @(Model.Reserva.FechaDesde?.ToString("dd/MM/yyyy") ?? "")</p>
+                    <p><strong>Fecha Check-Out:</strong><br />@(Model.Reserva.FechaHasta?.ToString("dd/MM/yyyy") ?? "")</p>
                     <p><strong>Número de Personas:</strong><br /> @Model.Reserva.CantidadPersonas persona(s)</p>
                 </div>
             </div>

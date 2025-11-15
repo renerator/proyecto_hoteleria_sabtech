@@ -15,5 +15,6 @@ namespace Front_Hoteleria.Services.Trabajadores
         Task<bool> CrearAsync(TrabajadoresDto dto, string bearer = null);
 
         Task<List<TrabajadoresDto>> ListarAsync(int? IdEmpresa = null, string bearer = null);
+        Task<List<TrabajadoresDto>> BuscarTrabajadorAsync(string rut = null, string bearer = null);
     }
 }

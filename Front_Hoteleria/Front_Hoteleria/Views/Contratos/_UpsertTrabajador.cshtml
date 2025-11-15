@@ -1,5 +1,10 @@
 ﻿@model Front_Hoteleria.Dto.Contrato.ContratoTrabajadorUpsertDto
 
+@{
+    var empresas = ViewBag.Empresas as IEnumerable<System.Web.Mvc.SelectListItem>
+                   ?? Enumerable.Empty<System.Web.Mvc.SelectListItem>();
+}
+
 <div class="modal-header" style="background:#f5f8fb;">
     <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
     <h4 class="modal-title">
@@ -8,7 +13,7 @@
 </div>
 
 <div class="modal-body">
-    <form id="frmTrabajadorCon">
+    <form id="frmTrabajadorCon" autocomplete="off">
         <input type="hidden" name="IdTrabajador" value="@(Model?.IdTrabajador ?? 0)" />
         <input type="hidden" name="IdContrato" value="@(Model?.IdContrato ?? 0)" />
 
@@ -33,11 +38,21 @@
             </div>
             <div class="col-md-6">
                 <label>Empresa *</label>
-                <select name="IdEmpresa" class="form-control">
-                    <option value="">Seleccionar empresa...</option>
-                    <option value="1">Constructora ABC Ltda.</option>
-                    <option value="2">Servicios Mineros XYZ S.A.</option>
-                </select>
+                @if (empresas.Any())
+                {
+                    @Html.DropDownList(
+                        "IdEmpresa",
+                        empresas,
+                       
+                        new { @class = "form-control", id = "cmbEmpresas" }
+                    )
+                }
+                else
+                {
+                    <select name="IdEmpresa" id="cmbEmpresas" class="form-control">
+                        <option value="">Sin empresas disponibles</option>
+                    </select>
+                }
             </div>
         </div>
 
@@ -82,37 +97,77 @@
 
 <div class="modal-footer">
     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-    <button type="button" class="btn btn-primary" id="btnGuardarTrabajadorCon">Agregar Trabajador</button>
+    <button type="button" class="btn btn-primary" id="btnGuardarTrabajadorCon">
+        Agregar Trabajador
+    </button>
 </div>
 
 <script>
-    $('#btnGuardarTrabajadorCon').on('click', function () {
+(function() {
+    // Evita bindings duplicados si el parcial se reinyecta
+    $(document).off('click', '#btnGuardarTrabajadorCon');
+    $(document).off('submit', '#frmTrabajadorCon');
 
-        var data = $('#frmTrabajadorCon').serialize();
-
-        $.post('@Url.Action("GuardarTrabajador","Contratos")', data, function (r) {
-            if (r && r.ok) {
-                if (window.PNotify) {
-                    new PNotify({
-                        title: 'Trabajador',
-                        text: 'Trabajador agregado correctamente.',
-                        type: 'success',
-                        styling: 'bootstrap3'
-                    });
-                }
-                $('#modalCon').modal('hide');
-            } else {
-                if (window.PNotify) {
-                    new PNotify({
-                        title: 'Trabajador',
-                        text: r.msg || 'No se pudo guardar.',
-                        type: 'error',
-                        styling: 'bootstrap3'
-                    });
-                } else {
-                    alert(r.msg || 'No se pudo guardar.');
-                }
-            }
-        });
+    // Click -> dispara submit (soporta Enter en inputs también)
+    $(document).on('click', '#btnGuardarTrabajadorCon', function () {
+        $('#frmTrabajadorCon').trigger('submit');
     });
+
+    // Submit AJAX
+    $(document).on('submit', '#frmTrabajadorCon', function (e) {
+        e.preventDefault();
+
+        var $btn  = $('#btnGuardarTrabajadorCon');
+        var $form = $(this);
+
+        // Deshabilitar botón para evitar doble envío
+        $btn.prop('disabled', true).text('Guardando...');
+
+        $.post('@Url.Action("GuardarTrabajador","Contratos")', $form.serialize())
+            .done(function (r) {
+                if (r && r.ok) {
+                    if (window.PNotify) {
+                        new PNotify({
+                            title: 'Trabajador',
+                            text: r.msg || 'Trabajador agregado correctamente.',
+                            type: 'success',
+                            styling: 'bootstrap3'
+                        });
+                    }
+
+                    // Cerrar modal
+                    $('#modalCon').modal('hide');
+
+                    // Refrescar tabla (con el criterio actual si existe) y dashboard
+                    var criterio = ($('#txtBuscarCon').val() || '').toString();
+                    if (typeof cargarTablaCon === 'function') {
+                        cargarTablaCon(criterio);
+                    }
+                    if (typeof cargarDashboardCon === 'function') {
+                        cargarDashboardCon();
+                    }
+
+                    // Fallback por si no existen las funciones
+                    if (typeof cargarTablaCon !== 'function' && typeof cargarDashboardCon !== 'function') {
+                        try { window.location.reload(); } catch(e) {}
+                    }
+                } else {
+                    var msg = (r && (r.msg || r.message)) || 'No se pudo guardar.';
+                    if (window.PNotify) {
+                        new PNotify({ title:'Trabajador', text: msg, type:'error', styling:'bootstrap3' });
+                    } else { alert(msg); }
+                }
+            })
+            .fail(function (xhr) {
+                var msg = 'Error al guardar.';
+                try { msg += '\n' + (xhr.responseText || ''); } catch(e){}
+                if (window.PNotify) {
+                    new PNotify({ title: 'Trabajador', text: msg, type: 'error', styling: 'bootstrap3' });
+                } else { alert(msg); }
+            })
+            .always(function () {
+                $btn.prop('disabled', false).text('Agregar Trabajador');
+            });
+    });
+})();
 </script>

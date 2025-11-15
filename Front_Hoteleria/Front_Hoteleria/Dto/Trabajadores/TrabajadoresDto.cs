@@ -18,6 +18,10 @@ namespace Font_Hoteleria.Dto.Trabajadores
         public string Telefono { get; set; }
         public int NivelAcceso { get; set; }
         public string Observaciones { get; set; }
+        public int? IdUsuarioActualizacion { get; set; }
+
+        public DateTime? FechaActualizacion { get; set; }
+
 
 
 

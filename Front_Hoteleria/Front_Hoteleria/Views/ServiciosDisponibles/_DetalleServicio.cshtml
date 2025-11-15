@@ -1,4 +1,7 @@
-﻿@model Front_Hoteleria.Dto.ServiciosDisponibles.ServicioDto
+﻿@model Front_Hoteleria.Dto.ServiciosDisponibles.ServicioDisponibleDto
+@{
+    Layout = null;
+}
 
 <div class="modal-header" style="background:#244769;color:#fff;border-top-left-radius:4px;border-top-right-radius:4px;">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff;opacity:1;">
@@ -57,19 +60,7 @@
                 </tr>
                 <tr>
                     <th>Personal:</th>
-                    <!--<td>@Model..PersonalAsignado</td>--> @* si no existe en tu dto, puedes dejar vacío *@
-                </tr>
-                <tr>
-                    <th>Creado:</th>
-                    @*<td>@Model..FechaCreacion?.ToString("dd-MM-yyyy")</td>*@
-                </tr>
-                <tr>
-                    <th>Última Modificación:</th>
-                    @*<td>@Model.FechaModificacion?.ToString("dd-MM-yyyy")</td>*@
-                </tr>
-                <tr>
-                    <th>Veces Solicitado:</th>
-                    @*<td>@Model.CantSolicitado</td>*@
+                    <td></td>
                 </tr>
                 <tr>
                     <th>Tiempo Promedio:</th>
@@ -83,37 +74,12 @@
     <div class="well" style="background:#fff;">
         @(string.IsNullOrWhiteSpace(Model.NombreServicio) ? "Sin descripción." : Model.NombreServicio)
     </div>
-
-    <h5><i class="fa fa-list-ul"></i> Protocolo de Atención</h5>
-    <div class="well" style="background:#fff;">
-        @*@(string.IsNullOrWhiteSpace(Model.Protocolo) ? "Sin protocolo definido." : Model.Protocolo)*@
-    </div>
 </div>
 
 <div class="modal-footer">
     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-    <button type="button" class="btn btn-success" id="btnDetalleEditar" data-id="@Model.IdServicio">
-        Editar Servicio
-    </button>
-    <button type="button" class="btn btn-warning" id="btnDetalleConfig" data-id="@Model.IdServicio">
-        Configurar
-    </button>
 </div>
 
 <script>
-    // desde este modal podemos saltar al de edición reutilizando tu endpoint de Modificar
-    $('#btnDetalleEditar').on('click', function () {
-        var id = $(this).data('id');
-        $.get('@Url.Action("Modificar","ServiciosDisponibles")', { id: id }, function (html) {
-            $('#modalUpsert .modal-content').html(html);
-        });
-    });
-
-    // si tienes un modal de config de servicios, puedes abrirlo acá también
-    $('#btnDetalleConfig').on('click', function () {
-        $.get('@Url.Action("ConfigurarServicios","ServiciosDisponibles")', function (html) {
-            $('#modalUpsert .modal-content').html(html);
-        });
-    });
+    // no hagas nada raro aquí, el modal ya está mostrado por la vista principal
 </script>
-

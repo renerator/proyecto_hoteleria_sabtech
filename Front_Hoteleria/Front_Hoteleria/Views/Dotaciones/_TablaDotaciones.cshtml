@@ -3,9 +3,14 @@
 @{
     var lista = Model ?? new List<Front_Hoteleria.Dto.Dotaciones.DotacionDto>();
 
-    // agrupamos por empresa igual que en la maqueta
+    // agrupamos por empresa
     var grupos = lista
-        .GroupBy(x => new { x.IdEmpresa, Empresa = x.Empresa ?? "Sin empresa", Rut = x.RutEmpresa ?? "" })
+        .GroupBy(x => new
+        {
+            x.IdEmpresa,
+            Empresa = x.Empresa ?? "Sin empresa",
+            Rut = x.RutEmpresa ?? ""
+        })
         .OrderBy(g => g.Key.Empresa)
         .ToList();
 }
@@ -58,16 +63,17 @@
         vertical-align: middle;
     }
 
+    /* colores de turno */
     .shift-dia {
-        background: #27ae60;
+        background: #27ae60; /* verde */
     }
 
     .shift-noche {
-        background: #34495e;
+        background: #34495e; /* negro/azul oscuro */
     }
 
     .shift-mant {
-        background: #f0ad4e;
+        background: #f0ad4e; /* naranja */
     }
 
     .dot-actions .btn {
@@ -86,10 +92,29 @@
         foreach (var g in grupos)
         {
             var trabajadores = g.ToList();
-            var turnoDia = trabajadores.Count(x => x.TurnoCodigo == "day" || (x.TurnoNombre ?? "").ToLower().Contains("día"));
-            var turnoNoche = trabajadores.Count(x => x.TurnoCodigo == "night" || (x.TurnoNombre ?? "").ToLower().Contains("noche"));
-            var mant = trabajadores.Count(x => x.TurnoCodigo == "maintenance" || (x.TurnoNombre ?? "").ToLower().Contains("mantenimiento"));
-            var off = trabajadores.Count(x => x.TurnoCodigo == "off" || (x.TurnoNombre ?? "").ToLower().Contains("fuera"));
+
+            // normalizamos turnos para contar
+            var turnoDia = trabajadores.Count(x =>
+            {
+                var tt = (x.Turno ?? "").ToLower();
+                return tt.Contains("día") || tt.Contains("dia") || tt == "day";
+            });
+
+            var turnoNoche = trabajadores.Count(x =>
+            {
+                var tt = (x.Turno ?? "").ToLower();
+                return tt.Contains("noche") || tt.Contains("night");
+            });
+
+            var mant = trabajadores.Count(x =>
+            {
+                var tt = (x.Turno ?? "").ToLower();
+                return tt.Contains("mantenimiento") || tt.Contains("mant");
+            });
+
+            // si en tu dto Estado es bool, esto está bien. Si es int, cambias a x.Estado == 0 o == 1
+            var off = trabajadores.Count(x => x.Estado == false);
+
             <div class="dot-card">
                 <div class="row">
                     <div class="col-md-9">
@@ -108,20 +133,29 @@
                         <div class="row">
                             @foreach (var t in trabajadores)
                             {
-                                // elegimos color del chip
-                                var tn = (t.TurnoNombre ?? "").ToLower();
-                                var chipClass =
-                                    (t.TurnoCodigo == "day" || tn.Contains("día")) ? "shift-dia" :
-                                    (t.TurnoCodigo == "night" || tn.Contains("noche")) ? "shift-noche" :
-                                    (t.TurnoCodigo == "maintenance" || tn.Contains("mantenimiento")) ? "shift-mant" :
-                                    "shift-dia";
+                                var tt = (t.Turno ?? "").Trim().ToLower();
+
+                                // prioridad: mantenimiento → naranja, noche → negro, resto → verde
+                                string chipClass;
+                                if (tt.Contains("mantenimiento") || tt.Contains("mant"))
+                                {
+                                    chipClass = "shift-mant";
+                                }
+                                else if (tt.Contains("noche") || tt.Contains("night"))
+                                {
+                                    chipClass = "shift-noche";
+                                }
+                                else
+                                {
+                                    chipClass = "shift-dia";
+                                }
 
                                 <div class="col-md-3 col-sm-4" style="margin-bottom:10px;">
                                     <div class="dot-worker-name">@t.Nombre @t.Apellido</div>
                                     <small>
                                         @t.Cargo
                                         |
-                                        <span class="shift-pill @chipClass">@t.TurnoNombre</span><br />
+                                        <span class="shift-pill @chipClass">@t.Turno</span><br />
                                         RUT: @t.Rut
                                     </small>
                                 </div>

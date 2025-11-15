@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DemoBackend.Dto.Reserva
 {
@@ -20,7 +21,9 @@ namespace DemoBackend.Dto.Reserva
         public string Apellidos { get; set; }
         public string Observaciones { get; set; }
 
-        public string Huesped { get; set; }
+
+        public string RutHuesped { get; set; }
+        public string NombreHuesped { get; set; }
         public string TipoHabitacion { get; set; }
 
         public int Huespedes { get; set; }
@@ -30,6 +33,9 @@ namespace DemoBackend.Dto.Reserva
         public string TelefonoHuespedReserva { get; set; }
 
         public int IdReservaTipoHabitacion { get; set; }
+        public int? IdUsuarioActualizacion { get; set; }
+       
+        public DateTime? FechaActualizacion { get; set; }
 
 
 

@@ -3,7 +3,7 @@
 @using (Html.BeginForm("Upsert", "Reservas", FormMethod.Post, new { id = "formReserva" }))
 {
     @Html.AntiForgeryToken()
-    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.IdReserva)
 
     <div class="modal-header" style="background:#2a3f54;color:#fff;">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff;">
@@ -11,49 +11,106 @@
         </button>
         <h4 class="modal-title"><i class="fa fa-plus"></i> Nueva Reserva</h4>
     </div>
+
     <div class="modal-body" style="padding-bottom:5px;">
+
+        <!-- PRIMERA FILA: RUT + NOMBRE -->
         <div class="row">
             <div class="col-md-6">
-                <label>Nombre del Huésped <span class="text-danger">*</span></label>
-                @Html.TextBoxFor(m => m.HuespedNombre, new { @class = "form-control", placeholder = "Nombre completo" })
+                <label>RUT del Huésped <span class="text-danger">*</span></label>
+                @Html.TextBoxFor(m => m.RutHuesped, new
+                {
+                    @class = "form-control",
+                    placeholder = "11.111.111-1",
+                    @id = "RutHuesped"
+                })
             </div>
             <div class="col-md-6">
-                <label>Email <span class="text-danger">*</span></label>
-                @Html.TextBoxFor(m => m.HuespedEmail, new { @class = "form-control", placeholder = "correo@ejemplo.com", type = "email" })
+                <label>Nombre del Huésped <span class="text-danger">*</span></label>
+                @Html.TextBoxFor(m => m.NombreHuesped, new
+                {
+                    @class = "form-control",
+                    placeholder = "Nombre y apellido paterno",
+                    @id = "NombreHuesped"
+                })
             </div>
         </div>
+
+        <!-- SEGUNDA FILA: EMAIL + TELÉFONO -->
         <div class="row" style="margin-top:12px;">
             <div class="col-md-6">
-                <label>Teléfono <span class="text-danger">*</span></label>
-                @Html.TextBoxFor(m => m.HuespedTelefono, new { @class = "form-control", placeholder = "+56912345678" })
+                <label>Email <span class="text-danger">*</span></label>
+                @Html.TextBoxFor(m => m.CorreoHuespedReserva, new { @class = "form-control", placeholder = "correo@ejemplo.com", type = "email" })
             </div>
             <div class="col-md-6">
-                <label>Tipo de Habitación <span class="text-danger">*</span></label>
-                @Html.TextBoxFor(m => m.TipoHabitacionNombre, new { @class = "form-control", placeholder = "Suite, Doble, etc." })
-                @* si más adelante llenas un combo, lo cambias por un DropDownList *@
+                <label>Teléfono <span class="text-danger">*</span></label>
+                @Html.TextBoxFor(m => m.TelefonoHuespedReserva, new
+                {
+                    @class = "form-control",
+                    placeholder = "+56912345678",
+                    maxlength = "11",
+                    inputmode = "numeric",
+                    @id = "TelefonoHuespedReserva"
+                })
             </div>
         </div>
+
+        <!-- TERCERA FILA: FECHAS + CANTIDAD -->
         <div class="row" style="margin-top:12px;">
             <div class="col-md-4">
                 <label>Fecha de Entrada <span class="text-danger">*</span></label>
-                @Html.TextBoxFor(m => m.FechaEntrada, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                @Html.TextBoxFor(
+                    m => m.FechaDesde,
+                    "{0:yyyy-MM-dd}",
+                    new { @class = "form-control", type = "date" }
+                )
             </div>
             <div class="col-md-4">
                 <label>Fecha de Salida <span class="text-danger">*</span></label>
-                @Html.TextBoxFor(m => m.FechaSalida, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                @Html.TextBoxFor(
+                    m => m.FechaHasta,
+                    "{0:yyyy-MM-dd}",
+                    new { @class = "form-control", type = "date" }
+                )
             </div>
             <div class="col-md-4">
                 <label>Número de Huéspedes <span class="text-danger">*</span></label>
-                @Html.TextBoxFor(m => m.CantidadPersonas, new { @class = "form-control", type = "number", min = "1", value = "1" })
+                @Html.TextBoxFor(m => m.CantidadPersonas,
+                    new
+                    {
+                        @class = "form-control",
+                        type = "number",
+                        min = "1",
+                        max = "20",
+                        value = "1",
+                        @id = "CantidadPersonas"
+                    })
             </div>
         </div>
+
+        <!-- CUARTA FILA: TIPO HABITACIÓN -->
+        <div class="row" style="margin-top:12px;">
+            <div class="col-md-6">
+                <label>Tipo de Habitación <span class="text-danger">*</span></label>
+                @Html.DropDownListFor(
+                    m => m.IdReservaTipoHabitacion,
+                    (IEnumerable<SelectListItem>)ViewBag.TiposHabitacion,
+                    "-- Seleccione tipo --",
+                    new { @class = "form-control" }
+                )
+            </div>
+        </div>
+
+        <!-- OBSERVACIONES -->
         <div class="row" style="margin-top:12px;">
             <div class="col-md-12">
                 <label>Observaciones</label>
-                @Html.TextAreaFor(m => m.Observaciones, 3, 50, new { @class = "form-control", placeholder = "Notas adicionales..." })
+                @Html.TextAreaFor(m => m.Observaciones, 3, 50,
+                    new { @class = "form-control", placeholder = "Notas adicionales..." })
             </div>
         </div>
     </div>
+
     <div class="modal-footer" style="background:#f7f7f7;">
         <button type="button" class="btn btn-default" data-dismiss="modal">
             <i class="fa fa-times"></i> Cancelar
@@ -63,3 +120,125 @@
         </button>
     </div>
 }
+
+<script>
+    (function ($) {
+        function formatearRut(rut) {
+            if (!rut) return "";
+
+            rut = rut.replace(/[^\dkK]/g, "").toUpperCase();
+            if (rut.length <= 1) return rut;
+
+            var cuerpo = rut.slice(0, -1);
+            var dv = rut.slice(-1);
+
+            var cuerpoRev = cuerpo.split("").reverse().join("");
+            var conPuntos = "";
+            for (var i = 0; i < cuerpoRev.length; i++) {
+                if (i > 0 && i % 3 === 0) {
+                    conPuntos += ".";
+                }
+                conPuntos += cuerpoRev[i];
+            }
+            conPuntos = conPuntos.split("").reverse().join("");
+
+            return conPuntos + "-" + dv;
+        }
+
+        // Formateos en tiempo real
+        document.addEventListener("input", function (e) {
+            var input = e.target;
+            if (!input) return;
+
+            // RUT
+            if (input.id === "RutHuesped") {
+                var valorRut = input.value;
+                var formateado = formatearRut(valorRut);
+                input.value = formateado;
+            }
+
+            // TELÉFONO: solo números y máx 11 dígitos
+            if (input.id === "TelefonoHuespedReserva") {
+                var val = input.value || "";
+                val = val.replace(/\D/g, ""); // solo dígitos
+                if (val.length > 11) {
+                    val = val.substring(0, 11);
+                }
+                input.value = val;
+            }
+
+            // NÚMERO DE HUÉSPEDES: entre 1 y 20
+            if (input.id === "CantidadPersonas") {
+                var v = input.value || "";
+                v = v.replace(/\D/g, ""); // solo dígitos
+
+                if (v === "") {
+                    input.value = "";
+                    return;
+                }
+
+                var n = parseInt(v, 10);
+                if (isNaN(n)) {
+                    input.value = "";
+                    return;
+                }
+
+                if (n < 1) n = 1;
+                if (n > 20) n = 20;
+
+                input.value = n;
+            }
+
+            // NOMBRE HUÉSPED: solo letras (incluye tildes) y espacios
+            if (input.id === "NombreHuesped") {
+                var nombre = input.value || "";
+                nombre = nombre.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, "");
+                input.value = nombre;
+            }
+        });
+
+        // Submit por AJAX: muestra alert si el RUT no existe
+        $(document)
+            .off("submit", "#formReserva")
+            .on("submit", "#formReserva", function (e) {
+                e.preventDefault();
+
+                var $form = $(this);
+
+                $.ajax({
+                    url: $form.attr("action"),
+                    type: $form.attr("method") || "POST",
+                    data: $form.serialize(),
+                    success: function (res, status, xhr) {
+
+                        // Caso JSON (ok / message)
+                        if (typeof res === "object" && res !== null && res.hasOwnProperty("ok")) {
+                            if (res.ok) {
+                                // éxito: cerrar modal y refrescar listado
+                                alert("Reserva guardada correctamente.");
+                                $("#modalReserva").modal("hide"); // ajusta al id de tu modal
+                                // TODO: llama aquí a la función que recarga la grilla
+                                return;
+                            }
+
+                            // ok = false => puede ser RUT no existe u otro mensaje
+                            if (res.message) {
+                                alert(res.message);
+                            } else {
+                                alert("No se pudo procesar la reserva.");
+                            }
+                            return;
+                        }
+
+                        // Caso HTML (PartialView con errores de ModelState)
+                        // Reemplaza el contenido del modal con el HTML devuelto
+                        $("#modalReserva .modal-content").html(res); // ajusta selector si usas otro
+                    },
+                    error: function () {
+                        alert("Ocurrió un error al enviar la reserva.");
+                    }
+                });
+            });
+
+    })(jQuery);
+</script>

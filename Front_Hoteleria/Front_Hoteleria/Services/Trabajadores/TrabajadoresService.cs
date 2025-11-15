@@ -9,8 +9,10 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace Front_Hoteleria.Services.Trabajadores
 {
@@ -119,5 +121,82 @@ namespace Front_Hoteleria.Services.Trabajadores
                 return new List<TrabajadoresDto>();
             }
         }
+
+      
+
+
+
+public async Task<List<TrabajadoresDto>> BuscarTrabajadorAsync(string rut = null, string bearer = null)
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(bearer))
+                SetBearer(bearer);
+
+            var url = "/api/Trabajador/BuscarTrabajadorPorRut";
+
+            // Armamos los querystring según lo que venga
+            var queryParts = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(rut))
+            {
+                // encodeamos el rut por si viene con puntos o guión
+                queryParts.Add("rut=" + WebUtility.UrlEncode(rut.Trim()));
+            }
+
+            if (queryParts.Count > 0)
+            {
+                url += "?" + string.Join("&", queryParts);
+            }
+
+            using (var resp = await _http.GetAsync(url))
+            {
+                if (resp.StatusCode == HttpStatusCode.NoContent)
+                    return new List<TrabajadoresDto>();
+
+                if (!resp.IsSuccessStatusCode)
+                {
+                    var err = await resp.Content.ReadAsStringAsync();
+                    Trace.TraceWarning($"[TrabajadoresService.BuscarTrabajadorAsync] {(int)resp.StatusCode} -> {err}");
+                    return new List<TrabajadoresDto>();
+                }
+
+                var json = await resp.Content.ReadAsStringAsync();
+                if (string.IsNullOrWhiteSpace(json))
+                    return new List<TrabajadoresDto>();
+
+                var trimmed = json.TrimStart();
+
+                // 🔹 Si es un ARRAY: [ { ... }, { ... } ]
+                if (trimmed.StartsWith("["))
+                {
+                    return JsonConvert.DeserializeObject<List<TrabajadoresDto>>(json)
+                           ?? new List<TrabajadoresDto>();
+                }
+
+                // 🔹 Si es un OBJETO: { "idUsuario": ... }
+                if (trimmed.StartsWith("{"))
+                {
+                    var uno = JsonConvert.DeserializeObject<TrabajadoresDto>(json);
+                    return uno != null
+                        ? new List<TrabajadoresDto> { uno }
+                        : new List<TrabajadoresDto>();
+                }
+
+                // Forma rara/no esperada
+                return new List<TrabajadoresDto>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("[TrabajadoresService.BuscarTrabajadorAsync] " + ex);
+            return new List<TrabajadoresDto>();
+        }
     }
+
+
+
+
+
+}
 }

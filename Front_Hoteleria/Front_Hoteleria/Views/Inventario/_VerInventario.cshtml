@@ -69,7 +69,7 @@
             <table class="inv-view-table">
                 <tr>
                     <th style="width:140px;">ID:</th>
-                    <td>@Model.Id</td>
+                    <td>@Model.IdArticulo</td>
                 </tr>
                 <tr>
                     <th>Nombre:</th>
@@ -90,7 +90,7 @@
                 <tr>
                     <th>Valor:</th>
                     <td>
-                        @(Model.Valor.HasValue ? Model.Valor.Value.ToString("C0") : "")
+                        @(Model.Valor)
                     </td>
                 </tr>
             </table>
@@ -140,11 +140,11 @@
 
     <!-- Descripción -->
     <div class="inv-view-title">
-        <i class="fa fa-file-text-o"></i> Descripción
+        <i class="fa fa-file-text-o"></i> Observaciones
     </div>
     <div class="inv-view-desc">
-        @(!string.IsNullOrWhiteSpace(Model.Descripcion)
-            ? Model.Descripcion
+        @(!string.IsNullOrWhiteSpace(Model.Observaciones)
+            ? Model.Observaciones
             : "Sin descripción registrada.")
     </div>
 
@@ -192,6 +192,6 @@
 
 <div class="modal-footer inv-view-footer">
     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-    <button type="button" class="btn btn-success" onclick="abrirModalInventario('@Model.Id')">Editar Artículo</button>
-    <button type="button" class="btn btn-warning" onclick="abrirMovimiento('@Model.Id')">Agregar Movimiento</button>
+    <button type="button" class="btn btn-success" onclick="abrirModalInventario('@Model.IdArticulo')">Editar Artículo</button>
+    <button type="button" class="btn btn-warning" onclick="abrirMovimiento('@Model.IdArticulo')">Agregar Movimiento</button>
 </div>

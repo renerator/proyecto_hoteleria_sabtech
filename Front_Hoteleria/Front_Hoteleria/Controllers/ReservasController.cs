@@ -1,6 +1,9 @@
+using Front_Hoteleria.Dto.Inventario;
 using Front_Hoteleria.Dto.Reserva;
-
+using Front_Hoteleria.Dto;
+using Front_Hoteleria.Services.Trabajadores;
 using Front_Hoteleria.Services.Reservas;
+using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,18 +11,22 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Font_Hoteleria.Dto.Trabajadores;
 
 namespace Front_Hoteleria.Controllers
 {
     public class ReservasController : Controller
     {
         private readonly IReservaService _api;
+        private readonly ITrabajadoresService _apitraservice;
 
-        public ReservasController() : this(new ReservaService()) { }
+        public ReservasController() : this(new ReservaService(), new TrabajadoresService()  ) { }
 
-        public ReservasController(IReservaService api)
+        public ReservasController(IReservaService api, ITrabajadoresService apitraservice)
         {
             _api = api;
+            _apitraservice= apitraservice;
+
         }
 
         // =========================================================
@@ -64,13 +71,13 @@ namespace Front_Hoteleria.Controllers
             // fallback demo
             if (dto == null)
             {
-                dto = new ReservaKPIDto
-                {
-                    Pendientes = 5,
-                    Confirmadas = 18,
-                    Rechazadas = 2,
-                    Total = 25
-                };
+                //dto = new ReservaKPIDto
+                //{
+                //    Pendientes = 5,
+                //    Confirmadas = 18,
+                //    Rechazadas = 2,
+                //    Total = 25
+                //};
             }
 
             return PartialView("~/Views/Reservas/_DashboardReserva.cshtml", dto);
@@ -82,6 +89,7 @@ namespace Front_Hoteleria.Controllers
         // =========================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
+      
         public async Task<ActionResult> TablaPartial()
         {
             DateTime? fechaDesde = null;
@@ -89,9 +97,10 @@ namespace Front_Hoteleria.Controllers
 
             var strDesde = Request["fechaDesde"];
             var strHasta = Request["fechaHasta"];
-            var estado = Request["estado"];
-            var habitacion = Request["habitacion"];
+            var strEstado = Request["estado"];   // viene "1","2","3","4","5"
+            
 
+            
             if (!string.IsNullOrWhiteSpace(strDesde) &&
                 DateTime.TryParse(strDesde, out var d1))
                 fechaDesde = d1;
@@ -100,84 +109,26 @@ namespace Front_Hoteleria.Controllers
                 DateTime.TryParse(strHasta, out var d2))
                 fechaHasta = d2;
 
+            int? idEstadoReserva = 0;
+            if (strEstado == "5") { idEstadoReserva = 0; }
+            if (int.TryParse(strEstado, out var idTmp))
+            {
+                // 1..4 = filtrar por ese estado
+                // 5    = "Todos" -> no se filtra (queda null)
+                if (idTmp >= 1 && idTmp <= 4)
+                    idEstadoReserva = idTmp;
+            }
+
             try
             {
                 var token = GetBearer();
                 var lista = await _api.ListarAsync(
-                    estado: estado,
-                    habitacion: habitacion,
+                    estado: idEstadoReserva,   // <-- cambia el tipo del parámetro en el service a int?
+                    //habitacion: habitacion,
                     fechaDesde: fechaDesde,
                     fechaHasta: fechaHasta,
                     bearer: token
                 );
-
-                // 👇 si la API no devuelve nada, metemos dummy
-                if (lista == null || !lista.Any())
-                {
-                    lista = new List<ReservaDto>
-            {
-                new ReservaDto{
-                    Codigo = "RES-006",
-                    Id = "RES-006",
-                    FechaEntrada = DateTime.Today.AddDays(-3),
-                    FechaSalida  = DateTime.Today.AddDays(-2),
-                    HuespedNombre = "Sofía Torres",
-                    TipoHabitacionNombre = "Doble",
-                    CantidadPersonas = 2,
-                    Estado = "pendiente"
-                },
-                new ReservaDto{
-                    Codigo = "RES-001",
-                    Id = "RES-001",
-                    FechaEntrada = DateTime.Today.AddDays(-2),
-                    FechaSalida  = DateTime.Today.AddDays(1),
-                    HuespedNombre = "Juan Pérez",
-                    TipoHabitacionNombre = "Suite",
-                    CantidadPersonas = 2,
-                    Estado = "pendiente"
-                },
-                new ReservaDto{
-                    Codigo = "RES-002",
-                    Id = "RES-002",
-                    FechaEntrada = DateTime.Today.AddDays(-1),
-                    FechaSalida  = DateTime.Today.AddDays(3),
-                    HuespedNombre = "María González",
-                    TipoHabitacionNombre = "Doble",
-                    CantidadPersonas = 2,
-                    Estado = "pendiente"
-                },
-                new ReservaDto{
-                    Codigo = "RES-003",
-                    Id = "RES-003",
-                    FechaEntrada = DateTime.Today,
-                    FechaSalida  = DateTime.Today.AddDays(2),
-                    HuespedNombre = "Carlos Rodríguez",
-                    TipoHabitacionNombre = "Individual",
-                    CantidadPersonas = 1,
-                    Estado = "pendiente"
-                },
-                new ReservaDto{
-                    Codigo = "RES-004",
-                    Id = "RES-004",
-                    FechaEntrada = DateTime.Today.AddDays(1),
-                    FechaSalida  = DateTime.Today.AddDays(5),
-                    HuespedNombre = "Ana Martínez",
-                    TipoHabitacionNombre = "Familiar",
-                    CantidadPersonas = 4,
-                    Estado = "pendiente"
-                },
-                new ReservaDto{
-                    Codigo = "RES-005",
-                    Id = "RES-005",
-                    FechaEntrada = DateTime.Today.AddDays(2),
-                    FechaSalida  = DateTime.Today.AddDays(4),
-                    HuespedNombre = "Luis Fernández",
-                    TipoHabitacionNombre = "Suite",
-                    CantidadPersonas = 2,
-                    Estado = "pendiente"
-                }
-            };
-                }
 
                 return PartialView("~/Views/Reservas/_TablaReserva.cshtml", lista);
             }
@@ -187,19 +138,44 @@ namespace Front_Hoteleria.Controllers
                 return new HttpStatusCodeResult(500, "No se pudo cargar el listado de reservas");
             }
         }
+        [HttpPost]
+        public async Task<ActionResult> Guardar(ReservaDto dto)
+        {
+            if (dto == null)
+                return Json(new { ok = false, msg = "Datos vacíos" });
+
+            var token = GetBearer();
+
+            try
+            {
+                bool ok;
+                if (dto.IdReserva > 0)
+                    ok = await _api.ActualizarAsync(dto, token);
+                else
+                    ok = await _api.CrearAsync(dto, token);
+
+                if (!ok)
+                    return Json(new { ok = false, msg = "No se pudo guardar en la API" });
+
+                return Json(new { ok = true });
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[InventarioController.Guardar] " + ex);
+                return Json(new { ok = false, msg = "Error inesperado al guardar" });
+            }
+        }
         // GET: /Reservas/Rechazar?id=RES-006
         [HttpGet]
-        public ActionResult Rechazar(string id)
+        public async Task<ActionResult> Rechazar(int idReserva)
         {
+            var token = GetBearer();
             // si no tengo la reserva real, armo una de demo como en tus capturas
-            var dto = new ReservaDto
-            {
-                Id = string.IsNullOrWhiteSpace(id) ? "RES-006" : id,
-                HuespedNombre = "Sofía Torres",
-                HuespedEmail = "sofia.t@email.com"
-            };
+            
+            var reservaDto = new ReservaDto();
 
-            return PartialView("~/Views/Reservas/_RechazarReserva.cshtml", dto);
+            reservaDto = await _api.ObtenerPorIdAsync(idReserva, token);
+            return PartialView("~/Views/Reservas/_RechazarReserva.cshtml", reservaDto);
         }
 
         // POST: /Reservas/Rechazar
@@ -207,6 +183,7 @@ namespace Front_Hoteleria.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Rechazar(ReservaRechazoDto dto)
         {
+
             if (dto == null || string.IsNullOrWhiteSpace(dto.IdReserva))
                 return Json(new { ok = false, msg = "Id de reserva requerido." });
 
@@ -221,31 +198,44 @@ namespace Front_Hoteleria.Controllers
         // GET: /Reservas/Upsert
         // abre el modal de crear/editar
         // =========================================================
+       
         [HttpGet]
-        public async Task<ActionResult> Upsert(string id = null)
+  
+        public async Task<ActionResult> Upsert(int idReserva = 0)
         {
+            var token = GetBearer();
             ReservaDto dto = null;
 
-            if (!string.IsNullOrWhiteSpace(id))
+            if (idReserva > 0)
             {
-                var token = GetBearer();
-                dto = await _api.ObtenerPorIdAsync(id, token);
+                dto = await _api.ObtenerPorIdAsync(idReserva, token);
             }
 
-            // si es nuevo o la API no devolvió nada, armamos dto vacío
+            // nuevo o no encontrado => dto vacío
             if (dto == null)
-            {
-                dto = new ReservaDto
+                dto = new ReservaDto();
+
+            // ================== TIPOS DE HABITACIÓN ==================
+            var tipos = await _api.TiposHabitacionAsync(token) ?? new List<ComboItemDto>();
+
+            ViewBag.TiposHabitacion = tipos
+                .Select(t =>
                 {
-                    FechaEntrada = DateTime.Today.AddDays(1),
-                    FechaSalida = DateTime.Today.AddDays(2),
-                    CantidadPersonas = 1,
-                    Estado = "pendiente"
-                };
-            }
+                    int idTipo;
+                    int.TryParse(t.Id, out idTipo);   // t.Id es string
+
+                    return new SelectListItem
+                    {
+                        Value = t.Id,                 // se envía como string al select
+                        Text = t.Text,
+                        Selected = (dto.IdReservaTipoHabitacion == idTipo)
+                    };
+                })
+                .ToList();
 
             return PartialView("~/Views/Reservas/_UpsertReserva.cshtml", dto);
         }
+
 
         // =========================================================
         // POST: /Reservas/Upsert
@@ -260,16 +250,44 @@ namespace Front_Hoteleria.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // devolvemos la misma parcial con los mensajes
+                // Recargar combos
+                var tiposInvalid = await _api.TiposHabitacionAsync(GetBearer()) ?? new List<ComboItemDto>();
+                ViewBag.TiposHabitacion = tiposInvalid
+                    .Select(t => new SelectListItem
+                    {
+                        Value = t.Id,
+                        Text = t.Text
+                    }).ToList();
+
                 return PartialView("~/Views/Reservas/_UpsertReserva.cshtml", dto);
             }
 
             var token = GetBearer();
 
+            dto.IdHabitacion = 2;
+            dto.FechaCheckIN = dto.FechaDesde;
+            dto.FechaCheckOut = dto.FechaHasta;
+            dto.IdEstadoReserva = 1;
+
+            // Buscar trabajador por RUT
+            var rut = dto.RutHuesped.Replace(".","");
+            var listaTrabajadores = await _apitraservice.BuscarTrabajadorAsync(rut, token);
+            var dtotrabajadores = listaTrabajadores.FirstOrDefault();
+
+            // 🚨 RUT no existe: devolvemos JSON para que el front haga alert
+            if (dtotrabajadores == null)
+            {
+                return Json(new
+                {
+                    ok = false,
+                    message = "El RUT ingresado no existe como trabajador en el sistema."
+                });
+            }
+
             try
             {
                 bool ok;
-                if (string.IsNullOrWhiteSpace(dto.Id))
+                if (dto.IdReserva == 0)
                     ok = await _api.CrearAsync(dto, token);
                 else
                     ok = await _api.ActualizarAsync(dto, token);
@@ -277,32 +295,50 @@ namespace Front_Hoteleria.Controllers
                 if (ok)
                     return Json(new { ok = true });
 
-                // si la API respondió 400/500, mostramos de nuevo el form
                 ModelState.AddModelError("", "No se pudo guardar la reserva en la API.");
+
+                var tipos = await _api.TiposHabitacionAsync(token) ?? new List<ComboItemDto>();
+                ViewBag.TiposHabitacion = tipos
+                    .Select(t => new SelectListItem
+                    {
+                        Value = t.Id,
+                        Text = t.Text
+                    }).ToList();
+
                 return PartialView("~/Views/Reservas/_UpsertReserva.cshtml", dto);
             }
             catch (Exception ex)
             {
                 Trace.TraceError("[ReservasController.Upsert POST] " + ex);
                 ModelState.AddModelError("", "Error inesperado al guardar la reserva.");
+
+                var tipos = await _api.TiposHabitacionAsync(token) ?? new List<ComboItemDto>();
+                ViewBag.TiposHabitacion = tipos
+                    .Select(t => new SelectListItem
+                    {
+                        Value = t.Id,
+                        Text = t.Text
+                    }).ToList();
+
                 return PartialView("~/Views/Reservas/_UpsertReserva.cshtml", dto);
             }
         }
+
 
         // =========================================================
         // POST: /Reservas/Eliminar
         // =========================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Eliminar(string id)
+        public async Task<ActionResult> Eliminar(int idReserva)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (idReserva==0)
                 return Json(new { ok = false, msg = "Id requerido" });
 
             var token = GetBearer();
             try
             {
-                var ok = await _api.EliminarAsync(id, token);
+                var ok = await _api.EliminarAsync(idReserva, token);
                 if (!ok)
                     return Json(new { ok = false, msg = "No se pudo eliminar en la API." });
 
@@ -357,16 +393,16 @@ namespace Front_Hoteleria.Controllers
             return Json(new { ok = true, data = resp }, JsonRequestBehavior.AllowGet);
         }
         [HttpGet]
-        public ActionResult Asignar(string id)
+        public ActionResult Asignar(int idReserva)
         {
             // 1) demo de la reserva (si no vino id, armamos una)
             var reserva = new ReservaDto
             {
-                Id = string.IsNullOrWhiteSpace(id) ? "RES-006" : id,
+                IdReserva =  idReserva,
                 HuespedNombre = "Sofía Torres",
                 HuespedEmail = "sofia.t@email.com",
-                FechaEntrada = new System.DateTime(2025, 11, 4),
-                FechaSalida = new System.DateTime(2025, 11, 5),
+                FechaDesde = new System.DateTime(2025, 11, 4),
+                FechaHasta = new System.DateTime(2025, 11, 5),
                 CantidadPersonas = 2,
                 TipoHabitacionNombre = "Doble"
             };

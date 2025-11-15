@@ -179,7 +179,7 @@
                             }
 
                             <tr>
-                                <td>@item.Id</td>
+                                <td>@item.IdArticulo</td>
                                 <td>@item.Nombre</td>
                                 <td><span class="inv-cat-pill @catClass">@catText</span></td>
                                 <td>@item.Habitacion</td>
@@ -188,32 +188,32 @@
                                         <i class="@estIcon"></i> @estText
                                     </span>
                                 </td>
-                                <td>@(item.Valor.HasValue ? "$" + item.Valor.Value.ToString("N0") : "")</td>
+                                <td>@(item.Valor)</td>
                                 <td>@ultimo</td>
                                 <td>
                                     <div class="inv-actions">
                                         <button type="button"
                                                 class="inv-action-btn inv-action-view"
                                                 title="Ver"
-                                                onclick="verInventario('@item.Id')">
+                                                onclick="verInventario('@item.IdArticulo')">
                                             <i class="fa fa-eye"></i>
                                         </button>
                                         <button type="button"
                                                 class="inv-action-btn inv-action-edit"
                                                 title="Editar"
-                                                onclick="abrirModalInventario('@item.Id')">
+                                                onclick="abrirModalInventario('@item.IdArticulo')">
                                             <i class="fa fa-edit"></i>
                                         </button>
                                         <button type="button"
                                                 class="inv-action-btn inv-action-move"
                                                 title="Registrar movimiento"
-                                                onclick="abrirMovimiento('@item.Id')">
+                                                onclick="abrirMovimiento('@item.IdArticulo')">
                                             <i class="fa fa-exchange"></i>
                                         </button>
                                         <button type="button"
                                                 class="inv-action-btn inv-action-delete"
                                                 title="Eliminar"
-                                                onclick="eliminarInventario('@item.Id')">
+                                                onclick="eliminarInventario('@item.IdArticulo')">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </div>

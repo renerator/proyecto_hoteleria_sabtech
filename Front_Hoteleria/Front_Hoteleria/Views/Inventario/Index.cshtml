@@ -4,121 +4,16 @@
 }
 
 <style>
-    /* fondo general del contenido */
     .right_col {
         background: #f4f6f9;
         min-height: calc(100vh - 70px);
     }
 
-    /* título */
     .page-title .title_left h3 {
         font-size: 28px;
         font-weight: 500;
         color: #365d82;
         margin-top: 5px;
-    }
-
-    /* ====== DASHBOARD (lo que devuelve _DashboardInventario) ====== */
-    #contenedor-dashboard .inventory-stats {
-        background: #2c6da5 !important;
-        border-radius: 8px;
-        padding: 18px 10px 14px 10px;
-        color: #fff;
-        margin-bottom: 18px;
-        box-shadow: 0 1px 2px rgba(0,0,0,.08);
-    }
-
-        #contenedor-dashboard .inventory-stats .stat-number {
-            font-size: 30px;
-            font-weight: 600;
-            display: block;
-            line-height: 1;
-            margin-bottom: 4px;
-        }
-
-        #contenedor-dashboard .inventory-stats .stat-label {
-            font-size: 13px;
-            opacity: .9;
-        }
-
-        #contenedor-dashboard .inventory-stats .col-md-3:not(:last-child) {
-            border-right: 1px solid rgba(255,255,255,.25);
-        }
-
-    /* ====== PANEL DE LA TABLA ====== */
-    #contenedor-tabla .x_panel {
-        background: #fff;
-        border: 1px solid #e1e8f0;
-        border-radius: 8px;
-        box-shadow: 0 1px 2px rgba(15,23,42,.04);
-    }
-
-    #contenedor-tabla .x_title {
-        border-bottom: 1px solid #edf1f5;
-        padding: 16px 20px 10px 20px;
-        margin-bottom: 0;
-    }
-
-        #contenedor-tabla .x_title h2 {
-            font-size: 18px;
-            font-weight: 500;
-            color: #365d82;
-        }
-
-    #contenedor-tabla .x_content {
-        padding: 15px 20px 20px 20px !important;
-    }
-
-    /* ====== TABLA ====== */
-    #tblInventario {
-        background: #fff;
-    }
-
-        #tblInventario thead th {
-            background: #f4f6f9 !important;
-            border-bottom: none !important;
-            color: #53657a;
-            font-weight: 500;
-            vertical-align: middle;
-        }
-
-        #tblInventario tbody td {
-            vertical-align: middle;
-        }
-
-        /* botones de opciones */
-        #tblInventario .btn-xs {
-            width: 32px;
-            height: 28px;
-            padding: 3px 0;
-            text-align: center;
-            border: none;
-            color: #fff;
-        }
-
-        #tblInventario .btn-info {
-            background: #22a6b3;
-        }
-
-        #tblInventario .btn-success {
-            background: #27ae60;
-        }
-
-        #tblInventario .btn-danger {
-            background: #e74c3c;
-        }
-
-    /* ====== DATATABLES footer (paginación) ====== */
-    #contenedor-tabla .dataTables_wrapper .dataTables_paginate .paginate_button {
-        border-radius: 4px !important;
-        border: 1px solid #d7dfe7 !important;
-        margin-left: 3px !important;
-    }
-
-    /* input buscar datatable */
-    #contenedor-tabla .dataTables_filter input {
-        border: 1px solid #d7dfe7;
-        border-radius: 4px;
     }
 </style>
 
@@ -142,51 +37,39 @@
 
         <div class="clearfix"></div>
 
-        <!-- aquí se carga el dashboard (KPIs + acciones + filtros) -->
+        <!-- dashboard -->
         <div id="contenedor-dashboard"></div>
 
-        <!-- aquí se carga la tabla -->
+        <!-- tabla -->
         <div id="contenedor-tabla" style="margin-top:20px;"></div>
     </div>
 </div>
 
 @section scripts {
     <script>
-        // ========================
-        // FUNCIONES GLOBALES
-        // ========================
-
-        // nuevo / editar
+        // =========== helpers de apertura ===========
         window.abrirModalInventario = function (id) {
+            id = id || 0;
             $.get('@Url.Action("Upsert","Inventario")', { id: id }, function (html) {
                 $('#modalInventarioContent').html(html);
                 $('#modalInventario').modal('show');
-            }).fail(function () {
-                alert('No se pudo abrir el formulario de inventario.');
             });
         };
 
-        // ver detalle
         window.verInventario = function (id) {
-            $.get('@Url.Action("Ver","Inventario")', { id: id }, function (html) {
+            $.get('@Url.Action("Upsert","Inventario")', { id: id, soloLectura: true }, function (html) {
                 $('#modalInventarioContent').html(html);
                 $('#modalInventario').modal('show');
-            }).fail(function () {
-                alert('No se pudo cargar el detalle.');
             });
         };
 
-        // registrar movimiento
         window.abrirMovimiento = function (idArticulo) {
             $.get('@Url.Action("RegistrarMovimiento","Inventario")', { id: idArticulo }, function (html) {
                 $('#modalInventarioContent').html(html);
                 $('#modalInventario').modal('show');
-            }).fail(function () {
-                alert('No se pudo abrir el movimiento.');
             });
         };
 
-        // importar masivo
         window.abrirImportacion = function () {
             $.get('@Url.Action("Importar","Inventario")', function (html) {
                 $('#modalInventarioContent').html(html);
@@ -194,9 +77,7 @@
             });
         };
 
-        // ========================
-        // INICIAL
-        // ========================
+        // =========== inicio ===========
         $(function () {
             cargarDashboard();
             cargarTabla();
@@ -207,33 +88,54 @@
                 cargarTabla({ criterio: criterio });
             });
 
-            // botones que vienen en el dashboard (Agregar Artículo)
+            // botón "Agregar Artículo" (viene en el dashboard o en la tabla)
             $(document).on('click', '#btnAbrirModalInventario, #inv-btn-add', function () {
-                abrirModalInventario(null);
+                abrirModalInventario(0);
             });
 
-            // importar masivo (botón azul claro)
-            $(document).on('click', '#inv-btn-import', function () {
-                abrirImportacion();
+            // botones de la TABLA (ya sin onclick, solo data-id)
+            $(document).on('click', '.inv-action-view', function () {
+                var id = $(this).data('id');
+                if (!id) return;
+                verInventario(id);
             });
 
-            // registrar movimiento (botón naranjo)
-            $(document).on('click', '#inv-btn-move', function () {
-                abrirMovimiento(null);
-            });
-
-            // por si la tabla trae un botón con class inv-action-edit y data-id
             $(document).on('click', '.inv-action-edit', function () {
                 var id = $(this).data('id');
+                if (!id) return;
                 abrirModalInventario(id);
+            });
+
+            $(document).on('click', '.inv-action-move', function () {
+                var id = $(this).data('id');
+                abrirMovimiento(id);
+            });
+
+            $(document).on('click', '.inv-action-delete', function () {
+                var id = $(this).data('id');
+                if (!id) return;
+                if (!confirm('¿Eliminar este artículo?')) return;
+
+                $.post('@Url.Action("Eliminar","Inventario")', { id: id }, function (r) {
+                    if (r && r.ok) {
+                        cargarTabla();
+                        cargarDashboard();
+                    } else {
+                        alert(r.msg || 'No se pudo eliminar.');
+                    }
+                });
+            });
+
+            // refrescar
+            $(document).on('click', '#inv-btn-refresh', function () {
+                cargarDashboard();
+                cargarTabla();
             });
         });
 
         function cargarDashboard() {
             $.get('@Url.Action("Resumen", "Inventario")', function (html) {
                 $('#contenedor-dashboard').html(html);
-            }).fail(function () {
-                $('#contenedor-dashboard').html('<div class="alert alert-danger">No se pudo cargar el dashboard.</div>');
             });
         }
 
@@ -241,18 +143,14 @@
             filtros = filtros || {};
             $.get('@Url.Action("Tabla", "Inventario")', filtros, function (html) {
                 $('#contenedor-tabla').html(html);
-            }).fail(function () {
-                $('#contenedor-tabla').html('<div class="alert alert-danger">No se pudo cargar el inventario.</div>');
             });
         }
     </script>
 
-    <!-- modal global del inventario -->
+    <!-- modal global -->
     <div class="modal fade" id="modalInventario" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content" id="modalInventarioContent">
-                <!-- aquí se cargan los partials -->
-            </div>
+            <div class="modal-content" id="modalInventarioContent"></div>
         </div>
     </div>
 }

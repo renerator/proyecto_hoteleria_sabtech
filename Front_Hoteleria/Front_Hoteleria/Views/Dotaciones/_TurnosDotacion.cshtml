@@ -1,0 +1,93 @@
+﻿@{
+    Layout = null;
+}
+
+<style>
+    .turno-pill {
+        display: inline-block;
+        padding: 5px 16px;
+        border-radius: 999px;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .turno-dia {
+        background: #27ae60;
+    }
+
+    .turno-noche {
+        background: #2c3e50;
+    }
+
+    .turno-mant {
+        background: #f0ad4e;
+    }
+
+    .tbl-turnos th {
+        background: #f5f7fa;
+        border-bottom: none;
+    }
+</style>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Gestión de Turnos</h4>
+</div>
+
+<div class="modal-body">
+    <p><strong>Horarios de Turnos:</strong></p>
+
+    <table class="table table-bordered tbl-turnos">
+        <thead>
+            <tr>
+                <th>Turno</th>
+                <th>Horario</th>
+                <th>Duración</th>
+                <th>Trabajadores Asignados</th>
+                <th style="width:90px;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="turno-pill turno-dia">Día</span></td>
+                <td>06:00 - 18:00</td>
+                <td>12 horas</td>
+                <td>1</td>
+                <td>
+                    <button type="button" class="btn btn-info btn-sm">
+                        <i class="fa fa-eye"></i> Ver
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td><span class="turno-pill turno-noche">Noche</span></td>
+                <td>18:00 - 06:00</td>
+                <td>12 horas</td>
+                <td>1</td>
+                <td>
+                    <button type="button" class="btn btn-info btn-sm">
+                        <i class="fa fa-eye"></i> Ver
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td><span class="turno-pill turno-mant">Mantenimiento</span></td>
+                <td>Flexible</td>
+                <td>Variable</td>
+                <td>1</td>
+                <td>
+                    <button type="button" class="btn btn-info btn-sm">
+                        <i class="fa fa-eye"></i> Ver
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+    <button type="button" class="btn btn-primary">
+        <i class="fa fa-file-excel-o"></i> Exportar Reporte de Turnos
+    </button>
+</div>

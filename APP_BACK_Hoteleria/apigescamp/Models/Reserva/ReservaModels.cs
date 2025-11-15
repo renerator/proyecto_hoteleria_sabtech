@@ -40,8 +40,11 @@ namespace DemoBackend.Models.Reserva
         [Column("Totales")]
         public int? Totales { get; set; }
 
-        [Column("Huesped")]
-        public string Huesped { get; set; }
+        [Column("RutHuesped")]
+        public string RutHuesped { get; set; }
+
+        [Column("NombreHuesped")]
+        public string NombreHuesped { get; set; }
 
         [Column("TipoHabitacion")]
         public string TipoHabitacion { get; set; }
@@ -53,6 +56,14 @@ namespace DemoBackend.Models.Reserva
 
         [Column("IdReservaTipoHabitacion")]
         public int? IdReservaTipoHabitacion { get; set; }
+        [Column("IdUsuarioActualizacion")]
+        public int? IdUsuarioActualizacion { get; set; }
+        [Column("FechaActualizacion")]
+        public DateTime? FechaActualizacion { get; set; }
+
+        [Column("CorreoHuespedReserva")]
+        public string CorreoHuespedReserva { get; set; }
+
     }
 }
 

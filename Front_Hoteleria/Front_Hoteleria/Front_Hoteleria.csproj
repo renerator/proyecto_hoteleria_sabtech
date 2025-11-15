@@ -157,6 +157,8 @@
     <Compile Include="Dto\Checkin\CheckinKpiDto.cs" />
     <Compile Include="Dto\Checkin\CheckinExtensionDto.cs" />
     <Compile Include="Dto\Checkin\ReservaCheckinDto.cs" />
+    <Compile Include="Dto\Empresa\EmpresaCrearPostDto.cs" />
+    <Compile Include="Dto\Empresa\EmpresaDto.cs" />
     <Compile Include="Dto\Contrato\ContratoTrabajadorUpsertDto.cs" />
     <Compile Include="Dto\Contrato\EmpresaContratoDto.cs" />
     <Compile Include="Dto\Contrato\ContratoDto.cs" />
@@ -203,6 +205,7 @@
     <Compile Include="Dto\Servicio\ServicioDashboardDto.cs" />
     <Compile Include="Dto\Servicio\ServicioKpiDto.cs" />
     <Compile Include="Dto\Servicio\ServicioDto.cs" />
+    <Compile Include="Dto\Trabajadores\TrabajadoresDto.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -212,10 +215,14 @@
     <Compile Include="Dto\TipoHabitacion\TipoHabitacionDto.cs" />
     <Compile Include="Services\ChekcinService\CheckinService.cs" />
     <Compile Include="Services\ChekcinService\ICheckinService.cs" />
+    <Compile Include="Services\Empresa\EmpresaService.cs" />
+    <Compile Include="Services\Empresa\IEmpresaService.cs" />
     <Compile Include="Services\Reportes\IReportesService.cs" />
     <Compile Include="Services\Reportes\ReportesService.cs" />
     <Compile Include="Services\reservas\IReservaService.cs" />
     <Compile Include="Services\reservas\ReservaService.cs" />
+    <Compile Include="Services\Trabajadores\ITrabajadoresService.cs" />
+    <Compile Include="Services\Trabajadores\TrabajadoresService.cs" />
     <Compile Include="Services\ServiciosPersonal\IServiciosPersonalService.cs" />
     <Compile Include="Services\ServiciosPersonal\ServiciosPersonalService.cs" />
     <Compile Include="Services\ServiciosHuesped\IServiciosHuespedService.cs" />
@@ -4736,6 +4743,8 @@
     <Content Include="Views\Reservas\_RechazarReserva.cshtml" />
     <Content Include="Views\Huesped\Reclamos\Index.cshtml" />
     <Content Include="Views\Huesped\Reclamos\_TablaReclamos.cshtml" />
+    <Content Include="Views\Dotaciones\_CargaMasivaDotacion.cshtml" />
+    <Content Include="Views\Dotaciones\_TurnosDotacion.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\vendors\devbridge-autocomplete\src\jquery.autocomplete.d.ts" />

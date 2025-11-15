@@ -54,11 +54,47 @@
                 cargarTabla(c, null);
             });
 
-            // desde dashboard: nuevo campamento
+          // desde dashboard: nuevo campamento
             $(document).on('click', '#camp-btn-nuevo', function () {
-                $.get('@Url.Action("Upsert","Campamentos")', function (html) {
+                $.get('@Url.Action("Upsert","Campamentos")', { IdCampamento: 0 }, function (html) {
                     $('#modalCampamentosContent').html(html);
                     $('#modalCampamentos').modal('show');
+                });
+            });
+
+            // editar desde la tabla
+            $(document).on('click', '.camp-btn-editar', function () {
+                var id = $(this).data('id');
+                $.get('@Url.Action("Upsert","Campamentos")', { IdCampamento: id }, function (html) {
+                    $('#modalCampamentosContent').html(html);
+                    $('#modalCampamentos').modal('show');
+                });
+            });
+
+            // VER desde la tabla (modo solo lectura)
+            $(document).on('click', '.camp-btn-ver', function () {
+                var id = $(this).data('id');
+                $.get('@Url.Action("Upsert","Campamentos")', { IdCampamento: id, soloLectura: true }, function (html) {
+                    $('#modalCampamentosContent').html(html);
+                    $('#modalCampamentos').modal('show');
+                });
+            });
+
+
+            // eliminar
+            $(document).on('click', '.camp-btn-del', function () {
+                var id = $(this).data('id');
+                if (!confirm('¿Seguro que deseas eliminar este campamento?')) return;
+
+                $.post('@Url.Action("Eliminar","Campamentos")', { IdCampamento: id }, function (r) {
+                    if (r && r.ok) {
+                        // recargar tabla
+                        $.get('@Url.Action("Tabla","Campamentos")', function (html) {
+                            $('#contenedor-tabla-camp').html(html);
+                        });
+                    } else {
+                        alert(r.msg || 'No se pudo eliminar');
+                    }
                 });
             });
 

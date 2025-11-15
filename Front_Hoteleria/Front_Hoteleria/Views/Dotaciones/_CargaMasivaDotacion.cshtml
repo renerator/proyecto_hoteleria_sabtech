@@ -1,0 +1,119 @@
+﻿@{
+    Layout = null;
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Carga Masiva de Dotaciones</h4>
+</div>
+
+<div class="modal-body">
+
+    <style>
+        .dot-plantillas-box {
+            background: #e9f5e9; /* verde muy claro */
+            border: 1px solid #d2ebd2;
+            border-radius: 6px;
+            padding: 14px 18px 10px 18px;
+            margin-bottom: 18px;
+        }
+
+            .dot-plantillas-box h5 {
+                margin: 0 0 10px 0;
+                font-weight: 600;
+                color: #4f6575;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+                .dot-plantillas-box h5 i {
+                    color: #4f6575;
+                }
+
+        .dot-plantilla-btn {
+            margin-right: 15px;
+        }
+
+        .dot-upload-area {
+            border: 2px dashed #118ad2;
+            border-radius: 8px;
+            text-align: center;
+            padding: 35px 20px;
+            background: #f9fcff;
+        }
+
+            .dot-upload-area i {
+                color: #95a5a6;
+            }
+    </style>
+
+    <!-- bloque verde de plantillas -->
+    <div class="dot-plantillas-box">
+        <h5>
+            <i class="fa fa-download"></i> Plantillas Excel Disponibles:
+        </h5>
+
+        <a href="@Url.Content("~/plantillas/Dotaciones_Trabajadores.xlsx")"
+           class="btn btn-sm btn-success dot-plantilla-btn" target="_blank">
+            <i class="fa fa-file-excel-o"></i> Plantilla Trabajadores
+        </a>
+        <span class="text-muted">Formato: Nombre, Apellido, RUT, Empresa, Cargo, Turno</span>
+
+        <a href="@Url.Content("~/plantillas/Dotaciones_Turnos.xlsx")"
+           class="btn btn-sm btn-info dot-plantilla-btn" target="_blank" style="margin-left:20px;">
+            <i class="fa fa-file-excel-o"></i> Plantilla Turnos
+        </a>
+        <span class="text-muted">Formato: RUT, Fecha, Turno, Horario</span>
+    </div>
+
+    <!-- zona de carga -->
+    <div class="dot-upload-area" id="dot-drop-zone">
+        <i class="fa fa-cloud-upload fa-3x"></i>
+        <p style="margin-top:10px; font-size:16px;">Arrastra tu archivo Excel aquí</p>
+        <p class="text-muted">o haz clic para seleccionar</p>
+        <input type="file" id="dot-file" name="Archivo" style="display:none;" accept=".xls,.xlsx" />
+        <button type="button" id="dot-btn-file" class="btn btn-primary">
+            <i class="fa fa-folder-open"></i> Seleccionar Archivo
+        </button>
+    </div>
+
+    <div id="dot-upload-result" style="margin-top:15px;"></div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+</div>
+
+<script>
+    // abrir file dialog
+    $('#dot-btn-file, #dot-drop-zone').off('click').on('click', function () {
+        $('#dot-file').click();
+    });
+
+    // subir al controller
+    $('#dot-file').off('change').on('change', function () {
+        var f = this.files[0];
+        if (!f) return;
+
+        var fd = new FormData();
+        fd.append('Archivo', f);
+        fd.append('Sobrescribir', true);
+
+        $.ajax({
+            url: '@Url.Action("Importar", "Dotaciones")',
+            type: 'POST',
+            data: fd,
+            processData: false,
+            contentType: false
+        }).done(function (r) {
+            $('#dot-upload-result').html(
+                '<div class="alert alert-success">' + (r.msg || 'Archivo cargado correctamente.') + '</div>'
+            );
+        }).fail(function () {
+            $('#dot-upload-result').html(
+                '<div class="alert alert-danger">No se pudo cargar el archivo.</div>'
+            );
+        });
+    });
+</script>

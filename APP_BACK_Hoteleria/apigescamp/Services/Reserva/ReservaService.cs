@@ -71,6 +71,7 @@ namespace DemoBackend.Services
             // IMPORTANTE: mismo nombre que el SP y mismos parámetros en el texto
             string sql = "HOT_CRE_Reserva " +
                          "@idHabitacion," +
+                         "@IdReservaTipoHabitacion," +   // 🔹 nuevo en la cadena
                          "@FechaDesde," +
                          "@FechaHasta," +
                          "@QuiereTransporte," +
@@ -78,38 +79,44 @@ namespace DemoBackend.Services
                          "@FechaCheckOut," +
                          "@idEstadoReserva," +
                          "@Observaciones," +
-                         "@Huesped," +
+                         "@NombreHuesped," +
+                         "@RutHuesped," +
                          "@CorreoHuespedReserva," +
                          "@TelefonoHuespedReserva";
 
-            // 11 parámetros (0..10) EXACTAMENTE los del SP
-            var parametros = new SqlParameter[11];
+            // 13 parámetros (0..12) EXACTAMENTE los del SP
+            var parametros = new SqlParameter[13];
 
             parametros[0] = new SqlParameter("@idHabitacion", reserva.IdHabitacion);
-            parametros[1] = new SqlParameter("@FechaDesde", reserva.FechaDesde);
-            parametros[2] = new SqlParameter("@FechaHasta", reserva.FechaHasta);
+            parametros[1] = new SqlParameter("@IdReservaTipoHabitacion", reserva.IdReservaTipoHabitacion);
+
+            parametros[2] = new SqlParameter("@FechaDesde", reserva.FechaDesde);
+            parametros[3] = new SqlParameter("@FechaHasta", reserva.FechaHasta);
 
             // si QuiereTransporte es bool? en el DTO:
             bool quiere = reserva.QuiereTransporte is bool b ? b : false;
-            parametros[3] = new SqlParameter("@QuiereTransporte", quiere);
+            parametros[4] = new SqlParameter("@QuiereTransporte", quiere);
 
-            parametros[4] = new SqlParameter("@FechaCheckIN",
+            parametros[5] = new SqlParameter("@FechaCheckIN",
                                              (object?)reserva.FechaCheckIN ?? DBNull.Value);
-            parametros[5] = new SqlParameter("@FechaCheckOut",
+            parametros[6] = new SqlParameter("@FechaCheckOut",
                                              (object?)reserva.FechaCheckOut ?? DBNull.Value);
 
-            parametros[6] = new SqlParameter("@idEstadoReserva", reserva.IdEstadoReserva);
+            parametros[7] = new SqlParameter("@idEstadoReserva", reserva.IdEstadoReserva);
 
-            parametros[7] = new SqlParameter("@Observaciones",
+            parametros[8] = new SqlParameter("@Observaciones",
                                              (object?)reserva.Observaciones ?? DBNull.Value);
 
-            parametros[8] = new SqlParameter("@Huesped",
-                                             (object?)reserva.Huesped ?? DBNull.Value);
+            parametros[9] = new SqlParameter("@NombreHuesped",
+                                             (object?)reserva.NombreHuesped ?? DBNull.Value);
 
-            parametros[9] = new SqlParameter("@CorreoHuespedReserva",
-                                             (object?)reserva.CorreoHuespedReserva ?? DBNull.Value);
+            parametros[10] = new SqlParameter("@RutHuesped",
+                                              (object?)reserva.RutHuesped ?? DBNull.Value);
 
-            parametros[10] = new SqlParameter("@TelefonoHuespedReserva",
+            parametros[11] = new SqlParameter("@CorreoHuespedReserva",
+                                              (object?)reserva.CorreoHuespedReserva ?? DBNull.Value);
+
+            parametros[12] = new SqlParameter("@TelefonoHuespedReserva",
                                               (object?)reserva.TelefonoHuespedReserva ?? DBNull.Value);
 
             try
@@ -123,7 +130,6 @@ namespace DemoBackend.Services
                 return false;
             }
         }
-
 
 
 
