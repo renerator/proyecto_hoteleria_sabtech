@@ -21,7 +21,7 @@ namespace Front_Hoteleria.Services.Reservas
 
         Task<bool> CrearAsync(ReservaDto dto, string bearer = null);
         Task<bool> ActualizarAsync(ReservaDto dto, string bearer = null);
-        Task<bool> EliminarAsync(int idReserva, string bearer = null);
+        Task<bool> EliminarAsync(ReservaDto Reserva, string bearer = null);
 
         // combos
         Task<List<ComboItemDto>> EstadosAsync(string bearer = null);

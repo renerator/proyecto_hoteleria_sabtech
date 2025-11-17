@@ -20,5 +20,7 @@ namespace Front_Hoteleria.Dto.Habitacion
         public int IdEmpresa { get; set; }
         public string Motivo { get; set; }
         public int IdTipoHabitacion { get; set; }
+
+        public int Precio { get; set; }
     }
 }

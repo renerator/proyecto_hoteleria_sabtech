@@ -14,9 +14,7 @@
             <table class="table table-striped table-bordered table-hover" id="reservasTable">
                 <thead>
                     <tr>
-                        <th style="width:30px; text-align:center;">
-                            <input type="checkbox" id="selectAll" />
-                        </th>
+                        
                         <th>ID</th>
                         <th>Huésped</th>
                         <th>Habitación</th>
@@ -40,8 +38,10 @@
                     {
                         foreach (var r in data)
                         {
+                            var estado = (r.Estado ?? "").ToLower();
                             var estadoClass = "label label-default";
-                            switch ((r.Estado ?? "").ToLower())
+
+                            switch (estado)
                             {
                                 case "confirmada": estadoClass = "label label-success"; break;
                                 case "checkin": estadoClass = "label label-info"; break;
@@ -51,30 +51,36 @@
                             }
 
                             <tr>
-                                <td style="text-align:center;">
-                                    @if ((r.Estado ?? "").ToLower() == "confirmada")
-                                    {
-                                        <input type="checkbox" class="reserva-check" data-id="@r.IdReserva" />
-                                    }
-                                </td>
+                                
                                 <td>@(r.CodigoReserva ?? r.IdReserva.ToString())</td>
                                 <td>@r.Huesped</td>
                                 <td>@r.Habitacion</td>
+
+                                <!-- IMPORTANTE: usamos FechaEntrada y FechaSalida,
+                                     NO FechaCheckIN / FechaCheckOut -->
                                 <td>@r.FechaEntrada.ToString("dd/MM/yyyy")</td>
                                 <td>@r.FechaSalida.ToString("dd/MM/yyyy")</td>
+
                                 <td>@r.Dias</td>
                                 <td><span class="@estadoClass">@r.Estado</span></td>
                                 <td>
-                                    @* acciones según estado *@
-                                    @if ((r.Estado ?? "").ToLower() == "confirmada")
+                                    @if (estado == "confirmada")
                                     {
-                                        <button class="btn btn-xs btn-success" onclick="abrirCheckin(@r.IdReserva)"><i class="fa fa-sign-in"></i></button>
-                                        <button class="btn btn-xs btn-danger" onclick="abrirNoShow(@r.IdReserva)"><i class="fa fa-user-times"></i></button>
+                                        <button class="btn btn-xs btn-success" onclick="abrirCheckin(@r.IdReserva)">
+                                            <i class="fa fa-sign-in"></i>
+                                        </button>
+                                        <button class="btn btn-xs btn-danger" onclick="abrirNoShow(@r.IdReserva)">
+                                            <i class="fa fa-user-times"></i>
+                                        </button>
                                     }
-                                    else if ((r.Estado ?? "").ToLower() == "checkin")
+                                    else if (estado == "checkin")
                                     {
-                                        <button class="btn btn-xs btn-info" onclick="abrirCheckout(@r.IdReserva)"><i class="fa fa-sign-out"></i></button>
-                                        <button class="btn btn-xs btn-warning" onclick="abrirExtension(@r.IdReserva)"><i class="fa fa-calendar-plus-o"></i></button>
+                                        <button class="btn btn-xs btn-info" onclick="abrirCheckout(@r.IdReserva)">
+                                            <i class="fa fa-sign-out"></i>
+                                        </button>
+                                        <button class="btn btn-xs btn-warning" onclick="abrirExtension(@r.IdReserva)">
+                                            <i class="fa fa-calendar-plus-o"></i>
+                                        </button>
                                     }
                                     else
                                     {
@@ -89,3 +95,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(function () {
+        $('#reservasTable').DataTable({
+            destroy: true,
+            pageLength: 10,
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
+            }
+        });
+
+        // check de cabecera
+        $('#selectAll').on('change', function () {
+            var checked = $(this).prop('checked');
+            $('.reserva-check').prop('checked', checked).trigger('change');
+        });
+    });
+</script>

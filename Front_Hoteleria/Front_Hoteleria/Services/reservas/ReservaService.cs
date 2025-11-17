@@ -239,23 +239,32 @@ namespace Front_Hoteleria.Services.Reservas
         // 6) ELIMINAR
         // DELETE /api/Reservas/{id}
         // =========================================================
-        public async Task<bool> EliminarAsync(int idReserva, string bearer = null)
+        public async Task<bool> EliminarAsync(ReservaDto dto, string bearer = null)
         {
-            if (idReserva==0)
+            if (dto == null || dto.IdReserva == 0)
                 return false;
 
             try
             {
                 SetBearer(bearer);
-                using (var resp = await _http.DeleteAsync($"/api/Reservas/{idReserva}"))
+
+                var json = JsonConvert.SerializeObject(dto);
+                using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
+                using (var request = new HttpRequestMessage(HttpMethod.Delete, "/api/Reservas/RechazaReserva"))
                 {
-                    if (!resp.IsSuccessStatusCode)
+                    request.Content = content;
+
+                    using (var resp = await _http.SendAsync(request))
                     {
-                        var err = await resp.Content.ReadAsStringAsync();
-                        Trace.TraceWarning($"[ReservasService.EliminarAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
-                        return false;
+                        if (!resp.IsSuccessStatusCode)
+                        {
+                            var err = await resp.Content.ReadAsStringAsync();
+                            Trace.TraceWarning($"[ReservasService.EliminarAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                            return false;
+                        }
+
+                        return true;
                     }
-                    return true;
                 }
             }
             catch (Exception ex)

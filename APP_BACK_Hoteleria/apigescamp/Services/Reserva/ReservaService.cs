@@ -164,9 +164,15 @@ namespace DemoBackend.Services
 
         public bool EliminarReserva(ReservaDto reserva)
         {
-            string sql = "HOT_DEL_Reserva @idReserva";
-            var parametros = new SqlParameter[1];
-            parametros[0] = new SqlParameter("@idReserva", reserva.IdReserva);
+            string sql = "HOT_DEL_Reserva @idReserva,@IdMotivoRechazo,@ObservacionesRechazo,@IdUsuarioActualizacion";
+
+            var parametros = new[]
+            {
+        new SqlParameter("@idReserva", reserva.IdReserva),
+        new SqlParameter("@IdMotivoRechazo", (object?)reserva.IdMotivoRechazo ?? DBNull.Value),
+        new SqlParameter("@ObservacionesRechazo", (object?)reserva.ObservacionesRechazo ?? DBNull.Value),
+        new SqlParameter("@IdUsuarioActualizacion", (object?)reserva.IdUsuarioActualizacion ?? DBNull.Value)
+    };
 
             try
             {
@@ -179,6 +185,7 @@ namespace DemoBackend.Services
                 return false;
             }
         }
+
 
 
         public List<ReservaDto> GetListaReserva()

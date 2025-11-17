@@ -47,7 +47,7 @@
         <div class="stats-card checkin">
             <i class="fa fa-sign-in icon"></i>
             <h4>Check-ins Hoy</h4>
-            <div class="number" id="statCheckinHoy">@((Model?.CheckinsHoy ?? 0))</div>
+            <div class="number" id="statCheckinHoy">@((Model?.CheckinHoy ?? 0))</div>
             <small class="text-muted">ENTRADAS PROGRAMADAS</small>
         </div>
     </div>
@@ -55,7 +55,8 @@
         <div class="stats-card checkout">
             <i class="fa fa-sign-out icon"></i>
             <h4>Check-outs Hoy</h4>
-            <div class="number" id="statCheckoutHoy">@((Model?.CheckoutsHoy ?? 0))</div>
+    
+            <div class="number" id="statCheckoutHoy">@((Model?.CheckoutHoy ?? 0))</div>
             <small class="text-muted">SALIDAS PROGRAMADAS</small>
         </div>
     </div>
@@ -63,7 +64,7 @@
         <div class="stats-card noshow">
             <i class="fa fa-user-times icon"></i>
             <h4>No Shows</h4>
-            <div class="number" id="statNoShow">@((Model?.NoShows ?? 0))</div>
+            <div class="number" id="statNoShow">@((Model?.NoShow ?? 0))</div>
             <small class="text-muted">NO SE PRESENTARON</small>
         </div>
     </div>

@@ -234,23 +234,23 @@ namespace DemoBackend.Controllers
         /// <response code="401">No autorizado</response>
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
-        [HttpDelete("EliminaReserva")]
-        public ActionResult EliminaReserva(int idReserva)
+        [HttpDelete("RechazaReserva")]
+        public ActionResult EliminaReserva([FromBody] ReservaDto dto)
         {
             try
             {
-                if (idReserva == 0)
+                if (dto.IdReserva == 0)
                 {
                     _logger.LogInformation("DelEliminaReserva: idReserva vacío.");
                     return Ok("Status 200: Error de campos vacíos");
                 }
 
-                var reservaDto = new ReservaDto() { IdReserva = idReserva };
-                var existe = _reservaService.VerificaReservaPorId(reservaDto);
-                if (existe.Count == 0)
-                    return Ok($"No se puede eliminar, no existe la reserva con Id {idReserva}");
+               // var reservaDto = new ReservaDto() { IdReserva = idReserva };
+                //var existe = _reservaService.VerificaReservaPorId(reservaDto);
+               // if (existe.Count == 0)
+                 //   return Ok($"No se puede eliminar, no existe la reserva con Id {idReserva}");
 
-                var eliminada = _reservaService.EliminarReserva(reservaDto);
+                var eliminada = _reservaService.EliminarReserva(dto);
                 if (eliminada)
                     return Ok("Reserva eliminada correctamente.");
                 else

@@ -2,10 +2,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DemoBackend.Models.Reserva
+namespace DemoBackend.Models.Check
 {
-    [Table("hot_Reservas")]
-    public class ReservaModels : EntityBase
+
+    public class CheckModels : EntityBase
     {
         [Key]
         [Column("idReserva")]

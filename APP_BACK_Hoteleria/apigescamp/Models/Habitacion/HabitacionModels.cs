@@ -40,6 +40,9 @@ namespace DemoBackend.Models.Habitacion
 
         [Column("IdTipoHabitacion")]
         public int IdTipoHabitacion { get; set; }
+
+        [Column("Precio")]
+        public int Precio{ get; set; }
     }
 }
 

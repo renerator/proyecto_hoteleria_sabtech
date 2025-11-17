@@ -39,6 +39,13 @@
         background: #cce5ff;
         color: #004085;
     }
+
+    /* columna acciones más ancha y sin saltos de línea */
+    th.col-acciones,
+    td.col-acciones {
+        width: 200px;
+        white-space: nowrap;
+    }
 </style>
 
 <div class="table-header-reserva">
@@ -56,7 +63,7 @@
                 <th>Tipo Habitación</th>
                 <th>Huéspedes</th>
                 <th>Estado</th>
-                <th style="width:140px;">Acciones</th>
+                <th class="col-acciones">Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -64,7 +71,6 @@
             {
                 foreach (var r in Model)
                 {
-                    // clase según el texto del estado
                     var cls =
                         string.Equals(r.EstadoReserva, "Pendiente", System.StringComparison.OrdinalIgnoreCase) ? "st-pendiente" :
                         string.Equals(r.EstadoReserva, "Rechazada", System.StringComparison.OrdinalIgnoreCase) ? "st-rechazada" :
@@ -72,7 +78,6 @@
                         string.Equals(r.EstadoReserva, "Realizada", System.StringComparison.OrdinalIgnoreCase) ? "st-realizada" :
                         "st-pendiente";
 
-                    // fallback por si algunos campos vienen nulos/vacíos
                     var codigo = !string.IsNullOrWhiteSpace(r.Codigo) ? r.Codigo : r.IdReserva.ToString();
                     var nombreHuesped = !string.IsNullOrWhiteSpace(r.NombreHuesped) ? r.NombreHuesped : r.HuespedNombre;
                     var tipoHab = !string.IsNullOrWhiteSpace(r.TipoHabitacion) ? r.TipoHabitacion : r.TipoHabitacionNombre;
@@ -88,17 +93,32 @@
 
                         <td>
                             <span class="status-pill @cls">
+                                @* icono solo si está pendiente *@
+                                @if (string.Equals(r.EstadoReserva, "Pendiente", System.StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <i class="fa fa-clock-o" style="margin-right:4px;"></i>
+                                }
                                 @r.EstadoReserva
                             </span>
                         </td>
 
-                        <td>
+                        <td class="col-acciones">
                             <button class="btn btn-success btn-xs btn-asignar-reserva" data-id="@r.IdReserva">
                                 <i class="fa fa-check"></i> Asignar
                             </button>
-                            <button class="btn btn-danger btn-xs btn-rechazar-reserva" data-id="@r.IdReserva">
-                                <i class="fa fa-times"></i> Rechazar
-                            </button>
+
+                            @if (string.Equals(r.EstadoReserva, "Rechazada", System.StringComparison.OrdinalIgnoreCase))
+                            {
+                                <button class="btn btn-danger btn-xs btn-rechazar-reserva" disabled="disabled" title="La reserva ya fue rechazada">
+                                    <i class="fa fa-ban"></i> Rechazada
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-danger btn-xs btn-rechazar-reserva" data-id="@r.IdReserva">
+                                    <i class="fa fa-times"></i> Rechazar
+                                </button>
+                            }
                         </td>
                     </tr>
                 }

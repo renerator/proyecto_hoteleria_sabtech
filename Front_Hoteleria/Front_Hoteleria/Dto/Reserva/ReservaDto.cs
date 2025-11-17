@@ -45,6 +45,9 @@ namespace Front_Hoteleria.Dto.Reserva
         public string TelefonoHuespedReserva { get; set; }
 
         public int IdReservaTipoHabitacion { get; set; }
+        public int? IdMotivoRechazo { get; set; }
+        public string ObservacionesRechazo { get; set; }
+
 
     }
 }

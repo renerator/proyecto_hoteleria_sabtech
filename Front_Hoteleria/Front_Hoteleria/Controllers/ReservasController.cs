@@ -1,8 +1,13 @@
+using Font_Hoteleria.Dto.Trabajadores;
+using Front_Hoteleria.Dto;
+using Front_Hoteleria.Dto.Empresa;
+using Front_Hoteleria.Dto.Habitacion;
 using Front_Hoteleria.Dto.Inventario;
 using Front_Hoteleria.Dto.Reserva;
-using Front_Hoteleria.Dto;
-using Front_Hoteleria.Services.Trabajadores;
+using Front_Hoteleria.Services.Empresa;
+using Front_Hoteleria.Services.Habitacion;
 using Front_Hoteleria.Services.Reservas;
+using Front_Hoteleria.Services.Trabajadores;
 using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
@@ -11,7 +16,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Font_Hoteleria.Dto.Trabajadores;
 
 namespace Front_Hoteleria.Controllers
 {
@@ -19,14 +23,17 @@ namespace Front_Hoteleria.Controllers
     {
         private readonly IReservaService _api;
         private readonly ITrabajadoresService _apitraservice;
+        private readonly IHabitacionService _apihabservice;
+        private readonly IEmpresaService _apiempservice;
 
-        public ReservasController() : this(new ReservaService(), new TrabajadoresService()  ) { }
+        public ReservasController() : this(new ReservaService(), new TrabajadoresService(), new HabitacionService(), new EmpresaService()) { }
 
-        public ReservasController(IReservaService api, ITrabajadoresService apitraservice)
+        public ReservasController(IReservaService api, ITrabajadoresService apitraservice, IHabitacionService apihabservice, IEmpresaService apiempservice)
         {
             _api = api;
             _apitraservice= apitraservice;
-
+            _apihabservice = apihabservice;
+            _apiempservice = apiempservice;
         }
 
         // =========================================================
@@ -166,39 +173,66 @@ namespace Front_Hoteleria.Controllers
             }
         }
         // GET: /Reservas/Rechazar?id=RES-006
-        [HttpGet]
-        public async Task<ActionResult> Rechazar(int idReserva)
+     [HttpGet]
+
+
+
+    public async Task<ActionResult> Rechazar(int idReserva)
+    {
+        var token = GetBearer();
+
+        // 1) Traer la reserva real desde la API
+        var dto = await _api.ObtenerPorIdAsync(idReserva, token);
+
+        // 2) Si no existe, 404
+        if (dto == null)
+            return HttpNotFound("Reserva no encontrada");
+
+        // 3) Si ya está en estado 3 (rechazada), no permitir rechazar de nuevo
+        if (dto.IdEstadoReserva == 3) // 3 = Rechazada
+        {
+            return new HttpStatusCodeResult(
+                (int)HttpStatusCode.Conflict,
+                "La reserva ya se encuentra rechazada y no puede volver a rechazarse."
+            );
+        }
+
+        // 4) Si todo ok, mostrar el modal de rechazo
+        return PartialView("~/Views/Reservas/_RechazarReserva.cshtml", dto);
+    }
+
+
+    // POST: /Reservas/Rechazar
+    [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Rechazar(ReservaDto dto)
         {
             var token = GetBearer();
-            // si no tengo la reserva real, armo una de demo como en tus capturas
-            
-            var reservaDto = new ReservaDto();
 
-            reservaDto = await _api.ObtenerPorIdAsync(idReserva, token);
-            return PartialView("~/Views/Reservas/_RechazarReserva.cshtml", reservaDto);
-        }
-
-        // POST: /Reservas/Rechazar
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Rechazar(ReservaRechazoDto dto)
-        {
-
-            if (dto == null || string.IsNullOrWhiteSpace(dto.IdReserva))
+            var dtoOriginal = new ReservaDto();
+            dtoOriginal = await _api.ObtenerPorIdAsync(dto.IdReserva, token);
+            dtoOriginal.IdMotivoRechazo = dto.IdMotivoRechazo;
+            dtoOriginal.ObservacionesRechazo = dto.ObservacionesRechazo;
+            if (dto == null || dto.IdReserva <= 0)
                 return Json(new { ok = false, msg = "Id de reserva requerido." });
 
-            // aquí iría el llamado real a tu API para rechazar la reserva
-            // var token = GetBearer();
-            // await _api.RechazarAsync(...)
+            // Validar motivo y observaciones si quieres obligarlos
+            if (dtoOriginal.IdMotivoRechazo == null || dtoOriginal.IdMotivoRechazo <= 0)
+                return Json(new { ok = false, msg = "Debe seleccionar un motivo de rechazo." });
 
-            // por ahora devolvemos ok
-            return Json(new { ok = true });
+            var exito = await _api.EliminarAsync(dtoOriginal, token);
+
+            if (!exito)
+                return Json(new { ok = false, msg = "No fue posible rechazar la reserva, intente nuevamente." });
+
+            return Json(new { ok = true, msg = "Reserva rechazada correctamente." });
         }
+
         // =========================================================
         // GET: /Reservas/Upsert
         // abre el modal de crear/editar
         // =========================================================
-       
+
         [HttpGet]
   
         public async Task<ActionResult> Upsert(int idReserva = 0)
@@ -330,15 +364,15 @@ namespace Front_Hoteleria.Controllers
         // =========================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Eliminar(int idReserva)
+        public async Task<ActionResult> Eliminar(ReservaDto dto)
         {
-            if (idReserva==0)
+            if (dto.IdReserva==0)
                 return Json(new { ok = false, msg = "Id requerido" });
 
             var token = GetBearer();
             try
             {
-                var ok = await _api.EliminarAsync(idReserva, token);
+                var ok = await _api.EliminarAsync(dto, token);
                 if (!ok)
                     return Json(new { ok = false, msg = "No se pudo eliminar en la API." });
 
@@ -392,84 +426,119 @@ namespace Front_Hoteleria.Controllers
 
             return Json(new { ok = true, data = resp }, JsonRequestBehavior.AllowGet);
         }
-        [HttpGet]
-        public ActionResult Asignar(int idReserva)
-        {
-            // 1) demo de la reserva (si no vino id, armamos una)
-            var reserva = new ReservaDto
-            {
-                IdReserva =  idReserva,
-                HuespedNombre = "Sofía Torres",
-                HuespedEmail = "sofia.t@email.com",
-                FechaDesde = new System.DateTime(2025, 11, 4),
-                FechaHasta = new System.DateTime(2025, 11, 5),
-                CantidadPersonas = 2,
-                TipoHabitacionNombre = "Doble"
-            };
+       
+      
 
-            // 2) combos en duro
+[HttpGet]
+    public async Task<ActionResult> Asignar(int idReserva)
+    {
+        var token = GetBearer();
+        ReservaDto dto = null;
+
+        // 1) Obtener reserva
+        if (idReserva > 0)
+            dto = await _api.ObtenerPorIdAsync(idReserva, token);
+
+        if (dto == null)
+            dto = new ReservaDto { IdReserva = idReserva };
+
+        // 2) EMPRESAS -> ViewBag
+        var empresasDto = await _apiempservice.ListarComboAsync(true, null, token)
+                         ?? new List<EmpresaDto>();
+
+        var empresasSelect = empresasDto
+            .Select(e => new SelectListItem
+            {
+                Value = e.IdEmpresa.ToString(),          // lo que se postea
+                Text = e.Nombre                         // lo que se muestra
+                                                        // si quieres incluir RUT:
+                                                        // Text = $"{e.Nombre} ({e.Rut})"
+            })
+            .ToList();
+
+        // Opción "Seleccione..." al inicio
+        empresasSelect.Insert(0, new SelectListItem
+        {
+            Value = "",
+            Text = "Seleccione..."
+        });
+
+        ViewBag.Empresas = empresasSelect;
+
+            // 3) HABITACIONES desde servicio
+            var habitacionesSource = await _apihabservice.HabitacionesDisponiblesAsync(1, token)
+                             ?? new List<HabitacionDto>();
+
+            var habitacionesVm = habitacionesSource
+                .Select(h =>
+                {
+                    var capNombre = h.Capacidad == 1
+                        ? "Individual"
+                        : (h.Capacidad == 2 ? "Doble" : "Familiar");
+
+                    return new HabitacionDisponibleDto
+                    {
+                        Numero = h.NombreHabitacion,              // o h.IdHabitacion.ToString("000")
+                        Tipo = h.IdTipoHabitacion.ToString(),
+                        Capacidad = h.Capacidad,
+                        CapacidadNombre = capNombre,
+                        PrecioNoche = h.Precio,
+                        Caracteristicas = h.Motivo,
+                        Estado = "disponible",
+                        EmpresaAsignada = null
+                    };
+                })
+                .ToList();
+
+
+            // 4) ViewModel (Empresas ya NO se usa aquí)
             var vm = new ReservaAsignacionVm
-            {
-                Reserva = reserva,
-                Empresas = new List<SelectListItem>
         {
-            new SelectListItem{ Value="", Text="Seleccione..." },
-            new SelectListItem{ Value="constructora_abc", Text="Constructora ABC Ltda." },
-            new SelectListItem{ Value="minera_xyz", Text="Minera XYZ S.A." },
-            new SelectListItem{ Value="servicios_tech", Text="Servicios Tech SpA" },
-            new SelectListItem{ Value="transportes_sur", Text="Transportes del Sur" }
-        },
-                TiposEmpresa = new List<SelectListItem>
-        {
-            new SelectListItem{ Value="", Text="Seleccione..." },
-            new SelectListItem{ Value="contratista", Text="Contratista Principal" },
-            new SelectListItem{ Value="subcontratista", Text="Subcontratista" },
-            new SelectListItem{ Value="proveedor", Text="Proveedor de Servicios" },
-            new SelectListItem{ Value="mandante", Text="Empresa Mandante" }
-        },
-                Jornadas = new List<SelectListItem>
-        {
-            new SelectListItem{ Value="", Text="Seleccione..." },
-            new SelectListItem{ Value="7x7", Text="7x7" },
-            new SelectListItem{ Value="14x7", Text="14x7" },
-            new SelectListItem{ Value="20x10", Text="20x10" },
-            new SelectListItem{ Value="permanente", Text="Permanente" }
-        },
-                Horarios = new List<SelectListItem>
-        {
-            new SelectListItem{ Value="", Text="Seleccione..." },
-            new SelectListItem{ Value="diurno", Text="Diurno (08:00 - 20:00)" },
-            new SelectListItem{ Value="nocturno", Text="Nocturno (20:00 - 08:00)" },
-            new SelectListItem{ Value="mixto", Text="Mixto / Rotativo" },
-            new SelectListItem{ Value="administrativo", Text="Administrativo (09:00 - 18:00)" }
-        },
-                Generos = new List<SelectListItem>
-        {
-            new SelectListItem{ Value="", Text="Seleccione..." },
-            new SelectListItem{ Value="masculino", Text="Masculino" },
-            new SelectListItem{ Value="femenino", Text="Femenino" },
-            new SelectListItem{ Value="mixto", Text="Mixto" },
-        },
-                Habitaciones = new List<HabitacionDisponibleDto>
-        {
-            new HabitacionDisponibleDto{
-                Numero = "201", Tipo="Doble", Capacidad=2, PrecioNoche=150,
-                Caracteristicas="Vista a la ciudad", Estado="disponible"
-            },
-            new HabitacionDisponibleDto{
-                Numero = "202", Tipo="Doble", Capacidad=2, PrecioNoche=150,
-                Caracteristicas="Vista al jardín", Estado="asignada", EmpresaAsignada="Constructora ABC Ltda."
-            },
-            new HabitacionDisponibleDto{
-                Numero = "203", Tipo="Doble", Capacidad=2, PrecioNoche=180,
-                Caracteristicas="Vista al mar", Estado="disponible"
-            }
-        }
-            };
+            Reserva = dto,
 
-            return PartialView("~/Views/Reservas/_AsignarReserva.cshtml", vm);
-        }
-        [HttpGet]
+            Empresas = new List<SelectListItem>(), // no se usa en la vista, puedes dejarla vacía
+
+            TiposEmpresa = new List<SelectListItem>
+        {
+            new SelectListItem{ Value = "",  Text = "Seleccione..." },
+            new SelectListItem{ Value = "1", Text = "Contratista Principal" },
+            new SelectListItem{ Value = "2", Text = "Subcontratista" },
+            new SelectListItem{ Value = "3", Text = "Proveedor de Servicios" },
+            new SelectListItem{ Value = "4", Text = "Empresa Mandante" }
+        },
+            Jornadas = new List<SelectListItem>
+        {
+            new SelectListItem{ Value = "",  Text = "Seleccione..." },
+            new SelectListItem{ Value = "1", Text = "7x7" },
+            new SelectListItem{ Value = "2", Text = "14x7" },
+            new SelectListItem{ Value = "3", Text = "20x10" },
+            new SelectListItem{ Value = "4", Text = "Permanente" }
+        },
+            Horarios = new List<SelectListItem>
+        {
+            new SelectListItem{ Value = "",  Text = "Seleccione..." },
+            new SelectListItem{ Value = "1", Text = "Diurno (08:00 - 20:00)" },
+            new SelectListItem{ Value = "2", Text = "Nocturno (20:00 - 08:00)" },
+            new SelectListItem{ Value = "3", Text = "Mixto / Rotativo" },
+            new SelectListItem{ Value = "4", Text = "Administrativo (09:00 - 18:00)" }
+        },
+            Generos = new List<SelectListItem>
+        {
+            new SelectListItem{ Value = "",  Text = "Seleccione..." },
+            new SelectListItem{ Value = "1", Text = "Masculino" },
+            new SelectListItem{ Value = "2", Text = "Femenino" },
+            new SelectListItem{ Value = "3", Text = "Mixto" }
+        },
+
+            Habitaciones = habitacionesVm
+        };
+
+        return PartialView("~/Views/Reservas/_AsignarReserva.cshtml", vm);
+    }
+
+
+
+    [HttpGet]
         public async Task<ActionResult> TipoHabitacionesCombo()
         {
             var token = GetBearer();

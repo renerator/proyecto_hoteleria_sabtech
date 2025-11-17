@@ -14,36 +14,67 @@
         </div>
         <div class="clearfix"></div>
 
-        @Html.Partial("_DashboardCheckin", Model)
+        <!-- DASHBOARD -->
+        <div id="dashCheckinContainer">
+            @* Carga inicial con el modelo que trae el Index *@
+            @Html.Partial("_DashboardCheckin", Model)
+        </div>
+
+        <!-- PANELES (filtros + botones masivos) -->
         @Html.Partial("_PanelesCheckin")
 
+        <!-- TABLA -->
         <div id="divTablaCheckin">
             @Html.Partial("_TablaCheckin", Enumerable.Empty<Front_Hoteleria.Dto.Checkin.ReservaCheckinDto>())
         </div>
 
+        <!-- MODALES -->
         @Html.Partial("_ModalesCheckin")
     </div>
 </div>
 
 @section Scripts {
     <script>
-        function recargarTabla() {
-            var fecha = $('#filtroFecha').val();
-            var estado = $('#filtroEstado').val();
-            $.post('@Url.Action("Tabla", "CheckinCheckout")',
-                {
-                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
-                    fecha: fecha,
-                    estado: estado
-                },
-                function (html) {
-                    $('#divTablaCheckin').html(html);
-                }
-            );
+        const urlTablaCheckin      = '@Url.Action("Tabla", "CheckinCheckout")';
+        const urlDashboardCheckin  = '@Url.Action("Dashboard", "CheckinCheckout")';
+
+        function cargarDashboardCheckin() {
+            $('#dashCheckinContainer').load(urlDashboardCheckin);
         }
 
-        // al cargar página traemos la tabla por defecto
+        function recargarTabla() {
+            var fecha    = $('#filtroFecha').val();               // puede ir vacío => null
+            var idEstado = parseInt($('#filtroEstado').val(),10); // 0..5
+
+            if (isNaN(idEstado)) idEstado = 0;
+
+            $.ajax({
+                url: urlTablaCheckin,
+                type: 'POST',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                    fecha: fecha,
+                    idEstado: idEstado
+                },
+                success: function (html) {
+                    $('#divTablaCheckin').html(html);
+                },
+                error: function (xhr) {
+                    console.error('Error al cargar tabla Checkin:', xhr.status, xhr.responseText);
+                    $('#divTablaCheckin').html(
+                        '<div class="p-3 text-danger">Error al cargar la tabla (' + xhr.status + ')</div>'
+                    );
+                }
+            });
+        }
+
         $(function () {
+            // filtros iniciales
+            $('#filtroFecha').val('');   // null al server
+            $('#filtroEstado').val('0'); // Todos
+
+            // carga inicial
+            cargarDashboardCheckin();
             recargarTabla();
         });
     </script>

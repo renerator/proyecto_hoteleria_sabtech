@@ -6,6 +6,7 @@ using DemoBackend.Models.Campamentos;
 using DemoBackend.Models.Contratos;
 using DemoBackend.Models.Dotaciones;
 using DemoBackend.Models.EmpresaContratista;
+using DemoBackend.Models.Check;
 
 using DemoBackend.Models.EstadoReserva;
 using DemoBackend.Models.Habitacion;
@@ -71,6 +72,9 @@ namespace DemoBackend.Models
         public DbSet<CalendarioSanitizacionModels> CalendarioSanitizacion { get; set; }
 
         public DbSet<CampamentosModels> Campamentos { get; set; }
+
+        public DbSet<CheckModels> Check { get; set; }
+        public DbSet<CheckKPIModels> CheckKPI { get; set; }
         public DbSet<CampamentoAreasModels> CampamentoAreas { get; set; }
 
         public DbSet<ContratosModels> Contratos { get; set; }
@@ -89,6 +93,12 @@ namespace DemoBackend.Models
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<ReservaDashboardKPI>(eb =>
+            {
+                eb.HasNoKey();     // <- clave
+                eb.ToView(null);   // <- no está mapeado a vista/tabla
+            });
+
+            modelBuilder.Entity<CheckKPIModels>(eb =>
             {
                 eb.HasNoKey();     // <- clave
                 eb.ToView(null);   // <- no está mapeado a vista/tabla
