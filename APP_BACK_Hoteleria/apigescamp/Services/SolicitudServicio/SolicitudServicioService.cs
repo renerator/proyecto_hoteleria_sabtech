@@ -1,39 +1,53 @@
 using AutoMapper;
+using DemoBackend.Dto.Reserva;
 using DemoBackend.Dto.SolicitudServicio;
 using DemoBackend.Models.SolicitudServicio;
 using DemoBackend.RepositoryGes;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DemoBackend.Services.SolicitudServicio
 {
     public class SolicitudServicioService : ISolicitudServicioService
     {
         private readonly IGenericRepositoryEntity<SolicitudServicioModels> _service;
+        private readonly IGenericRepositoryEntity<SolicitudKPIModels> _serviceKPI;
         private readonly IMapper _mapper;
 
-        public SolicitudServicioService(IGenericRepositoryEntity<SolicitudServicioModels> repo, IMapper mapper)
+        public SolicitudServicioService(IGenericRepositoryEntity<SolicitudServicioModels> repo,
+            IGenericRepositoryEntity<SolicitudKPIModels> repoKPI, IMapper mapper)
         {
             _service = repo;
+            _serviceKPI = repoKPI;
             _mapper = mapper;
         }
 
-        public List<SolicitudServicioDto> Buscar(int? idSolicitud = null, int? idHabitacion = null, int? idServicio = null, DateTime? desde = null, DateTime? hasta = null)
+        // =================== BÚSQUEDA GENERAL ===================
+        public List<SolicitudServicioDto> Buscar(
+            int? idSolicitud = null,
+            int? idHabitacion = null,
+            int? idServicio = null,
+            DateTime? desde = null,
+            DateTime? hasta = null)
         {
             string sql = "SOL_BUS_SolicitudServicio @idSolicitud,@idHabitacion,@idServicio,@Desde,@Hasta";
+
             var p = new SqlParameter[]
             {
-                new SqlParameter("@idSolicitud", (object?)idSolicitud ?? DBNull.Value),
+                new SqlParameter("@idSolicitud",   (object?)idSolicitud   ?? DBNull.Value),
                 new SqlParameter("@idHabitacion", (object?)idHabitacion ?? DBNull.Value),
-                new SqlParameter("@idServicio", (object?)idServicio ?? DBNull.Value),
-                new SqlParameter("@Desde", (object?)desde ?? DBNull.Value),
-                new SqlParameter("@Hasta", (object?)hasta ?? DBNull.Value)
+                new SqlParameter("@idServicio",   (object?)idServicio   ?? DBNull.Value),
+                new SqlParameter("@Desde",        (object?)desde        ?? DBNull.Value),
+                new SqlParameter("@Hasta",        (object?)hasta        ?? DBNull.Value)
             };
 
-            var data = _service.GetStoreProcedure(sql, p)?.ToList() ?? new List<SolicitudServicioModels>();
+            var data = _service.GetStoreProcedure(sql, p)?.ToList()
+                       ?? new List<SolicitudServicioModels>();
+
             return _mapper.Map<List<SolicitudServicioDto>>(data);
         }
 
@@ -43,21 +57,30 @@ namespace DemoBackend.Services.SolicitudServicio
             return list.FirstOrDefault();
         }
 
+        // =================== CREAR ===================
         public bool Crear(SolicitudServicioDto dto)
         {
             if (dto == null) return false;
             if (dto.IdHabitacion <= 0 || dto.IdServicio <= 0) return false;
 
-            string sql = "SOL_CRE_SolicitudServicio @idHabitacion,@idServicio,@FechaSolicitud,@HoraSolicitud,@AtendidoPor,@idOrdenTrabajo,@idTrabajador";
+            // si no viene fecha, dejamos ahora
+            var fecha = dto.FechaSolicitud ?? DateTime.Now;
+
+            string sql = "SOL_CRE_SolicitudServicio " +
+                         "@idHabitacion,@idServicio,@FechaSolicitud," +
+                         "@idPersonalAsignado,@idOrdenTrabajo," +
+                         "@idSolicitante,@idTipoServicio,@idEstadoSolicitud";
+
             var p = new SqlParameter[]
             {
-                new SqlParameter("@idHabitacion", dto.IdHabitacion),
-                new SqlParameter("@idServicio", dto.IdServicio),
-                new SqlParameter("@FechaSolicitud", (object?)dto.FechaSolicitud ?? DBNull.Value),
-                new SqlParameter("@HoraSolicitud", (object?)dto.HoraSolicitud ?? DBNull.Value),
-                new SqlParameter("@AtendidoPor", (object?)dto.AtendidoPor ?? DBNull.Value),
-                new SqlParameter("@idOrdenTrabajo", (object?)dto.IdOrdenTrabajo ?? DBNull.Value),
-                new SqlParameter("@idTrabajador", (object?)dto.IdTrabajador ?? DBNull.Value)
+                new SqlParameter("@idHabitacion",       dto.IdHabitacion),
+                new SqlParameter("@idServicio",         dto.IdServicio),
+                new SqlParameter("@FechaSolicitud",     fecha),
+                new SqlParameter("@idPersonalAsignado", (object?)dto.IdPersonalAsignado ?? DBNull.Value),
+                new SqlParameter("@idOrdenTrabajo",     (object?)dto.IdOrdenTrabajo     ?? DBNull.Value),
+                new SqlParameter("@idSolicitante",      (object?)dto.IdSolicitante      ?? DBNull.Value),
+                new SqlParameter("@idTipoServicio",     (object?)dto.IdTipoServicio     ?? DBNull.Value),
+                new SqlParameter("@idEstadoSolicitud",  (object?)dto.IdEstadoSolicitud  ?? DBNull.Value)
             };
 
             try
@@ -72,32 +95,93 @@ namespace DemoBackend.Services.SolicitudServicio
             }
         }
 
-        // SolicitudServicioService
-        public List<SolicitudServicioDto> GetListaSolicitudServicioEstado(int vigencia)
+        public Task<SolicitudKPIDto> ObtenerKpiAsync()
         {
-           
-            var sql = "SOL_BUS_SolicitudServicio_Vigencia @Vigencia";
-            var p = new[] { new SqlParameter("@Vigencia", vigencia) };
-            var data = _service.GetStoreProcedure(sql, p)?.ToList() ?? new List<SolicitudServicioModels>();
+            // Nombre del SP correcto
+            string sql = "HOT_DASH_SolicitudServicio";
+            var parametros = Array.Empty<SqlParameter>();
+
+            var dto = new SolicitudKPIDto();
+
+            try
+            {
+                var lista = _serviceKPI.GetStoreProcedure(sql, parametros)?.ToList()
+                    ?? new List<SolicitudKPIModels>();
+
+                Console.WriteLine($"[ObtenerKpiAsync] Filas devueltas por SP: {lista.Count}");
+
+                var kpiRow = lista.FirstOrDefault();
+
+                if (kpiRow != null)
+                {
+                    dto.SolicitudPendientesHoy = kpiRow.SolicitudPendientesHoy;
+                    dto.SolicitudPendientesSemana = kpiRow.SolicitudPendientesSemana;
+                    dto.TiempoPromedioRespuesta = kpiRow.TiempoPromedioRespuesta;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en ObtenerKpiAsync: {ex.Message}");
+            }
+
+            // Como el método debe devolver Task<SolicitudKPIDto>, lo envolvemos:
+            return Task.FromResult(dto);
+        }
+
+        // =================== LISTA POR ESTADO (VIGENCIA) ===================
+        public List<SolicitudServicioDto> GetListaSolicitudServicioEstado(
+     int idEstado,
+     DateTime? fechaInicio,
+     DateTime? fechaFin)
+        {
+            // idEstado = idEstadoSolicitud (1=Pendiente, 2=Asignada, etc.)
+            const string sql = "SOL_BUS_SolicitudServicio_Vigencia @IdEstado,@FechaInicio,@FechaFin";
+
+            var p = new[]
+            {
+        new SqlParameter("@IdEstado", SqlDbType.Int)
+        {
+            Value = idEstado
+        },
+        new SqlParameter("@FechaInicio", SqlDbType.DateTime)
+        {
+            Value = (object?)fechaInicio ?? DBNull.Value,
+            IsNullable = true
+        },
+        new SqlParameter("@FechaFin", SqlDbType.DateTime)
+        {
+            Value = (object?)fechaFin ?? DBNull.Value,
+            IsNullable = true
+        }
+    };
+
+            var data = _service.GetStoreProcedure(sql, p)?.ToList()
+                       ?? new List<SolicitudServicioModels>();
+
             return _mapper.Map<List<SolicitudServicioDto>>(data);
         }
 
-
+        // =================== MODIFICAR ===================
         public bool Modificar(SolicitudServicioDto dto)
         {
             if (dto == null || dto.IdSolicitud <= 0) return false;
 
-            string sql = "SOL_UPD_SolicitudServicio @idSolicitud,@idHabitacion,@idServicio,@FechaSolicitud,@HoraSolicitud,@AtendidoPor,@idOrdenTrabajo,@idTrabajador";
+            string sql = "SOL_UPD_SolicitudServicio " +
+                         "@idSolicitud,@idHabitacion,@idServicio,@FechaSolicitud," +
+                         "@idPersonalAsignado,@idOrdenTrabajo," +
+                         "@idSolicitante,@idTipoServicio,@idEstadoSolicitud";
+
             var p = new SqlParameter[]
             {
-                new SqlParameter("@idSolicitud", dto.IdSolicitud),
-                new SqlParameter("@idHabitacion", dto.IdHabitacion),
-                new SqlParameter("@idServicio", dto.IdServicio),
-                new SqlParameter("@FechaSolicitud", (object?)dto.FechaSolicitud ?? DBNull.Value),
-                new SqlParameter("@HoraSolicitud", (object?)dto.HoraSolicitud ?? DBNull.Value),
-                new SqlParameter("@AtendidoPor", (object?)dto.AtendidoPor ?? DBNull.Value),
-                new SqlParameter("@idOrdenTrabajo", (object?)dto.IdOrdenTrabajo ?? DBNull.Value),
-                new SqlParameter("@idTrabajador", (object?)dto.IdTrabajador ?? DBNull.Value)
+                new SqlParameter("@idSolicitud",        dto.IdSolicitud),
+                new SqlParameter("@idHabitacion",       dto.IdHabitacion),
+                new SqlParameter("@idServicio",         dto.IdServicio),
+                new SqlParameter("@FechaSolicitud",     (object?)dto.FechaSolicitud ?? DBNull.Value),
+                new SqlParameter("@idPersonalAsignado", (object?)dto.IdPersonalAsignado ?? DBNull.Value),
+                new SqlParameter("@idOrdenTrabajo",     (object?)dto.IdOrdenTrabajo     ?? DBNull.Value),
+                new SqlParameter("@idSolicitante",      (object?)dto.IdSolicitante      ?? DBNull.Value),
+                new SqlParameter("@idTipoServicio",     (object?)dto.IdTipoServicio     ?? DBNull.Value),
+                new SqlParameter("@idEstadoSolicitud",  (object?)dto.IdEstadoSolicitud  ?? DBNull.Value)
             };
 
             try
@@ -112,6 +196,7 @@ namespace DemoBackend.Services.SolicitudServicio
             }
         }
 
+        // =================== ELIMINAR ===================
         public bool Eliminar(int idSolicitud)
         {
             if (idSolicitud <= 0) return false;

@@ -16,6 +16,8 @@
     <tbody>
         @foreach (var s in (Model ?? Enumerable.Empty<Front_Hoteleria.Dto.ServiciosDisponibles.ServicioDisponibleDto>()))
         {
+
+            var codigo = $"SRV-{@s.IdServicio:000}";
             // ====== resolver clases de categoría ======
             var catClass = "cat-default";
             switch ((s.NombreCategoria ?? "").Trim())
@@ -43,7 +45,7 @@
                 .Equals("Activo", StringComparison.OrdinalIgnoreCase);
 
             <tr>
-                <td>@s.IdServicio</td>
+                <td>@codigo</td>
                 <td>@s.NombreServicio</td>
                 <td><span class="pill @catClass">@s.NombreCategoria</span></td>
                 <td><span class="pill @prioClass">@s.NombrePrioridad</span></td>

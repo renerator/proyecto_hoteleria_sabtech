@@ -26,10 +26,12 @@ namespace DemoBackend.Dto.Check{
         public string RutHuesped { get; set; }
         public string NombreHuesped { get; set; }
         public string TipoHabitacion { get; set; }
-
+        public string NombreHabitacion { get; set; }
+        public int Dias { get; set; }
         public int Huespedes { get; set; }
 
         public string EstadoReserva { get; set; }
+       
         public string CorreoHuespedReserva { get; set; }
         public string TelefonoHuespedReserva { get; set; }
 

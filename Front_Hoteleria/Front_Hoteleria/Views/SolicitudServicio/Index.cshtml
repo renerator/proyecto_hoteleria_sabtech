@@ -1,0 +1,92 @@
+﻿@{
+    ViewBag.Title = "Solicitudes de Servicios";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="right_col" role="main">
+    <div class="">
+        <div class="page-title">
+            <div class="title_left">
+                <h3>Gestión de Solicitudes de Servicio</h3>
+                <p class="text-muted">Administración de solicitudes de servicios</p>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+
+        @* Token para los POST con [ValidateAntiForgeryToken] *@
+        @Html.AntiForgeryToken()
+
+        @* Contenedor del dashboard (se llena por AJAX) *@
+        <div id="dashSolicitudContainer">
+            <!-- Dashboard se cargará por AJAX -->
+        </div>
+
+        @* Contenedor de los paneles/filtros (se llena por AJAX) *@
+        <div id="panelesSolicitudContainer" style="margin-top:15px;">
+            <!-- Paneles se cargarán por AJAX -->
+        </div>
+
+        @* Contenedor de la tabla (se llena por AJAX) *@
+        <div id="divTablaSolicitudes" style="margin-top:15px;">
+            <!-- Tabla se cargará por AJAX -->
+        </div>
+
+        @* Modal de creación/edición (si lo usas) *@
+        <div id="divUpsertSolicitud">
+            @Html.Partial("_UpsertServicio")
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Cargamos dashboard y paneles al entrar
+            cargarDashboard();
+            cargarPaneles();
+        });
+
+        function cargarDashboard() {
+            $.get('@Url.Action("Dashboard", "SolicitudServicio")',
+                function (html) {
+                    $('#dashSolicitudContainer').html(html);
+                }
+            );
+        }
+
+        function cargarPaneles() {
+            $.get('@Url.Action("Paneles", "SolicitudServicio")',
+                function (html) {
+                    $('#panelesSolicitudContainer').html(html);
+
+                    // Una vez que los paneles (filtros) están en el DOM,
+                    // recién ahí cargamos la tabla.
+                    recargarTabla();
+                }
+            );
+        }
+
+        // estado = idEstadoSolicitud (1 Pendiente, 2 Asignada, etc.)
+        function recargarTabla() {
+            var idEstado = $('#filtroEstado').val();   // combo de estado en _PanelesSolicitud
+            var fechaInicio = $('#fechaInicio').val(); // input date
+            var fechaFin = $('#fechaFin').val();       // input date
+
+            $.post('@Url.Action("Tabla", "SolicitudServicio")',
+                {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                    idEstado: idEstado,          // nombre EXACTO al parámetro del action
+                    fechaInicio: fechaInicio,
+                    fechaFin: fechaFin
+                },
+                function (html) {
+                    // 👈 aquí estaba tu error: el div se llama divTablaSolicitudes
+                    $('#divTablaSolicitudes').html(html);
+                }
+            ).fail(function (xhr) {
+                console.error("Error al cargar la tabla:", xhr.status, xhr.responseText);
+            });
+        }
+    </script>
+}
+

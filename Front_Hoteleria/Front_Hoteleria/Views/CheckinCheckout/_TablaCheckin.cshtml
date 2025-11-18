@@ -38,7 +38,7 @@
                     {
                         foreach (var r in data)
                         {
-                            var estado = (r.Estado ?? "").ToLower();
+                            var estado = (r.EstadoCheck ?? "").ToLower();
                             var estadoClass = "label label-default";
 
                             switch (estado)
@@ -49,45 +49,45 @@
                                 case "noshow": estadoClass = "label label-danger"; break;
                                 case "extendida": estadoClass = "label label-warning"; break;
                             }
+                    var codigo = $"RES-{@r.IdReserva:000}";
+                <tr>
 
-                            <tr>
-                                
-                                <td>@(r.CodigoReserva ?? r.IdReserva.ToString())</td>
-                                <td>@r.Huesped</td>
-                                <td>@r.Habitacion</td>
+                    <td>@codigo</td>
+                    <td>@r.NombreHuesped</td>
+                    <td>@r.NombreHabitacion</td>
 
-                                <!-- IMPORTANTE: usamos FechaEntrada y FechaSalida,
-                                     NO FechaCheckIN / FechaCheckOut -->
-                                <td>@r.FechaEntrada.ToString("dd/MM/yyyy")</td>
-                                <td>@r.FechaSalida.ToString("dd/MM/yyyy")</td>
+                    <!-- IMPORTANTE: usamos FechaEntrada y FechaSalida,
+         NO FechaCheckIN / FechaCheckOut -->
+                    <td>@(r.FechaCheckIN.HasValue ? r.FechaDesde.Value.ToString("dd/MM/yyyy") : "")</td>
+                    <td>@(r.FechaCheckOut.HasValue ? r.FechaHasta.Value.ToString("dd/MM/yyyy") : "")</td>
 
-                                <td>@r.Dias</td>
-                                <td><span class="@estadoClass">@r.Estado</span></td>
-                                <td>
-                                    @if (estado == "confirmada")
-                                    {
-                                        <button class="btn btn-xs btn-success" onclick="abrirCheckin(@r.IdReserva)">
-                                            <i class="fa fa-sign-in"></i>
-                                        </button>
-                                        <button class="btn btn-xs btn-danger" onclick="abrirNoShow(@r.IdReserva)">
-                                            <i class="fa fa-user-times"></i>
-                                        </button>
-                                    }
-                                    else if (estado == "checkin")
-                                    {
-                                        <button class="btn btn-xs btn-info" onclick="abrirCheckout(@r.IdReserva)">
-                                            <i class="fa fa-sign-out"></i>
-                                        </button>
-                                        <button class="btn btn-xs btn-warning" onclick="abrirExtension(@r.IdReserva)">
-                                            <i class="fa fa-calendar-plus-o"></i>
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted">Sin acciones</span>
-                                    }
-                                </td>
-                            </tr>
+                    <td>@r.Dias</td>
+                    <td><span class="@estadoClass">@r.EstadoCheck</span></td>
+                    <td>
+                        @if (estado == "confirmada")
+                        {
+                            <button class="btn btn-xs btn-success" onclick="abrirCheckin(@r.IdReserva)">
+                                <i class="fa fa-sign-in"></i>
+                            </button>
+                            <button class="btn btn-xs btn-danger" onclick="abrirNoShow(@r.IdReserva)">
+                                <i class="fa fa-user-times"></i>
+                            </button>
+                        }
+                        else if (estado == "checkin")
+                        {
+                            <button class="btn btn-xs btn-info" onclick="abrirCheckout(@r.IdReserva)">
+                                <i class="fa fa-sign-out"></i>
+                            </button>
+                            <button class="btn btn-xs btn-warning" onclick="abrirExtension(@r.IdReserva)">
+                                <i class="fa fa-calendar-plus-o"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Sin acciones</span>
+                        }
+                    </td>
+                </tr>
                         }
                     }
                 </tbody>

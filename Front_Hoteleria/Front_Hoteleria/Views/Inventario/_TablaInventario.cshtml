@@ -136,7 +136,7 @@
                             var cat = (item.Categoria ?? "").ToLower().Trim();
                             string catClass;
                             string catText;
-
+                            var codigo = $"INV-{@item.IdArticulo:000}";
                             switch (cat)
                             {
                                 case "muebles":
@@ -179,7 +179,7 @@
                             }
 
                             <tr>
-                                <td>@item.IdArticulo</td>
+                                <td>@codigo</td>
                                 <td>@item.Nombre</td>
                                 <td><span class="inv-cat-pill @catClass">@catText</span></td>
                                 <td>@item.Habitacion</td>

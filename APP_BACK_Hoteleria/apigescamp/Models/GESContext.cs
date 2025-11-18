@@ -65,6 +65,7 @@ namespace DemoBackend.Models
         public virtual DbSet<TipoHabitacionModels> TipoHabiatacion { get; set; }
         public virtual DbSet<EstadoReservaModels> EstadoReserva { get; set; }
         public virtual DbSet<OrdenTrabajoModels> ListaOrdenTrabajo { get; set; }
+        public virtual DbSet<SolicitudKPIModels> SolicitudKPI{ get; set; }
 
         public DbSet<CalendarioEventosModels> CalendarioEventos { get; set; }
         public DbSet<CalendarioBloqueosModels> CalendarioBloqueos { get; set; }

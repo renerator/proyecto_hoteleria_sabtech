@@ -25,8 +25,8 @@ namespace Front_Hoteleria
             );
             routes.MapRoute(
                 name: "ServiciosRoot",
-                url: "Servicios",
-                defaults: new { controller = "Servicios", action = "Index" }
+                url: "SolicitudServicio",
+                defaults: new { controller = "SolicitudServicio", action = "Index" }
             );
             routes.MapRoute(
             name: "PanelPrincipalRoot",

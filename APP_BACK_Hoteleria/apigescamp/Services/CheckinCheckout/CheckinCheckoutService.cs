@@ -41,21 +41,20 @@ namespace DemoBackend.Services
         /// </summary>
         public List<CheckDTO> GetListar(int idEstadoCheck, DateTime? fechaDesde)
         {
-            const string sql = "LISTADO_Check @idEstadoCheck";
+            const string sql = "LISTADO_Check @idEstadoCheck, @fechaDesde";
 
             var parametros = new[]
             {
-                new SqlParameter("@idEstadoCheck", SqlDbType.Int)
-                {
-                    Value = idEstadoCheck
-                },
-                new SqlParameter("@fechaDesde", SqlDbType.DateTime)
-                {
-                    Value = (object)fechaDesde ?? DBNull.Value,
-                    IsNullable = true
-                },
-                
-            };
+        new SqlParameter("@idEstadoCheck", SqlDbType.Int)
+        {
+            Value = idEstadoCheck
+        },
+        new SqlParameter("@fechaDesde", SqlDbType.DateTime)
+        {
+            Value = (object)fechaDesde ?? DBNull.Value,
+            IsNullable = true
+        },
+    };
 
             var lista = _listaCheck.GetStoreProcedure(sql, parametros);
             return _mapper.Map<List<CheckDTO>>(lista);
@@ -65,7 +64,7 @@ namespace DemoBackend.Services
         /// Método específico para Checkin/Checkout: filtra por fecha (día completo) e idEstado.
         /// idEstadoCheck = 0 => todos los estados (el SP ya debe manejar eso).
         /// </summary>
-       
+
 
         public CheckKPIDTO ObtenerDashboard()
         {

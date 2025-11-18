@@ -1,0 +1,92 @@
+﻿@model Front_Hoteleria.Dto.SolicitudServicio.SolicitudKPIDto
+
+<style>
+    .serv-dashboard-row {
+        margin-bottom: 20px;
+    }
+
+    .serv-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 18px 18px 14px 18px;
+        box-shadow: 0 4px 12px rgba(0,0,0,.04);
+        position: relative;
+        min-height: 130px;
+    }
+
+        .serv-card h4 {
+            margin-top: 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .serv-card small {
+            font-size: 11px;
+            letter-spacing: .5px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+
+        .serv-card .kpi-number {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 4px 0 6px 0;
+        }
+
+        /* colores por tarjeta */
+        .serv-card.kpi-dia .kpi-number {
+            color: #f39c12;
+        }
+
+        .serv-card.kpi-semana .kpi-number {
+            color: #3498db;
+        }
+
+        .serv-card.kpi-tiempo .kpi-number {
+            color: #2ecc71;
+        }
+
+        .serv-card .icon-soft {
+            position: absolute;
+            right: 18px;
+            top: 12px;
+            font-size: 32px;
+            color: rgba(44, 62, 80, .15);
+        }
+</style>
+
+<div class="row serv-dashboard-row">
+    <div class="col-md-4 col-sm-6">
+        <div class="serv-card kpi-dia">
+            <span class="icon-soft fa fa-clock-o"></span>
+            <h4>Solicitudes Pendientes Hoy</h4>
+            <div class="kpi-number" id="statPendientesHoy">
+                @(Model != null ? Model.SolicitudPendientesHoy : 0)
+            </div>
+            <small>REQUIEREN ATENCIÓN</small>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="serv-card kpi-semana">
+            <span class="icon-soft fa fa-calendar"></span>
+            <h4>Solicitudes Pendientes Semana</h4>
+            <div class="kpi-number" id="statPendientesSemana">
+                @(Model != null ? Model.SolicitudPendientesSemana : 5)
+            </div>
+            <small>ÚLTIMOS 7 DÍAS</small>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+        <div class="serv-card kpi-tiempo">
+            <span class="icon-soft fa fa-hourglass-half"></span>
+            <h4>Tiempo Promedio Respuesta</h4>
+            <div class="kpi-number" id="statTiempoRespuesta">
+                @(Model != null ? (Model.TiempoPromedioRespuesta + "h") : "6h")
+            </div>
+            <small>PROMEDIO GENERAL</small>
+        </div>
+    </div>
+</div>

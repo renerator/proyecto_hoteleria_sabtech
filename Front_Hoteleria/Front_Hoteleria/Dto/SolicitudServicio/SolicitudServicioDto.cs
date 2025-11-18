@@ -1,7 +1,6 @@
 using System;
 
-namespace DemoBackend.Dto.SolicitudServicio
-{
+namespace Front_Hoteleria.Dto.SolicitudServicio { 
     public class SolicitudServicioDto
     {
         public int IdSolicitud { get; set; }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DemoBackend.Controllers
 {
@@ -106,6 +107,30 @@ namespace DemoBackend.Controllers
             }
         }
 
+        [HttpGet("ResumenKPI")]
+        public async Task<ActionResult<SolicitudKPIDto>> ObtenerKPI()
+        {
+            _logger.LogInformation("GetObtenerKPI: Inicio.");
+            try
+            {
+                var dto = await _service.ObtenerKpiAsync();   // 👈 await al Task
+
+                if (dto == null)
+                {
+                    _logger.LogInformation("GetObtenerKPI: No hay datos de KPI.");
+                    return NoContent();
+                }
+
+                return Ok(dto);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "GetObtenerKPI: Error inesperado.");
+                return StatusCode(500, "Error interno del servidor.");
+            }
+        }
+
+
         /// <summary>
         /// Crea una nueva solicitud de servicio.
         /// </summary>
@@ -172,12 +197,19 @@ namespace DemoBackend.Controllers
         }
         // En SolicitudServicioController
         [HttpGet("ListaSolicitudesVigentes")]
-        public ActionResult<List<SolicitudServicioDto>> ListaSolicitudesVigentes([FromQuery] int vigencia = 1)
+        public ActionResult<List<SolicitudServicioDto>> ListaSolicitudesVigentes(
+     [FromQuery] int IdEstado = 1,
+     [FromQuery] DateTime? fechaInicio = null,
+     [FromQuery] DateTime? fechaFin = null)
         {
             try
             {
-                var data = _service.GetListaSolicitudServicioEstado(vigencia);
-                if (data == null || data.Count == 0) return NoContent();
+                // ahora el servicio recibe también el rango de fechas
+                var data = _service.GetListaSolicitudServicioEstado(IdEstado, fechaInicio, fechaFin);
+
+                if (data == null || data.Count == 0)
+                    return NoContent();
+
                 return Ok(data);
             }
             catch (Exception e)
@@ -186,6 +218,7 @@ namespace DemoBackend.Controllers
                 return StatusCode(500, "Error interno del servidor.");
             }
         }
+
         /// <summary>
         /// Elimina una solicitud por Id.
         /// </summary>

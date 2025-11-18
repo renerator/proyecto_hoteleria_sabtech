@@ -78,12 +78,13 @@
                         string.Equals(r.EstadoReserva, "Realizada", System.StringComparison.OrdinalIgnoreCase) ? "st-realizada" :
                         "st-pendiente";
 
-                    var codigo = !string.IsNullOrWhiteSpace(r.Codigo) ? r.Codigo : r.IdReserva.ToString();
+                    var codigo = $"RES-{@r.IdReserva:000}";
+                   // var codigo = !string.IsNullOrWhiteSpace(r.Codigo) ? r.Codigo : r.IdReserva.ToString();
                     var nombreHuesped = !string.IsNullOrWhiteSpace(r.NombreHuesped) ? r.NombreHuesped : r.HuespedNombre;
                     var tipoHab = !string.IsNullOrWhiteSpace(r.TipoHabitacion) ? r.TipoHabitacion : r.TipoHabitacionNombre;
 
                     <tr>
-                        <td><strong>@r.IdReserva</strong></td>
+                        <td>@codigo</td>
                         <td>@(r.FechaDesde.HasValue ? r.FechaDesde.Value.ToString("dd/MM/yyyy") : "")</td>
                         <td>@(r.FechaHasta.HasValue ? r.FechaHasta.Value.ToString("dd/MM/yyyy") : "")</td>
 

@@ -69,6 +69,10 @@ namespace DemoBackend.Models.Check
 
         [Column("ObservacionesRechazo")]
         public string ObservacionesRechazo { get; set; }
+        [Column("NombreHabitacion")]
+        public string NombreHabitacion { get; set; }
+        [Column("Dias")]
+        public int Dias { get; set; }
 
 
     }

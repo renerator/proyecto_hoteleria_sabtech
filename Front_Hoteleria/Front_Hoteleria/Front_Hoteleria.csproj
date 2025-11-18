@@ -144,6 +144,7 @@
     <Compile Include="Controllers\ServiciosHuespedController.cs" />
     <Compile Include="Controllers\ServiciosController.cs" />
     <Compile Include="Controllers\ServiciosDisponiblesController.cs" />
+    <Compile Include="Controllers\SolicitudServicioController.cs" />
     <Compile Include="Dto\Calendario\CalendarioBloqueoDto.cs" />
     <Compile Include="Dto\Calendario\CalendarioSanitizacionDto.cs" />
     <Compile Include="Dto\Calendario\CalendarioMantenimientoDto.cs" />
@@ -205,6 +206,8 @@
     <Compile Include="Dto\Servicio\ServicioDashboardDto.cs" />
     <Compile Include="Dto\Servicio\ServicioKpiDto.cs" />
     <Compile Include="Dto\Servicio\ServicioDto.cs" />
+    <Compile Include="Dto\SolicitudServicio\SolicitudKPIDto.cs" />
+    <Compile Include="Dto\SolicitudServicio\SolicitudServicioDto.cs" />
     <Compile Include="Dto\Trabajadores\TrabajadoresDto.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -221,6 +224,8 @@
     <Compile Include="Services\Reportes\ReportesService.cs" />
     <Compile Include="Services\reservas\IReservaService.cs" />
     <Compile Include="Services\reservas\ReservaService.cs" />
+    <Compile Include="Services\SolicitudServicio\ISolicitudServicioService.cs" />
+    <Compile Include="Services\SolicitudServicio\SolicitudServicioService.cs" />
     <Compile Include="Services\Trabajadores\ITrabajadoresService.cs" />
     <Compile Include="Services\Trabajadores\TrabajadoresService.cs" />
     <Compile Include="Services\ServiciosPersonal\IServiciosPersonalService.cs" />
@@ -4745,6 +4750,11 @@
     <Content Include="Views\Huesped\Reclamos\_TablaReclamos.cshtml" />
     <Content Include="Views\Dotaciones\_CargaMasivaDotacion.cshtml" />
     <Content Include="Views\Dotaciones\_TurnosDotacion.cshtml" />
+    <Content Include="Views\SolicitudServicio\_DashboardServicio.cshtml" />
+    <Content Include="Views\SolicitudServicio\_PanelesServicio.cshtml" />
+    <Content Include="Views\SolicitudServicio\_TablaServicio.cshtml" />
+    <Content Include="Views\SolicitudServicio\_UpsertServicio.cshtml" />
+    <Content Include="Views\SolicitudServicio\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\vendors\devbridge-autocomplete\src\jquery.autocomplete.d.ts" />

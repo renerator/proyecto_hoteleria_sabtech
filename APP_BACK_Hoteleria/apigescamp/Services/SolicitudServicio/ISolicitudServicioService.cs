@@ -1,6 +1,7 @@
+using DemoBackend.Dto.SolicitudServicio;
 using System;
 using System.Collections.Generic;
-using DemoBackend.Dto.SolicitudServicio;
+using System.Threading.Tasks;
 
 namespace DemoBackend.Services.SolicitudServicio
 {
@@ -13,7 +14,9 @@ namespace DemoBackend.Services.SolicitudServicio
         bool Eliminar(int idSolicitud);
 
         // ISolicitudServicioService
-        List<SolicitudServicioDto> GetListaSolicitudServicioEstado(int vigencia);
+        List<SolicitudServicioDto> GetListaSolicitudServicioEstado(int idEstado, DateTime? fchaInicio, DateTime? fechaFin);
+
+        Task<SolicitudKPIDto> ObtenerKpiAsync();
 
     }
 }

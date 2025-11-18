@@ -1,7 +1,7 @@
-﻿@model IEnumerable<Front_Hoteleria.Dto.Servicio.ServicioDto>
+﻿@model IEnumerable<Front_Hoteleria.Dto.SolicitudServicio.SolicitudServicioDto>
 
 @{
-    var data = Model ?? Enumerable.Empty<Front_Hoteleria.Dto.Servicio.ServicioDto>();
+    var data = Model ?? Enumerable.Empty<Front_Hoteleria.Dto.SolicitudServicio.SolicitudServicioDto>();
 }
 
 @Html.AntiForgeryToken()
@@ -27,28 +27,43 @@
                 font-weight: 700;
             }
 
-    /* Estado "Pendiente" tipo pill naranja */
-    .badge-estado-pendiente {
+    /* Estado: pills por tipo */
+    .badge-estado {
         display: inline-block;
         padding: 4px 10px;
         border-radius: 4px;
-        background: #f0ad4e;
-        color: #fff;
         font-size: 11px;
         font-weight: 600;
         white-space: nowrap;
+        color: #fff;
     }
 
-        .badge-estado-pendiente i {
+        .badge-estado i {
             margin-right: 4px;
         }
+
+    .badge-estado-pendiente {
+        background: #f0ad4e;
+    }
+
+    .badge-estado-asignada {
+        background: #5bc0de;
+    }
+
+    .badge-estado-rechazada {
+        background: #d9534f;
+    }
+
+    .badge-estado-realizada {
+        background: #5cb85c;
+    }
 
     /* Columna acciones centrada y con botones pequeños */
     #servicesTable th.col-acciones,
     #servicesTable td.col-acciones {
         text-align: center;
         white-space: nowrap;
-        width: 140px;
+        width: 160px;
     }
 
         #servicesTable td.col-acciones .btn {
@@ -74,6 +89,7 @@
                 <thead>
                     <tr>
                         <th>ID Solicitud</th>
+                        <th>Fecha/Hora</th>
                         <th class="col-servicio">Tipo Servicio</th>
                         <th>Habitación</th>
                         <th>Solicitante</th>
@@ -87,24 +103,51 @@
                     {
                         foreach (var s in data)
                         {
-                            // Ajusta estos campos a los nombres reales de tu DTO
-                            var idSolicitud = s.Codigo ?? $"SOL-{s.IdServicio:000}";
-                            var tipoServicio = s.NombreServicio;
-                            var habitacion = s.NumeroHabitacion;      // <-- cambia si tu propiedad se llama distinto
-                            var solicitante = s.NombreSolicitante;     // idem
+                            var codigo = $"SOL-{s.IdSolicitud:000}";
+
+                            var fechaTexto = s.FechaSolicitud.HasValue
+                                ? s.FechaSolicitud.Value.ToString("dd/MM/yyyy HH:mm")
+                                : "";
+
+                            var tipoServicio = s.TipoServicio;
+                            var habitacion = !string.IsNullOrWhiteSpace(s.NombreHabitacion)
+                                ? s.NombreHabitacion
+                                : s.IdHabitacion.ToString();
+
+                            var solicitante = s.NombreSolicitante;
                             var personalAsig = string.IsNullOrWhiteSpace(s.PersonalAsignado)
-                                                ? "Sin asignar"
-                                                : s.PersonalAsignado;
+                                ? "Sin asignar"
+                                : s.PersonalAsignado;
+
+                            var estado = (s.EstadoSolicitud ?? "").Trim();
+                            var cssEstado = "badge-estado badge-estado-pendiente";
+                            switch (estado)
+                            {
+                                case "Asignada":
+                                    cssEstado = "badge-estado badge-estado-asignada";
+                                    break;
+                                case "Rechazada":
+                                    cssEstado = "badge-estado badge-estado-rechazada";
+                                    break;
+                                case "Realizada":
+                                    cssEstado = "badge-estado badge-estado-realizada";
+                                    break;
+                                case "Pendiente":
+                                default:
+                                    cssEstado = "badge-estado badge-estado-pendiente";
+                                    break;
+                            }
 
                             <tr>
-                                <td class="col-id">@idSolicitud</td>
+                                <td>@codigo</td>
+                                <td>@fechaTexto</td>
                                 <td>@tipoServicio</td>
                                 <td>@habitacion</td>
                                 <td>@solicitante</td>
                                 <td>@personalAsig</td>
                                 <td>
-                                    <span class="badge-estado-pendiente">
-                                        <i class="fa fa-clock-o"></i> Pendiente
+                                    <span class="@cssEstado">
+                                        <i class="fa fa-clock-o"></i> @estado
                                     </span>
                                 </td>
                                 <td class="col-acciones">
@@ -112,7 +155,7 @@
                                     <button type="button"
                                             class="btn btn-info btn-xs"
                                             title="Ver"
-                                            onclick="verServicio(@s.IdServicio)">
+                                            onclick="verSolicitud(@s.IdSolicitud)">
                                         <i class="fa fa-eye"></i>
                                     </button>
 
@@ -120,7 +163,7 @@
                                     <button type="button"
                                             class="btn btn-warning btn-xs"
                                             title="Editar"
-                                            onclick="editarServicio(@s.IdServicio)">
+                                            onclick="editarSolicitud(@s.IdSolicitud)">
                                         <i class="fa fa-pencil"></i>
                                     </button>
 
@@ -128,7 +171,7 @@
                                     <button type="button"
                                             class="btn btn-success btn-xs"
                                             title="Notificar Personal"
-                                            onclick="nuevoServicio(@s.IdServicio)">
+                                            onclick="notificarPersonal(@s.IdSolicitud)">
                                         <i class="fa fa-user"></i>
                                     </button>
 
@@ -136,7 +179,7 @@
                                     <button type="button"
                                             class="btn btn-danger btn-xs"
                                             title="Eliminar"
-                                            onclick="eliminarServicio(@s.IdServicio)">
+                                            onclick="eliminarSolicitud(@s.IdSolicitud)">
                                         <i class="fa fa-trash"></i>
                                     </button>
                                 </td>
@@ -146,8 +189,8 @@
                     else
                     {
                         <tr>
-                            <td colspan="7" class="text-center text-muted">
-                                No hay servicios pendientes para los filtros seleccionados.
+                            <td colspan="8" class="text-center text-muted">
+                                No hay solicitudes para los filtros seleccionados.
                             </td>
                         </tr>
                     }
@@ -156,15 +199,15 @@
         </div>
     </div>
 </div>
-@section scripts{
-    <script>
-        $(function () {
-            $('#servicesTable').DataTable({
-                pageLength: 10,
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
-                }
-            });
+
+<script>
+    $(function () {
+        $('#servicesTable').DataTable({
+            destroy: true,
+            pageLength: 10,
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
+            }
         });
-    </script>
-}
+    });
+</script>
