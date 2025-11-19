@@ -15,7 +15,7 @@ namespace Front_Hoteleria.Dto.SolicitudServicio {
         public int? IdSolicitante { get; set; }
         public int? IdTipoServicio { get; set; }
         public int? IdEstadoSolicitud { get; set; }
-
+        public string Descripcion { get; set; }
         // ===== Campos de solo lectura para la vista (JOINs) =====
         public string NombreHabitacion { get; set; }      // ej: "301"
         public string TipoServicio { get; set; }          // ej: "Limpieza de Habitación"

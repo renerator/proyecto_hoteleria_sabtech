@@ -1,125 +1,123 @@
-﻿@model Front_Hoteleria.Dto.Servicio.ServicioDto
+﻿@model Front_Hoteleria.Dto.SolicitudServicio.SolicitudServicioDto
 
 @{
-    // si la vista se renderiza sin modelo desde el Index, creo uno por defecto
-    var m = Model ?? new Front_Hoteleria.Dto.Servicio.ServicioDto
-    {
-        IdServicio = 0,
-        Estado = true,
-        TiempoEstimadoMinutos = 30
-    };
-
-    // según si es nuevo o edición cambio la acción
-    var actionName = m.IdServicio > 0 ? "Modificar" : "Crear";
+    var esEdicion = Model != null && Model.IdSolicitud > 0;
+    var titulo = esEdicion ? "Editar Solicitud de Servicio" : "Nueva Solicitud de Servicio";
 }
 
-<div id="modalServicio" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+<div id="modalSolicitudServicio" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
 
-            <div class="modal-header" style="background: #2a3f54; color: #fff;">
+            <!-- HEADER -->
+            <div class="modal-header" style="background:#2a3f54;color:#fff;">
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                <h4 class="modal-title">@((m.IdServicio > 0) ? "Editar servicio" : "Nuevo servicio")</h4>
+                <h4 class="modal-title">
+                    <i class="fa fa-plus"></i> @titulo
+                </h4>
             </div>
 
-            @using (Html.BeginForm(actionName, "Servicios", FormMethod.Post, new { id = "frmServicio", @class = "form-horizontal form-label-left" }))
+            @using (Html.BeginForm("Crear", "SolicitudServicio", FormMethod.Post,
+                     new { id = "frmSolicitudServicio", @class = "form-horizontal" }))
             {
                 @Html.AntiForgeryToken()
-
-                <!-- id oculto -->
-                <input type="hidden" name="IdServicio" value="@m.IdServicio" />
+                @Html.HiddenFor(m => m.IdSolicitud)
 
                 <div class="modal-body">
 
-                    <div class="form-group">
-                        <label class="control-label col-md-3">Nombre del servicio <span class="text-danger">*</span></label>
-                        <div class="col-md-9">
-                            <input type="text"
-                                   name="NombreServicio"
-                                   class="form-control"
-                                   value="@m.NombreServicio"
-                                   placeholder="Ej: Limpieza de habitación"
-                                   required />
+                    <!-- FILA 1: Tipo Servicio / Habitación -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Tipo de Servicio <span class="text-danger">*</span></label>
+                                @* Se llenará por JS con los servicios disponibles *@
+                                <select id="IdServicio" name="IdServicio" class="form-control" required>
+                                    <option value="">Seleccione...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Habitación <span class="text-danger">*</span></label>
+                                <input type="text"
+                                       id="IdHabitacion"
+                                       name="IdHabitacion"
+                                       class="form-control"
+                                       value="@(Model != null && Model.IdHabitacion > 0 ? Model.IdHabitacion.ToString() : "")"
+                                       placeholder="Ej: 301"
+                                       required />
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="control-label col-md-3">Tipo de servicio</label>
-                        <div class="col-md-3">
-                            <input type="number"
-                                   name="IdTipoServicio"
-                                   class="form-control"
-                                   value="@(m.IdTipoServicio == 0 ? "" : m.IdTipoServicio.ToString())"
-                                   min="1" />
+                    <!-- FILA 2: Solicitante / RUT / Empresa -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>RUT Solicitante <span class="text-danger">*</span></label>
+                                <input type="text"
+                                       id="RutSolicitante"
+                                       name="RutSolicitante"
+                                       class="form-control"
+                                       placeholder="11.111.111-1"
+                                       required />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Solicitante <span class="text-danger">*</span></label>
+                                <input type="text"
+                                       id="NombreSolicitante"
+                                       name="NombreSolicitante"
+                                       class="form-control"
+                                       value="@(Model != null ? Model.NombreSolicitante : "")"
+                                       placeholder="Nombre del solicitante"
+                                       required />
+                            </div>
                         </div>
 
-                        <label class="control-label col-md-3">Empresa</label>
-                        <div class="col-md-3">
-                            <input type="number"
-                                   name="IdEmpresa"
-                                   class="form-control"
-                                   value="@(m.IdEmpresa == 0 ? "" : m.IdEmpresa.ToString())"
-                                   min="1" />
-                        </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label class="control-label col-md-3">Categoría</label>
-                        <div class="col-md-3">
-                            <input type="number"
-                                   name="IdServiciosCategoria"
-                                   class="form-control"
-                                   value="@(m.IdServiciosCategoria.HasValue ? m.IdServiciosCategoria.Value.ToString() : "")" />
-                        </div>
 
-                        <label class="control-label col-md-3">Prioridad</label>
-                        <div class="col-md-3">
-                            <input type="number"
-                                   name="IdServicioPrioridad"
-                                   class="form-control"
-                                   value="@(m.IdServicioPrioridad.HasValue ? m.IdServicioPrioridad.Value.ToString() : "")" />
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label col-md-3">Estado de servicio</label>
-                        <div class="col-md-3">
-                            <input type="number"
-                                   name="IdServicioEstado"
-                                   class="form-control"
-                                   value="@(m.IdServicioEstado.HasValue ? m.IdServicioEstado.Value.ToString() : "")" />
-                        </div>
-
-                        <label class="control-label col-md-3">Tiempo estimado (min)</label>
-                        <div class="col-md-3">
-                            <input type="number"
-                                   name="TiempoEstimadoMinutos"
-                                   class="form-control"
-                                   min="0"
-                                   value="@m.TiempoEstimadoMinutos" />
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Empresa</label>
+                                @* Combo para empresa; lo puedes llenar por AJAX *@
+                                <select id="IdEmpresa" name="IdEmpresa" class="form-control">
+                                    <option value="">Seleccione...</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
+                    <!-- FILA 3: Descripción -->
                     <div class="form-group">
-                        <label class="control-label col-md-3">Precio</label>
-                        <div class="col-md-3">
-                            <input type="number"
-                                   name="Precio"
-                                   class="form-control"
-                                   min="0"
-                                   step="1"
-                                   value="@(m.Precio.HasValue ? m.Precio.Value.ToString() : "")" />
-                        </div>
+                        <label>Descripción <span class="text-danger">*</span></label>
+                        <textarea id="Descripcion"
+                                  name="Descripcion"
+                                  rows="3"
+                                  class="form-control"
+                                  placeholder="Detalles de la solicitud"
+                                  required>@(Model != null ? Model.Descripcion : "")</textarea>
+                    </div>
 
-                        <label class="control-label col-md-3">Activo</label>
-                        <div class="col-md-3" style="padding-top:5px;">
-                            <input type="checkbox" name="Estado" value="true" @(m.Estado ? "checked=\"checked\"" : "") />
-                            <input type="hidden" name="Estado" value="false" />
+                    <!-- FILA 4: Prioridad -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Prioridad</label>
+                                <select id="Prioridad" name="Prioridad" class="form-control">
+                                    <option value="Normal" selected>Normal</option>
+                                    <option value="Alta">Alta</option>
+                                    <option value="Baja">Baja</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
                 </div> <!-- /modal-body -->
 
+                <!-- FOOTER -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-success">
@@ -132,13 +130,93 @@
 </div>
 
 <script>
-    // abrir para nuevo
+    // --------- Abrir modal para nueva solicitud ----------
     function nuevoServicio() {
-        $('#modalServicio').modal('show');
+        limpiarFormularioSolicitud();
+        $('#modalSolicitudServicio').modal('show');
     }
-    // abrir para edición (luego puedes hacer un GET y rellenar)
-    function editarServicio(id) {
-        // por ahora solo abrir
-        $('#modalServicio').modal('show');
+
+    function limpiarFormularioSolicitud() {
+        var $form = $('#frmSolicitudServicio');
+        if ($form.length) {
+            $form[0].reset();
+        }
+        $('#RutSolicitante').removeClass('input-validation-error');
     }
+
+    // --------- Validación de RUT chileno ----------
+    function validarRutChile(rut) {
+        if (!rut) return false;
+
+        rut = rut.replace(/\./g, '').replace(/-/g, '').toUpperCase();
+
+        if (rut.length < 2) return false;
+
+        var cuerpo = rut.slice(0, -1);
+        var dv = rut.slice(-1);
+
+        if (!/^\d+$/.test(cuerpo)) return false;
+
+        var suma = 0;
+        var multiplo = 2;
+
+        for (var i = cuerpo.length - 1; i >= 0; i--) {
+            suma += parseInt(cuerpo.charAt(i), 10) * multiplo;
+            multiplo = (multiplo === 7) ? 2 : multiplo + 1;
+        }
+
+        var resto = 11 - (suma % 11);
+        var dvEsperado = (resto === 11) ? '0' : (resto === 10 ? 'K' : resto.toString());
+
+        return dvEsperado === dv;
+    }
+
+    $(function () {
+
+        // Validar RUT al salir del campo
+        $('#RutSolicitante').on('blur', function () {
+            var rut = $(this).val();
+            if (rut && !validarRutChile(rut)) {
+                alert('El RUT del solicitante no es válido.');
+                $(this).addClass('input-validation-error').focus();
+            } else {
+                $(this).removeClass('input-validation-error');
+            }
+        });
+
+        // Enviar formulario por AJAX al método Crear(SolicitudServicioDto dto)
+        $('#frmSolicitudServicio').on('submit', function (e) {
+            e.preventDefault();
+
+            var rut = $('#RutSolicitante').val();
+            if (!validarRutChile(rut)) {
+                alert('El RUT del solicitante no es válido.');
+                $('#RutSolicitante').addClass('input-validation-error').focus();
+                return;
+            }
+
+            var $form = $(this);
+
+            $.ajax({
+                url: '@Url.Action("Crear", "SolicitudServicio")',
+                type: 'POST',
+                data: $form.serialize(),
+                success: function (resp) {
+                    if (resp && resp.ok) {
+                        $('#modalSolicitudServicio').modal('hide');
+                        if (typeof recargarTabla === 'function') {
+                            recargarTabla();   // refresca la grilla
+                        }
+                    } else {
+                        alert(resp && resp.message
+                            ? resp.message
+                            : 'No se pudo crear la solicitud.');
+                    }
+                },
+                error: function (xhr) {
+                    alert('Error al guardar la solicitud (' + xhr.status + ').');
+                }
+            });
+        });
+    });
 </script>
