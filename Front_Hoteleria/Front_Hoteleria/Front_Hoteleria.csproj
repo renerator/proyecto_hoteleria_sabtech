@@ -170,6 +170,9 @@
     <Compile Include="Dto\EstadoReserva\EstadoReservaDto.cs" />
     <Compile Include="Dto\Habitacion\HabitacionDashboardDto.cs" />
     <Compile Include="Dto\Habitacion\HabitacionDto.cs" />
+    <Compile Include="Dto\Huesped\EncuestaSatisfaccionDto.cs" />
+    <Compile Include="Dto\Huesped\SolicitudServicioDto.cs" />
+    <Compile Include="Dto\Huesped\ReservaHuespedDto.cs" />
     <Compile Include="Dto\Huesped\ReclamoSolicitudDto.cs" />
     <Compile Include="Dto\Inventario\InventarioMovimientoPostDto.cs" />
     <Compile Include="Dto\Inventario\InventarioKpiDto.cs" />
@@ -4661,8 +4664,6 @@
     <Content Include="Views\Servicios\_PanelesServicio.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Huesped\Reservas\Index.cshtml" />
-    <Content Include="Views\Huesped\Reservas\_TablaMisReservas.cshtml" />
-    <Content Include="Views\Huesped\Reservas\_UpsertReserva..cshtml" />
     <Content Include="Views\PanelPrincipal\_DashboardAdm.cshtml" />
     <Content Include="Views\PanelPrincipal\_TablaDashAdm.cshtml" />
     <Content Include="Views\PanelPrincipal\Index.cshtml" />
@@ -4680,10 +4681,9 @@
     <Content Include="Views\Dotaciones\_TablaDotaciones.cshtml" />
     <Content Include="Views\Dotaciones\_UpsertDotaciones.cshtml" />
     <Content Include="Views\Dotaciones\Index.cshtml" />
-    <Content Include="Views\ReservasHuesped\_DashboardReservaHuesped.cshtml" />
-    <Content Include="Views\ReservasHuesped\_TablaReservaHuesped.cshtml" />
-    <Content Include="Views\ReservasHuesped\_UpsertReservaHuesped.cshtml" />
-    <Content Include="Views\ReservasHuesped\Index.cshtml" />
+    <Content Include="Views\Huesped\Reservas\_DetalleReservaHuesped.cshtml" />
+    <Content Include="Views\Huesped\Reservas\_TablaReservasHuesped.cshtml" />
+    <Content Include="Views\Huesped\Reservas\_UpsertReservaHuesped.cshtml" />
     <Content Include="Views\ServiciosHuesped\_DashboardServicioHuesped.cshtml" />
     <Content Include="Views\ServiciosHuesped\_PanelesServicioHuesped.cshtml" />
     <Content Include="Views\ServiciosHuesped\_TablaServicioHuesped.cshtml" />
@@ -4755,6 +4755,15 @@
     <Content Include="Views\SolicitudServicio\_TablaServicio.cshtml" />
     <Content Include="Views\SolicitudServicio\_UpsertServicio.cshtml" />
     <Content Include="Views\SolicitudServicio\Index.cshtml" />
+    <Content Include="Views\Huesped\Reclamos\_DetalleReclamo.cshtml" />
+    <Content Include="Views\Huesped\Reservas\_EditReservaHuesped.cshtml" />
+    <Content Include="Views\Huesped\Reservas\_EncuestaSatisfaccion.cshtml" />
+    <Content Include="Views\Huesped\Servicio\_DetalleReservaHuesped.cshtml" />
+    <Content Include="Views\Huesped\Servicio\_EditReservaHuesped.cshtml" />
+    <Content Include="Views\Huesped\Servicio\_EncuestaSatisfaccion.cshtml" />
+    <Content Include="Views\Huesped\Servicio\_TablaSolicitudesServicio.cshtml" />
+    <Content Include="Views\Huesped\Servicio\_UpsertReservaHuesped.cshtml" />
+    <Content Include="Views\Huesped\Servicio\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\vendors\devbridge-autocomplete\src\jquery.autocomplete.d.ts" />

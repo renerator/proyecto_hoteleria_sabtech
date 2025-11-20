@@ -1,15 +1,155 @@
-﻿@* SIN MODELO *@
-<div class="panel panel-info" style="border:0; box-shadow:none;">
-    <div class="panel-heading" style="background:#2980b9; color:#fff; border-radius:4px 4px 0 0;">
-        <h4 style="margin:0;">
-            <i class="fa fa-undo"></i> Mis Solicitudes Anteriores
+﻿@model IEnumerable<Front_Hoteleria.Dto.Huesped.ReclamoSolicitudDto>
+
+<style>
+    /* ===== PANEL COMPLETO ===== */
+    .panel-solicitudes {
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,.08);
+        margin-top: 20px;
+    }
+
+        /* Huincha larga de “Mis Solicitudes Anteriores” */
+        .panel-solicitudes .panel-heading {
+            background: #3191D1;
+            background: linear-gradient(90deg,#2F8FD0,#3191D1,#2B84BF);
+            color: #fff;
+            border-radius: 4px 4px 0 0;
+            padding: 10px 20px;
+        }
+
+            .panel-solicitudes .panel-heading h4 {
+                margin: 0;
+                font-weight: 600;
+                font-size: 18px;
+            }
+
+            .panel-solicitudes .panel-heading i {
+                margin-right: 8px;
+            }
+
+        .panel-solicitudes .panel-body {
+            background: #fff;
+            padding: 15px;
+            border-radius: 0 0 4px 4px;
+        }
+
+    /* ===== TABLA INTERNA ===== */
+    .solicitudes-table {
+        width: 100%;
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 13px;
+    }
+
+        /* Cabecera de columnas con degradado por columna */
+        .solicitudes-table thead th {
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            padding: 10px 15px;
+            white-space: nowrap;
+        }
+
+            .solicitudes-table thead th:nth-child(1) {
+                background: #2E8CCB;
+            }
+
+            .solicitudes-table thead th:nth-child(2) {
+                background: #2B84BE;
+            }
+
+            .solicitudes-table thead th:nth-child(3) {
+                background: #3396D8;
+            }
+
+            .solicitudes-table thead th:nth-child(4) {
+                background: #2E8BC8;
+            }
+
+            .solicitudes-table thead th:nth-child(5) {
+                background: #2B84BF;
+            }
+
+            .solicitudes-table thead th:nth-child(6) {
+                background: #2E8BC8;
+            }
+
+            .solicitudes-table thead th:nth-child(7) {
+                background: #2B84BF;
+            }
+
+        /* Filas */
+        .solicitudes-table tbody tr:nth-child(odd) {
+            background: #f9fbfd;
+        }
+
+        .solicitudes-table tbody tr:nth-child(even) {
+            background: #ffffff;
+        }
+
+        .solicitudes-table tbody td {
+            padding: 10px 15px;
+            border-top: 1px solid #ecf0f1;
+            vertical-align: middle;
+        }
+
+    /* Pastillas de estado */
+    .estado-pill {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .estado-pendiente {
+        background: #f39c12;
+    }
+    /* naranja */
+    .estado-revision {
+        background: #3498db;
+    }
+    /* azul */
+    .estado-respondido {
+        background: #27ae60;
+    }
+    /* verde */
+    .estado-cerrado {
+        background: #95a5a6;
+    }
+    /* gris */
+
+    /* Botón VER */
+    .btn-ver-solicitud {
+        background: #f39c12;
+        border-color: #f39c12;
+        color: #fff;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+
+        .btn-ver-solicitud i {
+            margin-right: 4px;
+        }
+</style>
+
+<div class="panel panel-info panel-solicitudes">
+    <!-- Huincha larga -->
+    <div class="panel-heading">
+        <h4>
+            <i class="fa fa-history"></i>
+            Mis Solicitudes Anteriores
         </h4>
     </div>
-    <div class="panel-body" style="background:#fff; border:1px solid #d9edf7; border-top:0; border-radius:0 0 4px 4px;">
+
+    <div class="panel-body">
         <div class="table-responsive">
-            <table class="table" id="solicitudesTable" style="margin-bottom:0;">
+            <table class="table solicitudes-table" id="solicitudesTable">
                 <thead>
-                    <tr style="background:#2980b9; color:#fff;">
+                    <tr>
                         <th>Fecha</th>
                         <th>Tipo</th>
                         <th>Categoría</th>
@@ -20,40 +160,114 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- fila dummy 1 -->
-                    <tr>
-                        <td>20-10-2025</td>
-                        <td>⚠️ reclamo</td>
-                        <td>🔧 servicios</td>
-                        <td>WiFi lento</td>
-                        <td><span class="label label-info" style="background:#2980b9;">En Revisión</span></td>
-                        <td>Pendiente</td>
-                        <td>
-                            <button class="btn btn-warning btn-sm btn-ver-detalle" data-solicitud-id="sug_ejemplo_1">
-                                <i class="fa fa-eye"></i> Ver
-                            </button>
-                        </td>
-                    </tr>
-                    <!-- fila dummy 2 -->
-                    <tr>
-                        <td>19-10-2025</td>
-                        <td>💡 sugerencia</td>
-                        <td>🏠 habitacion</td>
-                        <td>Mejora en la limpieza</td>
-                        <td><span class="label label-success">Respondido</span></td>
-                        <td>
-                            <button class="btn btn-info btn-sm btn-ver-respuesta" data-solicitud-id="sug_ejemplo_2">
-                                <i class="fa fa-eye"></i> Ver
-                            </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-warning btn-sm btn-ver-detalle" data-solicitud-id="sug_ejemplo_2">
-                                <i class="fa fa-eye"></i> Ver
-                            </button>
-                        </td>
-                    </tr>
+                    @if (Model == null || !Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">
+                                <i class="fa fa-info-circle"></i>
+                                No tiene solicitudes registradas.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var s in Model)
+                        {
+                            var claseEstado = ClaseEstado(s.Estado);
+                            var textoEstado = TextoEstado(s.Estado);
+                            <tr>
+                                <td>@s.Fecha.ToString("dd-MM-yyyy")</td>
+                                <td>@Html.Raw(IconoTipo(s.TipoSolicitud)) @s.TipoSolicitud</td>
+                                <td>@Html.Raw(IconoCategoria(s.Categoria)) @s.Categoria</td>
+                                <td>@s.Asunto</td>
+                                <td>
+                                    <span class="estado-pill @claseEstado">@textoEstado</span>
+                                </td>
+                                <td>
+                                    @if (string.IsNullOrWhiteSpace(s.Respuesta))
+                                    {
+                                        @:Pendiente
+                                    }
+                                    else
+                                    {
+                                        <button type="button"
+                                                class="btn btn-info btn-sm btn-ver-respuesta"
+                                                data-solicitud-id="@s.idReclamoHuesped">
+                                            <i class="fa fa-eye"></i> Ver
+                                        </button>
+                                    }
+                                </td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-warning btn-sm btn-ver-solicitud btn-ver-detalle"
+                                            data-id="@s.idReclamoHuesped">
+                                        <i class="fa fa-eye"></i> Ver
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+@functions {
+    // Iconos para Tipo
+    public string IconoTipo(string tipo)
+    {
+        switch ((tipo ?? "").ToLowerInvariant())
+        {
+            case "sugerencia": return "💡";
+            case "reclamo": return "⚠️";
+            case "felicitacion": return "🎉";
+            case "queja": return "😞";
+            default: return "📝";
+        }
+    }
+
+    // Iconos para Categoría
+    public string IconoCategoria(string categoria)
+    {
+        switch ((categoria ?? "").ToLowerInvariant())
+        {
+            case "habitacion": return "🏠";
+            case "servicios": return "🔧";
+            case "comida": return "🍽";
+            case "limpieza": return "🧹";
+            case "personal": return "👥";
+            case "instalaciones": return "🏢";
+            case "otros": return "📋";
+            default: return "📝";
+        }
+    }
+
+    // Clases CSS para el estado
+    public string ClaseEstado(string estado)
+    {
+        switch ((estado ?? "").ToLowerInvariant())
+        {
+            case "pendiente": return "estado-pendiente";
+            case "en_revision":
+            case "en revisión": return "estado-revision";
+            case "respondido": return "estado-respondido";
+            case "cerrado": return "estado-cerrado";
+            default: return "estado-cerrado";
+        }
+    }
+
+    // Texto formateado de estado
+    public string TextoEstado(string estado)
+    {
+        switch ((estado ?? "").ToLowerInvariant())
+        {
+            case "pendiente": return "Pendiente";
+            case "en_revision":
+            case "en revisión": return "En Revisión";
+            case "respondido": return "Respondido";
+            case "cerrado": return "Cerrado";
+            default: return string.IsNullOrWhiteSpace(estado) ? "N/D" : estado;
+        }
+    }
+}

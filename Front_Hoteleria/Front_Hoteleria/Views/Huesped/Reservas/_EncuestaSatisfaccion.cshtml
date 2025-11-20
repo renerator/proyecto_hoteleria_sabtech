@@ -1,0 +1,226 @@
+﻿@model Front_Hoteleria.Dto.Huesped.EncuestaSatisfaccionDto
+
+@{
+    Layout = null;
+    var titulo = Model.TipoEncuesta == 2
+        ? "Encuesta de Satisfacción - Check-out"
+        : "Encuesta de Satisfacción - Check-in";
+}
+
+<style>
+    .encuesta-modal {
+        font-size: 13px;
+        color: #73879C;
+    }
+
+    .encuesta-header-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2A3F54;
+    }
+
+        .encuesta-header-title .fa-star {
+            margin-right: 5px;
+            color: #f0ad4e;
+        }
+
+    .encuesta-subtitle {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+        .encuesta-subtitle h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2A3F54;
+            margin-bottom: 5px;
+        }
+
+    .encuesta-rating-group {
+        margin-bottom: 10px;
+    }
+
+    .encuesta-label {
+        font-weight: 600;
+        color: #2A3F54;
+    }
+
+    .encuesta-stars {
+        cursor: pointer;
+        font-size: 18px;
+    }
+
+    .encuesta-star {
+        color: #ddd;
+        margin-right: 2px;
+    }
+
+        .encuesta-star.selected {
+            color: #f0ad4e;
+        }
+</style>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title encuesta-header-title">
+        <i class="fa fa-star"></i> @titulo
+    </h4>
+</div>
+
+<div class="modal-body encuesta-modal">
+    @using (Html.BeginForm("", "", FormMethod.Post, new { id = "frmEncuesta" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.IdEncuesta)
+        @Html.HiddenFor(m => m.IdReserva)
+        @Html.HiddenFor(m => m.TipoEncuesta)
+
+        <div class="encuesta-subtitle">
+            <h4>¿Cómo calificaría su experiencia?</h4>
+            <p>Su opinión es muy importante para nosotros</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="encuesta-rating-group">
+                    <span class="encuesta-label">Calificación General:</span>
+                    <span class="encuesta-stars" data-field="CalificacionGeneral">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span class="encuesta-star" data-value="@i">&#9733;</span>
+                        }
+                    </span>
+                    @Html.HiddenFor(m => m.CalificacionGeneral, new { id = "CalificacionGeneral" })
+                </div>
+
+                <div class="encuesta-rating-group">
+                    <span class="encuesta-label">Atención del Personal:</span>
+                    <span class="encuesta-stars" data-field="AtencionPersonal">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span class="encuesta-star" data-value="@i">&#9733;</span>
+                        }
+                    </span>
+                    @Html.HiddenFor(m => m.AtencionPersonal, new { id = "AtencionPersonal" })
+                </div>
+
+                <div class="encuesta-rating-group">
+                    <span class="encuesta-label">Facilidades del Hotel:</span>
+                    <span class="encuesta-stars" data-field="FacilidadesHotel">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span class="encuesta-star" data-value="@i">&#9733;</span>
+                        }
+                    </span>
+                    @Html.HiddenFor(m => m.FacilidadesHotel, new { id = "FacilidadesHotel" })
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="encuesta-rating-group">
+                    <span class="encuesta-label">Limpieza de la Habitación:</span>
+                    <span class="encuesta-stars" data-field="LimpiezaHabitacion">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span class="encuesta-star" data-value="@i">&#9733;</span>
+                        }
+                    </span>
+                    @Html.HiddenFor(m => m.LimpiezaHabitacion, new { id = "LimpiezaHabitacion" })
+                </div>
+
+                <div class="encuesta-rating-group">
+                    <span class="encuesta-label">Relación Calidad-Precio:</span>
+                    <span class="encuesta-stars" data-field="RelacionCalidadPrecio">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span class="encuesta-star" data-value="@i">&#9733;</span>
+                        }
+                    </span>
+                    @Html.HiddenFor(m => m.RelacionCalidadPrecio, new { id = "RelacionCalidadPrecio" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top:15px;">
+            <label class="encuesta-label">Comentarios Adicionales:</label>
+            @Html.TextAreaFor(m => m.Comentarios, 4, 40, new
+            {
+                @class = "form-control",
+                placeholder = "Comparta sus comentarios sobre su experiencia..."
+            })
+        </div>
+
+        <div class="form-group">
+            <label class="encuesta-label">¿Recomendaría nuestro hotel a otros?</label><br />
+            <label class="radio-inline">
+                <input type="radio" name="Recomendaria" value="1" /> Sí, definitivamente
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="Recomendaria" value="2" /> Probablemente
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="Recomendaria" value="3" /> No
+            </label>
+        </div>
+    }
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Omitir</button>
+    <button type="button" class="btn btn-primary" id="btnEnviarEncuesta">
+        <i class="fa fa-paper-plane"></i> Enviar Encuesta
+    </button>
+</div>
+
+<script>
+    (function () {
+
+        function setStars($group, value) {
+            $group.find('.encuesta-star').each(function () {
+                var v = $(this).data('value');
+                $(this).toggleClass('selected', v <= value);
+            });
+        }
+
+        $('.encuesta-stars .encuesta-star').on('mouseenter', function () {
+            var $group = $(this).closest('.encuesta-stars');
+            var value = $(this).data('value');
+            setStars($group, value);
+        }).on('mouseleave', function () {
+            var $group = $(this).closest('.encuesta-stars');
+            var field = $group.data('field');
+            var current = parseInt($('#' + field).val() || '0', 10);
+            setStars($group, current);
+        }).on('click', function () {
+            var $group = $(this).closest('.encuesta-stars');
+            var field = $group.data('field');
+            var value = $(this).data('value');
+            $('#' + field).val(value);
+            setStars($group, value);
+        });
+
+        $('#btnEnviarEncuesta').off('click').on('click', function () {
+            var $form = $('#frmEncuesta');
+            var data = $form.serialize();
+
+            $.ajax({
+                url: '@Url.Action("GuardarEncuesta", "ReservasHuesped")',
+                type: 'POST',
+                data: data,
+                success: function (resp) {
+                    if (resp && resp.ok) {
+                        alert(resp.message || 'Encuesta enviada.');
+                        $('#modalEncuesta').modal('hide');
+                    } else {
+                        alert((resp && resp.message) || 'No se pudo enviar la encuesta.');
+                    }
+                },
+                error: function (xhr) {
+                    console.error('Error GuardarEncuesta:', xhr.status, xhr.responseText);
+                    alert('Error al enviar la encuesta.');
+                }
+            });
+        });
+
+    })();
+</script>

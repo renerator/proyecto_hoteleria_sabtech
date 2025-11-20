@@ -1,4 +1,4 @@
-using Front_Hoteleria.Dto.Reserva;
+using Front_Hoteleria.Dto.Huesped;
 using Front_Hoteleria.Dto.Servicio;
 using Front_Hoteleria.Services.ServiciosHuesped;
 using System;
@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -17,9 +16,13 @@ namespace Front_Hoteleria.Controllers
         private readonly IServiciosHuespedService _api;
 
         public ServiciosHuespedController() : this(new ServicioHuespedService()) { }
-        public ServiciosHuespedController(IServiciosHuespedService api) { _api = api; }
 
-        // Token (cookie o sesión)
+        public ServiciosHuespedController(IServiciosHuespedService api)
+        {
+            _api = api;
+        }
+
+        // ================= TOKEN =================
         private string GetBearer()
         {
             try
@@ -36,189 +39,85 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
+        // ================= INDEX =================
         [HttpGet]
         public ActionResult Index()
         {
-            // 1) Token en sesión
             var tok = Session["Token"] as string;
             if (string.IsNullOrWhiteSpace(tok))
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
 
             try
             {
-                // 2) IdPerfil seguro
                 int idPerfil = 0;
                 var rawPerfil = Session["IdPerfil"];
                 if (rawPerfil == null || !int.TryParse(rawPerfil.ToString(), out idPerfil))
                     return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
 
-                // 3) Elegir la vista según perfil
                 switch (idPerfil)
                 {
                     case 1: // Administrador
-                            // Esta acción ya es Index, así que devolvemos la vista directamente para evitar loops
                         return View("~/Views/Servicios/Index.cshtml");
 
                     case 2: // Huésped
-                            // Vista de solicitud del huésped
                         return View("~/Views/Huesped/Servicio/Index.cshtml");
 
-                    case 3: // Personal (si la creas)
+                    case 3: // Personal (si lo usas)
                         return View("~/Views/Servicios/Gestionar.cshtml");
 
                     default:
-                        return new HttpStatusCodeResult(403); // Rol desconocido
+                        return new HttpStatusCodeResult(403);
                 }
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[ServiciosController.Index] {ex}");
+                Trace.TraceError($"[ServiciosHuespedController.Index] {ex}");
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
             }
         }
-        // =================== PARCIALES ===================
 
-        // Dashboard superior (KPIs + gráfico)
-        [HttpGet]
-        public async Task<ActionResult> DashboardServicio(DateTime? desde, DateTime? hasta)
-        {
-            // 1) DTO con valores por defecto (mock) para que SIEMPRE haya contenido
-            var dto = new ServicioDashboardDto();
-            {
-                //TotalServicios = 231_809,
-                //TotalDesayunos = 897,
-                //TotalLimpieza = 650,
-                //TotalTickets = 111_569
-            };
-
-            try
-            {
-                // 2) Si hay token, intentamos la API; si falla, dejamos el mock
-                var token = GetBearer();
-                if (!string.IsNullOrWhiteSpace(token))
-                {
-                    var d = desde ?? DateTime.Today.AddDays(-30);
-                    var h = hasta ?? DateTime.Today;
-
-                    var apiDto = await _api.DashboardHabitacionAsync(d, h, token);
-                    if (apiDto != null) dto = apiDto;
-                }
-                else
-                {
-                    Trace.TraceWarning("[DashboardServicio] Sin token. Se muestran datos mock.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[DashboardServicio] Fallback por error: {ex}");
-                // NO devolvemos 5xx; mostramos el mock
-            }
-
-            return PartialView("_DashboardServicio", dto);
-        }
+        // ================= PARCIALES =================
 
         // Paneles intermedios (estático en la vista)
         [HttpGet]
-        public ActionResult PanelesServicio() => PartialView("_PanelesServicio");
+        public ActionResult PanelesServicio()
+            => PartialView("_PanelesServicio");
 
-        // Tabla (listado)
+        // Tabla (listado de servicios solicitados por el huésped)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> TablaServicio(int? vigencia, string nombre)
         {
-            // mock inicial para que SIEMPRE muestre filas
-            var data = new List<ServicioDto>
-            {
-               // new ServicioDto{ IdServicio=1, NumeroHabitacion="0005", NombreServicio="Limpieza",  Fecha=DateTime.Today, Hora="10:00", Prioridad="Alta" },
-               // new ServicioDto{ IdServicio=2, NumeroHabitacion="0008", NombreServicio="Mantenimiento", Fecha=DateTime.Today, Hora="14:30", Prioridad="Urgente" },
-                //new ServicioDto{ IdServicio=3, NumeroHabitacion="0012", NombreServicio="WiFi",       Fecha=DateTime.Today, Hora="16:45", Prioridad="Normal" }
-            };
-
             try
             {
                 var token = GetBearer();
-                if (!string.IsNullOrWhiteSpace(token))
-                {
-                    var apiData = await _api.HabitacionesDisponiblesAsync(vigencia ?? 1, token);
-                    if (apiData != null && apiData.Any())
-                        data = apiData;
-                }
-                else
-                {
-                    Trace.TraceWarning("[TablaServicio] Sin token. Se muestran filas mock.");
-                }
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada");
 
-                if (!string.IsNullOrWhiteSpace(nombre))
-                    data = data.Where(x => (x.NombreServicio ?? string.Empty)
-                                    .IndexOf(nombre, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                // Filtro para la API
+                var filtro = new ServicioHuespedDto
+                {
+                    FiltroNombreServicio = nombre
+                    // si luego quieres usar "vigencia", lo puedes mapear a fechas/estado aquí
+                };
+
+                var data = await _api.ListarServiciosHuespedAsync(filtro, token)
+                           ?? new List<ServicioHuespedDto>();
+
+                // IMPORTANTE: la vista parcial debe esperar IEnumerable<ServicioHuespedDto>
+                return PartialView("_TablaServicio", data);
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[TablaServicio] Fallback por error: {ex}");
-                // dejamos data mock
-            }
-
-            return PartialView("_TablaServicio", data);
-        }
-
-        // Upsert GET
-        [HttpGet]
-        public async Task<ActionResult> UpsertServicio(int? id)
-        {
-            var dto = new ServicioDto();
-
-            try
-            {
-                var token = GetBearer();
-                if (!string.IsNullOrWhiteSpace(token) && id.HasValue)
-                {
-                    var lista = await _api.HabitacionesDisponiblesAsync(1, token);
-                    var existente = lista?.FirstOrDefault(x => x.IdServicio == id.Value);
-                    if (existente != null) dto = existente;
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[UpsertServicio-GET] Error (se muestra formulario vacío): {ex}");
-            }
-
-            return PartialView("_UpsertServicio", dto);
-        }
-
-        // Upsert POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> UpsertServicio(ServicioDto dto)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "Datos inválidos.");
-
-                var token = GetBearer();
-                if (!string.IsNullOrWhiteSpace(token))
-                {
-                    bool ok = dto.IdServicio == 0
-                        ? await _api.CrearHabitacionAsync(dto, token)
-                        : await _api.ModificarHabitacionAsync(dto, token);
-
-                    if (!ok) return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "No se pudo guardar.");
-                }
-                else
-                {
-                    Trace.TraceWarning("[UpsertServicio-POST] Sin token. Simulando guardado OK.");
-                }
-
-                return new HttpStatusCodeResult((int)HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[UpsertServicio-POST] Error: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al guardar el servicio.");
+                Trace.TraceError($"[TablaServicio] Error: {ex}");
+                return new HttpStatusCodeResult(
+                    (int)HttpStatusCode.InternalServerError,
+                    "Error al cargar el listado de servicios."
+                );
             }
         }
 
-        // Eliminar
+        // Eliminar una solicitud de servicio del huésped
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EliminarServicio(int idServicio)
@@ -226,38 +125,73 @@ namespace Front_Hoteleria.Controllers
             try
             {
                 var token = GetBearer();
-                if (!string.IsNullOrWhiteSpace(token))
-                {
-                    var ok = await _api.EliminarHabitacionAsync(idServicio, token);
-                    if (!ok) return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "No se pudo eliminar.");
-                }
-                else
-                {
-                    Trace.TraceWarning("[EliminarServicio] Sin token. Simulando eliminado OK.");
-                }
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada");
+
+                // idServicio aquí es el IdSolicitudServicio del DTO
+                var ok = await _api.EliminarServicioHuespedAsync(idServicio, token);
+                if (!ok)
+                    return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "No se pudo eliminar.");
 
                 return new HttpStatusCodeResult((int)HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[EliminarServicio] Error: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al eliminar el servicio.");
+                return new HttpStatusCodeResult(
+                    (int)HttpStatusCode.InternalServerError,
+                    "Error al eliminar el servicio."
+                );
             }
         }
 
-        // ===== Wrappers de compatibilidad (por si alguna vista vieja los llama) =====
-        [HttpGet] public Task<ActionResult> Dashboard(DateTime? desde, DateTime? hasta) => DashboardServicio(desde, hasta);
+        // ================= WRAPPERS DE COMPATIBILIDAD =================
 
+        // Dashboard superior (KPIs + gráfico) – ahora sin llamada al API
+        [HttpGet]
+        public Task<ActionResult> DashboardServicio(DateTime? desde, DateTime? hasta)
+        {
+            var dto = new ServicioDashboardDto(); // DTO vacío, la vista puede mostrar 0 o placeholders
+
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    Trace.TraceWarning("[DashboardServicio] Sin token. Se muestran datos por defecto.");
+                }
+                else
+                {
+                    // Si más adelante tienes un endpoint real, lo llamas aquí.
+                    // var d = desde ?? DateTime.Today.AddDays(-30);
+                    // var h = hasta ?? DateTime.Today;
+                    // var apiDto = await _otroServicio.DashboardServicioAsync(d, h, token);
+                    // if (apiDto != null) dto = apiDto;
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[DashboardServicio] Error: {ex}");
+            }
+
+            return Task.FromResult<ActionResult>(PartialView("_DashboardServicio", dto));
+        }
+
+        // Alias para vistas antiguas
+        [HttpGet]
+        public Task<ActionResult> Dashboard(DateTime? desde, DateTime? hasta)
+            => DashboardServicio(desde, hasta);
+
+        // Alias de tabla antigua
         [HttpPost]
         [ValidateAntiForgeryToken]
         public Task<ActionResult> TablaPartial(int? vigencia, string nombre, bool? vip, int? capacidadMin)
             => TablaServicio(vigencia, nombre);
 
-        [HttpGet] public Task<ActionResult> Upsert(int? id) => UpsertServicio(id);
-        [HttpPost][ValidateAntiForgeryToken] public Task<ActionResult> Upsert(ServicioDto dto) => UpsertServicio(dto);
-
+        // Alias de eliminar antiguo
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public Task<ActionResult> Eliminar(int idServicio) => EliminarServicio(idServicio);
+        public Task<ActionResult> Eliminar(int idServicio)
+            => EliminarServicio(idServicio);
     }
 }

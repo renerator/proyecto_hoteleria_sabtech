@@ -6,6 +6,7 @@ using DemoBackend.Repositories;
 using DemoBackend.Repository;
 using DemoBackend.RepositoryGes;
 using DemoBackend.Services;
+using DemoBackend.Services.Huesped;
 using DemoBackend.Services.Autenticacion;
 using DemoBackend.Services.Check;
 using DemoBackend.Services.Empresa;
@@ -75,6 +76,7 @@ namespace DemoBackend
                 services.AddTransient<IAutenticacionService, AutenticacionService>();
                 services.AddTransient<IEmpresaService, EmpresaService>();
                 services.AddTransient<IMantenedoresService, MantenedoresService>();
+                services.AddTransient<IHuespedService, HuespedService>();
                 services.AddTransient<IHabitacionService, HabitacionService>();
                 services.AddTransient<IReservaService, ReservaService>();
                 services.AddTransient<ICheckinCheckoutService, CheckinCheckoutService>();

@@ -1,4 +1,4 @@
-﻿using Front_Hoteleria.Dto.Reserva;
+﻿using Front_Hoteleria.Dto.Huesped;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,8 +9,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
-
 
 namespace Front_Hoteleria.Services.ReclamosHuesped
 {
@@ -29,251 +27,121 @@ namespace Front_Hoteleria.Services.ReclamosHuesped
             if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var baseUri))
                 throw new InvalidOperationException("Api.BaseUrl no es una URL válida: " + baseUrl);
 
-            _http = new HttpClient { BaseAddress = baseUri, Timeout = TimeSpan.FromSeconds(30) };
+            _http = new HttpClient
+            {
+                BaseAddress = baseUri,
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+
             _http.DefaultRequestHeaders.Accept.Clear();
-            _http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _http.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         private static void SetBearer(string bearer)
         {
             _http.DefaultRequestHeaders.Authorization = null;
+
             if (!string.IsNullOrWhiteSpace(bearer))
-                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
+                _http.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", bearer);
         }
 
-        // GET /api/Reservas/ReservasDisponibles?vigencia={vigencia}
-        public async Task<List<ReservaDto>> ReservasDisponiblesAsync(int vigencia, string bearer = null)
+        // =========================
+        // LISTAR RECLAMOS / SUGERENCIAS
+        // =========================
+        // GET /api/ReclamosHuesped/Listar
+        public async Task<List<ReclamoSolicitudDto>> ListarReclamosHuespedAsync(string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
-                using (var resp = await _http.GetAsync($"/api/Reservas/ReservasDisponibles?vigencia={vigencia}"))
+
+                var url = "/api/Huesped/ListarReclamos"; // ajusta si tu API usa otro path
+
+                using (var resp = await _http.GetAsync(url))
                 {
-                    if ((int)resp.StatusCode == 204) return new List<ReservaDto>();
+                    if (resp.StatusCode == HttpStatusCode.NoContent)
+                        return new List<ReclamoSolicitudDto>();
+
+                    resp.EnsureSuccessStatusCode();
+
+                    var json = await resp.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<List<ReclamoSolicitudDto>>(json)
+                           ?? new List<ReclamoSolicitudDto>();
+                }
+            }
+            catch (HttpRequestException httpEx)
+            {
+                Trace.TraceError($"[ListarReclamosHuespedAsync] HTTP: {httpEx}");
+                return new List<ReclamoSolicitudDto>();
+            }
+            catch (JsonException jsonEx)
+            {
+                Trace.TraceError($"[ListarReclamosHuespedAsync] JSON: {jsonEx}");
+                return new List<ReclamoSolicitudDto>();
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[ListarReclamosHuespedAsync] {ex}");
+                return new List<ReclamoSolicitudDto>();
+            }
+        }
+
+        // GET /api/ReclamosHuesped/Reclamo/{id}
+        public async Task<ReclamoSolicitudDto> ObtenerReclamoHuespedPorIdAsync(
+            int idReclamoHuesped, string bearer)
+        {
+            try
+            {
+                SetBearer(bearer);
+                var url = $"/api/Huesped/ObtenerReclamo/{idReclamoHuesped}";
+
+                using (var resp = await _http.GetAsync(url))
+                {
+                    if (resp.StatusCode == HttpStatusCode.NoContent ||
+                        resp.StatusCode == HttpStatusCode.NotFound)
+                        return null;
+
                     resp.EnsureSuccessStatusCode();
                     var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<ReservaDto>>(json) ?? new List<ReservaDto>();
+                    return JsonConvert.DeserializeObject<ReclamoSolicitudDto>(json);
                 }
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[ReservasDisponiblesAsync] {ex}");
-                return new List<ReservaDto>();
+                Trace.TraceError("[ObtenerReclamoHuespedPorIdAsync] " + ex);
+                return null;
             }
         }
 
-        // GET /api/Reservas/dashboardReservas
-        public async Task<ReservaDashboardDto> DashboardReservasAsync(string bearer = null)
+        // =========================
+        // CREAR RECLAMO / SUGERENCIA
+        // =========================
+        // POST /api/ReclamosHuesped/Crear
+        public async Task<bool> CrearReclamoHuespedAsync(ReclamoSolicitudDto dto, string bearer = null)
         {
             try
             {
                 SetBearer(bearer);
-                using (var resp = await _http.GetAsync("/api/Reservas/dashboardReservas"))
-                {
-                    if ((int)resp.StatusCode == 204) return new ReservaDashboardDto();
-                    resp.EnsureSuccessStatusCode();
-                    var json = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<ReservaDashboardDto>(json) ?? new ReservaDashboardDto();
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[DashboardReservasAsync] {ex}");
-                return new ReservaDashboardDto();
-            }
-        }
 
-        // POST /api/Reservas/SolicitaReserva
-        public async Task<bool> CrearReservaAsync(ReservaDto dto, string bearer = null)
-        {
-            try
-            {
-                SetBearer(bearer);
+                var url = "/api/Huesped/CrearReclamo"; // ajusta si tu API usa otro path
+
                 var json = JsonConvert.SerializeObject(dto);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                 var resp = await _http.PostAsync("/api/Reservas/SolicitaReserva", content);
-                return resp.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[CrearReservaAsync] {ex}");
-                return false;
-            }
-        }
-
-        // POST /api/Reservas/ConfirmarReserva
-        public async Task<bool> ConfirmarReservaAsync(ReservaDto dto, string bearer = null)
-        {
-            try
-            {
-                SetBearer(bearer);
-                var json = JsonConvert.SerializeObject(dto);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var resp = await _http.PostAsync("/api/Reservas/ConfirmarReserva", content);
-                return resp.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[ConfirmarReservaAsync] {ex}");
-                return false;
-            }
-        }
-
-        // PUT /api/Reservas/ModificaReserva
-        public async Task<bool> ModificarReservaAsync(ReservaDto dto, string bearer = null)
-        {
-            try
-            {
-                SetBearer(bearer);
-                var json = JsonConvert.SerializeObject(dto);
-               var content = new StringContent(json, Encoding.UTF8, "application/json");
-                 var resp = await _http.PutAsync("/api/Reservas/ModificaReserva", content);
-                return resp.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[ModificarReservaAsync] {ex}");
-                return false;
-            }
-        }
-
-        // DELETE /api/Reservas/EliminaReserva?idReserva={id}
-        public async Task<bool> EliminarReservaAsync(int idReserva, string bearer = null)
-        {
-            try
-            {
-                SetBearer(bearer);
-                 var resp = await _http.DeleteAsync($"/api/Reservas/EliminaReserva?idReserva={idReserva}");
-                if (resp.IsSuccessStatusCode) return true;
-
-                var error = await resp.Content.ReadAsStringAsync();
-                Trace.TraceWarning($"[EliminarReservaAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {error}");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[EliminarReservaAsync] {ex}");
-                return false;
-            }
-        }
-
-        // GET /api/Reservas/BuscarReservas?criterio={texto}
-        public async Task<List<ReservaDto>> BuscarReservasAsync(string criterio, string bearer = null)
-        {
-            try
-            {
-                SetBearer(bearer);
-                var url = $"/api/Reservas/BuscarReservas?criterio={Uri.EscapeDataString(criterio ?? string.Empty)}";
-                 var resp = await _http.GetAsync(url);
-                if ((int)resp.StatusCode == 204) return new List<ReservaDto>();
-
-                resp.EnsureSuccessStatusCode();
-                var json = await resp.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<ReservaDto>>(json) ?? new List<ReservaDto>();
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[BuscarReservasAsync] {ex}");
-                return new List<ReservaDto>();
-            }
-        }
-
-       
-
-
-
-public async Task<List<ReservaTrabajadorDto>> ReservasDisponiblesTrabajadorAsync(ReservaTrabajadorDto reservaTrabajador, string bearer = null)
-    {
-        try
-        {
-            SetBearer(bearer);
-
-            reservaTrabajador = new ReservaTrabajadorDto();
-
-            var basePath = "/api/Reservas/ReservasTrabajadorDisponibles";
-            var sb = new StringBuilder(basePath);
-            var first = true;
-
-            // helper inline para agregar pares key=value
-            Action<string, string> add = (k, v) =>
-            {
-                if (string.IsNullOrEmpty(v)) return;
-                sb.Append(first ? "?" : "&");
-                sb.Append(k).Append("=").Append(Uri.EscapeDataString(v));
-                first = false;
-            };
-
-            if (reservaTrabajador.FechaDesde.HasValue)
-                add("FechaDesde", reservaTrabajador.FechaDesde.Value.ToString("o")); // ISO-8601
-
-            if (reservaTrabajador.FechaHasta.HasValue)
-                add("FechaHasta", reservaTrabajador.FechaHasta.Value.ToString("o")); // ISO-8601
-                                                                                     // Si quieres cierre inclusivo del día:
-                                                                                     // add("FechaHasta", reservaTrabajador.FechaHasta.Value.Date.AddDays(1).AddTicks(-1).ToString("o"));
-
-            if (reservaTrabajador.IdEstadoReserva > 0)
-                add("idEstadoReserva", reservaTrabajador.IdEstadoReserva.ToString());
-
-            if (reservaTrabajador.IdTipoReserva > 0)
-                add("idtiporeserva", reservaTrabajador.IdTipoReserva.ToString());
-
-            var url = sb.ToString();
-
-            using (var resp = await _http.GetAsync(url))
-            {
-                if (resp.StatusCode == HttpStatusCode.NoContent)
-                    return new List<ReservaTrabajadorDto>();
-
-                resp.EnsureSuccessStatusCode();
-
-                var json = await resp.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<ReservaTrabajadorDto>>(json)
-                       ?? new List<ReservaTrabajadorDto>();
-            }
-        }
-        catch (HttpRequestException httpEx)
-        {
-            Trace.TraceError($"[ReservasDisponiblesTrabajadorAsync] HTTP: {httpEx}");
-            return new List<ReservaTrabajadorDto>();
-        }
-        catch (JsonException jsonEx)
-        {
-            Trace.TraceError($"[ReservasDisponiblesTrabajadorAsync] JSON: {jsonEx}");
-            return new List<ReservaTrabajadorDto>();
-        }
-        catch (Exception ex)
-        {
-            Trace.TraceError($"[ReservasDisponiblesTrabajadorAsync] {ex}");
-            return new List<ReservaTrabajadorDto>();
-        }
-    }
-        public async Task<bool> CrearReservaTrabajadorAsync(ReservaTrabajadorDto dto, string bearer = null)
-        {
-            try
-            {
-                SetBearer(bearer);
-
-                // Ajusta la ruta si tu API usa otra: p.ej. "/api/Reservas/CrearReserva"
-                var url = "/api/Reservas/CreaReservaTrabajador";
-
-                var payload = JsonConvert.SerializeObject(dto);
-                using (var content = new StringContent(payload, Encoding.UTF8, "application/json"))
+                using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
                 using (var resp = await _http.PostAsync(url, content))
                 {
-                    if (resp.StatusCode == HttpStatusCode.NoContent) return true;
-                    if (!resp.IsSuccessStatusCode) return false;
-                    return true;
+                    if (resp.StatusCode == HttpStatusCode.NoContent)
+                        return true;
+
+                    return resp.IsSuccessStatusCode;
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError($"[CrearReservaAsync] {ex}");
+                Trace.TraceError($"[CrearReclamoHuespedAsync] {ex}");
                 return false;
             }
         }
-
-
-        // Si más adelante usas bitácora:
-        // public async Task<bool> CrearBitacoraReservaAsync(BitacoraReservaDto dto, string bearer = null) { ... }
     }
 }

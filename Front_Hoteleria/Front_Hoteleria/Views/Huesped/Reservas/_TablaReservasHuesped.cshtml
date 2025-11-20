@@ -1,0 +1,74 @@
+﻿@model IEnumerable<Front_Hoteleria.Dto.Huesped.ReservaHuespedDto>
+<table class="table-responsive">
+    <table id="tblReservaHuesped" class="table table-hover">
+        <thead>
+            <tr class="res-h-table-header">
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Fecha Desde</th>
+                <th>Fecha Hasta</th>
+                <th>Estado</th>
+                <th class="text-right">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model == null || !Model.Any())
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted">
+                        No se encontraron reservas.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                foreach (var r in Model)
+                {
+                    string badgeClass = "res-h-label res-h-label-pendiente";
+                    switch (r.IdEstadoReserva)
+                    {
+                        case 2: badgeClass = "res-h-label res-h-label-aprobada"; break;
+                        case 3: badgeClass = "res-h-label res-h-label-rechazada"; break;
+                        case 4: badgeClass = "res-h-label res-h-label-completada"; break;
+                    }
+
+                    var codigo = "RES-" + r.IdReserva.ToString("D3");
+
+                    <tr>
+                        <td>@codigo</td>
+                        <td>@r.Nombre</td>
+                        <td>@r.Apellido</td>
+                        <td>@r.FechaDesde.ToString("yyyy-MM-dd")</td>
+                        <td>@r.FechaHasta.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <span class="@badgeClass">
+                                @r.Estado
+                            </span>
+                        </td>
+                        <td class="text-right">
+                            <button type="button" class="btn btn-info btn-xs btn-ver"
+                                    data-id="@r.IdReserva" title="Ver">
+                                <i class="fa fa-eye"></i>
+                            </button>
+
+                            @* solo si está pendiente, permitir editar / eliminar *@
+                            @if (r.IdEstadoReserva == 1)
+                            {
+                                <button type="button" class="btn btn-primary btn-xs btn-editar"
+                                        data-id="@r.IdReserva" title="Editar">
+                                    <i class="fa fa-pencil"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger btn-xs btn-eliminar"
+                                        data-id="@r.IdReserva" title="Eliminar">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</table>
+

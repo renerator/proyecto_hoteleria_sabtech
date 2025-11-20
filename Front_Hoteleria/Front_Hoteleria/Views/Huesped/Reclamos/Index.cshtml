@@ -33,57 +33,83 @@
                                 </p>
 
                                 <form id="suggestionForm">
+                                    @Html.AntiForgeryToken()
+
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label>Tipo de Solicitud:</label>
-                                                <select class="form-control" id="tipoSolicitud" required>
+                                                <label for="cmbTipoSolicitudHuesped">Tipo de Solicitud:</label>
+                                                <select class="form-control"
+                                                        id="cmbTipoSolicitudHuesped"
+                                                        name="idTipoSolicitudHuesped"
+                                                        required>
                                                     <option value="">Seleccione una opción</option>
-                                                    <option value="reclamo">⚠️ Reclamo</option>
-                                                    <option value="sugerencia">💡 Sugerencia</option>
-                                                    <option value="felicitacion">🎉 Felicitación</option>
-                                                    <option value="queja">😞 Queja</option>
+                                                    <option value="1">⚠ Reclamo</option>
+                                                    <option value="2">💡 Sugerencia</option>
+                                                    <option value="3">🎉 Felicitación</option>
+                                                    <option value="4">😞 Queja</option>
                                                 </select>
                                             </div>
                                         </div>
+
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label>Categoría:</label>
-                                                <select class="form-control" id="categoriaSolicitud" required>
+                                                <label for="cmbCategoriaSolicitudHuesped">Categoría:</label>
+                                                <select class="form-control"
+                                                        id="cmbCategoriaSolicitudHuesped"
+                                                        name="idCategoriaSolicitudHuesped"
+                                                        required>
                                                     <option value="">Seleccione una categoría</option>
-                                                    <option value="habitacion">🏠 habitación</option>
-                                                    <option value="servicios">🛠 servicios</option>
-                                                    <option value="comida">🍽 comida</option>
-                                                    <option value="limpieza">🧹 limpieza</option>
-                                                    <option value="personal">👥 personal</option>
-                                                    <option value="instalaciones">🏢 instalaciones</option>
-                                                    <option value="otros">📋 otros</option>
+                                                    <option value="1">🏠 habitación</option>
+                                                    <option value="2">🛠 servicios</option>
+                                                    <option value="3">🍽 comida</option>
+                                                    <option value="4">🧹 limpieza</option>
+                                                    <option value="5">👥 personal</option>
+                                                    <option value="6">🏢 instalaciones</option>
+                                                    <option value="7">📋 otros</option>
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="form-group">
-                                        <label>Asunto:</label>
-                                        <input type="text" class="form-control" id="asuntoSolicitud" placeholder="Resumen breve de su solicitud" required />
+                                        <label for="asuntoSolicitud">Asunto:</label>
+                                        <input type="text"
+                                               class="form-control"
+                                               id="asuntoSolicitud"
+                                               name="Asunto"
+                                               placeholder="Resumen breve de su solicitud"
+                                               required />
                                     </div>
 
                                     <div class="form-group">
-                                        <label>Descripción Detallada:</label>
-                                        <textarea class="form-control" id="descripcionSolicitud" rows="4" placeholder="Describa detalladamente su sugerencia o reclamo..." required></textarea>
+                                        <label for="descripcionSolicitud">Descripción Detallada:</label>
+                                        <textarea class="form-control"
+                                                  id="descripcionSolicitud"
+                                                  name="Descripcion"
+                                                  rows="4"
+                                                  placeholder="Describa detalladamente su sugerencia o reclamo..."
+                                                  required></textarea>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label>Email para respuesta:</label>
-                                                <input type="email" class="form-control" id="emailHuesped" placeholder="su.email@ejemplo.com" required />
+                                                <label for="emailHuesped">Email para respuesta:</label>
+                                                <input type="email"
+                                                       class="form-control"
+                                                       id="emailHuesped"
+                                                       name="EmailHuesped"
+                                                       placeholder="su.email@ejemplo.com"
+                                                       required />
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label>Prioridad:</label>
-                                                <select class="form-control" id="prioridadSolicitud">
+                                                <label for="prioridadSolicitud">Prioridad:</label>
+                                                <select class="form-control"
+                                                        id="prioridadSolicitud"
+                                                        name="Prioridad">
                                                     <option value="normal">🟢 Normal</option>
                                                     <option value="alta">🟡 Alta</option>
                                                     <option value="urgente">🔴 Urgente</option>
@@ -93,10 +119,14 @@
                                     </div>
 
                                     <div class="form-group" style="margin-top:15px;">
-                                        <button type="submit" class="btn btn-warning" style="background:#f39c12; border-color:#f39c12;">
+                                        <button type="submit"
+                                                class="btn btn-warning"
+                                                style="background:#f39c12; border-color:#f39c12;">
                                             <i class="fa fa-paper-plane"></i> Enviar Solicitud
                                         </button>
-                                        <button type="button" class="btn btn-default" id="btn-limpiar-formulario">
+                                        <button type="button"
+                                                class="btn btn-default"
+                                                id="btn-limpiar-formulario">
                                             ↻ Limpiar
                                         </button>
                                     </div>
@@ -104,9 +134,11 @@
                             </div>
                         </div>
 
-                        <!-- AQUÍ VA LA TABLA COMO PARCIAL -->
+                        <!-- AQUÍ VA LA TABLA COMO PARCIAL (SOLO AJAX, SIN Html.Action) -->
                         <div id="contenedor-tabla-reclamos">
-                            @Html.Action("TablaReclamos", "ReclamosHuesped")
+                            <div class="text-center text-muted" style="padding:10px;">
+                                Cargando solicitudes...
+                            </div>
                         </div>
 
                         <!-- modales -->
@@ -115,6 +147,7 @@
                                 <div class="modal-content"></div>
                             </div>
                         </div>
+
                         <div id="simpleModal" style="display:none;" class="reclamos-simple-modal">
                             <div class="reclamos-simple-modal-content">
                                 <div id="simpleModalContent"></div>
@@ -135,5 +168,88 @@
 </div>
 
 @section scripts {
-    <script src="~/Scripts/reclamos.js"></script>
+    <script type="text/javascript">
+        // función para mostrar mensajes (usa PNotify si existe, si no, alert)
+        function mostrarMensaje(tipo, texto) {
+            if (window.PNotify) {
+                new PNotify({
+                    title: (tipo === "success" ? "Éxito" : "Error"),
+                    text: texto,
+                    type: tipo,
+                    styling: "bootstrap3"
+                });
+            } else {
+                alert(texto);
+            }
+        }
+
+        // carga la tabla por AJAX
+        function recargarTablaReclamos() {
+            $("#contenedor-tabla-reclamos")
+                .load('@Url.Action("TablaReclamos", "ReclamosHuesped")');
+        }
+
+        function limpiarFormulario() {
+            var form = document.getElementById("suggestionForm");
+            if (form) form.reset();
+        }
+
+        function cerrarSimpleModal() {
+            $("#simpleModal").hide();
+            $("#simpleModalContent").empty();
+        }
+
+        function abrirSimpleModal(html) {
+            $("#simpleModalContent").html(html);
+            $("#simpleModal").show();
+        }
+
+        $(function () {
+            // cargar tabla al entrar
+            recargarTablaReclamos();
+
+            // Envío del formulario por AJAX
+            $("#suggestionForm").on("submit", function (e) {
+                e.preventDefault();
+
+                var $form = $(this);
+
+                $.ajax({
+                    url: '@Url.Action("Crear", "ReclamosHuesped")',
+                    type: "POST",
+                    data: $form.serialize(),
+                    success: function (resp) {
+                        if (resp && resp.ok) {
+                            mostrarMensaje("success", resp.message || "Solicitud registrada correctamente.");
+                            limpiarFormulario();
+                            recargarTablaReclamos();
+                        } else {
+                            mostrarMensaje("error", (resp && resp.message) || "No se pudo registrar la solicitud.");
+                        }
+                    },
+                    error: function () {
+                        mostrarMensaje("error", "Se produjo un error al enviar la solicitud.");
+                    }
+                });
+            });
+
+            // Botón limpiar
+            $("#btn-limpiar-formulario").on("click", function () {
+                limpiarFormulario();
+            });
+        });
+        // Abrir detalle en modal
+$(document).on("click", ".btn-ver-detalle", function (e) {
+    e.preventDefault();
+    var id = $(this).data("id");   // data-id en el botón
+
+    $.get("@Url.Action("Detalle", "ReclamosHuesped")",
+        { idReclamoHuesped: id },
+        function (html) {
+            $("#genericModal .modal-content").html(html);
+            $("#genericModal").modal("show");
+        });
+});
+
+    </script>
 }

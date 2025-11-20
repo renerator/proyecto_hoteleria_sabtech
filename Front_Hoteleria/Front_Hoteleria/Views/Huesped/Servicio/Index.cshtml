@@ -1,0 +1,376 @@
+﻿@{
+    ViewBag.Title = "Servicios";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int totalSolicitudes = (ViewBag.TotalSolicitudes as int?) ?? 0;
+    int completadas = (ViewBag.SolicitudesCompletadas as int?) ?? 0;
+    int pendientes = (ViewBag.SolicitudesPendientes as int?) ?? 0;
+}
+
+<style>
+    /* Fondo general del área de trabajo del contenido */
+    body.nav-md .container.body .right_col {
+        background: #F7F7F7;
+    }
+
+    /* Contenedor de la página de servicios huésped */
+    .page-servicios-huesped {
+        margin-left: 230px; /* para no quedar bajo el sidebar */
+        padding: 10px 15px 15px;
+    }
+
+        .page-servicios-huesped .x_panel {
+            border-radius: 4px;
+        }
+
+        .page-servicios-huesped .x_title h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .page-servicios-huesped .page-title h2 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .page-servicios-huesped .page-title p {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 14px;
+            color: #5A6C80; /* texto más oscuro, como en reservas */
+        }
+
+    /* Fila que agrupa columna principal + columna derecha */
+    .page-servicios-row {
+        background: #F7F7F7;
+        border-radius: 6px;
+        padding: 15px 0 10px;
+        margin-left: -15px;
+        margin-right: -15px;
+        box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+
+    /* Botones servicios rápidos */
+    .btn-servicio-rapido {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        border-radius: 3px;
+        text-align: left;
+    }
+
+    .btn-servicio-limpieza {
+        background: #31B0D5;
+        border-color: #31B0D5;
+        color: #fff;
+    }
+
+    .btn-servicio-reposicion {
+        background: #F0AD4E;
+        border-color: #F0AD4E;
+        color: #fff;
+    }
+
+    .btn-servicio-reparacion {
+        background: #D9534F;
+        border-color: #D9534F;
+        color: #fff;
+    }
+
+    .stats-servicios {
+        text-align: center;
+        padding-top: 10px;
+        padding-bottom: 5px;
+    }
+
+        .stats-servicios .stat-num {
+            display: block;
+            font-size: 26px;
+            font-weight: 700;
+            color: #2A3F54;
+        }
+
+        .stats-servicios .stat-label {
+            font-size: 12px;
+            color: #7A8699;
+        }
+</style>
+
+<div class="page-servicios-huesped">
+    <div class="row page-servicios-row">
+        <!-- COLUMNA PRINCIPAL -->
+        <div class="col-md-9 col-sm-8">
+            <div class="page-title">
+                <h2>Servicios</h2>
+                <p>Solicite servicios para mantener el confort de su estadía</p>
+            </div>
+
+            <!-- SOLICITAR SERVICIO -->
+            <div class="x_panel">
+                <div class="x_title">
+                    <h3><i class="fa fa-wrench"></i> Solicitar Servicio</h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <form id="frmServicioHuesped" class="form-horizontal" onsubmit="return false;">
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">Tipo de Servicio *</label>
+                            <div class="col-md-4">
+                                <select id="IdTipoServicio"
+                                        name="IdTipoServicio"
+                                        class="form-control">
+                                    <option value="">Seleccione un tipo de servicio</option>
+                                    <option value="1">Limpieza de Habitación</option>
+                                    <option value="2">Reposición de Artículos</option>
+                                    <option value="3">Reparación/Mantenimiento</option>
+                                    <option value="4">Conexión WiFi/TV</option>
+                                    <option value="5">Ajuste de Temperatura</option>
+                                    <option value="6">Servicio de Transporte</option>
+                                    <option value="7">Servicio de Lavandería</option>
+                                    <option value="8">Otro</option>
+                                </select>
+                            </div>
+
+                            <label class="control-label col-md-2">Prioridad *</label>
+                            <div class="col-md-4">
+                                <select id="IdPrioridad"
+                                        name="IdPrioridad"
+                                        class="form-control">
+                                    <option value="">Seleccione prioridad</option>
+                                    <option value="1">Baja - Puede esperar</option>
+                                    <option value="2">Media - Durante el día</option>
+                                    <option value="3">Alta - Lo antes posible</option>
+                                    <option value="4">Urgente - Inmediato</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">Descripción del Servicio *</label>
+                            <div class="col-md-10">
+                                <textarea name="Descripcion"
+                                          rows="4"
+                                          class="form-control"
+                                          placeholder="Describa detalladamente el servicio que necesita..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">Hora preferida</label>
+                            <div class="col-md-4">
+                                <input type="time"
+                                       name="HoraPreferida"
+                                       class="form-control" />
+                            </div>
+
+                            <label class="control-label col-md-2">Método de Contacto</label>
+                            <div class="col-md-4">
+                                <select id="IdMetodoContacto"
+                                        name="IdMetodoContacto"
+                                        class="form-control">
+                                    <option value="">Seleccione método de contacto</option>
+                                    <option value="1">Llamada a la habitación</option>
+                                    <option value="2">Teléfono registrado</option>
+                                    <option value="3">Correo electrónico</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">Comentarios Adicionales</label>
+                            <div class="col-md-10">
+                                <textarea name="ComentariosAdicionales"
+                                          rows="3"
+                                          class="form-control"
+                                          placeholder="Información adicional que pueda ser útil..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 text-center">
+                                <button id="btnEnviarServicio" class="btn btn-primary btn-lg">
+                                    <i class="fa fa-paper-plane"></i> Enviar Solicitud
+                                </button>
+                                <button id="btnLimpiarServicio"
+                                        type="button"
+                                        class="btn btn-default btn-lg">
+                                    <i class="fa fa-undo"></i> Limpiar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- LISTADO DE SOLICITUDES -->
+            <div class="x_panel">
+                <div class="x_title">
+                    <h3><i class="fa fa-list"></i> Solicitudes de Servicio</h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content" style="padding:0;">
+                    <div id="divTablaServicios" class="table-responsive">
+                        @Html.Partial(
+                            "~/Views/Huesped/Servicio/_TablaSolicitudesServicio.cshtml"
+                        )
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA -->
+        <div class="col-md-3 col-sm-4">
+
+            <!-- SERVICIOS RÁPIDOS -->
+            <div class="x_panel">
+                <div class="x_title">
+                    <h3><i class="fa fa-bolt"></i> Servicios Rápidos</h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <button type="button"
+                            class="btn btn-servicio-rapido btn-servicio-limpieza"
+                            data-tipo-servicio="limpieza">
+                        <i class="fa fa-tint"></i> Limpieza
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-servicio-rapido btn-servicio-reposicion"
+                            data-tipo-servicio="reposicion">
+                        <i class="fa fa-retweet"></i> Reposición
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-servicio-rapido btn-servicio-reparacion"
+                            data-tipo-servicio="reparacion">
+                        <i class="fa fa-wrench"></i> Reparación
+                    </button>
+                </div>
+            </div>
+
+            <!-- MIS ESTADÍSTICAS -->
+            <div class="x_panel">
+                <div class="x_title">
+                    <h3><i class="fa fa-bar-chart"></i> Mis Estadísticas</h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content stats-servicios">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <span class="stat-num">@totalSolicitudes</span>
+                            <span class="stat-label">Solicitudes</span>
+                        </div>
+                        <div class="col-xs-4">
+                            <span class="stat-num">@completadas</span>
+                            <span class="stat-label">Completadas</span>
+                        </div>
+                        <div class="col-xs-4">
+                            <span class="stat-num">@pendientes</span>
+                            <span class="stat-label">Pendientes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTACTO -->
+            <div class="x_panel">
+                <div class="x_title">
+                    <h3><i class="fa fa-phone"></i> Contacto</h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content" style="padding-top:0;">
+                    <p><strong>Recepción:</strong> +56 9 1234 5678</p>
+                    <p><strong>Servicios 24/7:</strong> +56 9 8765 4321</p>
+                    <p><strong>Email:</strong> servicios@hotelsabtech.com</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        (function () {
+
+            // Enviar solicitud de servicio
+            $(document).on('click', '#btnEnviarServicio', function (e) {
+                e.preventDefault();
+
+                var $form = $('#frmServicioHuesped');
+                if ($form.length === 0) return;
+
+                var data = $form.serialize();
+
+                $.ajax({
+                    url: '@Url.Action("Crear", "ServiciosHuesped")', // ajusta si tu acción se llama distinto
+                    type: 'POST',
+                    data: data,
+                    success: function (resp) {
+                        if (resp && resp.ok) {
+                            alert(resp.message || 'Solicitud enviada correctamente.');
+                            $form[0].reset();
+                            cargarTablaServicios();
+                        } else {
+                            alert((resp && resp.message) || 'No se pudo enviar la solicitud.');
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error('Error Crear servicio:', xhr.status, xhr.responseText);
+                        alert('Error al enviar la solicitud de servicio.');
+                    }
+                });
+            });
+
+            // Limpiar formulario
+            $('#btnLimpiarServicio').on('click', function () {
+                var f = document.getElementById('frmServicioHuesped');
+                if (f) f.reset();
+            });
+
+            // Botones de servicios rápidos rellenan tipo de servicio (IDs reales)
+            $(document).on('click', '.btn-servicio-rapido', function () {
+                var tipo  = $(this).data('tipo-servicio');
+                var $combo = $('#IdTipoServicio');
+
+                var map = {
+                    'limpieza':   '1', // Limpieza de Habitación
+                    'reposicion': '2', // Reposición de Artículos
+                    'reparacion': '3'  // Reparación/Mantenimiento
+                };
+
+                if (map[tipo]) {
+                    $combo.val(map[tipo]);
+                }
+
+                $combo.focus();
+            });
+
+            // Carga tabla de solicitudes (AJAX)
+            function cargarTablaServicios() {
+                $.ajax({
+                    url: '@Url.Action("Tabla", "ServiciosHuesped")', // ajusta nombres si es necesario
+                    type: 'GET',
+                    success: function (html) {
+                        $('#divTablaServicios').html(html);
+                    },
+                    error: function (xhr) {
+                        console.error('Error tabla servicios:', xhr.status, xhr.responseText);
+                        $('#divTablaServicios').html(
+                            '<div class="text-danger" style="padding:15px;">No se pudo cargar el listado.</div>'
+                        );
+                    }
+                });
+            }
+
+            // primera carga de la tabla
+            cargarTablaServicios();
+
+        })();
+    </script>
+}

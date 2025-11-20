@@ -1,0 +1,140 @@
+﻿@model Front_Hoteleria.Dto.Huesped.ReservaHuespedDto
+
+@{
+    Layout = null;
+
+    // Badge según estado
+    var badgeClass = "rh-badge rh-badge-pendiente";
+    switch (Model.IdEstadoReserva)
+    {
+        case 2: badgeClass = "rh-badge rh-badge-aprobada"; break;
+        case 3: badgeClass = "rh-badge rh-badge-rechazada"; break;
+        case 4: badgeClass = "rh-badge rh-badge-completada"; break;
+    }
+}
+
+<style>
+    /* Estilos solo para este modal de detalle */
+    .modal-detalle-reserva {
+        font-size: 13px;
+        color: #73879C;
+    }
+
+    .modal-detalle-reserva-header {
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+        .modal-detalle-reserva-header .modal-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: #2A3F54;
+        }
+
+        .modal-detalle-reserva-header .fa-eye {
+            margin-right: 8px;
+            color: #73879C;
+        }
+
+    .modal-detalle-reserva .section-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2A3F54;
+        margin-bottom: 8px;
+        margin-top: 15px;
+    }
+
+    .modal-detalle-reserva p {
+        margin-bottom: 4px;
+    }
+
+    .modal-detalle-reserva strong {
+        font-weight: 600;
+        color: #2A3F54;
+    }
+
+    /* Badge de estado */
+    .rh-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .rh-badge-pendiente {
+        background: #e0e0e0;
+        color: #555;
+    }
+
+    .rh-badge-aprobada {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .rh-badge-rechazada {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .rh-badge-completada {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+
+    .modal-detalle-reserva-footer {
+        border-top: 1px solid #e5e5e5;
+    }
+</style>
+
+<div class="modal-header modal-detalle-reserva-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">
+        <i class="fa fa-eye"></i> Detalle de Reserva
+    </h4>
+</div>
+
+<div class="modal-body modal-detalle-reserva">
+    <div class="row">
+        <!-- Columna izquierda -->
+        <div class="col-md-6">
+            <h4 class="section-title">Información de la Reserva</h4>
+            <p><strong>ID:</strong> @Model.IdReserva</p>
+            <p>
+                <strong>Estado:</strong>
+                <span class="@badgeClass">@Model.Estado</span>
+            </p>
+            <p><strong>Fecha de Solicitud:</strong> @Model.FechaSolicitud.ToString("dd-MM-yyyy")</p>
+
+            <h4 class="section-title">Información Personal</h4>
+            <p><strong>Nombre:</strong> @Model.Nombre @Model.Apellido</p>
+            <p><strong>Email:</strong> @Model.Email</p>
+            <p><strong>Teléfono:</strong> @Model.Telefono</p>
+        </div>
+
+        <!-- Columna derecha -->
+        <div class="col-md-6">
+            <h4 class="section-title">Fechas de Estadía</h4>
+            <p><strong>Fecha Desde:</strong> @Model.FechaDesde.ToString("yyyy-MM-dd")</p>
+            <p><strong>Fecha Hasta:</strong> @Model.FechaHasta.ToString("yyyy-MM-dd")</p>
+            <p><strong>Días de Estadía:</strong> @Model.DiasEstadia</p>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:25px;">
+        <div class="col-md-12">
+            <h4 class="section-title">Comentarios</h4>
+            <p>@(string.IsNullOrWhiteSpace(Model.Comentarios) ? "Sin comentarios." : Model.Comentarios)</p>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer modal-detalle-reserva-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+    @* Botón de edición como en la maqueta (esquina derecha) *@
+    <button type="button"
+            class="btn btn-warning"
+            id="btnEditarDetalleReserva"
+            data-id="@Model.IdReserva">
+        <i class="fa fa-pencil"></i>
+    </button>
+</div>

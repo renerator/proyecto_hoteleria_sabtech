@@ -7,7 +7,7 @@ using DemoBackend.Models.Contratos;
 using DemoBackend.Models.Dotaciones;
 using DemoBackend.Models.EmpresaContratista;
 using DemoBackend.Models.Check;
-
+using DemoBackend.Models.Huesped;
 using DemoBackend.Models.EstadoReserva;
 using DemoBackend.Models.Habitacion;
 using DemoBackend.Models.HabitacionInsumo;
@@ -40,6 +40,7 @@ namespace DemoBackend.Models
         {
         }
 
+        public virtual DbSet<ServicioHuespedModels> ServiciosHuesped { get; set; }
 
         public virtual DbSet<AreasModels> ListaAreas { get; set; }
         public virtual DbSet<HabitacionModels> ListaHabitaciones { get; set; }
@@ -47,7 +48,7 @@ namespace DemoBackend.Models
         public virtual DbSet<HabitacionInsumoModels> ListaHabitacionInsumo { get; set; }
         public virtual DbSet<ReservaDashboardKPI> Dashboard { get; set; }
 
-        
+        public virtual DbSet<ReservaHuespedModels> ReservaHuesped { get; set; }
         public DbSet<EmpresaContratistaModels> EmpresasContratistas { get; set; }
 
         public virtual DbSet<ReservaDashboardPanelPrincipalModel> DashboardPanelPrincipal { get; set; }
@@ -71,6 +72,9 @@ namespace DemoBackend.Models
         public DbSet<CalendarioBloqueosModels> CalendarioBloqueos { get; set; }
         public DbSet<CalendarioMantenimientosModels> CalendarioMantenimientos { get; set; }
         public DbSet<CalendarioSanitizacionModels> CalendarioSanitizacion { get; set; }
+
+
+        public DbSet<HuespedReclamoModels> ReclamosHuesped { get; set; }
 
         public DbSet<CampamentosModels> Campamentos { get; set; }
 

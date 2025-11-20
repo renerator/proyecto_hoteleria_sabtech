@@ -1,174 +1,513 @@
 ﻿@{
     ViewBag.Title = "Mis Reservas";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int totalReservas = (ViewBag.TotalReservas as int?) ?? 0;
+    int pendientes = (ViewBag.Pendientes as int?) ?? 0;
+    int aprobadas = (ViewBag.Aprobadas as int?) ?? 0;
+
+    var proximas = ViewBag.Proximas as List<Front_Hoteleria.Dto.Huesped.ReservaHuespedDto>
+                   ?? new List<Front_Hoteleria.Dto.Huesped.ReservaHuespedDto>();
 }
 
-@Html.AntiForgeryToken()
+<style>
+    /* Fondo general del área de trabajo del contenido */
+    body.nav-md .container.body .right_col {
+        background: #F7F7F7;
+    }
 
-<div class="row">
-    <!-- columna principal -->
-    <div class="col-md-9 col-sm-8">
-        <div class="page-title">
-            <h2>Mis Reservas</h2>
-            <p>Gestiona tus solicitudes de reserva</p>
+    /* Contenedor de la página de reservas huésped */
+    .page-reservas-huesped {
+        /*width: 100%;*/ /* << antes tenía max-width:1200 */
+        /*max-width: none;*/ /* quita límite de ancho */
+        margin-left: 230px; /* para no quedar debajo del sidebar */
+        padding: 10px 15px 15px;
+    }
+
+        .page-reservas-huesped .x_panel {
+            border-radius: 4px;
+        }
+
+        .page-reservas-huesped .x_title h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .page-reservas-huesped .page-title h2 {
+            margin-top: 0;
+            margin-bottom: 35px;
+            font-weight: 600;
+        }
+        .page-reservas-huesped .page-title p {
+            margin-top: 5px;
+            margin-bottom: 0;
+            font-size: 14px;
+            color: #5A6C80; /* más oscuro que el texto por defecto */
+        }
+
+
+    /* Fila que agrupa las dos columnas (central + derecha) */
+    .page-reservas-huesped-row {
+        background: #F7F7F7;
+        border-radius: 6px;
+        padding: 15px 0 10px;
+        margin-left: -15px; /* para llegar al borde del contenido */
+        margin-right: -15px; /* y al borde derecho (evita franjas) */
+        box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+
+    .res-h-label {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .res-h-label-pendiente {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .res-h-label-aprobada {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .res-h-label-rechazada {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .res-h-label-completada {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+</style>
+
+<div class="page-reservas-huesped">
+    <!-- Fila con fondo que cubre ambas columnas -->
+    <div class="row page-reservas-huesped-row">
+        <!-- COLUMNA PRINCIPAL (más ancha) -->
+        <div class="col-md-9 col-sm-8">
+            <div class="page-title">
+                <h2>Mis Reservas</h2>
+                <p>Gestiona tus solicitudes de reserva</p>
+            </div>
+
+            <!-- NUEVA RESERVA -->
+            <div class="x_panel">
+                <div class="x_title">
+                    <h3><i class="fa fa-plus"></i> Nueva Reserva</h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content text-center" style="padding:25px 10px;">
+                    <p>¿Necesita hacer una nueva reserva? Haga clic en el botón para iniciar el proceso.</p>
+                    <button id="btnNueva" class="btn btn-success btn-lg" style="padding:10px 40px;">
+                        <i class="fa fa-plus"></i> Crear Nueva Reserva
+                    </button>
+                </div>
+            </div>
+
+            <!-- BUSCAR MIS RESERVAS -->
+            <div class="x_panel">
+                <div class="x_title">
+                    <h3><i class="fa fa-search"></i> Buscar Mis Reservas</h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <form id="frmFiltro" class="form-inline" onsubmit="return false;">
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group" style="margin-right:10px;">
+                            <label style="display:block;">ID de Reserva:</label>
+                            <input name="Codigo" class="form-control" placeholder="Ej: RES001" />
+                        </div>
+                        <div class="form-group" style="margin-right:10px;">
+                            <label style="display:block;">Estado:</label>
+                            <select name="Estado" class="form-control">
+                                <option value="">Todos los estados</option>
+                                <option value="1">Pendiente</option>
+                                <option value="2">Aprobada</option>
+                                <option value="3">Rechazada</option>
+                                <option value="4">Completada</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-right:10px;">
+                            <label style="display:block;">Fecha Desde:</label>
+                            <input name="Desde" type="date" class="form-control" />
+                        </div>
+                        <div class="form-group" style="margin-right:10px;">
+                            <label style="display:block;">Fecha Hasta:</label>
+                            <input name="Hasta" type="date" class="form-control" />
+                        </div>
+                        <div style="margin-top:25px;">
+                            <button id="btnBuscar" class="btn btn-primary">
+                                <i class="fa fa-search"></i> Buscar Reservas
+                            </button>
+                            <button id="btnLimpiar" class="btn btn-default">
+                                <i class="fa fa-refresh"></i> Limpiar
+                            </button>
+                            <button id="btnTodas" class="btn btn-info">
+                                <i class="fa fa-list"></i> Ver Todas
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MIS SOLICITUDES DE RESERVA (TABLA) -->
+            <div class="x_panel">
+                <div class="x_title">
+                    <h3><i class="fa fa-list"></i> Mis Solicitudes de Reserva</h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content" style="padding:0;">
+                    <div id="divTabla" class="table-responsive">
+                        @Html.Partial(
+                            "~/Views/Huesped/Reservas/_TablaReservasHuesped.cshtml",
+                            Enumerable.Empty<Front_Hoteleria.Dto.Huesped.ReservaHuespedDto>()
+                        )
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- NUEVA RESERVA -->
-        <div class="x_panel">
-            <div class="x_title">
-                <h3><i class="fa fa-plus"></i> Nueva Reserva</h3>
-                <div class="clearfix"></div>
+        <!-- COLUMNA DERECHA (STATS / INFO) -->
+        <div class="col-md-3 col-sm-4">
+            <!-- stats -->
+            <div class="x_panel">
+                <div class="x_title">
+                    <h3><i class="fa fa-bar-chart"></i> Mis Estadísticas</h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content" style="padding-top:0;">
+                    <p><strong>@totalReservas</strong> Reservas</p>
+                    <p><strong>@pendientes</strong> Pendientes</p>
+                    <p><strong>@aprobadas</strong> Aprobadas</p>
+                </div>
             </div>
-            <div class="x_content text-center" style="padding:25px 10px;">
-                <p>¿Necesita hacer una nueva reserva? Haga clic en el botón para iniciar el proceso.</p>
-                <button id="btnNueva" class="btn btn-success btn-lg" style="padding:10px 40px;">
-                    <i class="fa fa-plus"></i> Crear Nueva Reserva
-                </button>
-            </div>
-        </div>
 
-        <!-- BUSCAR -->
-        <div class="x_panel">
-            <div class="x_title">
-                <h3><i class="fa fa-search"></i> Buscar Mis Reservas</h3>
-                <div class="clearfix"></div>
+            <!-- próximas fechas -->
+            <div class="x_panel">
+                <div class="x_title">
+                    <h3><i class="fa fa-calendar"></i> Próximas Fechas</h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content" style="padding-top:0;">
+                    @if (!proximas.Any())
+                    {
+                        <p class="text-muted">No tienes próximas reservas.</p>
+                    }
+                    else
+                    {
+                        foreach (var r in proximas)
+                        {
+                            var codigo = "RES" + r.IdReserva.ToString("D3");
+
+                            <p>
+                                <strong>@r.FechaDesde.ToString("dd MMM yyyy")</strong><br />
+                                Check-in @codigo
+                            </p>
+                        }
+                    }
+                </div>
             </div>
-            <div class="x_content">
-                <form id="frmFiltro" class="form-inline" onsubmit="return false;">
-                    <div class="form-group" style="margin-right:10px;">
-                        <label style="display:block;">ID de Reserva:</label>
-                        <input name="Codigo" class="form-control" placeholder="Ej: RES001" />
-                    </div>
-                    <div class="form-group" style="margin-right:10px;">
-                        <label style="display:block;">Estado:</label>
-                        <select name="Estado" class="form-control">
-                            <option value="">Todos los estados</option>
-                            <option value="1">Pendiente</option>
-                            <option value="2">Aprobada</option>
-                            <option value="3">Rechazada</option>
-                            <option value="4">Completada</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin-right:10px;">
-                        <label style="display:block;">Fecha Desde:</label>
-                        <input name="Desde" type="date" class="form-control" />
-                    </div>
-                    <div class="form-group" style="margin-right:10px;">
-                        <label style="display:block;">Fecha Hasta:</label>
-                        <input name="Hasta" type="date" class="form-control" />
-                    </div>
-                    <div style="margin-top:25px;">
-                        <button id="btnBuscar" class="btn btn-primary">
-                            <i class="fa fa-search"></i> Buscar Reservas
+
+            <!-- info -->
+            <div class="x_panel">
+                <div class="x_title">
+                    <h3><i class="fa fa-info-circle"></i> Información</h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content" style="padding-top:0;">
+                    <p><strong>Check-in:</strong> 15:00</p>
+                    <p><strong>Check-out:</strong> 12:00</p>
+                    <p><strong>WiFi:</strong> Gratuito</p>
+                    <p><strong>Recepción:</strong> 24/7</p>
+                    <p><strong>Emergencias:</strong> <span class="text-danger">+56 9 1234 5678</span></p>
+                    <hr />
+                    <p><strong><i class="fa fa-sign-in"></i> Check-in/Check-out</strong></p>
+                    <p>
+                        <button class="btn btn-success btn-block btn-sm btn-encuesta" data-tipo="1">
+                            ✔ Realizar Check-in
                         </button>
-                        <button id="btnLimpiar" class="btn btn-default">
-                            <i class="fa fa-refresh"></i> Limpiar
+                        <button class="btn btn-warning btn-block btn-sm btn-encuesta" data-tipo="2" style="margin-top:5px;">
+                            ✖ Realizar Check-out
                         </button>
-                        <button id="btnTodas" class="btn btn-info">
-                            <i class="fa fa-list"></i> Ver Todas
-                        </button>
-                    </div>
-                </form>
-
-                <div id="divTabla" class="table-responsive" style="margin-top:14px;"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- columna derecha -->
-    <div class="col-md-3 col-sm-4">
-        <!-- stats -->
-        <div class="x_panel">
-            <div class="x_title">
-                <h3><i class="fa fa-bar-chart"></i> Mis Estadísticas</h3>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content" style="padding-top:0;">
-                <p><strong>2</strong> Reservas</p>
-                <p><strong>1</strong> Pendientes</p>
-                <p><strong>1</strong> Aprobadas</p>
-            </div>
-        </div>
-        <!-- próximas fechas -->
-        <div class="x_panel">
-            <div class="x_title">
-                <h3><i class="fa fa-calendar"></i> Próximas Fechas</h3>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content" style="padding-top:0;">
-                <p><strong>15 Ene 2024</strong><br />Check-in RES001</p>
-                <p><strong>20 Ene 2024</strong><br />Check-out RES001</p>
-                <p><strong>25 Ene 2024</strong><br />Check-in RES002</p>
-            </div>
-        </div>
-        <!-- info -->
-        <div class="x_panel">
-            <div class="x_title">
-                <h3><i class="fa fa-info-circle"></i> Información</h3>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content" style="padding-top:0;">
-                <p><strong>Check-in:</strong> 15:00</p>
-                <p><strong>Check-out:</strong> 12:00</p>
-                <p><strong>WiFi:</strong> Gratuito</p>
-                <p><strong>Recepción:</strong> 24/7</p>
-                <p><strong>Emergencias:</strong> <span class="text-danger">+56 9 1234 5678</span></p>
-                <hr />
-                <p><strong><i class="fa fa-sign-in"></i> Check-in/Check-out</strong></p>
-                <p>
-                    <button class="btn btn-success btn-block btn-sm">✔ Realizar Check-in</button>
-                    <button class="btn btn-warning btn-block btn-sm" style="margin-top:5px;">✖ Realizar Check-out</button>
-                </p>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- modal -->
-<div id="modalUpsert" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content" id="modalBody"></div>
+<!-- MODAL NUEVA / EDITAR RESERVA -->
+<div id="modalReserva" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="modalBodyReserva"></div>
+    </div>
+</div>
+
+<!-- MODAL DETALLE RESERVA HUESPED -->
+<div class="modal fade" id="modalDetalleReservaHuesped" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="modalDetalleReservaHuespedContent">
+            @* Aquí se inyectará la partial _DetalleReservaHuesped.cshtml *@
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ENCUESTA SATISFACCIÓN -->
+<div class="modal fade" id="modalEncuesta" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="modalEncuestaContent">
+            @* aquí se cargará _EncuestaSatisfaccion.cshtml *@
+        </div>
     </div>
 </div>
 
 @section scripts{
     <script>
-(function () {
+        (function () {
 
-    function antix() { return $('input[name="__RequestVerificationToken"]').val(); }
+            function initTablaReservas() {
+                if (!$.fn.DataTable) {
+                    console.warn('DataTables no está cargado');
+                    return;
+                }
 
-    // abrir modal nueva
-    $('#btnNueva').on('click', function () {
-        $('#modalBody').html('<div class="p-3">Cargando…</div>');
-        $('#modalUpsert').modal('show');
-        $.get('@Url.Action("Nueva","ReservasHuesped")', function (html) {
-            $('#modalBody').html(html);
-        });
-    });
+                var $tbl = $('#tblReservaHuesped');
+                if (!$tbl.length) return;
 
-    function cargarTabla() {
-        var data = $('#frmFiltro').serialize();
-        $.ajax({
-            url: '@Url.Action("Tabla","ReservasHuesped")',
-            type: 'POST',
-            data: data,
-            headers: { 'RequestVerificationToken': antix() },
-            success: function (html) {
-                $('#divTabla').html(html);
-            },
-            error: function () {
-                $('#divTabla').html('<div class="text-danger">No se pudo cargar el listado.</div>');
+                if ($.fn.DataTable.isDataTable('#tblReservaHuesped')) {
+                    $tbl.DataTable().destroy();
+                }
+
+                $tbl.DataTable({
+                    pageLength: 10,
+                    lengthChange: false,
+                    order: [[0, 'desc']],
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.1/i18n/es-ES.json'
+                    }
+                });
             }
-        });
-    }
 
-    $('#btnBuscar').on('click', function () { cargarTabla(); });
-    $('#btnTodas').on('click', function () { $('#frmFiltro')[0].reset(); cargarTabla(); });
-    $('#btnLimpiar').on('click', function () { $('#frmFiltro')[0].reset(); });
+            // NUEVA RESERVA
+            $('#btnNueva').on('click', function () {
+                $('#modalBodyReserva').html('<div class="p-3">Cargando…</div>');
+                $('#modalReserva').modal('show');
 
-    // primera carga
-    cargarTabla();
+                $.get('@Url.Action("Nueva","ReservasHuesped")', function (html) {
+                    $('#modalBodyReserva').html(html);
+                });
+            });
 
-})();
+            // Cargar tabla
+            function cargarTabla() {
+                var data = $('#frmFiltro').serialize();
+
+                $.ajax({
+                    url: '@Url.Action("Tabla","ReservasHuesped")',
+                    type: 'POST',
+                    data: data,
+                    success: function (html) {
+                        $('#divTabla').html(html);
+                        initTablaReservas();
+                    },
+                    error: function (xhr) {
+                        console.log('Error Tabla:', xhr.status, xhr.responseText);
+                        $('#divTabla').html('<div class="text-danger" style="padding:15px;">No se pudo cargar el listado.</div>');
+                    }
+                });
+            }
+
+            $('#btnBuscar').on('click', function () { cargarTabla(); });
+            $('#btnTodas').on('click', function () {
+                $('#frmFiltro')[0].reset();
+                cargarTabla();
+            });
+            $('#btnLimpiar').on('click', function () {
+                $('#frmFiltro')[0].reset();
+            });
+
+            // Guardar
+            $(document).on('click', '#btnGuardarReserva', function () {
+                var $form = $('#frmReservaHuesped');
+                if ($form.length === 0) {
+                    alert('No se encontró el formulario de reserva.');
+                    return;
+                }
+
+                var data = $form.serialize();
+
+                $.ajax({
+                    url: '@Url.Action("Guardar","ReservasHuesped")',
+                    type: 'POST',
+                    data: data,
+                    success: function (resp) {
+                        if (resp && resp.ok) {
+                            alert(resp.message || 'Reserva guardada');
+                            $('#modalReserva').modal('hide');
+                            cargarTabla();
+                        } else {
+                            alert((resp && resp.message) || 'No se pudo guardar la reserva.');
+                        }
+                    },
+                    error: function (xhr) {
+                        console.log('Error Guardar:', xhr.status, xhr.responseText);
+                        alert('Error al guardar la reserva.');
+                    }
+                });
+            });
+
+            // Encuesta
+            $(document).on('click', '.btn-encuesta', function (e) {
+                e.preventDefault();
+
+                var tipo = $(this).data('tipo');
+                var idReserva = $(this).data('reserva') || '';
+
+                $('#modalEncuestaContent').html('<div class="p-3">Cargando encuesta…</div>');
+                $('#modalEncuesta').modal('show');
+
+                $.ajax({
+                    url: '@Url.Action("Encuesta", "ReservasHuesped")',
+                    type: 'GET',
+                    data: { tipo: tipo, idReserva: idReserva },
+                    success: function (html) {
+                        $('#modalEncuestaContent').html(html);
+                    },
+                    error: function (xhr) {
+                        console.error('Error cargando encuesta:', xhr.status, xhr.responseText);
+                        $('#modalEncuestaContent').html('<div class="p-3 text-danger">No se pudo cargar la encuesta.</div>');
+                    }
+                });
+            });
+
+            // Ver detalle
+            $(document).on('click', '.btn-ver', function (e) {
+                e.preventDefault();
+
+                var id = $(this).data('id');
+                if (!id) {
+                    console.warn('btn-ver sin data-id');
+                    return;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("Detalle", "ReservasHuesped")',
+                    type: 'GET',
+                    data: { id: id },
+                    success: function (html) {
+                        $('#modalDetalleReservaHuespedContent').html(html);
+                        $('#modalDetalleReservaHuesped').modal('show');
+                    },
+                    error: function (xhr) {
+                        console.error('Error Detalle:', xhr.status, xhr.responseText);
+                        alert('No se pudo cargar el detalle de la reserva.');
+                    }
+                });
+            });
+
+            // Editar desde detalle
+            $(document).on('click', '#btnEditarDetalleReserva', function (e) {
+                e.preventDefault();
+
+                var id = $(this).data('id');
+                if (!id) {
+                    console.warn('btnEditarDetalleReserva sin data-id');
+                    return;
+                }
+
+                $('#modalDetalleReservaHuesped').modal('hide');
+
+                $('#modalBodyReserva').html('<div class="p-3">Cargando…</div>');
+                $('#modalReserva').modal('show');
+
+                $.ajax({
+                    url: '@Url.Action("Editar", "ReservasHuesped")',
+                    type: 'GET',
+                    data: { id: id },
+                    success: function (html) {
+                        $('#modalBodyReserva').html(html);
+                    },
+                    error: function (xhr) {
+                        console.error('Error Editar desde Detalle:', xhr.status, xhr.responseText);
+                        alert('No se pudo cargar la reserva para edición.');
+                    }
+                });
+            });
+
+            // Editar
+            $(document).on('click', '.btn-editar', function (e) {
+                e.preventDefault();
+
+                var id = $(this).data('id');
+                if (!id) {
+                    console.warn('btn-editar sin data-id');
+                    return;
+                }
+
+                $('#modalBodyReserva').html('<div class="p-3">Cargando…</div>');
+                $('#modalReserva').modal('show');
+
+                $.ajax({
+                    url: '@Url.Action("Editar", "ReservasHuesped")',
+                    type: 'GET',
+                    data: { id: id },
+                    success: function (html) {
+                        $('#modalBodyReserva').html(html);
+                    },
+                    error: function (xhr) {
+                        console.error('Error Editar:', xhr.status, xhr.responseText);
+                        alert('No se pudo cargar la reserva para edición.');
+                    }
+                });
+            });
+
+            // Eliminar
+            $(document).on('click', '.btn-eliminar', function (e) {
+                e.preventDefault();
+
+                var id = $(this).data('id');
+                if (!id) {
+                    console.warn('btn-eliminar sin data-id');
+                    return;
+                }
+
+                if (!confirm('¿Está seguro de eliminar esta reserva?')) {
+                    return;
+                }
+
+                var token = $('#frmFiltro input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+                    url: '@Url.Action("Eliminar", "ReservasHuesped")',
+                    type: 'POST',
+                    data: {
+                        id: id,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (resp) {
+                        if (resp && resp.ok) {
+                            alert(resp.message || 'Reserva eliminada correctamente.');
+                            cargarTabla();
+                        } else {
+                            alert((resp && resp.message) || 'No se pudo eliminar la reserva.');
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error('Error Eliminar:', xhr.status, xhr.responseText);
+                        alert('Error al eliminar la reserva.');
+                    }
+                });
+            });
+
+            // Primera carga
+            cargarTabla();
+
+        })();
     </script>
 }

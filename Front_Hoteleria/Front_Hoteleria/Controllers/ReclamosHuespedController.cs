@@ -1,25 +1,24 @@
-using Front_Hoteleria.Dto.Reserva;
-using Front_Hoteleria.Services.ReclamosHuesped; // así lo tienes tú
+using Front_Hoteleria.Dto.Huesped;
+using Front_Hoteleria.Services.ReclamosHuesped;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
+
 
 namespace Front_Hoteleria.Controllers
 {
     public class ReclamosHuespedController : Controller
     {
-        // OJO: el nombre del servicio lo dejas como lo tienes en tu proyecto
         private readonly IReclamosHuespedService _api;
 
-        // ctor por defecto
         public ReclamosHuespedController() : this(new ReclamosHuespedService())
         {
         }
 
-        // ctor inyectable
         public ReclamosHuespedController(IReclamosHuespedService api)
         {
             _api = api;
@@ -58,7 +57,6 @@ namespace Front_Hoteleria.Controllers
             if (perfilObj == null)
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
 
-            // asumo que lo guardas como int
             var perfil = Convert.ToInt32(perfilObj);
 
             switch (perfil)
@@ -72,230 +70,205 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
-        // GET: /ReservasHuesped
-       
-
-        // POST: /ReservasHuesped/Tabla
-        // la vista Index hace un POST con filtros y espera HTML
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Tabla(string Codigo, string Estado, DateTime? Desde, DateTime? Hasta)
-        {
-            // acá iría tu llamada a la API para traer las reservas del huésped
-            // por ahora solo devolvemos el parcial con la tabla
-            return PartialView("~/Views/Huesped/Reservas/_TablaMisReservas.cshtml");
-        }
-
-        // GET: /ReservasHuesped/Nueva
-        // se carga dentro del modal
-        [HttpGet]
-        public ActionResult Nueva()
-        {
-            // si tu _UpsertReserva.cshtml necesita combos, los llenas con ViewBag acá
-            // ViewBag.Habitaciones = ...
-            // ViewBag.TiposReserva = ...
-
-            return PartialView("~/Views/Huesped/Reservas/_UpsertReserva.cshtml");
-        }
-
-        // OPCIONAL: si el formulario del modal hace POST
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Crear(FormCollection form)
-        {
-            // acá tomas los campos del form y los mandas a la API
-            // por ahora devolvemos OK para que el JS cierre el modal
-            return Json(new { ok = true });
-        }
-        [HttpGet]
-        public ActionResult TablaReclamos()
-        {
-            // por ahora no traemos datos del backend,
-            // solo devolvemos la estructura de la tabla
-            return PartialView("~/Views/Huesped/Reclamos/_TablaReclamos.cshtml");
-        }
-
-        // =========================
-        // RECLAMOS (HUÉSPED)
-        // =========================
-        // esta es la página que me dijiste "pertenece a huesped"
+        // Alias por si llamas /ReclamosHuesped/Reclamos
         [HttpGet]
         public ActionResult Reclamos()
         {
-            var token = GetBearer();
-            if (string.IsNullOrWhiteSpace(token))
-                return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-
-            // vista que te dejé antes: /Views/HuespedReclamos/Index.cshtml
-            return View("~/Views/HuespedReclamos/Index.cshtml");
+            return RedirectToAction("Index");
         }
 
         // =========================
-        // TABLA PARCIAL DE RESERVAS (HUÉSPED)
+        // TABLA RECLAMOS (PARCIAL, PARA AJAX)
         // =========================
         [HttpGet]
-        public async Task<ActionResult> TablaPartial(
-            DateTime? fechaDesde,
-            DateTime? fechaHasta,
-            int? idEstadoReserva,
-            int? idtiporeserva)
+        public async Task<ActionResult> TablaReclamos()
         {
             try
             {
                 var token = GetBearer();
                 if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult(401, "Sesión expirada");
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada.");
 
-                var filtro = new ReservaTrabajadorDto
+                var lista = await _api.ListarReclamosHuespedAsync(token)
+                            ?? new List<ReclamoSolicitudDto>();
+
+                return PartialView("~/Views/Huesped/Reclamos/_TablaReclamos.cshtml", lista);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[TablaReclamos] " + ex);
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al cargar los reclamos.");
+            }
+        }
+
+        // =========================
+        // CREAR RECLAMO / SUGERENCIA (USA IDs DE LOS COMBOS)
+        // =========================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Crear()
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return Json(new { ok = false, message = "Sesión expirada." });
+
+                var dto = MapearDesdeForm(Request);
+
+                // Validaciones básicas usando IDs
+                if (dto.IdTipoSolicitudHuesped <= 0 ||
+                    dto.IdCategoriaHuesped <= 0 ||
+                    dto.IdPrioridad <= 0 ||
+                    string.IsNullOrWhiteSpace(dto.Asunto) ||
+                    string.IsNullOrWhiteSpace(dto.Descripcion) ||
+                    string.IsNullOrWhiteSpace(dto.Email))
                 {
-                    FechaDesde = fechaDesde,
-                    FechaHasta = fechaHasta,
-                    IdEstadoReserva = idEstadoReserva ?? 0,
-                    IdTipoReserva = idtiporeserva ?? 0
-                };
+                    return Json(new { ok = false, message = "Debe completar todos los campos obligatorios." });
+                }
 
-                // este método está en tu service
-                var data = await _api.ReservasDisponiblesTrabajadorAsync(filtro, token);
+                var ok = await _api.CrearReclamoHuespedAsync(dto, token);
 
-                return PartialView("~/Views/Reservas/_TablaReserva.cshtml", data);
+                return Json(new
+                {
+                    ok,
+                    message = ok
+                        ? "Solicitud registrada correctamente."
+                        : "No se pudo registrar la solicitud."
+                });
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"[TablaPartial] {ex}");
-                return new HttpStatusCodeResult(500, "Error al cargar reservas");
+                Trace.TraceError("[ReclamosHuespedController.Crear] " + ex);
+                return Json(new { ok = false, message = "Ocurrió un error al registrar la solicitud." });
             }
         }
+        
+// ...
 
-        // =========================
-        // FORMULARIO DE RESERVA (HUÉSPED)
-        // =========================
-        [HttpGet]
-        public async Task<ActionResult> Upsert()
+[HttpGet]
+    public async Task<ActionResult> Detalle(int idReclamoHuesped)
+    {
+        try
         {
             var token = GetBearer();
             if (string.IsNullOrWhiteSpace(token))
-                return new HttpStatusCodeResult(401);
+                return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada.");
 
-            // combos de ejemplo; tú los puedes cargar desde la API
-            ViewBag.Habitaciones = new SelectList(new[]
+            if (idReclamoHuesped <= 0)
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "Id inválido.");
+
+            var dto = await _api.ObtenerReclamoHuespedPorIdAsync(idReclamoHuesped, token);
+            if (dto == null)
+                return HttpNotFound("No se encontró la solicitud.");
+
+            return PartialView("~/Views/Huesped/Reclamos/_DetalleReclamo.cshtml", dto);
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("[ReclamosHuesped.Detalle] " + ex);
+            return new HttpStatusCodeResult(
+                (int)HttpStatusCode.InternalServerError,
+                "Error al cargar el detalle de la solicitud.");
+        }
+    }
+
+    // =========================
+    // MAPEOS AUXILIARES
+    // =========================
+    private ReclamoSolicitudDto MapearDesdeForm(HttpRequestBase request)
+        {
+            // IDs que vienen de los combos
+            int.TryParse(request["idTipoSolicitudHuesped"], out var idTipoSolicitudHuesped);
+            int.TryParse(request["idCategoriaSolicitudHuesped"], out var idCategoriaHuesped);
+
+            // Prioridad viene como texto: normal / alta / urgente
+            var prioridadRaw = (request["Prioridad"] ?? "").ToLowerInvariant();
+            var idPrioridad = MapPrioridadId(prioridadRaw);
+            var prioridadTxt = MapPrioridad(prioridadRaw);
+
+            // Usuario actualizador (si tienes el id en sesión)
+            int idUsuario = 0;
+            if (Session["IdUsuario"] != null)
+                int.TryParse(Session["IdUsuario"].ToString(), out idUsuario);
+            else if (Session["IdTrabajador"] != null)
+                int.TryParse(Session["IdTrabajador"].ToString(), out idUsuario);
+
+            return new ReclamoSolicitudDto
             {
-                new { Id = 1, Nombre = "Individual" },
-                new { Id = 2, Nombre = "Grupal" },
-                new { Id = 3, Nombre = "Corporativa" }
-            }, "Id", "Nombre");
+                idReclamoHuesped = 0, // lo genera el backend
 
-            ViewBag.TiposReserva = new SelectList(new[]
-            {
-                new { Id = 1, Nombre = "Individual" },
-                new { Id = 2, Nombre = "Grupal" },
-                new { Id = 3, Nombre = "Corporativa" }
-            }, "Id", "Nombre");
+                IdTipoSolicitudHuesped = idTipoSolicitudHuesped,
+                TipoSolicitud = MapTipoSolicitud(idTipoSolicitudHuesped),
 
-            ViewBag.IdTrabajador = Session["IdTrabajador"];
+                IdCategoriaHuesped = idCategoriaHuesped,
+                Categoria = MapCategoria(idCategoriaHuesped),
 
-            var dto = new ReservaTrabajadorDto
-            {
-                FechaDesde = DateTime.Today,
-                FechaHasta = DateTime.Today.AddDays(1),
-                IdEstadoReserva = 1
+                Asunto = request["Asunto"],
+                Descripcion = request["Descripcion"],
+                Email = request["EmailHuesped"],
+
+                IdPrioridad = idPrioridad,
+                Prioridad = prioridadTxt,
+
+                Fecha = DateTime.Now,
+
+                IdEstado = 1,              // 1 = Pendiente (hot_EstadoHuesped)
+                Estado = "Pendiente",
+
+                Respuesta = null,
+                FechaRespuesta = null,
+
+                IdUsuarioActualizacion = idUsuario
             };
-
-            return PartialView("~/Views/Reservas/_UpsertReserva.cshtml", dto);
         }
 
-        // =========================
-        // CREAR RESERVA (POST)
-        // =========================
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CrearReserva(ReservaTrabajadorDto dto)
+        private string MapTipoSolicitud(int id)
         {
-            try
+            switch (id)
             {
-                var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada");
-
-                if (dto == null)
-                    return new HttpStatusCodeResult(400, "Datos inválidos");
-
-                if (dto.IdHabitacion <= 0 || !dto.FechaDesde.HasValue || !dto.FechaHasta.HasValue)
-                    return new HttpStatusCodeResult(400, "Campos obligatorios faltantes");
-
-                if (dto.IdEstadoReserva == 0)
-                    dto.IdEstadoReserva = 1; // ingresada
-
-                var ok = await _api.CrearReservaTrabajadorAsync(dto, token);
-                if (!ok)
-                    return new HttpStatusCodeResult(500, "No se pudo crear la reserva.");
-
-                return Json(new { ok = true });
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[CrearReserva] {ex}");
-                return new HttpStatusCodeResult(500, "Error al crear la reserva.");
+                case 1: return "Reclamo";
+                case 2: return "Sugerencia";
+                case 3: return "Felicitación";
+                case 4: return "Queja";
+                default: return "";
             }
         }
 
-        // =========================
-        // DASHBOARD PARCIAL
-        // =========================
-        [HttpGet]
-        public async Task<ActionResult> Dashboard()
+        private string MapCategoria(int id)
         {
-            try
+            switch (id)
             {
-                var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
-
-                var dto = await _api.DashboardReservasAsync(token)
-                          ?? new ReservaDashboardDto();
-
-                return PartialView("~/Views/Reservas/_DashboardReserva.cshtml", dto);
-            }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[Dashboard] Error HTTP: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.BadGateway, "No se pudo comunicar con la API de dashboard.");
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[Dashboard] Timeout: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta de dashboard excedió el tiempo de espera.");
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"[Dashboard] Error: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al cargar el dashboard.");
+                case 1: return "Habitación";
+                case 2: return "Servicios";
+                case 3: return "Comida";
+                case 4: return "Limpieza";
+                case 5: return "Personal";
+                case 6: return "Instalaciones";
+                case 7: return "Otros";
+                default: return "";
             }
         }
 
-        // =========================
-        // ELIMINAR (AJAX)
-        // =========================
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Eliminar(int idReserva)
+        private int MapPrioridadId(string prioridadRaw)
         {
-            try
+            switch (prioridadRaw)
             {
-                var token = GetBearer();
-                if (string.IsNullOrWhiteSpace(token))
-                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized);
-
-                // en tu versión tenías "idHabitacion", pero lo lógico es eliminar por idReserva
-                var ok = await _api.EliminarReservaAsync(idReserva, token);
-                if (!ok)
-                    return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "No se pudo eliminar.");
-
-                return new HttpStatusCodeResult((int)HttpStatusCode.OK);
+                case "normal": return 1;   // Id 1 en hot_PrioridadHuesped
+                case "alta": return 2;   // Id 2
+                case "urgente": return 3;   // Id 3
+                default: return 0;
             }
-            catch (Exception ex)
+        }
+
+        private string MapPrioridad(string prioridadRaw)
+        {
+            switch (prioridadRaw)
             {
-                Trace.TraceError($"[Eliminar] Error: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al eliminar la reserva.");
+                case "normal": return "Normal";
+                case "alta": return "Alta";
+                case "urgente": return "Urgente";
+                default: return "";
             }
         }
     }

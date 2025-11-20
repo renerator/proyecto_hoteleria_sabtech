@@ -1,7 +1,7 @@
 ﻿// Dto/Reclamos/ReclamoSolicitudDto.cs
 using System;
 
-namespace Front_Hoteleria.Dto.Huesped
+namespace DemoBackend.Dto.Huesped
 {
     public class ReclamoSolicitudDto
     {
@@ -19,12 +19,11 @@ namespace Front_Hoteleria.Dto.Huesped
         public string Prioridad { get; set; }       // normal, alta, urgente
         public DateTime Fecha { get; set; }
 
-        public int IdEstado { get; set; }
+        public int IdEstado{ get; set; }
         public string Estado { get; set; }          // pendiente, en_revision, respondido, cerrado
         public string Respuesta { get; set; }
         public DateTime? FechaRespuesta { get; set; }
 
         public int IdUsuarioActualizacion { get; set; }
-
     }
 }

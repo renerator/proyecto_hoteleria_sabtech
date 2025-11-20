@@ -1,5 +1,6 @@
-﻿using Front_Hoteleria.Dto.Reserva;
-using Front_Hoteleria.Dto.EstadoReserva;
+﻿using Front_Hoteleria.Dto.EstadoReserva;
+using Front_Hoteleria.Dto.Huesped;
+using Front_Hoteleria.Dto.Reserva;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,38 +9,14 @@ namespace Front_Hoteleria.Services.ReservasHuesped
 {
     public interface IReservaHuespedService
     {
-        // GET /api/Reservas/ReservasDisponibles?vigencia={vigencia}
-        Task<List<ReservaDto>> ReservasDisponiblesAsync(int vigencia, string bearer = null);
+        // ... (lo que ya tengas para admin / trabajador)
 
-        // GET /api/Reservas/dashboardReservas
-        Task<ReservaDashboardDto> DashboardReservasAsync(string bearer = null);
-
-        // POST /api/Reservas/SolicitaReserva
-        Task<bool> CrearReservaAsync(ReservaDto dto, string bearer = null);
-
-        // POST /api/Reservas/ConfirmarReserva
-        Task<bool> ConfirmarReservaAsync(ReservaDto dto, string bearer = null);
-
-        // PUT /api/Reservas/ModificaReserva
-        Task<bool> ModificarReservaAsync(ReservaDto dto, string bearer = null);
-
-        // DELETE /api/Reservas/EliminaReserva?idReserva={id}
-        Task<bool> EliminarReservaAsync(int idReserva, string bearer = null);
-
-        // GET /api/Reservas/BuscarReservas?criterio={texto}
-        Task<List<ReservaDto>> BuscarReservasAsync(string criterio, string bearer = null);
-
-        Task<List<ReservaTrabajadorDto>> ReservasDisponiblesTrabajadorAsync(ReservaTrabajadorDto ResevaTrabajador,string bearer = null);
-        // Front_Hoteleria.Services.Reservas.IReservaService
-        Task<bool> CrearReservaTrabajadorAsync(ReservaTrabajadorDto dto, string bearer = null);
-
-        // Si luego necesitas bitácora:
-        // Task<bool> CrearBitacoraReservaAsync(BitacoraReservaDto dto, string bearer = null);
-
-        Task<ReservaDashboardPanelPrincipalDto> DashboardReservasPanelPrincipalAsync(DateTime? desde, DateTime? hasta, string bearer = null);
-
-        Task<List<EstadoReservaDto>> GetListaEstadoReservas(string bearer = null);
-
+        Task<List<ReservaHuespedDto>> ListarReservasHuespedAsync(ReservaHuespedDto filtro, string bearer);
+        Task<ReservaHuespedDto> ObtenerReservaHuespedPorIdAsync(int idReserva, string bearer);
+        Task<bool> CrearReservaHuespedAsync(ReservaHuespedDto dto, string bearer);
+        Task<bool> ActualizarReservaHuespedAsync(ReservaHuespedDto dto, string bearer);
+        Task<bool> EliminarReservaHuespedAsync(int idReserva, string bearer);
+        Task<bool> RegistrarEncuestaAsync(EncuestaSatisfaccionDto dto, string bearer);
 
     }
 }

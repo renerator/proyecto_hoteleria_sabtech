@@ -1,0 +1,128 @@
+﻿@model Front_Hoteleria.Dto.Huesped.ReclamoSolicitudDto
+@{
+    Layout = null;
+
+    Func<string, string> iconoTipo = (tipo) =>
+    {
+        switch ((tipo ?? "").ToLower())
+        {
+            case "sugerencia": return "💡";
+            case "reclamo": return "⚠️";
+            case "felicitacion": return "🎉";
+            case "queja": return "😞";
+            default: return "📝";
+        }
+    };
+
+    Func<string, string> iconoCategoria = (cat) =>
+    {
+        switch ((cat ?? "").ToLower())
+        {
+            case "habitacion": return "🏠";
+            case "habitación": return "🏠";
+            case "servicios": return "🔧";
+            case "comida": return "🍽";
+            case "limpieza": return "🧹";
+            case "personal": return "👥";
+            case "instalaciones": return "🏢";
+            case "otros": return "📋";
+            default: return "📝";
+        }
+    };
+
+    string estado = (Model.Estado ?? "").ToLower();
+    string claseEstado = "label label-default";
+    string textoEstado = Model.Estado ?? "";
+
+    switch (estado)
+    {
+        case "pendiente":
+            claseEstado = "label label-warning";
+            textoEstado = "Pendiente";
+            break;
+        case "en_revision":
+        case "en revisión":
+            claseEstado = "label label-info";
+            textoEstado = "En Revisión";
+            break;
+        case "respondido":
+            claseEstado = "label label-success";
+            textoEstado = "Respondido";
+            break;
+        case "cerrado":
+            claseEstado = "label label-default";
+            textoEstado = "Cerrado";
+            break;
+    }
+}
+
+<div class="modal-header">
+    <h4 class="modal-title">
+        <i class="fa fa-eye"></i> Detalle de Solicitud
+    </h4>
+</div>
+
+<div class="modal-body">
+    <div class="row">
+        <div class="col-md-6">
+            <p>
+                <strong>Tipo:</strong>
+                @iconoTipo(Model.TipoSolicitud) @Model.TipoSolicitud
+            </p>
+            <p>
+                <strong>Categoría:</strong>
+                @iconoCategoria(Model.Categoria) @Model.Categoria
+            </p>
+            <p>
+                <strong>Prioridad:</strong> @Model.Prioridad
+            </p>
+            <p>
+                <strong>Fecha:</strong> @Model.Fecha.ToString("dd-MM-yyyy")
+            </p>
+        </div>
+        <div class="col-md-6">
+            <p>
+                <strong>Estado:</strong>
+                <span class="@claseEstado">@textoEstado</span>
+            </p>
+            <p>
+                <strong>Email:</strong> @Model.Email
+            </p>
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="form-group">
+        <strong>Asunto:</strong><br />
+        @Model.Asunto
+    </div>
+
+    <div class="form-group">
+        <strong>Descripción:</strong><br />
+        @Html.Raw(Html.Encode(Model.Descripcion ?? "").Replace("\n", "<br />"))
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Respuesta))
+    {
+        <hr />
+        <div class="alert alert-success">
+            <strong><i class="fa fa-reply"></i> Respuesta del Administrador:</strong><br />
+            @Html.Raw(Html.Encode(Model.Respuesta).Replace("\n", "<br />"))
+
+            @if (Model.FechaRespuesta.HasValue)
+            {
+                <br />
+                <small class="text-muted">
+                    Respondido el: @Model.FechaRespuesta.Value.ToString("dd-MM-yyyy")
+                </small>
+            }
+        </div>
+    }
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger" data-dismiss="modal">
+        <i class="fa fa-times"></i> Cerrar
+    </button>
+</div>

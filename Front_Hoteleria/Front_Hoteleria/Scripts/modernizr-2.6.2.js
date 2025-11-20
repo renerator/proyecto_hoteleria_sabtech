@@ -62,8 +62,8 @@ window.Modernizr = (function( window, document, undefined ) {
      * Create our "modernizr" element that we do most feature tests on.
      */
     mod = 'modernizr',
-    modElem = document.createElement(mod),
-    mStyle = modElem.style,
+    Dtoem = document.createElement(mod),
+    mStyle = Dtoem.style,
 
     /**
      * Create the input element for various Web Forms feature tests.
@@ -1022,9 +1022,9 @@ window.Modernizr = (function( window, document, undefined ) {
      };
 
 
-    // Reset modElem.cssText to nothing to reduce memory footprint.
+    // Reset Dtoem.cssText to nothing to reduce memory footprint.
     setCss('');
-    modElem = inputElem = null;
+    Dtoem = inputElem = null;
 
     /*>>shiv*/
     /*! HTML5 Shiv v3.6.1 | @afarkas @jdalton @jon_neal @rem | MIT/GPL2 Licensed */
