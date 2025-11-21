@@ -168,6 +168,11 @@
 </div>
 
 @section scripts {
+    <!-- Si NO tienes ya las librerías de DataTables en el _Layout, descomenta estas líneas:
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap.min.js"></script>
+    -->
+
     <script type="text/javascript">
         // función para mostrar mensajes (usa PNotify si existe, si no, alert)
         function mostrarMensaje(tipo, texto) {
@@ -183,10 +188,37 @@
             }
         }
 
+        // Inicializa DataTables en la tabla de reclamos
+        function initTablaReclamos() {
+            var $tbl = $('#solicitudesTable');
+
+            if ($tbl.length === 0 || !$.fn.DataTable) return;
+
+            // Si ya estaba inicializada, destruirla para evitar error de re-inicialización
+            if ($.fn.DataTable.isDataTable($tbl)) {
+                $tbl.DataTable().destroy();
+            }
+
+            $tbl.DataTable({
+                paging: true,
+                pageLength: 5,        // filas por página
+                lengthChange: false,  // ocultar combo de 10/25/50
+                searching: false,     // sin caja de búsqueda
+                ordering: false,      // sin orden por columnas
+                info: true,           // “Mostrando 1 a 5 de X”
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.13.1/i18n/es-ES.json"
+                }
+            });
+        }
+
         // carga la tabla por AJAX
         function recargarTablaReclamos() {
             $("#contenedor-tabla-reclamos")
-                .load('@Url.Action("TablaReclamos", "ReclamosHuesped")');
+                .load('@Url.Action("TablaReclamos", "ReclamosHuesped")', function () {
+                    // una vez cargado el HTML de la parcial, inicializamos la paginación
+                    initTablaReclamos();
+                });
         }
 
         function limpiarFormulario() {
@@ -238,18 +270,29 @@
                 limpiarFormulario();
             });
         });
+
         // Abrir detalle en modal
-$(document).on("click", ".btn-ver-detalle", function (e) {
-    e.preventDefault();
-    var id = $(this).data("id");   // data-id en el botón
+        $(document).on("click", ".btn-ver-detalle", function (e) {
+            e.preventDefault();
+            var id = $(this).data("id");   // data-id en el botón
 
-    $.get("@Url.Action("Detalle", "ReclamosHuesped")",
-        { idReclamoHuesped: id },
-        function (html) {
-            $("#genericModal .modal-content").html(html);
-            $("#genericModal").modal("show");
+            $.get("@Url.Action("Detalle", "ReclamosHuesped")",
+                { idReclamoHuesped: id },
+                function (html) {
+                    $("#genericModal .modal-content").html(html);
+                    $("#genericModal").modal("show");
+                });
         });
-});
 
+        // Ver respuesta (si tienes el botón .btn-ver-respuesta)
+        $(document).on("click", ".btn-ver-respuesta", function () {
+            var id = $(this).data("solicitud-id");
+
+            $.get("@Url.Action("VerRespuesta", "ReclamosHuesped")",
+                { idReclamoHuesped: id },
+                function (html) {
+                    abrirSimpleModal(html);
+                });
+        });
     </script>
 }

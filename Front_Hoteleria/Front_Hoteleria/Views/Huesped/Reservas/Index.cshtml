@@ -45,6 +45,18 @@
             color: #5A6C80; /* más oscuro que el texto por defecto */
         }
 
+    .stats-reservas .stat-num {
+        display: block;
+        font-size: 26px;
+        font-weight: 700;
+        color: #3498DB; /* azul pedido */
+    }
+
+    .stats-reservas .stat-label {
+        display: block;
+        font-size: 12px;
+        color: #7A8699;
+    }
 
     /* Fila que agrupa las dos columnas (central + derecha) */
     .page-reservas-huesped-row {
@@ -181,12 +193,24 @@
                     <h3><i class="fa fa-bar-chart"></i> Mis Estadísticas</h3>
                     <div class="clearfix"></div>
                 </div>
-                <div class="x_content" style="padding-top:0;">
-                    <p><strong>@totalReservas</strong> Reservas</p>
-                    <p><strong>@pendientes</strong> Pendientes</p>
-                    <p><strong>@aprobadas</strong> Aprobadas</p>
+                <div class="x_content stats-reservas">
+                    <div class="row text-center">
+                        <div class="col-xs-4">
+                            <span class="stat-num">@totalReservas</span>
+                            <span class="stat-label">Reservas</span>
+                        </div>
+                        <div class="col-xs-4">
+                            <span class="stat-num">@pendientes</span>
+                            <span class="stat-label">Pendientes</span>
+                        </div>
+                        <div class="col-xs-4">
+                            <span class="stat-num">@aprobadas</span>
+                            <span class="stat-label">Aprobadas</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+
 
             <!-- próximas fechas -->
             <div class="x_panel">
@@ -225,7 +249,10 @@
                     <p><strong>Check-out:</strong> 12:00</p>
                     <p><strong>WiFi:</strong> Gratuito</p>
                     <p><strong>Recepción:</strong> 24/7</p>
-                    <p><strong>Emergencias:</strong> <span class="text-danger">+56 9 1234 5678</span></p>
+                    <p>
+                        <strong>Emergencias:</strong><br />
+                        <span class="text-danger">+56 9 1234 5678</span>
+                    </p>
                     <hr />
                     <p><strong><i class="fa fa-sign-in"></i> Check-in/Check-out</strong></p>
                     <p>

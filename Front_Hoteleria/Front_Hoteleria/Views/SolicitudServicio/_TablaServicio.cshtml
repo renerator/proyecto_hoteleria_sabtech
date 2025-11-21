@@ -7,7 +7,6 @@
 @Html.AntiForgeryToken()
 
 <style>
-    /* Ajustes generales de la tabla para que se vea como la maqueta */
     #servicesTable {
         background: #fff;
     }
@@ -22,12 +21,10 @@
             vertical-align: middle;
         }
 
-            /* ID solicitud en negrita como la maqueta */
             #servicesTable tbody td.col-id {
                 font-weight: 700;
             }
 
-    /* Estado: pills por tipo */
     .badge-estado {
         display: inline-block;
         padding: 4px 10px;
@@ -58,7 +55,6 @@
         background: #5cb85c;
     }
 
-    /* Columna acciones centrada y con botones pequeños */
     #servicesTable th.col-acciones,
     #servicesTable td.col-acciones {
         text-align: center;
@@ -121,6 +117,7 @@
 
                             var estado = (s.EstadoSolicitud ?? "").Trim();
                             var cssEstado = "badge-estado badge-estado-pendiente";
+
                             switch (estado)
                             {
                                 case "Asignada":
@@ -139,7 +136,7 @@
                             }
 
                             <tr>
-                                <td>@codigo</td>
+                                <td class="col-id">@codigo</td>
                                 <td>@fechaTexto</td>
                                 <td>@tipoServicio</td>
                                 <td>@habitacion</td>
@@ -151,7 +148,6 @@
                                     </span>
                                 </td>
                                 <td class="col-acciones">
-                                    <!-- VER -->
                                     <button type="button"
                                             class="btn btn-info btn-xs"
                                             title="Ver"
@@ -159,7 +155,6 @@
                                         <i class="fa fa-eye"></i>
                                     </button>
 
-                                    <!-- EDITAR -->
                                     <button type="button"
                                             class="btn btn-warning btn-xs"
                                             title="Editar"
@@ -167,7 +162,6 @@
                                         <i class="fa fa-pencil"></i>
                                     </button>
 
-                                    <!-- NOTIFICAR PERSONAL -->
                                     <button type="button"
                                             class="btn btn-success btn-xs"
                                             title="Notificar Personal"
@@ -175,7 +169,6 @@
                                         <i class="fa fa-user"></i>
                                     </button>
 
-                                    <!-- ELIMINAR -->
                                     <button type="button"
                                             class="btn btn-danger btn-xs"
                                             title="Eliminar"

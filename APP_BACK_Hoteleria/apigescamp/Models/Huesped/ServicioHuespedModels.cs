@@ -39,7 +39,7 @@ namespace DemoBackend.Models.Huesped
         [Column("ComentariosAdicionales")]
         public string ComentariosAdicionales { get; set; }
 
-        [Column("IdEstadoServicio")]
+        [Column("IdEstado")]
         public int? IdEstado { get; set; }
 
         [Column("Estado")]
@@ -59,8 +59,8 @@ namespace DemoBackend.Models.Huesped
         public string Email { get; set; }
 
         // Si tu EntityBase NO define estos, déjalos aquí:
-        [Column("EstadoRegistro")]
-        public bool EstadoRegistro { get; set; }
+        //[Column("EstadoRegistro")]
+        //public bool EstadoRegistro { get; set; }
 
         [Column("IdUsuarioActualizacion")]
         public int? IdUsuarioActualizacion { get; set; }

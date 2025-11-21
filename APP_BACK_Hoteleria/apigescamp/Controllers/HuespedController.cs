@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace DemoBackend.Controllers
@@ -195,25 +196,41 @@ namespace DemoBackend.Controllers
         /// Busca solicitudes de servicio del huésped según filtros.
         /// POST /api/Huesped/BuscarServicios
         /// </summary>
-        [HttpPost("BuscarServicios")]
-        public ActionResult<List<ServicioHuespedDto>> BuscarServicios([FromBody] ServicioHuespedDto filtro)
+        // GET: /api/Huesped/BuscarServicios
+        [HttpGet("BuscarServicios")]
+        public ActionResult<List<ServicioHuespedDto>> BuscarServicios(
+     [FromQuery] int? idEstado,
+     [FromQuery] string nombreServicio,
+     [FromQuery] string texto,
+     [FromQuery] DateTime? desde,
+     [FromQuery] DateTime? hasta)
         {
             try
             {
-                var lista = _huespedService.BuscarServiciosHuesped(filtro ?? new ServicioHuespedDto())
-                           ?? new List<ServicioHuespedDto>();
+                var filtro = new ServicioHuespedDto
+                {
+                    FiltroIdEstado = idEstado,
+                    FiltroNombreServicio = nombreServicio,
+                    FiltroTexto = texto,
+                    FiltroDesde = desde,
+                    FiltroHasta = hasta
+                };
 
-                if (lista.Count == 0)
+                // 👇 OJO: SIN await, porque el método es síncrono
+                var lista = _huespedService.BuscarServiciosHuesped(filtro);
+
+                if (lista == null || lista.Count == 0)
                     return NoContent();
 
                 return Ok(lista);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(e, "POST api/Huesped/BuscarServicios : error.");
-                return StatusCode(500, e.Message);
+                Trace.TraceError("[HuespedController.BuscarServicios] " + ex);
+                return StatusCode(500, "Error al listar servicios del huésped.");
             }
         }
+
 
         /// <summary>
         /// Obtiene una solicitud de servicio de huésped por Id.

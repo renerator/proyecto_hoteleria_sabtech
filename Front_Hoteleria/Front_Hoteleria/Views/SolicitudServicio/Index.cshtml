@@ -10,7 +10,17 @@
                 <h3>Gestión de Solicitudes de Servicio</h3>
                 <p class="text-muted">Administración de solicitudes de servicios</p>
             </div>
+            @*<div class="title_right">
+                <div class="pull-right" style="margin-top:15px;">
+                    <button type="button"
+                            class="btn btn-success"
+                            onclick="nuevaSolicitud();">
+                        <i class="fa fa-plus"></i> Nueva Solicitud
+                    </button>
+                </div>
+            </div>*@
         </div>
+
         <div class="clearfix"></div>
 
         @* Token para los POST con [ValidateAntiForgeryToken] *@
@@ -31,9 +41,17 @@
             <!-- Tabla se cargará por AJAX -->
         </div>
 
-        @* Modal de creación/edición (si lo usas) *@
-        <div id="divUpsertSolicitud">
-            @Html.Partial("_UpsertServicio")
+        @* Contenedor para el modal de crear/editar *@
+        <div id="divUpsertSolicitud"></div>
+
+        @* Contenedor para el modal de asignar personal *@
+        <div id="divAsignarPersonal"></div>
+
+        @* Modal de detalle (solo estructura) *@
+        <div id="modalDetalleServicio" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content"><!-- aquí se inyecta _DetalleServicio --></div>
+            </div>
         </div>
     </div>
 </div>
@@ -41,10 +59,13 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Cargamos dashboard y paneles al entrar
             cargarDashboard();
             cargarPaneles();
         });
+
+        function getToken() {
+            return $('input[name="__RequestVerificationToken"]').val();
+        }
 
         function cargarDashboard() {
             $.get('@Url.Action("Dashboard", "SolicitudServicio")',
@@ -58,35 +79,106 @@
             $.get('@Url.Action("Paneles", "SolicitudServicio")',
                 function (html) {
                     $('#panelesSolicitudContainer').html(html);
-
-                    // Una vez que los paneles (filtros) están en el DOM,
-                    // recién ahí cargamos la tabla.
+                    // cuando los filtros estén listos, cargamos la tabla
                     recargarTabla();
                 }
             );
         }
 
-        // estado = idEstadoSolicitud (1 Pendiente, 2 Asignada, etc.)
+        // ================== TABLA ==================
         function recargarTabla() {
-            var idEstado = $('#filtroEstado').val();   // combo de estado en _PanelesSolicitud
-            var fechaInicio = $('#fechaInicio').val(); // input date
-            var fechaFin = $('#fechaFin').val();       // input date
+            var idEstado = $('#filtroEstado').val() || 0;
+            var fechaInicio = $('#fechaInicio').val();
+            var fechaFin = $('#fechaFin').val();
 
             $.post('@Url.Action("Tabla", "SolicitudServicio")',
                 {
-                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
-                    idEstado: idEstado,          // nombre EXACTO al parámetro del action
+                    __RequestVerificationToken: getToken(),
+                    idEstado: idEstado,
                     fechaInicio: fechaInicio,
                     fechaFin: fechaFin
                 },
                 function (html) {
-                    // 👈 aquí estaba tu error: el div se llama divTablaSolicitudes
                     $('#divTablaSolicitudes').html(html);
                 }
             ).fail(function (xhr) {
                 console.error("Error al cargar la tabla:", xhr.status, xhr.responseText);
             });
         }
+
+        // ================== NUEVA ==================
+        function nuevaSolicitud() {
+            $.get('@Url.Action("Upsert", "SolicitudServicio")',
+                { id: 0 },
+                function (html) {
+                    $('#divUpsertSolicitud').html(html);
+                    $('#modalSolicitudServicio').modal('show');
+                }
+            ).fail(function (xhr) {
+                alert('No se pudo cargar el formulario de nueva solicitud (' + xhr.status + ').');
+            });
+        }
+
+        // ================== EDITAR ==================
+        function editarSolicitud(id) {
+            $.get('@Url.Action("Upsert", "SolicitudServicio")',
+                { id: id },
+                function (html) {
+                    $('#divUpsertSolicitud').html(html);
+                    $('#modalSolicitudServicio').modal('show');
+                }
+            ).fail(function (xhr) {
+                alert('No se pudo cargar la solicitud para edición (' + xhr.status + ').');
+            });
+        }
+
+        // ================== DETALLE ==================
+        function verSolicitud(id) {
+            $.get('@Url.Action("Detalle", "SolicitudServicio")',
+                { idSolicitud: id },
+                function (html) {
+                    $('#modalDetalleServicio .modal-content').html(html);
+                    $('#modalDetalleServicio').modal('show');
+                }
+            ).fail(function (xhr) {
+                alert('No se pudo cargar el detalle (' + xhr.status + ').');
+            });
+        }
+
+        // ================== ASIGNAR PERSONAL ==================
+        function notificarPersonal(id) {
+            $.get('@Url.Action("AsignarPersonal", "SolicitudServicio")',
+                { idSolicitud: id },
+                function (html) {
+                    $('#divAsignarPersonal').html(html);
+                    $('#modalAsignarPersonal').modal('show');
+                }
+            ).fail(function (xhr) {
+                alert('No se pudo cargar la ventana de asignación (' + xhr.status + ').');
+            });
+        }
+
+        // ================== ELIMINAR ==================
+        function eliminarSolicitud(id) {
+            if (!confirm('¿Está seguro de eliminar esta solicitud?')) {
+                return;
+            }
+
+            $.post('@Url.Action("Eliminar", "SolicitudServicio")',
+                {
+                    __RequestVerificationToken: getToken(),
+                    idSolicitud: id
+                },
+                function (resp) {
+                    if (resp && resp.ok) {
+                        recargarTabla();
+                    } else {
+                        alert((resp && resp.message) || 'No se pudo eliminar la solicitud.');
+                    }
+                }
+            ).fail(function (xhr) {
+                alert('Error al eliminar la solicitud (' + xhr.status + ').');
+            });
+        }
     </script>
 }
-

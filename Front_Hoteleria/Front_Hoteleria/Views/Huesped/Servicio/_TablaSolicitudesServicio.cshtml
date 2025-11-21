@@ -1,14 +1,52 @@
-﻿@model IEnumerable<Front_Hoteleria.Dto.Huesped.ReservaHuespedDto>
-<table class="table-responsive">
-    <table id="tblReservaHuesped" class="table table-hover">
+﻿@using System.Linq
+@model IEnumerable<Front_Hoteleria.Dto.Huesped.ServicioHuespedDto>
+
+<style>
+    .svc-h-table-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e5e5e5;
+        background: #fff;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .svc-h-label {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: .75rem;
+        font-weight: 600;
+    }
+
+    .svc-h-label-pendiente {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .svc-h-label-enproceso {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .svc-h-label-completado {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .svc-h-label-cancelado {
+        background: #f8d7da;
+        color: #721c24;
+    }
+</style>
+
+<div class="table-responsive">
+    <table id="tblSolicitudesServicio" class="table table-hover">
         <thead>
-            <tr class="res-h-table-header">
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Fecha Desde</th>
-                <th>Fecha Hasta</th>
+            <tr class="svc-h-table-header">
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Prioridad</th>
                 <th>Estado</th>
+                <th>Fecha</th>
                 <th class="text-right">Acciones</th>
             </tr>
         </thead>
@@ -16,59 +54,75 @@
             @if (Model == null || !Model.Any())
             {
                 <tr>
-                    <td colspan="7" class="text-center text-muted">
-                        No se encontraron reservas.
+                    <td colspan="6" class="text-center text-muted">
+                        No se encontraron solicitudes de servicio.
                     </td>
                 </tr>
             }
             else
             {
-                foreach (var r in Model)
+                foreach (var s in Model)
                 {
-                    string badgeClass = "res-h-label res-h-label-pendiente";
-                    switch (r.IdEstadoReserva)
+                    // IdEstado numérico: 1=Pendiente, 2=Asignada, 3=Rechazada, 4=Realizada
+                    var idEstado = s.IdEstado ?? 0;
+
+                    string badgeClass;
+                    string textoEstado;
+
+                    switch (idEstado)
                     {
-                        case 2: badgeClass = "res-h-label res-h-label-aprobada"; break;
-                        case 3: badgeClass = "res-h-label res-h-label-rechazada"; break;
-                        case 4: badgeClass = "res-h-label res-h-label-completada"; break;
+                        case 1: // Pendiente
+                            textoEstado = "Pendiente";
+                            badgeClass = "svc-h-label svc-h-label-pendiente";
+                            break;
+
+                        case 2: // Asignada
+                            textoEstado = "Asignada";
+                            badgeClass = "svc-h-label svc-h-label-enproceso";
+                            break;
+
+                        case 3: // Rechazada
+                            textoEstado = "Rechazada";
+                            badgeClass = "svc-h-label svc-h-label-cancelado";
+                            break;
+
+                        case 4: // Realizada
+                            textoEstado = "Realizada";
+                            badgeClass = "svc-h-label svc-h-label-completado";
+                            break;
+
+                        default:
+                            // Si viene texto en s.Estado, úsalo; si no, "Desconocido"
+                            textoEstado = !string.IsNullOrWhiteSpace(s.Estado)
+                                ? s.Estado
+                                : "Desconocido";
+                            badgeClass = "svc-h-label svc-h-label-pendiente";
+                            break;
                     }
 
-                    var codigo = "RES-" + r.IdReserva.ToString("D3");
-
                     <tr>
-                        <td>@codigo</td>
-                        <td>@r.Nombre</td>
-                        <td>@r.Apellido</td>
-                        <td>@r.FechaDesde.ToString("yyyy-MM-dd")</td>
-                        <td>@r.FechaHasta.ToString("yyyy-MM-dd")</td>
+                        <td>@s.TipoServicio</td>
+                        <td>@s.Descripcion</td>
+                        <td>@s.Prioridad</td>
                         <td>
                             <span class="@badgeClass">
-                                @r.Estado
+                                @textoEstado
                             </span>
                         </td>
+                        <td>
+                            @s.FechaSolicitud.ToString("yyyy-MM-dd")
+                        </td>
                         <td class="text-right">
-                            <button type="button" class="btn btn-info btn-xs btn-ver"
-                                    data-id="@r.IdReserva" title="Ver">
-                                <i class="fa fa-eye"></i>
+                            <button type="button"
+                                    class="btn btn-danger btn-xs btn-eliminar-servicio"
+                                    data-id="@s.IdSolicitudServicio"
+                                    title="Eliminar">
+                                <i class="fa fa-trash"></i>
                             </button>
-
-                            @* solo si está pendiente, permitir editar / eliminar *@
-                            @if (r.IdEstadoReserva == 1)
-                            {
-                                <button type="button" class="btn btn-primary btn-xs btn-editar"
-                                        data-id="@r.IdReserva" title="Editar">
-                                    <i class="fa fa-pencil"></i>
-                                </button>
-                                <button type="button" class="btn btn-danger btn-xs btn-eliminar"
-                                        data-id="@r.IdReserva" title="Eliminar">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            }
                         </td>
                     </tr>
                 }
             }
         </tbody>
     </table>
-</table>
-
+</div>

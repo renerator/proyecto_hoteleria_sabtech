@@ -25,5 +25,13 @@ namespace Front_Hoteleria.Services.SolicitudServicio
 
         Task<bool> EliminarSolicitudAsync(int idSolicitud, string bearer = null);
         Task<SolicitudKPIDto> ObtenerKpiAsync(string bearer = null);
+
+        // ⬇⬇ NUEVO MÉTODO PARA ASIGNAR PERSONAL
+        Task<bool> AsignarPersonalAsync(
+            int idSolicitud,
+            int? idPersonal,
+            bool asignacionAutomatica,
+            string bearer = null);
+
     }
 }

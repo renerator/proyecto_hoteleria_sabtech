@@ -264,6 +264,46 @@ namespace Front_Hoteleria.Services.SolicitudServicio
                 return false;
             }
         }
+        // ===================== ASIGNAR PERSONAL =====================
+        public async Task<bool> AsignarPersonalAsync(
+            int idSolicitud,
+            int? idPersonal,
+            bool asignacionAutomatica,
+            string bearer = null)
+        {
+            try
+            {
+                if (idSolicitud <= 0) return false;
+
+                SetBearer(bearer);
+
+                // Payload que espera tu API (ajusta nombres si es necesario)
+                var payload = new
+                {
+                    IdSolicitud = idSolicitud,
+                    IdPersonal = idPersonal,
+                    AsignacionAutomatica = asignacionAutomatica
+                };
+
+                var json = JsonConvert.SerializeObject(payload);
+
+                using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
+                using (var resp = await _http.PostAsync("/api/SolicitudServicio/AsignarPersonal", content))
+                {
+                    if (resp.IsSuccessStatusCode)
+                        return true;
+
+                    var err = await resp.Content.ReadAsStringAsync();
+                    Trace.TraceWarning($"[AsignarPersonalAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[AsignarPersonalAsync] {ex}");
+                return false;
+            }
+        }
 
         // ===================== ELIMINAR =====================
         public async Task<bool> EliminarSolicitudAsync(int idSolicitud, string bearer = null)

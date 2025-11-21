@@ -371,70 +371,92 @@ public ReservaHuespedDto ObtenerPorId(int idReserva)
         /// Lista solicitudes de servicio de huésped con filtros:
         /// SP: HOT_HUESPED_SERVICIO_LISTAR @IdEstado,@FechaDesde,@FechaHasta,@Texto,@NombreServicio
         /// </summary>
-        public List<ServicioHuespedDto> BuscarServiciosHuesped(ServicioHuespedDto filtro)
+
+// ...
+
+public List<ServicioHuespedDto> BuscarServiciosHuesped(ServicioHuespedDto filtro)
+    {
+        // Aseguramos que nunca sea null
+        filtro ??= new ServicioHuespedDto();
+
+        const string sql = "HOT_HUESPED_SERVICIO_LISTAR " +
+                           "@IdEstado,@FechaDesde,@FechaHasta,@Texto,@NombreServicio";
+
+        var p = new SqlParameter[]
         {
-            const string sql = "HOT_HUESPED_SERVICIO_LISTAR " +
-                               "@IdEstado,@FechaDesde,@FechaHasta,@Texto,@NombreServicio";
-
-            var p = new SqlParameter[]
-            {
-        new SqlParameter("@IdEstado",        (object?)filtro.FiltroIdEstado       ?? DBNull.Value),
-        new SqlParameter("@FechaDesde",      (object?)filtro.FiltroDesde          ?? DBNull.Value),
-        new SqlParameter("@FechaHasta",      (object?)filtro.FiltroHasta          ?? DBNull.Value),
-        new SqlParameter("@Texto",           (object?)filtro.FiltroTexto          ?? DBNull.Value),
-        new SqlParameter("@NombreServicio",  (object?)filtro.FiltroNombreServicio ?? DBNull.Value)
-            };
-
-            try
-            {
-                var lista = _repoServicioHuesped.GetStoreProcedure(sql, p);
-
-                if (lista == null)
-                    return new List<ServicioHuespedDto>();
-
-                return lista
-                    .Select(e => new ServicioHuespedDto
-                    {
-                        IdSolicitudServicio = e.IdSolicitudServicio,
-
-                        IdTipoServicio = e.IdTipoServicio,
-                        TipoServicio = e.TipoServicio,
-
-                        IdPrioridad = e.IdPrioridad,
-                        Prioridad = e.Prioridad,
-
-                        Descripcion = e.Descripcion,
-                        FechaPreferida = e.FechaPreferida,
-
-                        IdMetodoContacto = e.IdMetodoContacto,
-                        MetodoContacto = e.MetodoContacto,
-
-                        ComentariosAdicionales = e.ComentariosAdicionales,
-
-                        IdEstado = e.IdEstado,
-                        Estado = e.Estado,
-
-                        FechaSolicitud = e.FechaSolicitud,
-
-                        Nombre = e.Nombre,
-                        Apellido = e.Apellido,
-                        Email = e.Email
-                    })
-                    .OrderByDescending(x => x.FechaSolicitud)
-                    .ToList();
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("[HuespedService.BuscarServiciosHuesped] " + ex);
-                return new List<ServicioHuespedDto>();
-            }
+        new SqlParameter("@IdEstado", SqlDbType.Int)
+        {
+            Value = (object?)filtro.FiltroIdEstado ?? DBNull.Value
+        },
+        new SqlParameter("@FechaDesde", SqlDbType.DateTime)
+        {
+            Value = (object?)filtro.FiltroDesde ?? DBNull.Value
+        },
+        new SqlParameter("@FechaHasta", SqlDbType.DateTime)
+        {
+            Value = (object?)filtro.FiltroHasta ?? DBNull.Value
+        },
+        new SqlParameter("@Texto", SqlDbType.NVarChar, 200)
+        {
+            Value = (object?)filtro.FiltroTexto ?? DBNull.Value
+        },
+        new SqlParameter("@NombreServicio", SqlDbType.NVarChar, 100)
+        {
+            Value = (object?)filtro.FiltroNombreServicio ?? DBNull.Value
         }
+        };
 
-        /// <summary>
-        /// Detalle de una solicitud de servicio de huésped.
-        /// SP: HOT_HUESPED_SERVICIO_DETALLE @IdSolicitudServicio
-        /// </summary>
-        public ServicioHuespedDto ObtenerServicioHuespedPorId(int idSolicitudServicio)
+        try
+        {
+            // GetStoreProcedure debe devolver tu entidad mapeada
+            var lista = _repoServicioHuesped.GetStoreProcedure(sql, p);
+
+            if (lista == null)
+                return new List<ServicioHuespedDto>();
+
+            return lista
+                .Select(e => new ServicioHuespedDto
+                {
+                    IdSolicitudServicio = e.IdSolicitudServicio,
+
+                    IdTipoServicio = e.IdTipoServicio,
+                    TipoServicio = e.TipoServicio,
+
+                    IdPrioridad = e.IdPrioridad,
+                    Prioridad = e.Prioridad,
+
+                    Descripcion = e.Descripcion,
+                    FechaPreferida = e.FechaPreferida,
+
+                    IdMetodoContacto = e.IdMetodoContacto,
+                    MetodoContacto = e.MetodoContacto,
+
+                    ComentariosAdicionales = e.ComentariosAdicionales,
+
+                    IdEstado = e.IdEstado,
+                    Estado = e.Estado,
+
+                    FechaSolicitud = e.FechaSolicitud,
+
+                    Nombre = e.Nombre,
+                    Apellido = e.Apellido,
+                    Email = e.Email
+                })
+                .OrderByDescending(x => x.FechaSolicitud)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError("[HuespedService.BuscarServiciosHuesped] " + ex);
+            return new List<ServicioHuespedDto>();
+        }
+    }
+
+    /// <summary>
+    /// Detalle de una solicitud de servicio de huésped.
+    /// SP: HOT_HUESPED_SERVICIO_DETALLE @IdSolicitudServicio
+    /// </summary>
+    public ServicioHuespedDto ObtenerServicioHuespedPorId(int idSolicitudServicio)
         {
             if (idSolicitudServicio <= 0)
                 return null;

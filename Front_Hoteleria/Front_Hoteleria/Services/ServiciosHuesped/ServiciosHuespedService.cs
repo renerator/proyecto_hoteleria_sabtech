@@ -11,66 +11,116 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace Front_Hoteleria.Services.ServiciosHuesped
 {
-    // OJO: ahora implementa IServiciosHuespedService  (plural)
+    // Implementa IServiciosHuespedService
     public class ServicioHuespedService : IServiciosHuespedService
     {
-        private readonly HttpClient _http;
+        private static readonly HttpClient _http;
         private const string BasePath = "/api/Huesped";
 
-        public ServicioHuespedService()
+        // ========= CTOR ESTÁTICO, MISMO ESTILO QUE ReservaService =========
+        static ServicioHuespedService()
         {
-            _http = new HttpClient();
+            var baseUrl = ConfigurationManager.AppSettings["Api.BaseUrl"]
+                          ?? ConfigurationManager.AppSettings["ApiBaseUrl"];
 
-            var baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
-            if (!string.IsNullOrWhiteSpace(baseUrl))
-                _http.BaseAddress = new Uri(baseUrl);
+            if (string.IsNullOrWhiteSpace(baseUrl))
+                throw new InvalidOperationException("Falta Api.BaseUrl en Web.config (o ApiBaseUrl).");
 
-            _http.Timeout = TimeSpan.FromSeconds(30);
+            if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var baseUri))
+                throw new InvalidOperationException("Api.BaseUrl no es una URL válida: " + baseUrl);
+
+            _http = new HttpClient
+            {
+                BaseAddress = baseUri,
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+
+            _http.DefaultRequestHeaders.Accept.Clear();
+            _http.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        private void SetBearer(string bearer)
+        private static void SetBearer(string bearer)
         {
             _http.DefaultRequestHeaders.Authorization = null;
             if (!string.IsNullOrWhiteSpace(bearer))
-            {
                 _http.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", bearer);
-            }
         }
 
-        public async Task<List<ServicioHuespedDto>> ListarServiciosHuespedAsync(
-            ServicioHuespedDto filtro,
-            string bearer = null)
+        // =========================================================
+        // 1) LISTAR SERVICIOS DEL HUÉSPED
+        // POST /api/Huesped/BuscarServicios
+        // =========================================================
+       
+
+    public async Task<List<ServicioHuespedDto>> ListarServiciosHuespedAsync(
+    ServicioHuespedDto filtro,
+    string bearer = null)
+    {
+        try
         {
-            try
+            SetBearer(bearer);
+
+            filtro = new ServicioHuespedDto();
+
+            var qs = new List<string>();
+
+            // Mapeamos los campos de filtro del DTO a parámetros de querystring
+            if (filtro.FiltroIdEstado.HasValue)
+                qs.Add("idEstado=" + filtro.FiltroIdEstado.Value);
+
+            if (filtro.FiltroDesde.HasValue)
+                qs.Add("desde=" + filtro.FiltroDesde.Value.ToString("yyyy-MM-dd"));
+
+            if (filtro.FiltroHasta.HasValue)
+                qs.Add("hasta=" + filtro.FiltroHasta.Value.ToString("yyyy-MM-dd"));
+
+            if (!string.IsNullOrWhiteSpace(filtro.FiltroNombreServicio))
+                qs.Add("nombreServicio=" + WebUtility.UrlEncode(filtro.FiltroNombreServicio));
+
+            if (!string.IsNullOrWhiteSpace(filtro.FiltroTexto))
+                qs.Add("texto=" + WebUtility.UrlEncode(filtro.FiltroTexto));
+
+            var url = $"{BasePath}/BuscarServicios";
+            if (qs.Count > 0)
+                url += "?" + string.Join("&", qs);
+
+            using (var resp = await _http.GetAsync(url))
             {
-                SetBearer(bearer);
+                if (resp.StatusCode == HttpStatusCode.NoContent ||
+                    resp.StatusCode == HttpStatusCode.NotFound)
+                    return new List<ServicioHuespedDto>();
 
-                var json = JsonConvert.SerializeObject(filtro ?? new ServicioHuespedDto());
-
-                using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
-                using (var resp = await _http.PostAsync($"{BasePath}/BuscarServicios", content))
+                if (!resp.IsSuccessStatusCode)
                 {
-                    if (resp.StatusCode == HttpStatusCode.NoContent ||
-                        resp.StatusCode == HttpStatusCode.NotFound)
-                        return new List<ServicioHuespedDto>();
-
-                    resp.EnsureSuccessStatusCode();
-                    var str = await resp.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<ServicioHuespedDto>>(str);
+                    var err = await resp.Content.ReadAsStringAsync();
+                    Trace.TraceWarning(
+                        $"[ServicioHuespedService.ListarServiciosHuespedAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                    return new List<ServicioHuespedDto>();
                 }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("[ServicioHuespedService.ListarServiciosHuespedAsync] " + ex);
-                return new List<ServicioHuespedDto>();
+
+                var str = await resp.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<ServicioHuespedDto>>(str)
+                       ?? new List<ServicioHuespedDto>();
             }
         }
+        catch (Exception ex)
+        {
+            Trace.TraceError("[ServicioHuespedService.ListarServiciosHuespedAsync] " + ex);
+            return new List<ServicioHuespedDto>();
+        }
+    }
 
-        public async Task<ServicioHuespedDto> ObtenerServicioHuespedPorIdAsync(
+    // =========================================================
+    // 2) OBTENER POR ID
+    // GET /api/Huesped/Servicio/{id}
+    // =========================================================
+    public async Task<ServicioHuespedDto> ObtenerServicioHuespedPorIdAsync(
             int idSolicitud,
             string bearer = null)
         {
@@ -98,6 +148,10 @@ namespace Front_Hoteleria.Services.ServiciosHuesped
             }
         }
 
+        // =========================================================
+        // 3) CREAR SERVICIO
+        // POST /api/Huesped/CrearServicio
+        // =========================================================
         public async Task<bool> CrearServicioHuespedAsync(
             ServicioHuespedDto dto,
             string bearer = null)
@@ -109,11 +163,18 @@ namespace Front_Hoteleria.Services.ServiciosHuesped
                 SetBearer(bearer);
 
                 var json = JsonConvert.SerializeObject(dto);
-
                 using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
                 using (var resp = await _http.PostAsync($"{BasePath}/CrearServicio", content))
                 {
-                    return resp.IsSuccessStatusCode;
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning(
+                            $"[ServicioHuespedService.CrearServicioHuespedAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return false;
+                    }
+
+                    return true;
                 }
             }
             catch (Exception ex)
@@ -123,6 +184,10 @@ namespace Front_Hoteleria.Services.ServiciosHuesped
             }
         }
 
+        // =========================================================
+        // 4) ACTUALIZAR SERVICIO
+        // PUT /api/Huesped/ActualizarServicio
+        // =========================================================
         public async Task<bool> ActualizarServicioHuespedAsync(
             ServicioHuespedDto dto,
             string bearer = null)
@@ -134,11 +199,18 @@ namespace Front_Hoteleria.Services.ServiciosHuesped
                 SetBearer(bearer);
 
                 var json = JsonConvert.SerializeObject(dto);
-
                 using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
                 using (var resp = await _http.PutAsync($"{BasePath}/ActualizarServicio", content))
                 {
-                    return resp.IsSuccessStatusCode;
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning(
+                            $"[ServicioHuespedService.ActualizarServicioHuespedAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return false;
+                    }
+
+                    return true;
                 }
             }
             catch (Exception ex)
@@ -148,6 +220,10 @@ namespace Front_Hoteleria.Services.ServiciosHuesped
             }
         }
 
+        // =========================================================
+        // 5) ELIMINAR SERVICIO
+        // DELETE /api/Huesped/EliminarServicio/{id}
+        // =========================================================
         public async Task<bool> EliminarServicioHuespedAsync(
             int idSolicitud,
             string bearer = null)
@@ -163,7 +239,15 @@ namespace Front_Hoteleria.Services.ServiciosHuesped
                     if (resp.StatusCode == HttpStatusCode.NoContent)
                         return true;
 
-                    return resp.IsSuccessStatusCode;
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning(
+                            $"[ServicioHuespedService.EliminarServicioHuespedAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return false;
+                    }
+
+                    return true;
                 }
             }
             catch (Exception ex)

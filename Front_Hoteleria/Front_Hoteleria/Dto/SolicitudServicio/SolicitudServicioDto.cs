@@ -21,6 +21,14 @@ namespace Front_Hoteleria.Dto.SolicitudServicio {
         public string TipoServicio { get; set; }          // ej: "Limpieza de Habitación"
         public string NombreSolicitante { get; set; }     // ej: "Juan Pérez"
         public string PersonalAsignado { get; set; }      // ej: "Sin asignar" / "Luis Soto"
-        public string EstadoSolicitud { get; set; }       // ej: "Pendiente"
+        public string EstadoSolicitud { get; set; }
+        public string Empresa { get; set; } // ej: "Pendiente"
+
+        public int IdEmpresa { get; set; }
+        public string Prioridad { get; set; }
+
+        public int  IdPrioridad { get; set; }
+
+        public string RutSolicitante { get; set; }
     }
 }

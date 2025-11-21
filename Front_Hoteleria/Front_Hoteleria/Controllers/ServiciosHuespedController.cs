@@ -1,5 +1,6 @@
 using Front_Hoteleria.Dto.Huesped;
 using Front_Hoteleria.Dto.Servicio;
+using Front_Hoteleria.Dto.SolicitudServicio;
 using Front_Hoteleria.Services.ServiciosHuesped;
 using System;
 using System.Collections.Generic;
@@ -39,9 +40,44 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
+        // ================== GUARDAR SERVICIO ==================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> GuardarServicio(ServicioHuespedDto dto)
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return Json(new { ok = false, message = "Sesión expirada." });
+
+                var ok = await _api.CrearServicioHuespedAsync(dto, token);
+
+                return Json(new
+                {
+                    ok,
+                    message = ok ? "Solicitud de servicio enviada." :
+                                   "No se pudo guardar la solicitud de servicio."
+                });
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[ServiciosHuesped.GuardarServicio] " + ex);
+                return Json(new { ok = false, message = "Error al guardar la solicitud de servicio." });
+            }
+        }
+
+        // Alias para compatibilidad con código antiguo que llamaba a "Crear"
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public Task<ActionResult> Crear(ServicioHuespedDto dto)
+            => GuardarServicio(dto);
+
+
+
         // ================= INDEX =================
         [HttpGet]
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             var tok = Session["Token"] as string;
             if (string.IsNullOrWhiteSpace(tok))
@@ -60,9 +96,23 @@ namespace Front_Hoteleria.Controllers
                         return View("~/Views/Servicios/Index.cshtml");
 
                     case 2: // Huésped
-                        return View("~/Views/Huesped/Servicio/Index.cshtml");
+                        {
+                            // Llamamos al servicio que lista las solicitudes (el mismo que usa la tabla)
+                            var filtro = new ServicioHuespedDto(); // filtros vacíos => todas las del huésped
+                            var lista = await _api.ListarServiciosHuespedAsync(filtro, tok)
+                                       ?? new List<ServicioHuespedDto>();
 
-                    case 3: // Personal (si lo usas)
+                            // KPIs
+                            ViewBag.TotalSolicitudes = lista.Count;
+
+                            // 1 = Pendiente, 2 = Asignada, 3 = Rechazada, 4 = Realizada
+                            ViewBag.SolicitudesCompletadas = lista.Count(x => x.IdEstado == 4);
+                            ViewBag.SolicitudesPendientes = lista.Count(x => x.IdEstado == 1);
+
+                            return View("~/Views/Huesped/Servicio/Index.cshtml");
+                        }
+
+                    case 3: // Personal
                         return View("~/Views/Servicios/Gestionar.cshtml");
 
                     default:
@@ -76,10 +126,10 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
-        // ================= PARCIALES =================
+            // ================= PARCIALES =================
 
-        // Paneles intermedios (estático en la vista)
-        [HttpGet]
+            // Paneles intermedios (si los usas en otra vista)
+            [HttpGet]
         public ActionResult PanelesServicio()
             => PartialView("_PanelesServicio");
 
@@ -94,18 +144,20 @@ namespace Front_Hoteleria.Controllers
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada");
 
-                // Filtro para la API
                 var filtro = new ServicioHuespedDto
                 {
                     FiltroNombreServicio = nombre
-                    // si luego quieres usar "vigencia", lo puedes mapear a fechas/estado aquí
+                    // si ocupas "vigencia", mapea aquí (por fechas/estado)
                 };
 
                 var data = await _api.ListarServiciosHuespedAsync(filtro, token)
                            ?? new List<ServicioHuespedDto>();
 
-                // IMPORTANTE: la vista parcial debe esperar IEnumerable<ServicioHuespedDto>
-                return PartialView("_TablaServicio", data);
+                // IMPORTANTE: la vista parcial espera IEnumerable<ServicioHuespedDto>
+                return PartialView(
+                    "~/Views/Huesped/Servicio/_TablaSolicitudesServicio.cshtml",
+                    data
+                );
             }
             catch (Exception ex)
             {
@@ -128,7 +180,7 @@ namespace Front_Hoteleria.Controllers
                 if (string.IsNullOrWhiteSpace(token))
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada");
 
-                // idServicio aquí es el IdSolicitudServicio del DTO
+                // idServicio = IdSolicitudServicio del DTO
                 var ok = await _api.EliminarServicioHuespedAsync(idServicio, token);
                 if (!ok)
                     return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "No se pudo eliminar.");
@@ -147,7 +199,7 @@ namespace Front_Hoteleria.Controllers
 
         // ================= WRAPPERS DE COMPATIBILIDAD =================
 
-        // Dashboard superior (KPIs + gráfico) – ahora sin llamada al API
+        // Dashboard superior (KPIs + gráfico) – por ahora vacío
         [HttpGet]
         public Task<ActionResult> DashboardServicio(DateTime? desde, DateTime? hasta)
         {
@@ -162,11 +214,7 @@ namespace Front_Hoteleria.Controllers
                 }
                 else
                 {
-                    // Si más adelante tienes un endpoint real, lo llamas aquí.
-                    // var d = desde ?? DateTime.Today.AddDays(-30);
-                    // var h = hasta ?? DateTime.Today;
-                    // var apiDto = await _otroServicio.DashboardServicioAsync(d, h, token);
-                    // if (apiDto != null) dto = apiDto;
+                    // Implementar cuando tengas API real de dashboard
                 }
             }
             catch (Exception ex)

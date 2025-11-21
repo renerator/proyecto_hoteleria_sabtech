@@ -1,0 +1,165 @@
+﻿@model Front_Hoteleria.Dto.SolicitudServicio.SolicitudServicioDto
+
+@{
+    Layout = null;
+
+    var codigo = Model != null ? $"SOL-{Model.IdSolicitud:000}" : "";
+    var fechaHora = Model?.FechaSolicitud.HasValue == true
+        ? Model.FechaSolicitud.Value.ToString("dd/MM/yyyy HH:mm:ss")
+        : "";
+
+    var habitacion = !string.IsNullOrWhiteSpace(Model?.NombreHabitacion)
+        ? Model.NombreHabitacion
+        : (Model?.IdHabitacion > 0 ? Model.IdHabitacion.ToString() : "");
+
+    var solicitante = Model?.NombreSolicitante ?? "";
+    var empresa = Model?.Empresa ?? "";
+    var personal = string.IsNullOrWhiteSpace(Model?.PersonalAsignado)
+        ? "Sin asignar"
+        : Model.PersonalAsignado;
+
+    var estado = (Model?.EstadoSolicitud ?? "").Trim();
+    var cssEstado = "badge-estado-detalle badge-estado-pendiente";
+    var iconEstado = "fa-clock-o";
+
+    switch (estado)
+    {
+        case "Asignada":
+            cssEstado = "badge-estado-detalle badge-estado-asignada";
+            iconEstado = "fa-user";
+            break;
+        case "Rechazada":
+            cssEstado = "badge-estado-detalle badge-estado-rechazada";
+            iconEstado = "fa-times-circle";
+            break;
+        case "Realizada":
+            cssEstado = "badge-estado-detalle badge-estado-realizada";
+            iconEstado = "fa-check-circle";
+            break;
+        case "Pendiente":
+        default:
+            cssEstado = "badge-estado-detalle badge-estado-pendiente";
+            iconEstado = "fa-clock-o";
+            break;
+    }
+}
+
+<style>
+    .detalle-label {
+        font-weight: 600;
+        color: #34495e;
+    }
+
+    .detalle-valor {
+        color: #2c3e50;
+    }
+
+    .detalle-descripcion-box {
+        background: #f7f8fa;
+        border: 1px solid #ecf0f1;
+        border-radius: 4px;
+        padding: 10px 12px;
+        min-height: 60px;
+        color: #555;
+    }
+
+    .badge-estado-detalle {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #fff;
+        white-space: nowrap;
+    }
+
+        .badge-estado-detalle i {
+            margin-right: 4px;
+        }
+
+    .badge-estado-pendiente {
+        background: #f0ad4e;
+    }
+
+    .badge-estado-asignada {
+        background: #5bc0de;
+    }
+
+    .badge-estado-rechazada {
+        background: #d9534f;
+    }
+
+    .badge-estado-realizada {
+        background: #5cb85c;
+    }
+</style>
+
+<div class="modal-header" style="background:#2a3f54; color:#fff;">
+    <button type="button" class="close" data-dismiss="modal">
+        <span>&times;</span>
+    </button>
+    <h4 class="modal-title">
+        <i class="fa fa-eye"></i> Detalles del Servicio
+    </h4>
+</div>
+
+<div class="modal-body">
+
+    <div class="row" style="margin-bottom:15px;">
+        <div class="col-md-6">
+            <p>
+                <span class="detalle-label">ID Solicitud:</span>
+                <span class="detalle-valor">@codigo</span>
+            </p>
+            <p>
+                <span class="detalle-label">Tipo de Servicio:</span>
+                <span class="detalle-valor">@Model?.TipoServicio</span>
+            </p>
+            <p>
+                <span class="detalle-label">Habitación:</span>
+                <span class="detalle-valor">@habitacion</span>
+            </p>
+            <p>
+                <span class="detalle-label">Solicitante:</span>
+                <span class="detalle-valor">@solicitante</span>
+            </p>
+        </div>
+
+        <div class="col-md-6">
+            <p>
+                <span class="detalle-label">Empresa:</span>
+                <span class="detalle-valor">@empresa</span>
+            </p>
+            <p>
+                <span class="detalle-label">Fecha/Hora:</span>
+                <span class="detalle-valor">@fechaHora</span>
+            </p>
+            <p>
+                <span class="detalle-label">Personal Asignado:</span>
+                <span class="detalle-valor">@personal</span>
+            </p>
+            <p>
+                <span class="detalle-label">Estado:</span>
+                <span class="@cssEstado">
+                    <i class="fa @iconEstado"></i> @estado
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <p class="detalle-label">Descripción:</p>
+            <div class="detalle-descripcion-box">
+                @Html.Raw(Html.Encode(Model?.Descripcion ?? "").Replace("\n", "<br />"))
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">
+        Cerrar
+    </button>
+</div>

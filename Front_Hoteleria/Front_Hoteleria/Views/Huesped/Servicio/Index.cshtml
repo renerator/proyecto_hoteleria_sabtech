@@ -1,4 +1,6 @@
-﻿@{
+﻿@using System.Linq
+
+@{
     ViewBag.Title = "Servicios";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
@@ -90,9 +92,31 @@
             display: block;
             font-size: 26px;
             font-weight: 700;
-            color: #2A3F54;
+            color: #3498DB; /* color solicitado */
         }
 
+    /* Contacto */
+    .contact-item {
+        margin-bottom: 8px;
+    }
+
+    .contact-label {
+        font-weight: 600;
+    }
+
+    .contact-phone-recepcion {
+        color: #3498DB; /* mismo color que las estadísticas */
+        font-weight: 700;
+    }
+
+    .contact-phone-servicios {
+        color: #e74c3c; /* rojo bonito, puedes usar "red" si prefieres */
+        font-weight: 700;
+    }
+
+    .contact-email {
+        color: #2A3F54; /* un tono sobrio para el mail, opcional */
+    }
         .stats-servicios .stat-label {
             font-size: 12px;
             color: #7A8699;
@@ -179,7 +203,6 @@
                                     <option value="3">Correo electrónico</option>
                                 </select>
                             </div>
-
                         </div>
 
                         <div class="form-group">
@@ -217,7 +240,8 @@
                 <div class="x_content" style="padding:0;">
                     <div id="divTablaServicios" class="table-responsive">
                         @Html.Partial(
-                            "~/Views/Huesped/Servicio/_TablaSolicitudesServicio.cshtml"
+                            "~/Views/Huesped/Servicio/_TablaSolicitudesServicio.cshtml",
+                            Enumerable.Empty<Front_Hoteleria.Dto.Huesped.ServicioHuespedDto>()
                         )
                     </div>
                 </div>
@@ -235,19 +259,19 @@
                 </div>
                 <div class="x_content">
                     <button type="button"
-                            class="btn btn-servicio-rapido btn-servicio-limpieza"
+                            class="btn-servicio-rapido btn-servicio-limpieza"
                             data-tipo-servicio="limpieza">
                         <i class="fa fa-tint"></i> Limpieza
                     </button>
 
                     <button type="button"
-                            class="btn btn-servicio-rapido btn-servicio-reposicion"
+                            class="btn-servicio-rapido btn-servicio-reposicion"
                             data-tipo-servicio="reposicion">
                         <i class="fa fa-retweet"></i> Reposición
                     </button>
 
                     <button type="button"
-                            class="btn btn-servicio-rapido btn-servicio-reparacion"
+                            class="btn-servicio-rapido btn-servicio-reparacion"
                             data-tipo-servicio="reparacion">
                         <i class="fa fa-wrench"></i> Reparación
                     </button>
@@ -284,19 +308,63 @@
                     <h3><i class="fa fa-phone"></i> Contacto</h3>
                     <div class="clearfix"></div>
                 </div>
-                <div class="x_content" style="padding-top:0;">
-                    <p><strong>Recepción:</strong> +56 9 1234 5678</p>
-                    <p><strong>Servicios 24/7:</strong> +56 9 8765 4321</p>
-                    <p><strong>Email:</strong> servicios@hotelsabtech.com</p>
+                <div class="x_content contacto-box" style="padding-top:0;">
+                    <p class="contact-item">
+                        <strong class="contact-label">Recepción:</strong><br />
+                        <span class="contact-phone contact-phone-recepcion">+56 9 1234 5678</span>
+                    </p>
+                    <p class="contact-item">
+                        <strong class="contact-label">Servicios 24/7:</strong><br />
+                        <span class="contact-phone contact-phone-servicios">+56 9 8765 4321</span>
+                    </p>
+                    <p class="contact-item">
+                        <strong class="contact-label">Email:</strong><br />
+                        <span class="contact-email">servicios@hotelsabtech.com</span>
+                    </p>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
 
 @section scripts{
+    <!-- Si NO tienes ya las librerías de DataTables en el _Layout, puedes usar esto:
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap.min.js"></script>
+    -->
+
     <script>
         (function () {
+
+            function getToken() {
+                return $('input[name="__RequestVerificationToken"]').val();
+            }
+
+            // Inicializa DataTables en la tabla de solicitudes
+            function initTablaServicios() {
+                var $tbl = $('#tblSolicitudesServicio');
+
+                if ($tbl.length === 0) return;
+
+                // Si ya estaba inicializada, la destruye para evitar el error de "reinitialization"
+                if ($.fn.DataTable && $.fn.DataTable.isDataTable($tbl)) {
+                    $tbl.DataTable().destroy();
+                }
+
+                $tbl.DataTable({
+                    paging: true,
+                    pageLength: 5,        // Nº de filas por página
+                    lengthChange: false,  // Oculta combo de "mostrar 10 / 25 / 50"
+                    searching: false,     // Sin caja de búsqueda (si la quieres, pon true)
+                    ordering: false,      // Sin ordenamiento por columnas
+                    info: true,           // "Mostrando 1 a 5 de X"
+                    language: {
+                        // Español (puedes cambiar la URL si ya tienes el JSON local)
+                        url: "https://cdn.datatables.net/plug-ins/1.13.1/i18n/es-ES.json"
+                    }
+                });
+            }
 
             // Enviar solicitud de servicio
             $(document).on('click', '#btnEnviarServicio', function (e) {
@@ -305,10 +373,10 @@
                 var $form = $('#frmServicioHuesped');
                 if ($form.length === 0) return;
 
-                var data = $form.serialize();
+                var data = $form.serialize(); // incluye el token
 
                 $.ajax({
-                    url: '@Url.Action("Crear", "ServiciosHuesped")', // ajusta si tu acción se llama distinto
+                    url: '@Url.Action("GuardarServicio", "ServiciosHuesped")',
                     type: 'POST',
                     data: data,
                     success: function (resp) {
@@ -335,11 +403,11 @@
 
             // Botones de servicios rápidos rellenan tipo de servicio (IDs reales)
             $(document).on('click', '.btn-servicio-rapido', function () {
-                var tipo  = $(this).data('tipo-servicio');
+                var tipo = $(this).data('tipo-servicio');
                 var $combo = $('#IdTipoServicio');
 
                 var map = {
-                    'limpieza':   '1', // Limpieza de Habitación
+                    'limpieza': '1',   // Limpieza de Habitación
                     'reposicion': '2', // Reposición de Artículos
                     'reparacion': '3'  // Reparación/Mantenimiento
                 };
@@ -354,10 +422,17 @@
             // Carga tabla de solicitudes (AJAX)
             function cargarTablaServicios() {
                 $.ajax({
-                    url: '@Url.Action("Tabla", "ServiciosHuesped")', // ajusta nombres si es necesario
-                    type: 'GET',
+                    url: '@Url.Action("TablaServicio", "ServiciosHuesped")',
+                    type: 'POST',
+                    data: {
+                        __RequestVerificationToken: getToken(),
+                        vigencia: null,
+                        nombre: '' // aquí luego puedes tomar el filtro desde un textbox
+                    },
                     success: function (html) {
                         $('#divTablaServicios').html(html);
+                        // IMPORTANTE: inicializar DataTables cada vez que recargas la tabla
+                        initTablaServicios();
                     },
                     error: function (xhr) {
                         console.error('Error tabla servicios:', xhr.status, xhr.responseText);
@@ -368,9 +443,36 @@
                 });
             }
 
+            // Eliminar solicitud
+            $(document).on('click', '.btn-eliminar-servicio', function () {
+                var id = $(this).data('id');
+                if (!id) return;
+
+                if (!confirm('¿Está seguro de eliminar la solicitud de servicio?')) {
+                    return;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("EliminarServicio", "ServiciosHuesped")',
+                    type: 'POST',
+                    data: {
+                        __RequestVerificationToken: getToken(),
+                        idServicio: id
+                    },
+                    success: function () {
+                        cargarTablaServicios();
+                    },
+                    error: function (xhr) {
+                        console.error('Error al eliminar servicio:', xhr.status, xhr.responseText);
+                        alert('No se pudo eliminar la solicitud.');
+                    }
+                });
+            });
+
             // primera carga de la tabla
             cargarTablaServicios();
 
         })();
     </script>
 }
+

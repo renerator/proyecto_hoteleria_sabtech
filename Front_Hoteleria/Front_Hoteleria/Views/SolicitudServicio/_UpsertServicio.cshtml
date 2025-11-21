@@ -1,15 +1,19 @@
 ﻿@model Front_Hoteleria.Dto.SolicitudServicio.SolicitudServicioDto
-
+@using System.Web.Mvc
 @{
+    Layout = null;
+
     var esEdicion = Model != null && Model.IdSolicitud > 0;
     var titulo = esEdicion ? "Editar Solicitud de Servicio" : "Nueva Solicitud de Servicio";
+
+    var empresas = ViewBag.Empresas as List<SelectListItem> ?? new List<SelectListItem>();
+    var habitaciones = ViewBag.Habitaciones as List<SelectListItem> ?? new List<SelectListItem>();
 }
 
 <div id="modalSolicitudServicio" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
 
-            <!-- HEADER -->
             <div class="modal-header" style="background:#2a3f54;color:#fff;">
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                 <h4 class="modal-title">
@@ -30,9 +34,26 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Tipo de Servicio <span class="text-danger">*</span></label>
-                                @* Se llenará por JS con los servicios disponibles *@
-                                <select id="IdServicio" name="IdServicio" class="form-control" required>
+                                <select id="IdServicio"
+                                        name="IdServicio"
+                                        class="form-control"
+                                        required>
                                     <option value="">Seleccione...</option>
+                                    <option value="1" @(Model != null && Model.IdServicio == 1 ? "selected" : "")>
+                                        Limpieza de Habitación
+                                    </option>
+                                    <option value="2" @(Model != null && Model.IdServicio == 2 ? "selected" : "")>
+                                        Mantenimiento
+                                    </option>
+                                    <option value="3" @(Model != null && Model.IdServicio == 3 ? "selected" : "")>
+                                        Lavandería
+                                    </option>
+                                    <option value="4" @(Model != null && Model.IdServicio == 4 ? "selected" : "")>
+                                        Servicio de Alimentos
+                                    </option>
+                                    <option value="5" @(Model != null && Model.IdServicio == 5 ? "selected" : "")>
+                                        Otros
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -40,18 +61,15 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Habitación <span class="text-danger">*</span></label>
-                                <input type="text"
-                                       id="IdHabitacion"
-                                       name="IdHabitacion"
-                                       class="form-control"
-                                       value="@(Model != null && Model.IdHabitacion > 0 ? Model.IdHabitacion.ToString() : "")"
-                                       placeholder="Ej: 301"
-                                       required />
+                                @Html.DropDownListFor(m => m.IdHabitacion,
+                                      habitaciones,
+                                      "Seleccione...",
+                                      new { @class = "form-control", id = "IdHabitacion", required = "required" })
                             </div>
                         </div>
                     </div>
 
-                    <!-- FILA 2: Solicitante / RUT / Empresa -->
+                    <!-- FILA 2: Rut / Nombre / Empresa -->
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -60,6 +78,7 @@
                                        id="RutSolicitante"
                                        name="RutSolicitante"
                                        class="form-control"
+                                       value="@(Model != null ? Model.RutSolicitante : "")"
                                        placeholder="11.111.111-1"
                                        required />
                             </div>
@@ -77,20 +96,18 @@
                             </div>
                         </div>
 
-
-
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Empresa</label>
-                                @* Combo para empresa; lo puedes llenar por AJAX *@
-                                <select id="IdEmpresa" name="IdEmpresa" class="form-control">
-                                    <option value="">Seleccione...</option>
-                                </select>
+                                @Html.DropDownListFor(m => m.IdEmpresa,
+                                      empresas,
+                                      "Seleccione...",
+                                      new { @class = "form-control", id = "IdEmpresa" })
                             </div>
                         </div>
                     </div>
 
-                    <!-- FILA 3: Descripción -->
+                    <!-- DESCRIPCIÓN -->
                     <div class="form-group">
                         <label>Descripción <span class="text-danger">*</span></label>
                         <textarea id="Descripcion"
@@ -101,23 +118,22 @@
                                   required>@(Model != null ? Model.Descripcion : "")</textarea>
                     </div>
 
-                    <!-- FILA 4: Prioridad -->
+                    <!-- PRIORIDAD -->
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Prioridad</label>
                                 <select id="Prioridad" name="Prioridad" class="form-control">
-                                    <option value="Normal" selected>Normal</option>
-                                    <option value="Alta">Alta</option>
-                                    <option value="Baja">Baja</option>
+                                    <option value="Normal" @(Model != null && Model.Prioridad == "Normal" ? "selected" : "")>Normal</option>
+                                    <option value="Alta" @(Model != null && Model.Prioridad == "Alta" ? "selected" : "")>Alta</option>
+                                    <option value="Baja" @(Model != null && Model.Prioridad == "Baja" ? "selected" : "")>Baja</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                </div> <!-- /modal-body -->
+                </div>
 
-                <!-- FOOTER -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-success">
@@ -130,26 +146,10 @@
 </div>
 
 <script>
-    // --------- Abrir modal para nueva solicitud ----------
-    function nuevoServicio() {
-        limpiarFormularioSolicitud();
-        $('#modalSolicitudServicio').modal('show');
-    }
-
-    function limpiarFormularioSolicitud() {
-        var $form = $('#frmSolicitudServicio');
-        if ($form.length) {
-            $form[0].reset();
-        }
-        $('#RutSolicitante').removeClass('input-validation-error');
-    }
-
-    // --------- Validación de RUT chileno ----------
     function validarRutChile(rut) {
         if (!rut) return false;
 
         rut = rut.replace(/\./g, '').replace(/-/g, '').toUpperCase();
-
         if (rut.length < 2) return false;
 
         var cuerpo = rut.slice(0, -1);
@@ -173,7 +173,6 @@
 
     $(function () {
 
-        // Validar RUT al salir del campo
         $('#RutSolicitante').on('blur', function () {
             var rut = $(this).val();
             if (rut && !validarRutChile(rut)) {
@@ -184,8 +183,7 @@
             }
         });
 
-        // Enviar formulario por AJAX al método Crear(SolicitudServicioDto dto)
-        $('#frmSolicitudServicio').on('submit', function (e) {
+        $('#frmSolicitudServicio').off('submit').on('submit', function (e) {
             e.preventDefault();
 
             var rut = $('#RutSolicitante').val();
@@ -196,21 +194,25 @@
             }
 
             var $form = $(this);
+            var id = parseInt($('#IdSolicitud').val() || '0', 10);
+            var url = id > 0
+                ? '@Url.Action("Modificar", "SolicitudServicio")'
+                : '@Url.Action("Crear", "SolicitudServicio")';
 
             $.ajax({
-                url: '@Url.Action("Crear", "SolicitudServicio")',
+                url: url,
                 type: 'POST',
                 data: $form.serialize(),
                 success: function (resp) {
                     if (resp && resp.ok) {
                         $('#modalSolicitudServicio').modal('hide');
                         if (typeof recargarTabla === 'function') {
-                            recargarTabla();   // refresca la grilla
+                            recargarTabla();
                         }
                     } else {
                         alert(resp && resp.message
                             ? resp.message
-                            : 'No se pudo crear la solicitud.');
+                            : 'No se pudo guardar la solicitud.');
                     }
                 },
                 error: function (xhr) {

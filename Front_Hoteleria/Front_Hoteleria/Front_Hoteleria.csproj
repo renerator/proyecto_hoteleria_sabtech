@@ -171,7 +171,7 @@
     <Compile Include="Dto\Habitacion\HabitacionDashboardDto.cs" />
     <Compile Include="Dto\Habitacion\HabitacionDto.cs" />
     <Compile Include="Dto\Huesped\EncuestaSatisfaccionDto.cs" />
-    <Compile Include="Dto\Huesped\SolicitudServicioDto.cs" />
+    <Compile Include="Dto\Huesped\ServicioHuespedDto.cs" />
     <Compile Include="Dto\Huesped\ReservaHuespedDto.cs" />
     <Compile Include="Dto\Huesped\ReclamoSolicitudDto.cs" />
     <Compile Include="Dto\Inventario\InventarioMovimientoPostDto.cs" />
@@ -4764,6 +4764,8 @@
     <Content Include="Views\Huesped\Servicio\_TablaSolicitudesServicio.cshtml" />
     <Content Include="Views\Huesped\Servicio\_UpsertReservaHuesped.cshtml" />
     <Content Include="Views\Huesped\Servicio\Index.cshtml" />
+    <Content Include="Views\SolicitudServicio\_AsignarPersonal.cshtml" />
+    <Content Include="Views\SolicitudServicio\_DetalleServicio.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\vendors\devbridge-autocomplete\src\jquery.autocomplete.d.ts" />

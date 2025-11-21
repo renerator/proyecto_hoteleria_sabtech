@@ -1,71 +1,157 @@
 ﻿@{
     Layout = null;
 }
+
 <style>
-    .btn-notificar-personal {
-        background-color: #55c6e9; /* ajusta el celeste si quieres */
-        border-color: #55c6e9;
-        color: #fff;
-        border-radius: 3px;
-        padding: 4px 12px;
+    /* Contenedor general del panel */
+    .ss-panel-filtros {
+        background: #ffffff;
+        border-radius: 4px;
+        padding: 15px 20px 10px;
+        box-shadow: 0 1px 3px rgba(0,0,0,.08);
+        margin-bottom: 15px;
     }
 
-        .btn-notificar-personal i {
-            margin-right: 4px;
+    /* Título "Filtros de Búsqueda" */
+    .ss-panel-filtros-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2A3F54;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+        .ss-panel-filtros-title i {
+            margin-right: 8px;
+            color: #5A738E;
         }
+
+    /* Labels */
+    .ss-panel-filtros label {
+        font-weight: 600;
+        color: #5A6C80;
+        font-size: 13px;
+    }
+
+    /* Botón principal Buscar (azul grande) */
+    .ss-btn-buscar {
+        width: 100%;
+        margin-top: 24px;
+        padding: 10px 0;
+        font-size: 15px;
+        font-weight: 600;
+        border-radius: 3px;
+    }
+
+    /* Fila de botones secundarios (abajo) */
+    .ss-panel-bottom-buttons {
+        margin-top: 10px;
+    }
+
+        .ss-panel-bottom-buttons .btn {
+            min-width: 210px;
+            font-weight: 600;
+        }
+
+            .ss-panel-bottom-buttons .btn i {
+                margin-right: 5px;
+            }
 </style>
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="x_panel">
-            <div class="x_title">
-                <h2><i class="fa fa-filter"></i> Filtros de búsqueda</h2>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-                <div class="row">
-                    <div class="col-md-3">
-                        <label>Fecha inicio</label>
-                        <input type="date" id="fechaInicio" class="form-control" />
-                    </div>
-                    <div class="col-md-3">
-                        <label>Fecha fin</label>
-                        <input type="date" id="fechaFin" class="form-control" />
-                    </div>
+<div class="ss-panel-filtros">
+    <!-- TÍTULO -->
+    <div class="ss-panel-filtros-title">
+        <i class="fa fa-filter"></i> Filtros de Búsqueda
+    </div>
 
-                    <div class="col-md-3">
-                        <label>Estado</label>
-                        <select id="filtroEstado"
-                                class="form-control"
-                                onchange="recargarTabla($('#filtroEstado').val());">
-                            <!-- valores típicos: 1=Pendiente, 2=Asignada, 3=Rechazada, 4=Realizada, 0=Todos -->
-                            <option value="1" selected>Pendiente</option>
-                            <option value="2">Asignada</option>
-                            <option value="3">Rechazada</option>
-                            <option value="4">Realizada</option>
-                            <option value="0">Todos</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label>&nbsp;</label>
-                        <button class="btn btn-primary btn-block"
-                                onclick="recargarTabla($('#filtroEstado').val());">
-                            <i class="fa fa-search"></i> Buscar
-                        </button>
-                    </div>
-                </div>
-
-                <hr />
-
-                <button class="btn btn-success" onclick="nuevoServicio();">
-                    <i class="fa fa-plus"></i> Crear Nueva Solicitud
-                </button>
-
-                <button class="btn btn-info btn-notificar-personal" onclick="nuevoServicio();">
-                    <i class="fa fa-bell"></i> Notificar Personal
-                </button>
+    <!-- FILA DE FECHAS + ESTADO + BUSCAR -->
+    <div class="row">
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                <label for="fechaInicio">Fecha Inicio</label>
+                <input type="date"
+                       id="fechaInicio"
+                       class="form-control" />
             </div>
         </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                <label for="fechaFin">Fecha Fin</label>
+                <input type="date"
+                       id="fechaFin"
+                       class="form-control" />
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="form-group">
+                <label for="filtroEstado">Estado</label>
+                <select id="filtroEstado" class="form-control">
+                    <option value="1" selected>Pendiente</option>
+                    <option value="2">Asignada</option>
+                    <option value="3">Rechazada</option>
+                    <option value="4">Realizada</option>
+                    <option value="0">Todos</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <button type="button"
+                    class="btn btn-primary ss-btn-buscar"
+                    onclick="recargarTabla();">
+                <i class="fa fa-search"></i> Buscar
+            </button>
+        </div>
+    </div>
+
+    <!-- FILA DE BOTONES: CREAR / NOTIFICAR -->
+    <div class="row ss-panel-bottom-buttons">
+        <div class="col-md-6 col-sm-12">
+            <button type="button"
+                    class="btn btn-success"
+                    onclick="nuevaSolicitud();">
+                <i class="fa fa-plus"></i> Crear Nueva Solicitud
+            </button>
+            <button type="button"
+                    class="btn btn-info"
+                    onclick="notificarPersonalGlobal();">
+                <i class="fa fa-bell"></i> Notificar Personal
+            </button>
+        </div>
+        
     </div>
 </div>
+
+<script>
+    // Limpia filtros y recarga tabla
+    function limpiarFiltrosSolicitud() {
+        $('#fechaInicio').val('');
+        $('#fechaFin').val('');
+        $('#filtroEstado').val('1'); // Pendiente por defecto
+
+        if (typeof recargarTabla === 'function') {
+            recargarTabla();
+        }
+    }
+     // ================== NUEVA ==================
+ function nuevaSolicitud() {
+     $.get('@Url.Action("Upsert", "SolicitudServicio")',
+         { id: 0 },
+         function (html) {
+             $('#divUpsertSolicitud').html(html);
+             $('#modalSolicitudServicio').modal('show');
+         }
+     ).fail(function (xhr) {
+         alert('No se pudo cargar el formulario de nueva solicitud (' + xhr.status + ').');
+     });
+ }
+    // Botón "Notificar Personal" general (placeholder)
+    function notificarPersonalGlobal() {
+        // Aquí luego puedes abrir un modal o hacer la lógica que necesites
+        // De momento dejamos un aviso para que sepas que está enganchado.
+        alert('Aquí irá la lógica para notificar al personal.');
+    }
+</script>

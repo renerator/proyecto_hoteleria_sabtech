@@ -1,0 +1,150 @@
+﻿@model Front_Hoteleria.Dto.SolicitudServicio.SolicitudServicioDto
+@using System.Collections.Generic
+@using System.Web.Mvc
+
+@{
+    // Código, tipo y habitación para el encabezado del modal
+    var codigo = Model != null && Model.IdSolicitud > 0
+        ? ("SOL-" + Model.IdSolicitud.ToString("000"))
+        : "SOL-000";
+
+    var tipo = Model != null ? (Model.TipoServicio ?? "") : "";
+    var habitacion = "";
+
+    if (Model != null)
+    {
+        if (!string.IsNullOrWhiteSpace(Model.NombreHabitacion))
+        {
+            habitacion = Model.NombreHabitacion;
+        }
+        else if (Model.IdHabitacion > 0)
+        {
+            habitacion = Model.IdHabitacion.ToString();
+        }
+    }
+
+    // Lista de personal (puede venir desde el controller en ViewBag.Personal)
+    var personalItems = ViewBag.Personal as List<SelectListItem>
+                        ?? new List<SelectListItem>
+                        {
+                            new SelectListItem{ Value = "", Text = "Seleccione..." },
+                            // DEMO: puedes quitar estos y rellenar dinámicamente
+                            new SelectListItem{ Value = "1", Text = "Juan Pérez" },
+                            new SelectListItem{ Value = "2", Text = "María González" }
+                                };
+}
+
+<div class="modal fade" id="modalAsignarPersonal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- HEADER -->
+            <div class="modal-header" style="background:#2a3f54;color:#fff;">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">
+                    <i class="fa fa-user"></i> Asignar Personal
+                </h4>
+            </div>
+
+            @using (Html.BeginForm(
+                "AsignarPersonal",
+                "SolicitudServicio",
+                FormMethod.Post,
+                new { id = "frmAsignarPersonal", @class = "form-horizontal" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Hidden("idSolicitud", Model != null ? Model.IdSolicitud : 0)
+
+                <!-- BODY -->
+                <div class="modal-body">
+
+                    <div class="row" style="margin-bottom:15px;">
+                        <div class="col-sm-6">
+                            <p><strong>Solicitud:</strong> @codigo</p>
+                            <p><strong>Tipo:</strong> @tipo</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <p><strong>Habitación:</strong> @habitacion</p>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">
+                            Seleccionar Personal <span class="text-danger">*</span>
+                        </label>
+                        <div class="col-sm-8">
+                            @Html.DropDownList("idPersonal", personalItems,
+                                new { @class = "form-control", id = "idPersonal" })
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top:10px;">
+                        <div class="col-sm-offset-4 col-sm-8">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox"
+                                           id="chkAsignacionAutomatica"
+                                           name="asignacionAutomatica"
+                                           value="true" />
+                                    Usar asignación automática
+                                </label>
+                            </div>
+                            <p class="help-block" style="margin-top:5px;">
+                                El sistema asignará automáticamente al personal disponible más cercano.
+                            </p>
+                        </div>
+                    </div>
+
+                </div> <!-- /modal-body -->
+
+                <!-- FOOTER -->
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-default"
+                            data-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa fa-check"></i> Asignar
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+
+        // Quitamos handlers anteriores para evitar duplicados si se reabre el modal
+        $('#frmAsignarPersonal').off('submit').on('submit', function (e) {
+            e.preventDefault();
+
+            var $form = $(this);
+            var data = $form.serialize(); // incluye token, idSolicitud, idPersonal y asignacionAutomatica
+
+            $.ajax({
+                url: '@Url.Action("AsignarPersonal", "SolicitudServicio")',
+                type: 'POST',
+                data: data,
+                success: function (resp) {
+                    if (resp && resp.ok) {
+                        $('#modalAsignarPersonal').modal('hide');
+                        if (typeof recargarTabla === 'function') {
+                            recargarTabla(); // refresca la grilla principal
+                        }
+                    } else {
+                        alert((resp && resp.message) || 'No se pudo asignar el personal.');
+                    }
+                },
+                error: function (xhr) {
+                    alert('Error al asignar el personal (' + xhr.status + ').');
+                }
+            });
+        });
+    });
+</script>
