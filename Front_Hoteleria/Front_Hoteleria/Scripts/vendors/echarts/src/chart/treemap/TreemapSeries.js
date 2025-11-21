@@ -1,15 +1,15 @@
 define(function(require) {
 
-    var SeriesModel = require('../../model/Series');
+    var SeriesDto = require('../../Dto/Series');
     var Tree = require('../../data/Tree');
     var zrUtil = require('zrender/core/util');
-    var Model = require('../../model/Model');
+    var Dto = require('../../Dto/Dto');
     var formatUtil = require('../../util/format');
     var encodeHTML = formatUtil.encodeHTML;
     var addCommas = formatUtil.addCommas;
 
 
-    return SeriesModel.extend({
+    return SeriesDto.extend({
 
         type: 'series.treemap',
 
@@ -126,7 +126,7 @@ define(function(require) {
         /**
          * @override
          */
-        getInitialData: function (option, ecModel) {
+        getInitialData: function (option, ecDto) {
             var data = option.data || [];
             var rootName = option.name;
             rootName == null && (rootName = option.name);
@@ -141,7 +141,7 @@ define(function(require) {
             // sereis.mergeOption 的 getInitData是否放在merge后，从而能直接获取merege后的结果而非手动判断。
             var levels = option.levels || [];
 
-            levels = option.levels = setDefault(levels, ecModel);
+            levels = option.levels = setDefault(levels, ecDto);
 
             // Make sure always a new tree is created when setOption,
             // in TreemapView, we check whether oldTree === newTree
@@ -176,7 +176,7 @@ define(function(require) {
          * @return {Object}
          */
         getDataParams: function (dataIndex) {
-            var params = SeriesModel.prototype.getDataParams.apply(this, arguments);
+            var params = SeriesDto.prototype.getDataParams.apply(this, arguments);
 
             var data = this.getData();
             var node = data.tree.getNodeByDataIndex(dataIndex);
@@ -319,8 +319,8 @@ define(function(require) {
     /**
      * set default to level configuration
      */
-    function setDefault(levels, ecModel) {
-        var globalColorList = ecModel.get('color');
+    function setDefault(levels, ecDto) {
+        var globalColorList = ecDto.get('color');
 
         if (!globalColorList) {
             return;
@@ -329,10 +329,10 @@ define(function(require) {
         levels = levels || [];
         var hasColorDefine;
         zrUtil.each(levels, function (levelDefine) {
-            var model = new Model(levelDefine);
-            var modelColor = model.get('color');
-            if (model.get('itemStyle.normal.color')
-                || (modelColor && modelColor !== 'none')
+            var Dto = new Dto(levelDefine);
+            var DtoColor = Dto.get('color');
+            if (Dto.get('itemStyle.normal.color')
+                || (DtoColor && DtoColor !== 'none')
             ) {
                 hasColorDefine = true;
             }

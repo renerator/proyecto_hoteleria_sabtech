@@ -13,7 +13,7 @@ define(function (require) {
         /**
          * @override
          */
-        init: function (ecModel, api) {
+        init: function (ecDto, api) {
             /**
              * 'throttle' is used in this.dispatchAction, so we save range
              * to avoid missing some 'pan' info.
@@ -26,31 +26,31 @@ define(function (require) {
         /**
          * @override
          */
-        render: function (dataZoomModel, ecModel, api, payload) {
+        render: function (dataZoomDto, ecDto, api, payload) {
             InsideZoomView.superApply(this, 'render', arguments);
 
             // Notice: origin this._range should be maintained, and should not be re-fetched
-            // from dataZoomModel when payload.type is 'dataZoom', otherwise 'pan' or 'zoom'
+            // from dataZoomDto when payload.type is 'dataZoom', otherwise 'pan' or 'zoom'
             // info will be missed because of 'throttle' of this.dispatchAction.
-            if (roams.shouldRecordRange(payload, dataZoomModel.id)) {
-                this._range = dataZoomModel.getPercentRange();
+            if (roams.shouldRecordRange(payload, dataZoomDto.id)) {
+                this._range = dataZoomDto.getPercentRange();
             }
 
             // Reset controllers.
             var coordInfoList = this.getTargetInfo().cartesians;
             var allCoordIds = zrUtil.map(coordInfoList, function (coordInfo) {
-                return roams.generateCoordId(coordInfo.model);
+                return roams.generateCoordId(coordInfo.Dto);
             });
             zrUtil.each(coordInfoList, function (coordInfo) {
-                var coordModel = coordInfo.model;
+                var coordDto = coordInfo.Dto;
                 roams.register(
                     api,
                     {
-                        coordId: roams.generateCoordId(coordModel),
+                        coordId: roams.generateCoordId(coordDto),
                         allCoordIds: allCoordIds,
-                        coordinateSystem: coordModel.coordinateSystem,
-                        dataZoomId: dataZoomModel.id,
-                        throttleRage: dataZoomModel.get('throttle', true),
+                        coordinateSystem: coordDto.coordinateSystem,
+                        dataZoomId: dataZoomDto.id,
+                        throttleRage: dataZoomDto.get('throttle', true),
                         panGetRange: bind(this._onPan, this, coordInfo),
                         zoomGetRange: bind(this._onZoom, this, coordInfo)
                     }
@@ -65,7 +65,7 @@ define(function (require) {
          * @override
          */
         remove: function () {
-            roams.unregister(this.api, this.dataZoomModel.id);
+            roams.unregister(this.api, this.dataZoomDto.id);
             InsideZoomView.superApply(this, 'remove', arguments);
             this._range = null;
         },
@@ -74,7 +74,7 @@ define(function (require) {
          * @override
          */
         dispose: function () {
-            roams.unregister(this.api, this.dataZoomModel.id);
+            roams.unregister(this.api, this.dataZoomDto.id);
             InsideZoomView.superApply(this, 'dispose', arguments);
             this._range = null;
         },
@@ -94,16 +94,16 @@ define(function (require) {
          * @private
          */
         _onZoom: function (coordInfo, controller, scale, mouseX, mouseY) {
-            var dataZoomModel = this.dataZoomModel;
+            var dataZoomDto = this.dataZoomDto;
 
-            if (dataZoomModel.option.zoomLock) {
+            if (dataZoomDto.option.zoomLock) {
                 return this._range;
             }
 
             return (
                 this._range = scaleCartesian(
                     1 / scale, [mouseX, mouseY], this._range,
-                    controller, coordInfo, dataZoomModel
+                    controller, coordInfo, dataZoomDto
                 )
             );
         }
@@ -114,12 +114,12 @@ define(function (require) {
         range = range.slice();
 
         // Calculate transform by the first axis.
-        var axisModel = coordInfo.axisModels[0];
-        if (!axisModel) {
+        var axisDto = coordInfo.axisDtos[0];
+        if (!axisDto) {
             return;
         }
 
-        var directionInfo = getDirectionInfo(pixelDeltas, axisModel, controller);
+        var directionInfo = getDirectionInfo(pixelDeltas, axisDto, controller);
 
         var percentDelta = directionInfo.signal
             * (range[1] - range[0])
@@ -135,16 +135,16 @@ define(function (require) {
         return range;
     }
 
-    function scaleCartesian(scale, mousePoint, range, controller, coordInfo, dataZoomModel) {
+    function scaleCartesian(scale, mousePoint, range, controller, coordInfo, dataZoomDto) {
         range = range.slice();
 
         // Calculate transform by the first axis.
-        var axisModel = coordInfo.axisModels[0];
-        if (!axisModel) {
+        var axisDto = coordInfo.axisDtos[0];
+        if (!axisDto) {
             return;
         }
 
-        var directionInfo = getDirectionInfo(mousePoint, axisModel, controller);
+        var directionInfo = getDirectionInfo(mousePoint, axisDto, controller);
 
         var mouse = directionInfo.pixel - directionInfo.pixelStart;
         var percentPoint = mouse / directionInfo.pixelLength * (range[1] - range[0]) + range[0];
@@ -156,8 +156,8 @@ define(function (require) {
         return fixRange(range);
     }
 
-    function getDirectionInfo(xy, axisModel, controller) {
-        var axis = axisModel.axis;
+    function getDirectionInfo(xy, axisDto, controller) {
+        var axis = axisDto.axis;
         var rect = controller.rectProvider();
         var ret = {};
 

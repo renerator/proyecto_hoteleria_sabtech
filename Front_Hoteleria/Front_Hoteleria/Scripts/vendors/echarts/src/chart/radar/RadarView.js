@@ -13,11 +13,11 @@ define(function (require) {
     return require('../../echarts').extendChartView({
         type: 'radar',
 
-        render: function (seriesModel, ecModel, api) {
-            var polar = seriesModel.coordinateSystem;
+        render: function (seriesDto, ecDto, api) {
+            var polar = seriesDto.coordinateSystem;
             var group = this.group;
 
-            var data = seriesModel.getData();
+            var data = seriesDto.getData();
             var oldData = this._data;
 
             function createSymbol(data, idx) {
@@ -51,7 +51,7 @@ define(function (require) {
                             graphic[isInit ? 'initProps' : 'updateProps'](
                                 symbolPath, {
                                     position: newPoints[i]
-                                }, seriesModel, idx
+                                }, seriesDto, idx
                             );
                         }
                         else {
@@ -82,8 +82,8 @@ define(function (require) {
                     };
                     polygon.shape.points = getInitialPoints(points);
                     polyline.shape.points = getInitialPoints(points);
-                    graphic.initProps(polygon, target, seriesModel, idx);
-                    graphic.initProps(polyline, target, seriesModel, idx);
+                    graphic.initProps(polygon, target, seriesDto, idx);
+                    graphic.initProps(polyline, target, seriesDto, idx);
 
                     var itemGroup = new graphic.Group();
                     var symbolGroup = new graphic.Group();
@@ -114,8 +114,8 @@ define(function (require) {
                         polyline.shape.points, target.shape.points, symbolGroup, data, newIdx, false
                     );
 
-                    graphic.updateProps(polyline, target, seriesModel);
-                    graphic.updateProps(polygon, target, seriesModel);
+                    graphic.updateProps(polyline, target, seriesDto);
+                    graphic.updateProps(polygon, target, seriesDto);
 
                     data.setItemGraphicEl(newIdx, itemGroup);
                 })
@@ -125,7 +125,7 @@ define(function (require) {
                 .execute();
 
             data.eachItemGraphicEl(function (itemGroup, idx) {
-                var itemModel = data.getItemModel(idx);
+                var itemDto = data.getItemDto(idx);
                 var polyline = itemGroup.childAt(0);
                 var polygon = itemGroup.childAt(1);
                 var symbolGroup = itemGroup.childAt(2);
@@ -135,56 +135,56 @@ define(function (require) {
 
                 polyline.useStyle(
                     zrUtil.extend(
-                        itemModel.getModel('lineStyle.normal').getLineStyle(),
+                        itemDto.getDto('lineStyle.normal').getLineStyle(),
                         {
                             fill: 'none',
                             stroke: color
                         }
                     )
                 );
-                polyline.hoverStyle = itemModel.getModel('lineStyle.emphasis').getLineStyle();
+                polyline.hoverStyle = itemDto.getDto('lineStyle.emphasis').getLineStyle();
 
-                var areaStyleModel = itemModel.getModel('areaStyle.normal');
-                var hoverAreaStyleModel = itemModel.getModel('areaStyle.emphasis');
-                var polygonIgnore = areaStyleModel.isEmpty() && areaStyleModel.parentModel.isEmpty();
-                var hoverPolygonIgnore = hoverAreaStyleModel.isEmpty() && hoverAreaStyleModel.parentModel.isEmpty();
+                var areaStyleDto = itemDto.getDto('areaStyle.normal');
+                var hoverAreaStyleDto = itemDto.getDto('areaStyle.emphasis');
+                var polygonIgnore = areaStyleDto.isEmpty() && areaStyleDto.parentDto.isEmpty();
+                var hoverPolygonIgnore = hoverAreaStyleDto.isEmpty() && hoverAreaStyleDto.parentDto.isEmpty();
 
                 hoverPolygonIgnore = hoverPolygonIgnore && polygonIgnore;
                 polygon.ignore = polygonIgnore;
 
                 polygon.useStyle(
                     zrUtil.defaults(
-                        areaStyleModel.getAreaStyle(),
+                        areaStyleDto.getAreaStyle(),
                         {
                             fill: color,
                             opacity: 0.7
                         }
                     )
                 );
-                polygon.hoverStyle = hoverAreaStyleModel.getAreaStyle();
+                polygon.hoverStyle = hoverAreaStyleDto.getAreaStyle();
 
-                var itemStyle = itemModel.getModel('itemStyle.normal').getItemStyle(['color']);
-                var itemHoverStyle = itemModel.getModel('itemStyle.emphasis').getItemStyle();
-                var labelModel = itemModel.getModel('label.normal');
-                var labelHoverModel = itemModel.getModel('label.emphasis');
+                var itemStyle = itemDto.getDto('itemStyle.normal').getItemStyle(['color']);
+                var itemHoverStyle = itemDto.getDto('itemStyle.emphasis').getItemStyle();
+                var labelDto = itemDto.getDto('label.normal');
+                var labelHoverDto = itemDto.getDto('label.emphasis');
                 symbolGroup.eachChild(function (symbolPath) {
                     symbolPath.setStyle(itemStyle);
                     symbolPath.hoverStyle = zrUtil.clone(itemHoverStyle);
 
                     var defaultText = data.get(data.dimensions[symbolPath.__dimIdx], idx);
-                    graphic.setText(symbolPath.style, labelModel, color);
+                    graphic.setText(symbolPath.style, labelDto, color);
                     symbolPath.setStyle({
-                        text: labelModel.get('show') ? zrUtil.retrieve(
-                            seriesModel.getFormattedLabel(
+                        text: labelDto.get('show') ? zrUtil.retrieve(
+                            seriesDto.getFormattedLabel(
                                 idx, 'normal', null, symbolPath.__dimIdx
                             ),
                             defaultText
                         ) : ''
                     });
 
-                    graphic.setText(symbolPath.hoverStyle, labelHoverModel, color);
-                    symbolPath.hoverStyle.text = labelHoverModel.get('show') ? zrUtil.retrieve(
-                        seriesModel.getFormattedLabel(
+                    graphic.setText(symbolPath.hoverStyle, labelHoverDto, color);
+                    symbolPath.hoverStyle.text = labelHoverDto.get('show') ? zrUtil.retrieve(
+                        seriesDto.getFormattedLabel(
                             idx, 'emphasis', null, symbolPath.__dimIdx
                         ),
                         defaultText

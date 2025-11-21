@@ -51,10 +51,10 @@ define(function (require) {
         onZero: false,
 
         /**
-         * Axis model
-         * @param {module:echarts/coord/cartesian/AxisModel}
+         * Axis Dto
+         * @param {module:echarts/coord/cartesian/AxisDto}
          */
-        model: null,
+        Dto: null,
 
         isHorizontal: function () {
             var position = this.position;

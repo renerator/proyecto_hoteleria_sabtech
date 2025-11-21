@@ -1,6 +1,6 @@
 define(function (require) {
     return {
-        getBarItemStyle: require('../../model/mixin/makeStyleMapper')(
+        getBarItemStyle: require('../../Dto/mixin/makeStyleMapper')(
             [
                 ['fill', 'color'],
                 ['stroke', 'borderColor'],

@@ -151,9 +151,9 @@ define(function (require) {
         content.moveTo(x, y);
     }
 
-    function ifSeriesSupportAxisTrigger(seriesModel) {
-        var coordSys = seriesModel.coordinateSystem;
-        var trigger = seriesModel.get('tooltip.trigger', true);
+    function ifSeriesSupportAxisTrigger(seriesDto) {
+        var coordSys = seriesDto.coordinateSystem;
+        var trigger = seriesDto.get('tooltip.trigger', true);
         // Ignore series use item tooltip trigger and series coordinate system is not cartesian or
         return !(!coordSys
             || (coordSys.type !== 'cartesian2d' && coordSys.type !== 'polar' && coordSys.type !== 'single')
@@ -166,7 +166,7 @@ define(function (require) {
 
         _axisPointers: {},
 
-        init: function (ecModel, api) {
+        init: function (ecDto, api) {
             if (env.node) {
                 return;
             }
@@ -177,7 +177,7 @@ define(function (require) {
             api.on('hideTip', this._manuallyHideTip, this);
         },
 
-        render: function (tooltipModel, ecModel, api) {
+        render: function (tooltipDto, ecDto, api) {
             if (env.node) {
                 return;
             }
@@ -193,15 +193,15 @@ define(function (require) {
 
             /**
              * @private
-             * @type {module:echarts/component/tooltip/TooltipModel}
+             * @type {module:echarts/component/tooltip/TooltipDto}
              */
-            this._tooltipModel = tooltipModel;
+            this._tooltipDto = tooltipDto;
 
             /**
              * @private
-             * @type {module:echarts/model/Global}
+             * @type {module:echarts/Dto/Global}
              */
-            this._ecModel = ecModel;
+            this._ecDto = ecDto;
 
             /**
              * @private
@@ -220,14 +220,14 @@ define(function (require) {
 
             var tooltipContent = this._tooltipContent;
             tooltipContent.update();
-            tooltipContent.enterable = tooltipModel.get('enterable');
-            this._alwaysShowContent = tooltipModel.get('alwaysShowContent');
+            tooltipContent.enterable = tooltipDto.get('enterable');
+            this._alwaysShowContent = tooltipDto.get('alwaysShowContent');
 
             /**
              * @type {Object.<string, Array>}
              */
             this._seriesGroupByAxis = this._prepareAxisTriggerData(
-                tooltipModel, ecModel
+                tooltipDto, ecDto
             );
 
             var crossText = this._crossText;
@@ -255,7 +255,7 @@ define(function (require) {
             zr.off('mousemove', this._mousemove);
             zr.off('mouseout', this._hide);
             zr.off('globalout', this._hide);
-            if (tooltipModel.get('triggerOn') === 'click') {
+            if (tooltipDto.get('triggerOn') === 'click') {
                 zr.on('click', this._tryShow, this);
             }
             else {
@@ -266,7 +266,7 @@ define(function (require) {
         },
 
         _mousemove: function (e) {
-            var showDelay = this._tooltipModel.get('showDelay');
+            var showDelay = this._tooltipDto.get('showDelay');
             var self = this;
             clearTimeout(this._showTimeout);
             if (showDelay > 0) {
@@ -301,35 +301,35 @@ define(function (require) {
                 return;
             }
 
-            var ecModel = this._ecModel;
+            var ecDto = this._ecDto;
             var seriesIndex = event.seriesIndex;
             var dataIndex = event.dataIndex;
-            var seriesModel = ecModel.getSeriesByIndex(seriesIndex);
+            var seriesDto = ecDto.getSeriesByIndex(seriesIndex);
             var api = this._api;
 
             if (event.x == null || event.y == null) {
-                if (!seriesModel) {
+                if (!seriesDto) {
                     // Find the first series can use axis trigger
-                    ecModel.eachSeries(function (_series) {
-                        if (ifSeriesSupportAxisTrigger(_series) && !seriesModel) {
-                            seriesModel = _series;
+                    ecDto.eachSeries(function (_series) {
+                        if (ifSeriesSupportAxisTrigger(_series) && !seriesDto) {
+                            seriesDto = _series;
                         }
                     });
                 }
-                if (seriesModel) {
-                    var data = seriesModel.getData();
+                if (seriesDto) {
+                    var data = seriesDto.getData();
                     if (dataIndex == null) {
                         dataIndex = data.indexOfName(event.name);
                     }
                     var el = data.getItemGraphicEl(dataIndex);
                     var cx, cy;
                     // Try to get the point in coordinate system
-                    var coordSys = seriesModel.coordinateSystem;
+                    var coordSys = seriesDto.coordinateSystem;
                     if (coordSys && coordSys.dataToPoint) {
                         var point = coordSys.dataToPoint(
                             data.getValues(
                                 zrUtil.map(coordSys.dimensions, function (dim) {
-                                    return seriesModel.coordDimToDataDim(dim)[0];
+                                    return seriesDto.coordDimToDataDim(dim)[0];
                                 }), dataIndex, true
                             )
                         );
@@ -372,12 +372,12 @@ define(function (require) {
             this._hide();
         },
 
-        _prepareAxisTriggerData: function (tooltipModel, ecModel) {
+        _prepareAxisTriggerData: function (tooltipDto, ecDto) {
             // Prepare data for axis trigger
             var seriesGroupByAxis = {};
-            ecModel.eachSeries(function (seriesModel) {
-                if (ifSeriesSupportAxisTrigger(seriesModel)) {
-                    var coordSys = seriesModel.coordinateSystem;
+            ecDto.eachSeries(function (seriesDto) {
+                if (ifSeriesSupportAxisTrigger(seriesDto)) {
+                    var coordSys = seriesDto.coordinateSystem;
                     var baseAxis;
                     var key;
 
@@ -401,7 +401,7 @@ define(function (require) {
                         series: []
                     };
                     seriesGroupByAxis[key].coordSys.push(coordSys);
-                    seriesGroupByAxis[key].series.push(seriesModel);
+                    seriesGroupByAxis[key].series.push(seriesDto);
                 }
             }, this);
 
@@ -415,12 +415,12 @@ define(function (require) {
          */
         _tryShow: function (e) {
             var el = e.target;
-            var tooltipModel = this._tooltipModel;
-            var globalTrigger = tooltipModel.get('trigger');
-            var ecModel = this._ecModel;
+            var tooltipDto = this._tooltipDto;
+            var globalTrigger = tooltipDto.get('trigger');
+            var ecDto = this._ecDto;
             var api = this._api;
 
-            if (!tooltipModel) {
+            if (!tooltipDto) {
                 return;
             }
 
@@ -430,15 +430,15 @@ define(function (require) {
 
             // Always show item tooltip if mouse is on the element with dataIndex
             if (el && el.dataIndex != null) {
-                // Use dataModel in element if possible
+                // Use dataDto in element if possible
                 // Used when mouseover on a element like markPoint or edge
                 // In which case, the data is not main data in series.
-                var dataModel = el.dataModel || ecModel.getSeriesByIndex(el.seriesIndex);
+                var dataDto = el.dataDto || ecDto.getSeriesByIndex(el.seriesIndex);
                 var dataIndex = el.dataIndex;
-                var itemModel = dataModel.getData().getItemModel(dataIndex);
+                var itemDto = dataDto.getData().getItemDto(dataIndex);
                 // Series or single data may use item trigger when global is axis trigger
-                if ((itemModel.get('tooltip.trigger') || globalTrigger) === 'axis') {
-                    this._showAxisTooltip(tooltipModel, ecModel, e);
+                if ((itemDto.get('tooltip.trigger') || globalTrigger) === 'axis') {
+                    this._showAxisTooltip(tooltipDto, ecDto, e);
                 }
                 else {
                     // Reset ticket
@@ -448,7 +448,7 @@ define(function (require) {
                     // Reset last hover and dispatch downplay action
                     this._resetLastHover();
 
-                    this._showItemTooltipContent(dataModel, dataIndex, el.dataType, e);
+                    this._showItemTooltipContent(dataDto, dataIndex, el.dataType, e);
                 }
 
                 api.dispatchAction({
@@ -464,12 +464,12 @@ define(function (require) {
                 }
                 else {
                     // Try show axis tooltip
-                    this._showAxisTooltip(tooltipModel, ecModel, e);
+                    this._showAxisTooltip(tooltipDto, ecDto, e);
                 }
 
                 // Action of cross pointer
                 // other pointer types will trigger action in _dispatchAndShowSeriesTooltipContent method
-                if (tooltipModel.get('axisPointer.type') === 'cross') {
+                if (tooltipDto.get('axisPointer.type') === 'cross') {
                     api.dispatchAction({
                         type: 'showTip',
                         from: this.uid,
@@ -482,21 +482,21 @@ define(function (require) {
 
         /**
          * Show tooltip on axis
-         * @param {module:echarts/component/tooltip/TooltipModel} tooltipModel
-         * @param {module:echarts/model/Global} ecModel
+         * @param {module:echarts/component/tooltip/TooltipDto} tooltipDto
+         * @param {module:echarts/Dto/Global} ecDto
          * @param {Object} e
          * @private
          */
-        _showAxisTooltip: function (tooltipModel, ecModel, e) {
-            var axisPointerModel = tooltipModel.getModel('axisPointer');
-            var axisPointerType = axisPointerModel.get('type');
+        _showAxisTooltip: function (tooltipDto, ecDto, e) {
+            var axisPointerDto = tooltipDto.getDto('axisPointer');
+            var axisPointerType = axisPointerDto.get('type');
 
             if (axisPointerType === 'cross') {
                 var el = e.target;
                 if (el && el.dataIndex != null) {
-                    var seriesModel = ecModel.getSeriesByIndex(el.seriesIndex);
+                    var seriesDto = ecDto.getSeriesByIndex(el.seriesIndex);
                     var dataIndex = el.dataIndex;
-                    this._showItemTooltipContent(seriesModel, dataIndex, el.dataType, e);
+                    this._showItemTooltipContent(seriesDto, dataIndex, el.dataType, e);
                 }
             }
 
@@ -522,7 +522,7 @@ define(function (require) {
                 var value = coordSys.pointToData(point, true);
                 point = coordSys.dataToPoint(value);
                 var baseAxis = coordSys.getBaseAxis();
-                var axisType = axisPointerModel.get('axis');
+                var axisType = axisPointerDto.get('axis');
                 if (axisType === 'auto') {
                     axisType = baseAxis.dim;
                 }
@@ -549,17 +549,17 @@ define(function (require) {
 
                 if (coordSys.type === 'cartesian2d' && !contentNotChange) {
                     this._showCartesianPointer(
-                        axisPointerModel, coordSys, axisType, point
+                        axisPointerDto, coordSys, axisType, point
                     );
                 }
                 else if (coordSys.type === 'polar' && !contentNotChange) {
                     this._showPolarPointer(
-                        axisPointerModel, coordSys, axisType, point
+                        axisPointerDto, coordSys, axisType, point
                     );
                 }
                 else if (coordSys.type === 'single' && !contentNotChange) {
                     this._showSinglePointer(
-                        axisPointerModel, coordSys, axisType, point
+                        axisPointerDto, coordSys, axisType, point
                     );
                 }
 
@@ -570,7 +570,7 @@ define(function (require) {
                 }
             }, this);
 
-            if (!this._tooltipModel.get('show')) {
+            if (!this._tooltipDto.get('show')) {
                 this._hideAxisPointer();
             }
 
@@ -581,23 +581,23 @@ define(function (require) {
 
         /**
          * Show tooltip on axis of cartesian coordinate
-         * @param {module:echarts/model/Model} axisPointerModel
+         * @param {module:echarts/Dto/Dto} axisPointerDto
          * @param {module:echarts/coord/cartesian/Cartesian2D} cartesians
          * @param {string} axisType
          * @param {Array.<number>} point
          * @private
          */
-        _showCartesianPointer: function (axisPointerModel, cartesian, axisType, point) {
+        _showCartesianPointer: function (axisPointerDto, cartesian, axisType, point) {
             var self = this;
 
-            var axisPointerType = axisPointerModel.get('type');
+            var axisPointerType = axisPointerDto.get('type');
             var moveAnimation = axisPointerType !== 'cross';
 
             if (axisPointerType === 'cross') {
                 moveGridLine('x', point, cartesian.getAxis('y').getGlobalExtent());
                 moveGridLine('y', point, cartesian.getAxis('x').getGlobalExtent());
 
-                this._updateCrossText(cartesian, point, axisPointerModel);
+                this._updateCrossText(cartesian, point, axisPointerDto);
             }
             else {
                 var otherAxis = cartesian.getAxis(axisType === 'x' ? 'y' : 'x');
@@ -619,12 +619,12 @@ define(function (require) {
                     : makeLineShape(otherExtent[0], point[1], otherExtent[1], point[1]);
 
                 var pointerEl = self._getPointerElement(
-                    cartesian, axisPointerModel, axisType, targetShape
+                    cartesian, axisPointerDto, axisType, targetShape
                 );
                 moveAnimation
                     ? graphic.updateProps(pointerEl, {
                         shape: targetShape
-                    }, axisPointerModel)
+                    }, axisPointerDto)
                     :  pointerEl.attr({
                         shape: targetShape
                     });
@@ -642,21 +642,21 @@ define(function (require) {
                     : makeRectShape(otherExtent[0], point[1] - bandWidth / 2, span, bandWidth);
 
                 var pointerEl = self._getPointerElement(
-                    cartesian, axisPointerModel, axisType, targetShape
+                    cartesian, axisPointerDto, axisType, targetShape
                 );
                 moveAnimation
                     ? graphic.updateProps(pointerEl, {
                         shape: targetShape
-                    }, axisPointerModel)
+                    }, axisPointerDto)
                     :  pointerEl.attr({
                         shape: targetShape
                     });
             }
         },
 
-        _showSinglePointer: function (axisPointerModel, single, axisType, point) {
+        _showSinglePointer: function (axisPointerDto, single, axisType, point) {
             var self = this;
-            var axisPointerType = axisPointerModel.get('type');
+            var axisPointerType = axisPointerDto.get('type');
             var moveAnimation = axisPointerType !== 'cross';
             var rect = single.getRect();
             var otherExtent = [rect.y, rect.y + rect.height];
@@ -675,12 +675,12 @@ define(function (require) {
                     : makeLineShape(otherExtent[0], point[1], otherExtent[1], point[1]);
 
                 var pointerEl = self._getPointerElement(
-                    single, axisPointerModel, axisType, targetShape
+                    single, axisPointerDto, axisType, targetShape
                 );
                 moveAnimation
                     ? graphic.updateProps(pointerEl, {
                         shape: targetShape
-                    }, axisPointerModel)
+                    }, axisPointerDto)
                     :  pointerEl.attr({
                         shape: targetShape
                     });
@@ -690,15 +690,15 @@ define(function (require) {
 
         /**
          * Show tooltip on axis of polar coordinate
-         * @param {module:echarts/model/Model} axisPointerModel
+         * @param {module:echarts/Dto/Dto} axisPointerDto
          * @param {Array.<module:echarts/coord/polar/Polar>} polar
          * @param {string} axisType
          * @param {Array.<number>} point
          */
-        _showPolarPointer: function (axisPointerModel, polar, axisType, point) {
+        _showPolarPointer: function (axisPointerDto, polar, axisType, point) {
             var self = this;
 
-            var axisPointerType = axisPointerModel.get('type');
+            var axisPointerType = axisPointerDto.get('type');
 
             var angleAxis = polar.getAngleAxis();
             var radiusAxis = polar.getRadiusAxis();
@@ -709,7 +709,7 @@ define(function (require) {
                 movePolarLine('angle', point, radiusAxis.getExtent());
                 movePolarLine('radius', point, angleAxis.getExtent());
 
-                this._updateCrossText(polar, point, axisPointerModel);
+                this._updateCrossText(polar, point, axisPointerDto);
             }
             else {
                 var otherAxis = polar.getAxis(axisType === 'radius' ? 'angle' : 'radius');
@@ -741,13 +741,13 @@ define(function (require) {
                 }
 
                 var pointerEl = self._getPointerElement(
-                    polar, axisPointerModel, axisType, targetShape
+                    polar, axisPointerDto, axisType, targetShape
                 );
 
                 moveAnimation
                     ? graphic.updateProps(pointerEl, {
                         shape: targetShape
-                    }, axisPointerModel)
+                    }, axisPointerDto)
                     :  pointerEl.attr({
                         shape: targetShape
                     });
@@ -785,23 +785,23 @@ define(function (require) {
                 }
 
                 var pointerEl = self._getPointerElement(
-                    polar, axisPointerModel, axisType, targetShape
+                    polar, axisPointerDto, axisType, targetShape
                 );
                 moveAnimation
                     ? graphic.updateProps(pointerEl, {
                         shape: targetShape
-                    }, axisPointerModel)
+                    }, axisPointerDto)
                     :  pointerEl.attr({
                         shape: targetShape
                     });
             }
         },
 
-        _updateCrossText: function (coordSys, point, axisPointerModel) {
-            var crossStyleModel = axisPointerModel.getModel('crossStyle');
-            var textStyleModel = crossStyleModel.getModel('textStyle');
+        _updateCrossText: function (coordSys, point, axisPointerDto) {
+            var crossStyleDto = axisPointerDto.getDto('crossStyle');
+            var textStyleDto = crossStyleDto.getDto('textStyle');
 
-            var tooltipModel = this._tooltipModel;
+            var tooltipDto = this._tooltipDto;
 
             var text = this._crossText;
             if (!text) {
@@ -831,20 +831,20 @@ define(function (require) {
             });
 
             text.setStyle({
-                fill: textStyleModel.getTextColor() || crossStyleModel.get('color'),
-                textFont: textStyleModel.getFont(),
+                fill: textStyleDto.getTextColor() || crossStyleDto.get('color'),
+                textFont: textStyleDto.getFont(),
                 text: value.join(', '),
                 x: point[0] + 5,
                 y: point[1] - 5
             });
-            text.z = tooltipModel.get('z');
-            text.zlevel = tooltipModel.get('zlevel');
+            text.z = tooltipDto.get('z');
+            text.zlevel = tooltipDto.get('zlevel');
         },
 
-        _getPointerElement: function (coordSys, pointerModel, axisType, initShape) {
-            var tooltipModel = this._tooltipModel;
-            var z = tooltipModel.get('z');
-            var zlevel = tooltipModel.get('zlevel');
+        _getPointerElement: function (coordSys, pointerDto, axisType, initShape) {
+            var tooltipDto = this._tooltipDto;
+            var z = tooltipDto.get('z');
+            var zlevel = tooltipDto.get('zlevel');
             var axisPointers = this._axisPointers;
             var coordSysName = coordSys.name;
             axisPointers[coordSysName] = axisPointers[coordSysName] || {};
@@ -853,10 +853,10 @@ define(function (require) {
             }
 
             // Create if not exists
-            var pointerType = pointerModel.get('type');
-            var styleModel = pointerModel.getModel(pointerType + 'Style');
+            var pointerType = pointerDto.get('type');
+            var styleDto = pointerDto.getDto(pointerType + 'Style');
             var isShadow = pointerType === 'shadow';
-            var style = styleModel[isShadow ? 'getAreaStyle' : 'getLineStyle']();
+            var style = styleDto[isShadow ? 'getAreaStyle' : 'getLineStyle']();
 
             var elementType = coordSys.type === 'polar'
                 ? (isShadow ? 'Sector' : (axisType === 'radius' ? 'Circle' : 'Line'))
@@ -878,7 +878,7 @@ define(function (require) {
 
         /**
          * Dispatch actions and show tooltip on series
-         * @param {Array.<module:echarts/model/Series>} seriesList
+         * @param {Array.<module:echarts/Dto/Series>} seriesList
          * @param {Array.<number>} point
          * @param {Array.<number>} value
          * @param {boolean} contentNotChange
@@ -888,7 +888,7 @@ define(function (require) {
             coordSys, seriesList, point, value, contentNotChange
         ) {
 
-            var rootTooltipModel = this._tooltipModel;
+            var rootTooltipDto = this._tooltipDto;
             var tooltipContent = this._tooltipContent;
 
             var baseAxis = coordSys.getBaseAxis();
@@ -930,10 +930,10 @@ define(function (require) {
                 from: this.uid
             });
 
-            if (baseAxis && rootTooltipModel.get('showContent') && rootTooltipModel.get('show')) {
+            if (baseAxis && rootTooltipDto.get('showContent') && rootTooltipDto.get('show')) {
 
-                var formatter = rootTooltipModel.get('formatter');
-                var positionExpr = rootTooltipModel.get('position');
+                var formatter = rootTooltipDto.get('formatter');
+                var positionExpr = rootTooltipDto.get('position');
                 var html;
 
                 var paramsList = zrUtil.map(seriesList, function (series, index) {
@@ -945,7 +945,7 @@ define(function (require) {
                 //     paramsList = paramsList[0];
                 // }
 
-                tooltipContent.show(rootTooltipModel);
+                tooltipContent.show(rootTooltipDto);
 
                 // Update html content
                 var firstDataIndex = payloadBatch[0].dataIndex;
@@ -997,38 +997,38 @@ define(function (require) {
 
         /**
          * Show tooltip on item
-         * @param {module:echarts/model/Series} seriesModel
+         * @param {module:echarts/Dto/Series} seriesDto
          * @param {number} dataIndex
          * @param {string} dataType
          * @param {Object} e
          */
-        _showItemTooltipContent: function (seriesModel, dataIndex, dataType, e) {
+        _showItemTooltipContent: function (seriesDto, dataIndex, dataType, e) {
             // FIXME Graph data
             var api = this._api;
-            var data = seriesModel.getData(dataType);
-            var itemModel = data.getItemModel(dataIndex);
+            var data = seriesDto.getData(dataType);
+            var itemDto = data.getItemDto(dataIndex);
 
-            var rootTooltipModel = this._tooltipModel;
+            var rootTooltipDto = this._tooltipDto;
 
             var tooltipContent = this._tooltipContent;
 
-            var tooltipModel = itemModel.getModel('tooltip');
+            var tooltipDto = itemDto.getDto('tooltip');
 
-            // If series model
-            if (tooltipModel.parentModel) {
-                tooltipModel.parentModel.parentModel = rootTooltipModel;
+            // If series Dto
+            if (tooltipDto.parentDto) {
+                tooltipDto.parentDto.parentDto = rootTooltipDto;
             }
             else {
-                tooltipModel.parentModel = this._tooltipModel;
+                tooltipDto.parentDto = this._tooltipDto;
             }
 
-            if (tooltipModel.get('showContent') && tooltipModel.get('show')) {
-                var formatter = tooltipModel.get('formatter');
-                var positionExpr = tooltipModel.get('position');
-                var params = seriesModel.getDataParams(dataIndex, dataType);
+            if (tooltipDto.get('showContent') && tooltipDto.get('show')) {
+                var formatter = tooltipDto.get('formatter');
+                var positionExpr = tooltipDto.get('position');
+                var params = seriesDto.getDataParams(dataIndex, dataType);
                 var html;
                 if (!formatter) {
-                    html = seriesModel.formatTooltip(dataIndex, false, dataType);
+                    html = seriesDto.formatTooltip(dataIndex, false, dataType);
                 }
                 else {
                     if (typeof formatter === 'string') {
@@ -1036,7 +1036,7 @@ define(function (require) {
                     }
                     else if (typeof formatter === 'function') {
                         var self = this;
-                        var ticket = 'item_' + seriesModel.name + '_' + dataIndex;
+                        var ticket = 'item_' + seriesDto.name + '_' + dataIndex;
                         var callback = function (cbTicket, html) {
                             if (cbTicket === self._ticket) {
                                 tooltipContent.setContent(html);
@@ -1052,7 +1052,7 @@ define(function (require) {
                     }
                 }
 
-                tooltipContent.show(tooltipModel);
+                tooltipContent.show(tooltipDto);
                 tooltipContent.setContent(html);
 
                 updatePosition(
@@ -1114,7 +1114,7 @@ define(function (require) {
             this._hideAxisPointer();
             this._resetLastHover();
             if (!this._alwaysShowContent) {
-                this._tooltipContent.hideLater(this._tooltipModel.get('hideDelay'));
+                this._tooltipContent.hideLater(this._tooltipDto.get('hideDelay'));
             }
 
             this._api.dispatchAction({
@@ -1125,7 +1125,7 @@ define(function (require) {
             this._lastX = this._lastY = null;
         },
 
-        dispose: function (ecModel, api) {
+        dispose: function (ecDto, api) {
             if (env.node) {
                 return;
             }

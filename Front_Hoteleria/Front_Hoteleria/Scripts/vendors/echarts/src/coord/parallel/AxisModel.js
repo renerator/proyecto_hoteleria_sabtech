@@ -1,12 +1,12 @@
 define(function(require) {
 
-    var ComponentModel = require('../../model/Component');
+    var ComponentDto = require('../../Dto/Component');
     var zrUtil = require('zrender/core/util');
-    var makeStyleMapper = require('../../model/mixin/makeStyleMapper');
-    var axisModelCreator = require('../axisModelCreator');
+    var makeStyleMapper = require('../../Dto/mixin/makeStyleMapper');
+    var axisDtoCreator = require('../axisDtoCreator');
     var numberUtil = require('../../util/number');
 
-    var AxisModel = ComponentModel.extend({
+    var AxisDto = ComponentDto.extend({
 
         type: 'baseParallelAxis',
 
@@ -33,12 +33,12 @@ define(function(require) {
                     ['width', 'width'],
                     ['opacity', 'opacity']
                 ]
-            ).call(this.getModel('areaSelectStyle'));
+            ).call(this.getDto('areaSelectStyle'));
         },
 
         /**
-         * The code of this feature is put on AxisModel but not ParallelAxis,
-         * because axisModel can be alive after echarts updating but instance of
+         * The code of this feature is put on AxisDto but not ParallelAxis,
+         * because axisDto can be alive after echarts updating but instance of
          * ParallelAxis having been disposed. this._activeInterval should be kept
          * when action dispatched (i.e. legend click).
          *
@@ -108,13 +108,13 @@ define(function(require) {
         z: 10
     };
 
-    zrUtil.merge(AxisModel.prototype, require('../axisModelCommonMixin'));
+    zrUtil.merge(AxisDto.prototype, require('../axisDtoCommonMixin'));
 
     function getAxisType(axisName, option) {
         return option.type || (option.data ? 'category' : 'value');
     }
 
-    axisModelCreator('parallel', AxisModel, getAxisType, defaultOption);
+    axisDtoCreator('parallel', AxisDto, getAxisType, defaultOption);
 
-    return AxisModel;
+    return AxisDto;
 });

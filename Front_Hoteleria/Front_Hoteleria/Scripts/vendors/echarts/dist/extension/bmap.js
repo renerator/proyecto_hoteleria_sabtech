@@ -70,11 +70,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        type: 'bmapRoam',
 	        event: 'bmapRoam',
 	        update: 'updateLayout'
-	    }, function (payload, ecModel) {
-	        ecModel.eachComponent('bmap', function (bMapModel) {
-	            var bmap = bMapModel.getBMap();
+	    }, function (payload, ecDto) {
+	        ecDto.eachComponent('bmap', function (bMapDto) {
+	            var bmap = bMapDto.getBMap();
 	            var center = bmap.getCenter();
-	            bMapModel.setCenterAndZoom([center.lng, center.lat], bmap.getZoom());
+	            bMapDto.setCenterAndZoom([center.lng, center.lat], bmap.getZoom());
 	        });
 	    });
 
@@ -169,12 +169,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return Overlay;
 	    }
 
-	    BMapCoordSys.create = function (ecModel, api) {
+	    BMapCoordSys.create = function (ecDto, api) {
 	        var bmapCoordSys;
 	        var root = api.getDom();
 
 	        // TODO Dispose
-	        ecModel.eachComponent('bmap', function (bmapModel) {
+	        ecDto.eachComponent('bmap', function (bmapDto) {
 	            var viewportRoot = api.getZr().painter.getViewportRoot();
 	            if (typeof BMap === 'undefined') {
 	                throw new Error('BMap api is not loaded');
@@ -183,7 +183,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (bmapCoordSys) {
 	                throw new Error('Only one bmap component can exist');
 	            }
-	            if (!bmapModel.__bmap) {
+	            if (!bmapDto.__bmap) {
 	                // Not support IE8
 	                var bmapRoot = root.querySelector('.ec-extension-bmap');
 	                if (bmapRoot) {
@@ -198,30 +198,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // Not support IE8
 	                bmapRoot.classList.add('ec-extension-bmap');
 	                root.appendChild(bmapRoot);
-	                var bmap = bmapModel.__bmap = new BMap.Map(bmapRoot);
+	                var bmap = bmapDto.__bmap = new BMap.Map(bmapRoot);
 
 	                var overlay = new Overlay(viewportRoot);
 	                bmap.addOverlay(overlay);
 	            }
-	            var bmap = bmapModel.__bmap;
+	            var bmap = bmapDto.__bmap;
 
 	            // Set bmap options
 	            // centerAndZoom before layout and render
-	            var center = bmapModel.get('center');
-	            var zoom = bmapModel.get('zoom');
+	            var center = bmapDto.get('center');
+	            var zoom = bmapDto.get('zoom');
 	            if (center && zoom) {
 	                var pt = new BMap.Point(center[0], center[1]);
 	                bmap.centerAndZoom(pt, zoom);
 	            }
 
 	            bmapCoordSys = new BMapCoordSys(bmap, api);
-	            bmapCoordSys.setMapOffset(bmapModel.__mapOffset || [0, 0]);
-	            bmapModel.coordinateSystem = bmapCoordSys;
+	            bmapCoordSys.setMapOffset(bmapDto.__mapOffset || [0, 0]);
+	            bmapDto.coordinateSystem = bmapCoordSys;
 	        });
 
-	        ecModel.eachSeries(function (seriesModel) {
-	            if (seriesModel.get('coordinateSystem') === 'bmap') {
-	                seriesModel.coordinateSystem = bmapCoordSys;
+	        ecDto.eachSeries(function (seriesDto) {
+	            if (seriesDto.get('coordinateSystem') === 'bmap') {
+	                seriesDto.coordinateSystem = bmapCoordSys;
 	            }
 	        });
 	    };
@@ -239,7 +239,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return a && b && a[0] === b[0] && a[1] === b[1];
 	    }
 
-	    return __webpack_require__(1).extendComponentModel({
+	    return __webpack_require__(1).extendComponentDto({
 	        type: 'bmap',
 
 	        getBMap: function () {
@@ -278,12 +278,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return __webpack_require__(1).extendComponentView({
 	        type: 'bmap',
 
-	        render: function (bMapModel, ecModel, api) {
+	        render: function (bMapDto, ecDto, api) {
 	            var rendering = true;
 
-	            var bmap = bMapModel.getBMap();
+	            var bmap = bMapDto.getBMap();
 	            var viewportRoot = api.getZr().painter.getViewportRoot();
-	            var coordSys = bMapModel.coordinateSystem;
+	            var coordSys = bMapDto.coordinateSystem;
 	            var moveHandler = function (type, target) {
 	                if (rendering) {
 	                    return;
@@ -297,7 +297,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                viewportRoot.style.top = mapOffset[1] + 'px';
 
 	                coordSys.setMapOffset(mapOffset);
-	                bMapModel.__mapOffset = mapOffset;
+	                bMapDto.__mapOffset = mapOffset;
 
 	                api.dispatchAction({
 	                    type: 'bmapRoam'
@@ -325,7 +325,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._oldMoveHandler = moveHandler;
 	            this._oldZoomEndHandler = zoomEndHandler;
 
-	            var roam = bMapModel.get('roam');
+	            var roam = bMapDto.get('roam');
 	            if (roam && roam !== 'scale') {
 	                bmap.enableDragging();
 	            }
@@ -343,14 +343,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	                bmap.disablePinchToZoom();
 	            }
 
-	            var originalStyle = bMapModel.__mapStyle;
+	            var originalStyle = bMapDto.__mapStyle;
 
-	            var newMapStyle = bMapModel.get('mapStyle') || {};
+	            var newMapStyle = bMapDto.get('mapStyle') || {};
 	            // FIXME, Not use JSON methods
 	            var mapStyleStr = JSON.stringify(newMapStyle);
 	            if (JSON.stringify(originalStyle) !== mapStyleStr) {
 	                bmap.setMapStyle(newMapStyle);
-	                bMapModel.__mapStyle = JSON.parse(mapStyleStr);
+	                bMapDto.__mapStyle = JSON.parse(mapStyleStr);
 	            }
 
 	            rendering = false;

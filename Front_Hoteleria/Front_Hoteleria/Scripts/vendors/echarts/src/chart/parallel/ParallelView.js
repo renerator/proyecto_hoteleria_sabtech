@@ -25,12 +25,12 @@ define(function (require) {
         /**
          * @override
          */
-        render: function (seriesModel, ecModel, api, payload) {
+        render: function (seriesDto, ecDto, api, payload) {
 
             var dataGroup = this._dataGroup;
-            var data = seriesModel.getData();
+            var data = seriesDto.getData();
             var oldData = this._data;
-            var coordSys = seriesModel.coordinateSystem;
+            var coordSys = seriesDto.coordinateSystem;
             var dimensions = coordSys.dimensions;
 
             data.diff(oldData)
@@ -41,11 +41,11 @@ define(function (require) {
 
             // Update style
             data.eachItemGraphicEl(function (elGroup, idx) {
-                var itemModel = data.getItemModel(idx);
-                var lineStyleModel = itemModel.getModel('lineStyle.normal');
+                var itemDto = data.getItemDto(idx);
+                var lineStyleDto = itemDto.getDto('lineStyle.normal');
                 elGroup.eachChild(function (child) {
                     child.useStyle(zrUtil.extend(
-                        lineStyleModel.getLineStyle(),
+                        lineStyleDto.getLineStyle(),
                         {
                             fill: null,
                             stroke: data.getItemVisual(idx, 'color'),
@@ -58,7 +58,7 @@ define(function (require) {
             // First create
             if (!this._data) {
                 dataGroup.setClipPath(createGridClipShape(
-                    coordSys, seriesModel, function () {
+                    coordSys, seriesDto, function () {
                         dataGroup.removeClipPath();
                     }
                 ));
@@ -104,7 +104,7 @@ define(function (require) {
                                 shape: {
                                     points: pointPair
                                 }
-                            }, seriesModel, newDataIndex);
+                            }, seriesDto, newDataIndex);
                         }
                     }
                 );
@@ -137,8 +137,8 @@ define(function (require) {
         }
     });
 
-    function createGridClipShape(coordSys, seriesModel, cb) {
-        var parallelModel = coordSys.model;
+    function createGridClipShape(coordSys, seriesDto, cb) {
+        var parallelDto = coordSys.Dto;
         var rect = coordSys.getRect();
         var rectEl = new graphic.Rect({
             shape: {
@@ -148,14 +148,14 @@ define(function (require) {
                 height: rect.height
             }
         });
-        var dim = parallelModel.get('layout') === 'horizontal' ? 'width' : 'height';
+        var dim = parallelDto.get('layout') === 'horizontal' ? 'width' : 'height';
         rectEl.setShape(dim, 0);
         graphic.initProps(rectEl, {
             shape: {
                 width: rect.width,
                 height: rect.height
             }
-        }, seriesModel, cb);
+        }, seriesDto, cb);
         return rectEl;
     }
 

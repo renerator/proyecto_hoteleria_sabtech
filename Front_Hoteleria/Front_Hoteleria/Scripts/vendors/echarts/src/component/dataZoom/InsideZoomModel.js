@@ -1,9 +1,9 @@
 /**
- * @file Data zoom model
+ * @file Data zoom Dto
  */
 define(function(require) {
 
-    return require('./DataZoomModel').extend({
+    return require('./DataZoomDto').extend({
 
         type: 'dataZoom.inside',
 

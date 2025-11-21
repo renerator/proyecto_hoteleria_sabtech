@@ -4,7 +4,7 @@ define(function (require) {
         return a && b && a[0] === b[0] && a[1] === b[1];
     }
 
-    return require('echarts').extendComponentModel({
+    return require('echarts').extendComponentDto({
         type: 'bmap',
 
         getBMap: function () {

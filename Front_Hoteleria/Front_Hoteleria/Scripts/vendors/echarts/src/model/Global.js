@@ -1,15 +1,15 @@
 /**
- * ECharts global model
+ * ECharts global Dto
  *
- * @module {echarts/model/Global}
+ * @module {echarts/Dto/Global}
  *
  */
 
 define(function (require) {
 
     var zrUtil = require('zrender/core/util');
-    var modelUtil = require('../util/model');
-    var Model = require('./Model');
+    var DtoUtil = require('../util/Dto');
+    var Dto = require('./Dto');
     var each = zrUtil.each;
     var filter = zrUtil.filter;
     var map = zrUtil.map;
@@ -17,36 +17,36 @@ define(function (require) {
     var indexOf = zrUtil.indexOf;
     var isObject = zrUtil.isObject;
 
-    var ComponentModel = require('./Component');
+    var ComponentDto = require('./Component');
 
     var globalDefault = require('./globalDefault');
 
     var OPTION_INNER_KEY = '\0_ec_inner';
 
     /**
-     * @alias module:echarts/model/Global
+     * @alias module:echarts/Dto/Global
      *
      * @param {Object} option
-     * @param {module:echarts/model/Model} parentModel
+     * @param {module:echarts/Dto/Dto} parentDto
      * @param {Object} theme
      */
-    var GlobalModel = Model.extend({
+    var GlobalDto = Dto.extend({
 
-        constructor: GlobalModel,
+        constructor: GlobalDto,
 
-        init: function (option, parentModel, theme, optionManager) {
+        init: function (option, parentDto, theme, optionManager) {
             theme = theme || {};
 
             this.option = null; // Mark as not initialized.
 
             /**
-             * @type {module:echarts/model/Model}
+             * @type {module:echarts/Dto/Dto}
              * @private
              */
-            this._theme = new Model(theme);
+            this._theme = new Dto(theme);
 
             /**
-             * @type {module:echarts/model/OptionManager}
+             * @type {module:echarts/Dto/OptionManager}
              */
             this._optionManager = optionManager;
         },
@@ -115,13 +115,13 @@ define(function (require) {
             var componentsMap = this._componentsMap;
             var newCptTypes = [];
 
-            // 如果不存在对应的 component model 则直接 merge
+            // 如果不存在对应的 component Dto 则直接 merge
             each(newOption, function (componentOption, mainType) {
                 if (componentOption == null) {
                     return;
                 }
 
-                if (!ComponentModel.hasClass(mainType)) {
+                if (!ComponentDto.hasClass(mainType)) {
                     option[mainType] = option[mainType] == null
                         ? zrUtil.clone(componentOption)
                         : zrUtil.merge(option[mainType], componentOption, true);
@@ -132,20 +132,20 @@ define(function (require) {
             });
 
             // FIXME OPTION 同步是否要改回原来的
-            ComponentModel.topologicalTravel(
-                newCptTypes, ComponentModel.getAllClassMainTypes(), visitComponent, this
+            ComponentDto.topologicalTravel(
+                newCptTypes, ComponentDto.getAllClassMainTypes(), visitComponent, this
             );
 
             function visitComponent(mainType, dependencies) {
-                var newCptOptionList = modelUtil.normalizeToArray(newOption[mainType]);
+                var newCptOptionList = DtoUtil.normalizeToArray(newOption[mainType]);
 
-                var mapResult = modelUtil.mappingToExists(
+                var mapResult = DtoUtil.mappingToExists(
                     componentsMap[mainType], newCptOptionList
                 );
 
                 makeKeyInfo(mainType, mapResult);
 
-                var dependentModels = getComponentsByTypes(
+                var dependentDtos = getComponentsByTypes(
                     componentsMap, dependencies
                 );
 
@@ -153,49 +153,49 @@ define(function (require) {
                 componentsMap[mainType] = [];
 
                 each(mapResult, function (resultItem, index) {
-                    var componentModel = resultItem.exist;
+                    var componentDto = resultItem.exist;
                     var newCptOption = resultItem.option;
 
                     zrUtil.assert(
-                        isObject(newCptOption) || componentModel,
+                        isObject(newCptOption) || componentDto,
                         'Empty component definition'
                     );
 
                     // Consider where is no new option and should be merged using {},
                     // see removeEdgeAndAdd in topologicalTravel and
-                    // ComponentModel.getAllClassMainTypes.
+                    // ComponentDto.getAllClassMainTypes.
                     if (!newCptOption) {
-                        componentModel.mergeOption({}, this);
-                        componentModel.optionUpdated(this);
+                        componentDto.mergeOption({}, this);
+                        componentDto.optionUpdated(this);
                     }
                     else {
-                        var ComponentModelClass = ComponentModel.getClass(
+                        var ComponentDtoClass = ComponentDto.getClass(
                             mainType, resultItem.keyInfo.subType, true
                         );
 
-                        if (componentModel && componentModel instanceof ComponentModelClass) {
-                            componentModel.mergeOption(newCptOption, this);
-                            componentModel.optionUpdated(this);
+                        if (componentDto && componentDto instanceof ComponentDtoClass) {
+                            componentDto.mergeOption(newCptOption, this);
+                            componentDto.optionUpdated(this);
                         }
                         else {
                             // PENDING Global as parent ?
-                            componentModel = new ComponentModelClass(
+                            componentDto = new ComponentDtoClass(
                                 newCptOption, this, this,
                                 zrUtil.extend(
                                     {
-                                        dependentModels: dependentModels,
+                                        dependentDtos: dependentDtos,
                                         componentIndex: index
                                     },
                                     resultItem.keyInfo
                                 )
                             );
                             // Call optionUpdated after init
-                            componentModel.optionUpdated(this);
+                            componentDto.optionUpdated(this);
                         }
                     }
 
-                    componentsMap[mainType][index] = componentModel;
-                    option[mainType][index] = componentModel.option;
+                    componentsMap[mainType][index] = componentDto;
+                    option[mainType][index] = componentDto.option;
                 }, this);
 
                 // Backup series for filtering.
@@ -214,11 +214,11 @@ define(function (require) {
             var option = zrUtil.clone(this.option);
 
             each(option, function (opts, mainType) {
-                if (ComponentModel.hasClass(mainType)) {
-                    var opts = modelUtil.normalizeToArray(opts);
+                if (ComponentDto.hasClass(mainType)) {
+                    var opts = DtoUtil.normalizeToArray(opts);
                     for (var i = opts.length - 1; i >= 0; i--) {
                         // Remove options with inner id.
-                        if (modelUtil.isIdInner(opts[i])) {
+                        if (DtoUtil.isIdInner(opts[i])) {
                             opts.splice(i, 1);
                         }
                     }
@@ -232,7 +232,7 @@ define(function (require) {
         },
 
         /**
-         * @return {module:echarts/model/Model}
+         * @return {module:echarts/Dto/Dto}
          */
         getTheme: function () {
             return this._theme;
@@ -241,7 +241,7 @@ define(function (require) {
         /**
          * @param {string} mainType
          * @param {number} [idx=0]
-         * @return {module:echarts/model/Component}
+         * @return {module:echarts/Dto/Component}
          */
         getComponent: function (mainType, idx) {
             var list = this._componentsMap[mainType];
@@ -257,7 +257,7 @@ define(function (require) {
          * @param {number} [condition.index] Either input index or id or name.
          * @param {string} [condition.id] Either input index or id or name.
          * @param {string} [condition.name] Either input index or id or name.
-         * @return {Array.<module:echarts/model/Component>}
+         * @return {Array.<module:echarts/Dto/Component>}
          */
         queryComponents: function (condition) {
             var mainType = condition.mainType;
@@ -318,7 +318,7 @@ define(function (require) {
          * );
          * var result = findComponents(
          *     {mainType: 'series'},
-         *     function (model, index) {...}
+         *     function (Dto, index) {...}
          * );
          * // result like [component0, componnet1, ...]
          *
@@ -331,7 +331,7 @@ define(function (require) {
          *        do not filtering by query conditions, which is convenient for
          *        no-payload situations or when target of action is global.
          * @param {Function} [condition.filter] parameter: component, return boolean.
-         * @return {Array.<module:echarts/model/Component>}
+         * @return {Array.<module:echarts/Dto/Component>}
          */
         findComponents: function (condition) {
             var query = condition.query;
@@ -372,20 +372,20 @@ define(function (require) {
 
         /**
          * @usage
-         * eachComponent('legend', function (legendModel, index) {
+         * eachComponent('legend', function (legendDto, index) {
          *     ...
          * });
-         * eachComponent(function (componentType, model, index) {
+         * eachComponent(function (componentType, Dto, index) {
          *     // componentType does not include subType
          *     // (componentType is 'xxx' but not 'xxx.aa')
          * });
          * eachComponent(
          *     {mainType: 'dataZoom', query: {dataZoomId: 'abc'}},
-         *     function (model, index) {...}
+         *     function (Dto, index) {...}
          * );
          * eachComponent(
          *     {mainType: 'series', subType: 'pie', query: {seriesName: 'uio'}},
-         *     function (model, index) {...}
+         *     function (Dto, index) {...}
          * );
          *
          * @param {string|Object=} mainType When mainType is object, the definition
@@ -416,7 +416,7 @@ define(function (require) {
 
         /**
          * @param {string} name
-         * @return {Array.<module:echarts/model/Series>}
+         * @return {Array.<module:echarts/Dto/Series>}
          */
         getSeriesByName: function (name) {
             var series = this._componentsMap.series;
@@ -427,7 +427,7 @@ define(function (require) {
 
         /**
          * @param {number} seriesIndex
-         * @return {module:echarts/model/Series}
+         * @return {module:echarts/Dto/Series}
          */
         getSeriesByIndex: function (seriesIndex) {
             return this._componentsMap.series[seriesIndex];
@@ -435,7 +435,7 @@ define(function (require) {
 
         /**
          * @param {string} subType
-         * @return {Array.<module:echarts/model/Series>}
+         * @return {Array.<module:echarts/Dto/Series>}
          */
         getSeriesByType: function (subType) {
             var series = this._componentsMap.series;
@@ -445,7 +445,7 @@ define(function (require) {
         },
 
         /**
-         * @return {Array.<module:echarts/model/Series>}
+         * @return {Array.<module:echarts/Dto/Series>}
          */
         getSeries: function () {
             return this._componentsMap.series.slice();
@@ -506,11 +506,11 @@ define(function (require) {
         },
 
         /**
-         * @param {module:echarts/model/Series} seriesModel
+         * @param {module:echarts/Dto/Series} seriesDto
          */
-        isSeriesFiltered: function (seriesModel) {
+        isSeriesFiltered: function (seriesDto) {
             assertSeriesInitialized(this);
-            return zrUtil.indexOf(this._seriesIndices, seriesModel.componentIndex) < 0;
+            return zrUtil.indexOf(this._seriesIndices, seriesDto.componentIndex) < 0;
         },
 
         /**
@@ -535,9 +535,9 @@ define(function (require) {
                 componentTypes.push(componentType);
             });
 
-            ComponentModel.topologicalTravel(
+            ComponentDto.topologicalTravel(
                 componentTypes,
-                ComponentModel.getAllClassMainTypes(),
+                ComponentDto.getAllClassMainTypes(),
                 function (componentType, dependencies) {
                     each(componentsMap[componentType], function (component) {
                         component.restoreData();
@@ -553,8 +553,8 @@ define(function (require) {
      */
     function mergeTheme(option, theme) {
         for (var name in theme) {
-            // 如果有 component model 则把具体的 merge 逻辑交给该 model 处理
-            if (!ComponentModel.hasClass(name)) {
+            // 如果有 component Dto 则把具体的 merge 逻辑交给该 Dto 处理
+            if (!ComponentDto.hasClass(name)) {
                 if (typeof theme[name] === 'object') {
                     option[name] = !option[name]
                         ? zrUtil.clone(theme[name])
@@ -573,12 +573,12 @@ define(function (require) {
         baseOption = baseOption;
 
         // Using OPTION_INNER_KEY to mark that this option can not be used outside,
-        // i.e. `chart.setOption(chart.getModel().option);` is forbiden.
+        // i.e. `chart.setOption(chart.getDto().option);` is forbiden.
         this.option = {};
         this.option[OPTION_INNER_KEY] = 1;
 
         /**
-         * @type {Object.<string, Array.<module:echarts/model/Model>>}
+         * @type {Object.<string, Array.<module:echarts/Dto/Dto>>}
          * @private
          */
         this._componentsMap = {};
@@ -601,8 +601,8 @@ define(function (require) {
 
     /**
      * @inner
-     * @param {Array.<string>|string} types model types
-     * @return {Object} key: {string} type, value: {Array.<Object>} models
+     * @param {Array.<string>|string} types Dto types
+     * @return {Object} key: {string} type, value: {Array.<Object>} Dtos
      */
     function getComponentsByTypes(componentsMap, types) {
         if (!zrUtil.isArray(types)) {
@@ -621,12 +621,12 @@ define(function (require) {
      * @inner
      */
     function makeKeyInfo(mainType, mapResult) {
-        // We use this id to hash component models and view instances
+        // We use this id to hash component Dtos and view instances
         // in echarts. id can be specified by user, or auto generated.
 
         // The id generation rule ensures new view instance are able
         // to mapped to old instance when setOption are called in
-        // no-merge mode. So we generate model id by name and plus
+        // no-merge mode. So we generate Dto id by name and plus
         // type in view id.
 
         // name can be duplicated among components, which is convenient
@@ -709,7 +709,7 @@ define(function (require) {
             : existComponent
             ? existComponent.subType
             // Use determineSubType only when there is no existComponent.
-            : ComponentModel.determineSubType(mainType, newCptOption);
+            : ComponentDto.determineSubType(mainType, newCptOption);
 
         // tooltip, markline, markpoint may always has no subType
         return subType;
@@ -718,8 +718,8 @@ define(function (require) {
     /**
      * @inner
      */
-    function createSeriesIndices(seriesModels) {
-        return map(seriesModels, function (series) {
+    function createSeriesIndices(seriesDtos) {
+        return map(seriesDtos, function (series) {
             return series.componentIndex;
         }) || [];
     }
@@ -740,13 +740,13 @@ define(function (require) {
     /**
      * @inner
      */
-    function assertSeriesInitialized(ecModel) {
+    function assertSeriesInitialized(ecDto) {
         // Components that use _seriesIndices should depends on series component,
         // which make sure that their initialization is after series.
-        if (!ecModel._seriesIndices) {
+        if (!ecDto._seriesIndices) {
             throw new Error('Series has not been initialized yet.');
         }
     }
 
-    return GlobalModel;
+    return GlobalDto;
 });

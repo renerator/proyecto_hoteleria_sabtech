@@ -15,7 +15,7 @@ describe('timelineOptions', function() {
     }
 
     function getSeries(chart, seriesIndex) {
-        return chart.getModel().getComponent('series', seriesIndex);
+        return chart.getDto().getComponent('series', seriesIndex);
     }
 
     testCase.createChart()('timeline_setOptionOnceMore_baseOption', function () {
@@ -106,7 +106,7 @@ describe('timelineOptions', function() {
         var chart = this.chart;
         chart.setOption(option);
 
-        var ecModel = chart.getModel();
+        var ecDto = chart.getDto();
         expect(getData0(chart, 0)).toEqual(1111);
         expect(getData0(chart, 1)).toEqual(2222);
 
@@ -131,8 +131,8 @@ describe('timelineOptions', function() {
             ]
         });
 
-        var ecModel = chart.getModel();
-        var option = ecModel.getOption();
+        var ecDto = chart.getDto();
+        var option = ecDto.getOption();
         expect(option.backgroundColor).toEqual('#987654');
         expect(getData0(chart, 0)).toEqual(1111);
         expect(getData0(chart, 1)).toEqual(2222);

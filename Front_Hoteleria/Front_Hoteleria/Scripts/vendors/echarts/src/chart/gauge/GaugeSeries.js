@@ -1,14 +1,14 @@
 define(function (require) {
 
     var List = require('../../data/List');
-    var SeriesModel = require('../../model/Series');
+    var SeriesDto = require('../../Dto/Series');
     var zrUtil = require('zrender/core/util');
 
-    var GaugeSeries = SeriesModel.extend({
+    var GaugeSeries = SeriesDto.extend({
 
         type: 'series.gauge',
 
-        getInitialData: function (option, ecModel) {
+        getInitialData: function (option, ecDto) {
             var list = new List(['value'], this);
             var dataOpt = option.data || [];
             if (!zrUtil.isArray(dataOpt)) {

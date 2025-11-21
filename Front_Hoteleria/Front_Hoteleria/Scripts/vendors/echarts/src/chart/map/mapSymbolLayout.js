@@ -2,11 +2,11 @@ define(function (require) {
 
     var zrUtil = require('zrender/core/util');
 
-    return function (ecModel) {
+    return function (ecDto) {
 
         var processedMapType = {};
 
-        ecModel.eachSeriesByType('map', function (mapSeries) {
+        ecDto.eachSeriesByType('map', function (mapSeries) {
             var mapType = mapSeries.get('map');
             if (processedMapType[mapType]) {
                 return;
@@ -17,7 +17,7 @@ define(function (require) {
             zrUtil.each(mapSeries.seriesGroup, function (subMapSeries) {
                 var geo = subMapSeries.coordinateSystem;
                 var data = subMapSeries.getData();
-                if (subMapSeries.get('showLegendSymbol') && ecModel.getComponent('legend')) {
+                if (subMapSeries.get('showLegendSymbol') && ecDto.getComponent('legend')) {
                     data.each('value', function (value, idx) {
                         var name = data.getName(idx);
                         var region = geo.getRegion(name);

@@ -38,7 +38,7 @@ define(function (require) {
         // Remove paths created before
         this.removeAll();
 
-        var seriesModel = data.hostModel;
+        var seriesDto = data.hostDto;
         var color = data.getItemVisual(idx, 'color');
 
         var symbolPath = symbolUtil.createSymbol(
@@ -57,7 +57,7 @@ define(function (require) {
 
         graphic.initProps(symbolPath, {
             scale: size
-        }, seriesModel, idx);
+        }, seriesDto, idx);
 
         this._symbolType = symbolType;
 
@@ -117,7 +117,7 @@ define(function (require) {
      */
     symbolProto.updateData = function (data, idx) {
         var symbolType = data.getItemVisual(idx, 'symbol') || 'circle';
-        var seriesModel = data.hostModel;
+        var seriesDto = data.hostDto;
         var symbolSize = normalizeSymbolSize(data.getItemVisual(idx, 'symbolSize'));
         if (symbolType !== this._symbolType) {
             this._createSymbol(symbolType, data, idx);
@@ -126,11 +126,11 @@ define(function (require) {
             var symbolPath = this.childAt(0);
             graphic.updateProps(symbolPath, {
                 scale: symbolSize
-            }, seriesModel, idx);
+            }, seriesDto, idx);
         }
         this._updateCommon(data, idx, symbolSize);
 
-        this._seriesModel = seriesModel;
+        this._seriesDto = seriesDto;
     };
 
     // Update common properties
@@ -141,9 +141,9 @@ define(function (require) {
 
     symbolProto._updateCommon = function (data, idx, symbolSize) {
         var symbolPath = this.childAt(0);
-        var seriesModel = data.hostModel;
-        var itemModel = data.getItemModel(idx);
-        var normalItemStyleModel = itemModel.getModel(normalStyleAccessPath);
+        var seriesDto = data.hostDto;
+        var itemDto = data.getItemDto(idx);
+        var normalItemStyleDto = itemDto.getDto(normalStyleAccessPath);
         var color = data.getItemVisual(idx, 'color');
 
         // Reset style
@@ -154,11 +154,11 @@ define(function (require) {
         }
         var elStyle = symbolPath.style;
 
-        var hoverStyle = itemModel.getModel(emphasisStyleAccessPath).getItemStyle();
+        var hoverStyle = itemDto.getDto(emphasisStyleAccessPath).getItemStyle();
 
-        symbolPath.rotation = (itemModel.getShallow('symbolRotate') || 0) * Math.PI / 180 || 0;
+        symbolPath.rotation = (itemDto.getShallow('symbolRotate') || 0) * Math.PI / 180 || 0;
 
-        var symbolOffset = itemModel.getShallow('symbolOffset');
+        var symbolOffset = itemDto.getShallow('symbolOffset');
         if (symbolOffset) {
             var pos = symbolPath.position;
             pos[0] = numberUtil.parsePercent(symbolOffset[0], symbolSize[0]);
@@ -171,7 +171,7 @@ define(function (require) {
             elStyle,
             // Color must be excluded.
             // Because symbol provide setColor individually to set fill and stroke
-            normalItemStyleModel.getItemStyle(['color'])
+            normalItemStyleDto.getItemStyle(['color'])
         );
 
         var opacity = data.getItemVisual(idx, 'opacity');
@@ -179,8 +179,8 @@ define(function (require) {
             elStyle.opacity = opacity;
         }
 
-        var labelModel = itemModel.getModel(normalLabelAccessPath);
-        var hoverLabelModel = itemModel.getModel(emphasisLabelAccessPath);
+        var labelDto = itemDto.getDto(normalLabelAccessPath);
+        var hoverLabelDto = itemDto.getDto(emphasisLabelAccessPath);
 
         // Get last value dim
         var dimensions = data.dimensions.slice();
@@ -192,10 +192,10 @@ define(function (require) {
             dataType === 'ordinal' || dataType === 'time'
         )) {} // jshint ignore:line
 
-        if (valueDim != null && labelModel.get('show')) {
-            graphic.setText(elStyle, labelModel, color);
+        if (valueDim != null && labelDto.get('show')) {
+            graphic.setText(elStyle, labelDto, color);
             elStyle.text = zrUtil.retrieve(
-                seriesModel.getFormattedLabel(idx, 'normal'),
+                seriesDto.getFormattedLabel(idx, 'normal'),
                 data.get(valueDim, idx)
             );
         }
@@ -203,10 +203,10 @@ define(function (require) {
             elStyle.text = '';
         }
 
-        if (valueDim != null && hoverLabelModel.getShallow('show')) {
-            graphic.setText(hoverStyle, hoverLabelModel, color);
+        if (valueDim != null && hoverLabelDto.getShallow('show')) {
+            graphic.setText(hoverStyle, hoverLabelDto, color);
             hoverStyle.text = zrUtil.retrieve(
-                seriesModel.getFormattedLabel(idx, 'emphasis'),
+                seriesDto.getFormattedLabel(idx, 'emphasis'),
                 data.get(valueDim, idx)
             );
         }
@@ -223,7 +223,7 @@ define(function (require) {
 
         graphic.setHoverStyle(symbolPath, hoverStyle);
 
-        if (itemModel.getShallow('hoverAnimation')) {
+        if (itemDto.getShallow('hoverAnimation')) {
             var onEmphasis = function() {
                 var ratio = size[1] / size[0];
                 this.animateTo({
@@ -256,7 +256,7 @@ define(function (require) {
         symbolPath.style.text = '';
         graphic.updateProps(symbolPath, {
             scale: [0, 0]
-        }, this._seriesModel, this.dataIndex, cb);
+        }, this._seriesDto, this.dataIndex, cb);
     };
 
     zrUtil.inherits(Symbol, graphic.Group);

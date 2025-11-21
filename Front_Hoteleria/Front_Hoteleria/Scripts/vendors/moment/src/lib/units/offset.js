@@ -56,11 +56,11 @@ function offsetFromString(matcher, string) {
     return parts[0] === '+' ? minutes : -minutes;
 }
 
-// Return a moment from input, that is local/utc/zone equivalent to model.
-export function cloneWithOffset(input, model) {
+// Return a moment from input, that is local/utc/zone equivalent to Dto.
+export function cloneWithOffset(input, Dto) {
     var res, diff;
-    if (model._isUTC) {
-        res = model.clone();
+    if (Dto._isUTC) {
+        res = Dto.clone();
         diff = (isMoment(input) || isDate(input) ? input.valueOf() : createLocal(input).valueOf()) - res.valueOf();
         // Use low-level api, because this fn is low-level api.
         res._d.setTime(res._d.valueOf() + diff);

@@ -38,16 +38,16 @@ define(function (require) {
 
     var funnelPieceProto = FunnelPiece.prototype;
 
-    function getLabelStyle(data, idx, state, labelModel) {
-        var textStyleModel = labelModel.getModel('textStyle');
-        var position = labelModel.get('position');
+    function getLabelStyle(data, idx, state, labelDto) {
+        var textStyleDto = labelDto.getDto('textStyle');
+        var position = labelDto.get('position');
         var isLabelInside = position === 'inside' || position === 'inner' || position === 'center';
         return {
-            fill: textStyleModel.getTextColor()
+            fill: textStyleDto.getTextColor()
                 || (isLabelInside ? '#fff' : data.getItemVisual(idx, 'color')),
-            textFont: textStyleModel.getFont(),
+            textFont: textStyleDto.getFont(),
             text: zrUtil.retrieve(
-                data.hostModel.getFormattedLabel(idx, state),
+                data.hostDto.getFormattedLabel(idx, state),
                 data.getName(idx)
             )
         };
@@ -58,10 +58,10 @@ define(function (require) {
 
         var polygon = this.childAt(0);
 
-        var seriesModel = data.hostModel;
-        var itemModel = data.getItemModel(idx);
+        var seriesDto = data.hostDto;
+        var itemDto = data.getItemDto(idx);
         var layout = data.getItemLayout(idx);
-        var opacity = data.getItemModel(idx).get(opacityAccessPath);
+        var opacity = data.getItemDto(idx).get(opacityAccessPath);
         opacity = opacity == null ? 1 : opacity;
 
         // Reset style
@@ -76,7 +76,7 @@ define(function (require) {
                 style: {
                     opacity: opacity
                 }
-            }, seriesModel, idx);
+            }, seriesDto, idx);
         }
         else {
             graphic.updateProps(polygon, {
@@ -86,11 +86,11 @@ define(function (require) {
                 shape: {
                     points: layout.points
                 }
-            }, seriesModel, idx);
+            }, seriesDto, idx);
         }
 
         // Update common style
-        var itemStyleModel = itemModel.getModel('itemStyle');
+        var itemStyleDto = itemDto.getDto('itemStyle');
         var visualColor = data.getItemVisual(idx, 'color');
 
         polygon.setStyle(
@@ -98,10 +98,10 @@ define(function (require) {
                 {
                     fill: visualColor
                 },
-                itemStyleModel.getModel('normal').getItemStyle(['opacity'])
+                itemStyleDto.getDto('normal').getItemStyle(['opacity'])
             )
         );
-        polygon.hoverStyle = itemStyleModel.getModel('emphasis').getItemStyle();
+        polygon.hoverStyle = itemStyleDto.getDto('emphasis').getItemStyle();
 
         this._updateLabel(data, idx);
 
@@ -113,8 +113,8 @@ define(function (require) {
         var labelLine = this.childAt(1);
         var labelText = this.childAt(2);
 
-        var seriesModel = data.hostModel;
-        var itemModel = data.getItemModel(idx);
+        var seriesDto = data.hostDto;
+        var itemDto = data.getItemDto(idx);
         var layout = data.getItemLayout(idx);
         var labelLayout = layout.label;
         var visualColor = data.getItemVisual(idx, 'color');
@@ -123,14 +123,14 @@ define(function (require) {
             shape: {
                 points: labelLayout.linePoints || labelLayout.linePoints
             }
-        }, seriesModel, idx);
+        }, seriesDto, idx);
 
         graphic.updateProps(labelText, {
             style: {
                 x: labelLayout.x,
                 y: labelLayout.y
             }
-        }, seriesModel, idx);
+        }, seriesDto, idx);
         labelText.attr({
             style: {
                 textAlign: labelLayout.textAlign,
@@ -142,27 +142,27 @@ define(function (require) {
             z2: 10
         });
 
-        var labelModel = itemModel.getModel('label.normal');
-        var labelHoverModel = itemModel.getModel('label.emphasis');
-        var labelLineModel = itemModel.getModel('labelLine.normal');
-        var labelLineHoverModel = itemModel.getModel('labelLine.emphasis');
+        var labelDto = itemDto.getDto('label.normal');
+        var labelHoverDto = itemDto.getDto('label.emphasis');
+        var labelLineDto = itemDto.getDto('labelLine.normal');
+        var labelLineHoverDto = itemDto.getDto('labelLine.emphasis');
 
-        labelText.setStyle(getLabelStyle(data, idx, 'normal', labelModel));
+        labelText.setStyle(getLabelStyle(data, idx, 'normal', labelDto));
 
-        labelText.ignore = labelText.normalIgnore = !labelModel.get('show');
-        labelText.hoverIgnore = !labelHoverModel.get('show');
+        labelText.ignore = labelText.normalIgnore = !labelDto.get('show');
+        labelText.hoverIgnore = !labelHoverDto.get('show');
 
-        labelLine.ignore = labelLine.normalIgnore = !labelLineModel.get('show');
-        labelLine.hoverIgnore = !labelLineHoverModel.get('show');
+        labelLine.ignore = labelLine.normalIgnore = !labelLineDto.get('show');
+        labelLine.hoverIgnore = !labelLineHoverDto.get('show');
 
         // Default use item visual color
         labelLine.setStyle({
             stroke: visualColor
         });
-        labelLine.setStyle(labelLineModel.getModel('lineStyle').getLineStyle());
+        labelLine.setStyle(labelLineDto.getDto('lineStyle').getLineStyle());
 
-        labelText.hoverStyle = getLabelStyle(data, idx, 'emphasis', labelHoverModel);
-        labelLine.hoverStyle = labelLineHoverModel.getModel('lineStyle').getLineStyle();
+        labelText.hoverStyle = getLabelStyle(data, idx, 'emphasis', labelHoverDto);
+        labelLine.hoverStyle = labelLineHoverDto.getDto('lineStyle').getLineStyle();
     };
 
     zrUtil.inherits(FunnelPiece, graphic.Group);
@@ -172,8 +172,8 @@ define(function (require) {
 
         type: 'funnel',
 
-        render: function (seriesModel, ecModel, api) {
-            var data = seriesModel.getData();
+        render: function (seriesDto, ecDto, api) {
+            var data = seriesDto.getData();
             var oldData = this._data;
 
             var group = this.group;

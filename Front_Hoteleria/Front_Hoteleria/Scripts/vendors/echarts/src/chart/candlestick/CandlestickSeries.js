@@ -3,13 +3,13 @@ define(function(require) {
     'use strict';
 
     var zrUtil = require('zrender/core/util');
-    var SeriesModel = require('../../model/Series');
+    var SeriesDto = require('../../Dto/Series');
     var whiskerBoxCommon = require('../helper/whiskerBoxCommon');
     var formatUtil = require('../../util/format');
     var encodeHTML = formatUtil.encodeHTML;
     var addCommas = formatUtil.addCommas;
 
-    var CandlestickSeries = SeriesModel.extend({
+    var CandlestickSeries = SeriesDto.extend({
 
         type: 'series.candlestick',
 
@@ -85,7 +85,7 @@ define(function(require) {
 
     });
 
-    zrUtil.mixin(CandlestickSeries, whiskerBoxCommon.seriesModelMixin, true);
+    zrUtil.mixin(CandlestickSeries, whiskerBoxCommon.seriesDtoMixin, true);
 
     return CandlestickSeries;
 

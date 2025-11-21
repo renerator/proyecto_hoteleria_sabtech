@@ -6,9 +6,9 @@ define(function (require) {
 
         type: 'dataZoom',
 
-        render: function (dataZoomModel, ecModel, api, payload) {
-            this.dataZoomModel = dataZoomModel;
-            this.ecModel = ecModel;
+        render: function (dataZoomDto, ecDto, api, payload) {
+            this.dataZoomDto = dataZoomDto;
+            this.ecDto = ecDto;
             this.api = api;
         },
 
@@ -18,64 +18,64 @@ define(function (require) {
          * @protected
          * @return {Object} {
          *                   cartesians: [
-         *                       {model: coord0, axisModels: [axis1, axis3], coordIndex: 1},
-         *                       {model: coord1, axisModels: [axis0, axis2], coordIndex: 0},
+         *                       {Dto: coord0, axisDtos: [axis1, axis3], coordIndex: 1},
+         *                       {Dto: coord1, axisDtos: [axis0, axis2], coordIndex: 0},
          *                       ...
          *                   ],  // cartesians must not be null/undefined.
          *                   polars: [
-         *                       {model: coord0, axisModels: [axis4], coordIndex: 0},
+         *                       {Dto: coord0, axisDtos: [axis4], coordIndex: 0},
          *                       ...
          *                   ],  // polars must not be null/undefined.
-         *                   axisModels: [axis0, axis1, axis2, axis3, axis4]
-         *                       // axisModels must not be null/undefined.
+         *                   axisDtos: [axis0, axis1, axis2, axis3, axis4]
+         *                       // axisDtos must not be null/undefined.
          *                  }
          */
         getTargetInfo: function () {
-            var dataZoomModel = this.dataZoomModel;
-            var ecModel = this.ecModel;
+            var dataZoomDto = this.dataZoomDto;
+            var ecDto = this.ecDto;
             var cartesians = [];
             var polars = [];
-            var axisModels = [];
+            var axisDtos = [];
 
-            dataZoomModel.eachTargetAxis(function (dimNames, axisIndex) {
-                var axisModel = ecModel.getComponent(dimNames.axis, axisIndex);
-                if (axisModel) {
-                    axisModels.push(axisModel);
+            dataZoomDto.eachTargetAxis(function (dimNames, axisIndex) {
+                var axisDto = ecDto.getComponent(dimNames.axis, axisIndex);
+                if (axisDto) {
+                    axisDtos.push(axisDto);
 
-                    var gridIndex = axisModel.get('gridIndex');
-                    var polarIndex = axisModel.get('polarIndex');
+                    var gridIndex = axisDto.get('gridIndex');
+                    var polarIndex = axisDto.get('polarIndex');
 
                     if (gridIndex != null) {
-                        var coordModel = ecModel.getComponent('grid', gridIndex);
-                        save(coordModel, axisModel, cartesians, gridIndex);
+                        var coordDto = ecDto.getComponent('grid', gridIndex);
+                        save(coordDto, axisDto, cartesians, gridIndex);
                     }
                     else if (polarIndex != null) {
-                        var coordModel = ecModel.getComponent('polar', polarIndex);
-                        save(coordModel, axisModel, polars, polarIndex);
+                        var coordDto = ecDto.getComponent('polar', polarIndex);
+                        save(coordDto, axisDto, polars, polarIndex);
                     }
                 }
             }, this);
 
-            function save(coordModel, axisModel, store, coordIndex) {
+            function save(coordDto, axisDto, store, coordIndex) {
                 var item;
                 for (var i = 0; i < store.length; i++) {
-                    if (store[i].model === coordModel) {
+                    if (store[i].Dto === coordDto) {
                         item = store[i];
                         break;
                     }
                 }
                 if (!item) {
                     store.push(item = {
-                        model: coordModel, axisModels: [], coordIndex: coordIndex
+                        Dto: coordDto, axisDtos: [], coordIndex: coordIndex
                     });
                 }
-                item.axisModels.push(axisModel);
+                item.axisDtos.push(axisDto);
             }
 
             return {
                 cartesians: cartesians,
                 polars: polars,
-                axisModels: axisModels
+                axisDtos: axisDtos
             };
         }
 

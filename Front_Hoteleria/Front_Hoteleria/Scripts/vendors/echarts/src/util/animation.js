@@ -30,7 +30,7 @@
              * might not be called. This method checks this (by el.id),
              * suppresses adding and returns false when existing el found.
              *
-             * @param {modele:zrender/Element} el
+             * @param {Dtoe:zrender/Element} el
              * @param {Object} target
              * @param {number} [time=500]
              * @param {number} [delay=0]

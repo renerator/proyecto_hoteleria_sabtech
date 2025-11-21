@@ -11,7 +11,7 @@ define(function(require) {
         return item.value == null ? item : item.value;
     }
 
-    var seriesModelMixin = {
+    var seriesDtoMixin = {
 
         /**
          * @private
@@ -22,17 +22,17 @@ define(function(require) {
         /**
          * @override
          */
-        getInitialData: function (option, ecModel) {
+        getInitialData: function (option, ecDto) {
             // When both types of xAxis and yAxis are 'value', layout is
             // needed to be specified by user. Otherwise, layout can be
             // judged by which axis is category.
 
             var categories;
 
-            var xAxisModel = ecModel.getComponent('xAxis', this.get('xAxisIndex'));
-            var yAxisModel = ecModel.getComponent('yAxis', this.get('yAxisIndex'));
-            var xAxisType = xAxisModel.get('type');
-            var yAxisType = yAxisModel.get('type');
+            var xAxisDto = ecDto.getComponent('xAxis', this.get('xAxisIndex'));
+            var yAxisDto = ecDto.getComponent('yAxis', this.get('yAxisIndex'));
+            var xAxisType = xAxisDto.get('type');
+            var yAxisType = yAxisDto.get('type');
             var addOrdinal;
 
             // FIXME
@@ -40,12 +40,12 @@ define(function(require) {
 
             if (xAxisType === 'category') {
                 option.layout = 'horizontal';
-                categories = xAxisModel.getCategories();
+                categories = xAxisDto.getCategories();
                 addOrdinal = true;
             }
             else if (yAxisType  === 'category') {
                 option.layout = 'vertical';
-                categories = yAxisModel.getCategories();
+                categories = yAxisDto.getCategories();
                 addOrdinal = true;
             }
             else {
@@ -106,7 +106,7 @@ define(function(require) {
          */
         getBaseAxis: function () {
             var dim = this._baseAxisDim;
-            return this.ecModel.getComponent(dim + 'Axis', this.get(dim + 'AxisIndex')).axis;
+            return this.ecDto.getComponent(dim + 'Axis', this.get(dim + 'AxisIndex')).axis;
         }
     };
 
@@ -124,17 +124,17 @@ define(function(require) {
             this.group.add(whiskerBoxDraw.group);
         },
 
-        render: function (seriesModel, ecModel, api) {
-            this._whiskerBoxDraw.updateData(seriesModel.getData());
+        render: function (seriesDto, ecDto, api) {
+            this._whiskerBoxDraw.updateData(seriesDto.getData());
         },
 
-        remove: function (ecModel) {
+        remove: function (ecDto) {
             this._whiskerBoxDraw.remove();
         }
     };
 
     return {
-        seriesModelMixin: seriesModelMixin,
+        seriesDtoMixin: seriesDtoMixin,
         viewMixin: viewMixin
     };
 });

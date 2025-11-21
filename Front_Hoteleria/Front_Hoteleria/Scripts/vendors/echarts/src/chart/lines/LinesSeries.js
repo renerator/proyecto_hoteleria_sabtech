@@ -2,18 +2,18 @@ define(function (require) {
 
     'use strict';
 
-    var SeriesModel = require('../../model/Series');
+    var SeriesDto = require('../../Dto/Series');
     var List = require('../../data/List');
     var zrUtil = require('zrender/core/util');
     var CoordinateSystem = require('../../CoordinateSystem');
 
-    return SeriesModel.extend({
+    return SeriesDto.extend({
 
         type: 'series.lines',
 
         dependencies: ['grid', 'polar'],
 
-        getInitialData: function (option, ecModel) {
+        getInitialData: function (option, ecDto) {
             var fromDataArr = [];
             var toDataArr = [];
             var lineDataArr = [];

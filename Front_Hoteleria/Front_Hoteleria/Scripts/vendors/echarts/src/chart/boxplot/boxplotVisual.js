@@ -2,29 +2,29 @@ define(function (require) {
 
     var borderColorQuery = ['itemStyle', 'normal', 'borderColor'];
 
-    return function (ecModel, api) {
+    return function (ecDto, api) {
 
-        var globalColors = ecModel.get('color');
+        var globalColors = ecDto.get('color');
 
-        ecModel.eachRawSeriesByType('boxplot', function (seriesModel) {
+        ecDto.eachRawSeriesByType('boxplot', function (seriesDto) {
 
-            var defaulColor = globalColors[seriesModel.seriesIndex % globalColors.length];
-            var data = seriesModel.getData();
+            var defaulColor = globalColors[seriesDto.seriesIndex % globalColors.length];
+            var data = seriesDto.getData();
 
             data.setVisual({
                 legendSymbol: 'roundRect',
                 // Use name 'color' but not 'borderColor' for legend usage and
                 // visual coding from other component like dataRange.
-                color: seriesModel.get(borderColorQuery) || defaulColor
+                color: seriesDto.get(borderColorQuery) || defaulColor
             });
 
             // Only visible series has each data be visual encoded
-            if (!ecModel.isSeriesFiltered(seriesModel)) {
+            if (!ecDto.isSeriesFiltered(seriesDto)) {
                 data.each(function (idx) {
-                    var itemModel = data.getItemModel(idx);
+                    var itemDto = data.getItemDto(idx);
                     data.setItemVisual(
                         idx,
-                        {color: itemModel.get(borderColorQuery, true)}
+                        {color: itemDto.get(borderColorQuery, true)}
                     );
                 });
             }

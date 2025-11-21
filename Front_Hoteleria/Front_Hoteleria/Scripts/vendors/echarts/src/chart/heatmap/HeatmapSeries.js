@@ -1,13 +1,13 @@
 define(function (require) {
 
-    var SeriesModel = require('../../model/Series');
+    var SeriesDto = require('../../Dto/Series');
     var createListFromArray = require('../helper/createListFromArray');
 
-    return SeriesModel.extend({
+    return SeriesDto.extend({
         type: 'series.heatmap',
 
-        getInitialData: function (option, ecModel) {
-            return createListFromArray(option.data, this, ecModel);
+        getInitialData: function (option, ecDto) {
+            return createListFromArray(option.data, this, ecDto);
         },
 
         defaultOption: {

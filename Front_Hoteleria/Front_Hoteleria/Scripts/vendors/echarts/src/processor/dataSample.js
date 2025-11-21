@@ -44,11 +44,11 @@ define(function () {
     var indexSampler = function (frame, value) {
         return Math.round(frame.length / 2);
     };
-    return function (seriesType, ecModel, api) {
-        ecModel.eachSeriesByType(seriesType, function (seriesModel) {
-            var data = seriesModel.getData();
-            var sampling = seriesModel.get('sampling');
-            var coordSys = seriesModel.coordinateSystem;
+    return function (seriesType, ecDto, api) {
+        ecDto.eachSeriesByType(seriesType, function (seriesDto) {
+            var data = seriesDto.getData();
+            var sampling = seriesDto.get('sampling');
+            var coordSys = seriesDto.coordinateSystem;
             // Only cartesian2d support down sampling
             if (coordSys.type === 'cartesian2d' && sampling) {
                 var baseAxis = coordSys.getBaseAxis();
@@ -69,7 +69,7 @@ define(function () {
                         data = data.downSample(
                             valueAxis.dim, 1 / rate, sampler, indexSampler
                         );
-                        seriesModel.setData(data);
+                        seriesDto.setData(data);
                     }
                 }
             }

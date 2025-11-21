@@ -22,11 +22,11 @@ define(function (require) {
      *
      * @param {Array.<Object>} nodes 节点信息
      * @param {Array} matrix 邻接矩阵
-     * @param {module:echarts/model/Series}
+     * @param {module:echarts/Dto/Series}
      * @param {boolean} directed 是否是有向图
      * @return {module:echarts/data/Graph}
      */
-    return function (nodes, matrix, hostModel, directed) {
+    return function (nodes, matrix, hostDto, directed) {
         var graph = new Graph(directed);
         for (var i = 0; i < nodes.length; i++) {
             graph.addNode(zrUtil.retrieve(
@@ -56,10 +56,10 @@ define(function (require) {
             }
         }
 
-        var coordSys = hostModel.get('coordinateSystem');
+        var coordSys = hostDto.get('coordinateSystem');
         var nodeData;
         if (coordSys === 'cartesian2d' || coordSys === 'polar') {
-            nodeData = createListFromArray(nodes, hostModel, hostModel.ecModel);
+            nodeData = createListFromArray(nodes, hostDto, hostDto.ecDto);
         }
         else {
             // FIXME
@@ -69,10 +69,10 @@ define(function (require) {
                 ((coordSysCtor && coordSysCtor.type !== 'view') ? (coordSysCtor.dimensions || []) : []).concat(['value']),
                 nodes
             );
-            nodeData = new List(dimensionNames, hostModel);
+            nodeData = new List(dimensionNames, hostDto);
             nodeData.initData(nodes);
         }
-        var edgeData = new List(['value'], hostModel);
+        var edgeData = new List(['value'], hostDto);
 
         edgeData.initData(links);
 

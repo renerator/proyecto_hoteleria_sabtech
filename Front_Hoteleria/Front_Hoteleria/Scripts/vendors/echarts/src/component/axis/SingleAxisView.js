@@ -16,36 +16,36 @@ define(function (require) {
 
         type: 'singleAxis',
 
-        render: function (axisModel, ecModel) {
+        render: function (axisDto, ecDto) {
 
             var group = this.group;
 
             group.removeAll();
 
-            var layout =  axisLayout(axisModel);
+            var layout =  axisLayout(axisDto);
 
-            var axisBuilder = new AxisBuilder(axisModel, layout);
+            var axisBuilder = new AxisBuilder(axisDto, layout);
 
             zrUtil.each(axisBuilderAttrs, axisBuilder.add, axisBuilder);
 
             group.add(axisBuilder.getGroup());
 
-            if (axisModel.get(selfBuilderAttr + '.show')) {
-                this['_' + selfBuilderAttr](axisModel, layout.labelInterval);
+            if (axisDto.get(selfBuilderAttr + '.show')) {
+                this['_' + selfBuilderAttr](axisDto, layout.labelInterval);
             }
         },
 
-        _splitLine: function(axisModel, labelInterval) {
-            var axis = axisModel.axis;
-            var splitLineModel = axisModel.getModel('splitLine');
-            var lineStyleModel = splitLineModel.getModel('lineStyle');
-            var lineWidth = lineStyleModel.get('width');
-            var lineColors = lineStyleModel.get('color');
-            var lineInterval = getInterval(splitLineModel, labelInterval);
+        _splitLine: function(axisDto, labelInterval) {
+            var axis = axisDto.axis;
+            var splitLineDto = axisDto.getDto('splitLine');
+            var lineStyleDto = splitLineDto.getDto('lineStyle');
+            var lineWidth = lineStyleDto.get('width');
+            var lineColors = lineStyleDto.get('color');
+            var lineInterval = getInterval(splitLineDto, labelInterval);
 
             lineColors = lineColors instanceof Array ? lineColors : [lineColors];
 
-            var gridRect = axisModel.coordinateSystem.getRect();
+            var gridRect = axisDto.coordinateSystem.getRect();
             var isHorizontal = axis.isHorizontal();
 
             var splitLines = [];
@@ -94,7 +94,7 @@ define(function (require) {
                 this.group.add(graphic.mergePath(splitLines[i], {
                     style: {
                         stroke: lineColors[i % lineColors.length],
-                        lineDash: lineStyleModel.getLineDash(),
+                        lineDash: lineStyleDto.getLineDash(),
                         lineWidth: lineWidth
                     },
                     silent: true
@@ -103,10 +103,10 @@ define(function (require) {
         }
     });
 
-    function axisLayout(axisModel) {
+    function axisLayout(axisDto) {
 
-        var single = axisModel.coordinateSystem;
-        var axis = axisModel.axis;
+        var single = axisDto.coordinateSystem;
+        var axis = axisDto.axis;
         var layout = {};
 
         var axisPosition = axis.position;
@@ -138,15 +138,15 @@ define(function (require) {
             = layout.nameDirection 
             = directionMap[axisPosition];
 
-        if (axisModel.getModel('axisTick').get('inside')) {
+        if (axisDto.getDto('axisTick').get('inside')) {
             layout.tickDirection = -layout.tickDirection;
         }
 
-        if (axisModel.getModel('axisLabel').get('inside')) {
+        if (axisDto.getDto('axisLabel').get('inside')) {
             layout.labelDirection = -layout.labelDirection;
         }
 
-        var labelRotation = axisModel.getModel('axisLabel').get('rotate');
+        var labelRotation = axisDto.getDto('axisLabel').get('rotate');
         layout.labelRotation = axisPosition === 'top' ? -labelRotation : labelRotation;
 
         layout.labelInterval = axis.getLabelInterval();

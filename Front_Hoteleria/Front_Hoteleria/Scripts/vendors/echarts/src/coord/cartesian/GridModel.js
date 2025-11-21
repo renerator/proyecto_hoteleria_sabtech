@@ -4,10 +4,10 @@ define(function(require) {
 
     'use strict';
 
-    require('./AxisModel');
-    var ComponentModel = require('../../model/Component');
+    require('./AxisDto');
+    var ComponentDto = require('../../Dto/Component');
 
-    return ComponentModel.extend({
+    return ComponentDto.extend({
 
         type: 'grid',
 

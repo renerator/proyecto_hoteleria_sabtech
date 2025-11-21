@@ -7,9 +7,9 @@ define(function (require) {
     var graphic = require('../../util/graphic');
     var zrUtil = require('zrender/core/util');
 
-    function getFixedItemStyle(model, scale) {
-        var itemStyle = model.getItemStyle();
-        var areaColor = model.get('areaColor');
+    function getFixedItemStyle(Dto, scale) {
+        var itemStyle = Dto.getItemStyle();
+        var areaColor = Dto.get('areaColor');
         if (areaColor) {
             itemStyle.fill = areaColor;
         }
@@ -17,9 +17,9 @@ define(function (require) {
         return itemStyle;
     }
 
-    function updateMapSelectHandler(mapOrGeoModel, group, api, fromView) {
+    function updateMapSelectHandler(mapOrGeoDto, group, api, fromView) {
         group.off('click');
-        mapOrGeoModel.get('selectedMode')
+        mapOrGeoDto.get('selectedMode')
             && group.on('click', function (e) {
                 var el = e.target;
                 while (!el.__region) {
@@ -31,23 +31,23 @@ define(function (require) {
 
                 var region = el.__region;
                 var action = {
-                    type: (mapOrGeoModel.mainType === 'geo' ? 'geo' : 'map') + 'ToggleSelect',
+                    type: (mapOrGeoDto.mainType === 'geo' ? 'geo' : 'map') + 'ToggleSelect',
                     name: region.name,
                     from: fromView.uid
                 };
-                action[mapOrGeoModel.mainType + 'Id'] = mapOrGeoModel.id;
+                action[mapOrGeoDto.mainType + 'Id'] = mapOrGeoDto.id;
 
                 api.dispatchAction(action);
 
-                updateMapSelected(mapOrGeoModel, group);
+                updateMapSelected(mapOrGeoDto, group);
             });
     }
 
-    function updateMapSelected(mapOrGeoModel, group) {
+    function updateMapSelected(mapOrGeoDto, group) {
         // FIXME
         group.eachChild(function (otherRegionEl) {
             if (otherRegionEl.__region) {
-                otherRegionEl.trigger(mapOrGeoModel.isSelected(otherRegionEl.__region.name) ? 'emphasis' : 'normal');
+                otherRegionEl.trigger(mapOrGeoDto.isSelected(otherRegionEl.__region.name) ? 'emphasis' : 'normal');
             }
         });
     }
@@ -86,12 +86,12 @@ define(function (require) {
 
         constructor: MapDraw,
 
-        draw: function (mapOrGeoModel, ecModel, api, fromView, payload) {
+        draw: function (mapOrGeoDto, ecDto, api, fromView, payload) {
 
-            // geoModel has no data
-            var data = mapOrGeoModel.getData && mapOrGeoModel.getData();
+            // geoDto has no data
+            var data = mapOrGeoDto.getData && mapOrGeoDto.getData();
 
-            var geo = mapOrGeoModel.coordinateSystem;
+            var geo = mapOrGeoDto.coordinateSystem;
 
             var group = this.group;
 
@@ -106,7 +106,7 @@ define(function (require) {
                 group.attr(groupNewProp);
             }
             else {
-                graphic.updateProps(group, groupNewProp, mapOrGeoModel);
+                graphic.updateProps(group, groupNewProp, mapOrGeoDto);
             }
 
             group.removeAll();
@@ -126,15 +126,15 @@ define(function (require) {
                 });
                 regionGroup.add(compoundPath);
 
-                var regionModel = mapOrGeoModel.getRegionModel(region.name) || mapOrGeoModel;
+                var regionDto = mapOrGeoDto.getRegionDto(region.name) || mapOrGeoDto;
 
-                var itemStyleModel = regionModel.getModel(itemStyleAccessPath);
-                var hoverItemStyleModel = regionModel.getModel(hoverItemStyleAccessPath);
-                var itemStyle = getFixedItemStyle(itemStyleModel, scale);
-                var hoverItemStyle = getFixedItemStyle(hoverItemStyleModel, scale);
+                var itemStyleDto = regionDto.getDto(itemStyleAccessPath);
+                var hoverItemStyleDto = regionDto.getDto(hoverItemStyleAccessPath);
+                var itemStyle = getFixedItemStyle(itemStyleDto, scale);
+                var hoverItemStyle = getFixedItemStyle(hoverItemStyleDto, scale);
 
-                var labelModel = regionModel.getModel(labelAccessPath);
-                var hoverLabelModel = regionModel.getModel(hoverLabelAccessPath);
+                var labelDto = regionDto.getDto(labelAccessPath);
+                var hoverLabelDto = regionDto.getDto(hoverLabelAccessPath);
 
                 var dataIdx;
                 // Use the itemStyle in data if has data
@@ -150,8 +150,8 @@ define(function (require) {
                     }
                 }
 
-                var textStyleModel = labelModel.getModel('textStyle');
-                var hoverTextStyleModel = hoverLabelModel.getModel('textStyle');
+                var textStyleDto = labelDto.getDto('textStyle');
+                var hoverTextStyleDto = hoverLabelDto.getDto('textStyle');
 
                 zrUtil.each(region.contours, function (contour) {
 
@@ -168,8 +168,8 @@ define(function (require) {
                 compoundPath.style.strokeNoScale = true;
                 compoundPath.culling = true;
                 // Label
-                var showLabel = labelModel.get('show');
-                var hoverShowLabel = hoverLabelModel.get('show');
+                var showLabel = labelDto.get('show');
+                var hoverShowLabel = hoverLabelDto.get('show');
 
                 var isDataNaN = data && isNaN(data.get('value', dataIdx));
                 var itemLayout = data && data.getItemLayout(dataIdx);
@@ -182,20 +182,20 @@ define(function (require) {
                  || (itemLayout && itemLayout.showLabel)
                  ) {
                     var query = data ? dataIdx : region.name;
-                    var formattedStr = mapOrGeoModel.getFormattedLabel(query, 'normal');
-                    var hoverFormattedStr = mapOrGeoModel.getFormattedLabel(query, 'emphasis');
+                    var formattedStr = mapOrGeoDto.getFormattedLabel(query, 'normal');
+                    var hoverFormattedStr = mapOrGeoDto.getFormattedLabel(query, 'emphasis');
                     var text = new graphic.Text({
                         style: {
                             text: showLabel ? (formattedStr || region.name) : '',
-                            fill: textStyleModel.getTextColor(),
-                            textFont: textStyleModel.getFont(),
+                            fill: textStyleDto.getTextColor(),
+                            textFont: textStyleDto.getFont(),
                             textAlign: 'center',
                             textVerticalAlign: 'middle'
                         },
                         hoverStyle: {
                             text: hoverShowLabel ? (hoverFormattedStr || region.name) : '',
-                            fill: hoverTextStyleModel.getTextColor(),
-                            textFont: hoverTextStyleModel.getFont()
+                            fill: hoverTextStyleDto.getTextColor(),
+                            textFont: hoverTextStyleDto.getFont()
                         },
                         position: region.center.slice(),
                         scale: [1 / scale[0], 1 / scale[1]],
@@ -212,13 +212,13 @@ define(function (require) {
                     data.setItemGraphicEl(dataIdx, regionGroup);
                 }
                 else {
-                    var regionModel = mapOrGeoModel.getRegionModel(region.name);
+                    var regionDto = mapOrGeoDto.getRegionDto(region.name);
                     // Package custom mouse event for geo component
                     compoundPath.eventData = {
                         componentType: 'geo',
-                        geoIndex: mapOrGeoModel.componentIndex,
+                        geoIndex: mapOrGeoDto.componentIndex,
                         name: region.name,
-                        region: (regionModel && regionModel.option) || {}
+                        region: (regionDto && regionDto.option) || {}
                     };
                 }
 
@@ -229,11 +229,11 @@ define(function (require) {
                 group.add(regionGroup);
             });
 
-            this._updateController(mapOrGeoModel, ecModel, api);
+            this._updateController(mapOrGeoDto, ecDto, api);
 
-            updateMapSelectHandler(mapOrGeoModel, group, api, fromView);
+            updateMapSelectHandler(mapOrGeoDto, group, api, fromView);
 
-            updateMapSelected(mapOrGeoModel, group);
+            updateMapSelected(mapOrGeoDto, group);
         },
 
         remove: function () {
@@ -241,22 +241,22 @@ define(function (require) {
             this._controller.dispose();
         },
 
-        _updateController: function (mapOrGeoModel, ecModel, api) {
-            var geo = mapOrGeoModel.coordinateSystem;
+        _updateController: function (mapOrGeoDto, ecDto, api) {
+            var geo = mapOrGeoDto.coordinateSystem;
             var controller = this._controller;
-            controller.zoomLimit = mapOrGeoModel.get('scaleLimit');
-            // Update zoom from model
+            controller.zoomLimit = mapOrGeoDto.get('scaleLimit');
+            // Update zoom from Dto
             controller.zoom = geo.getZoom();
             // roamType is will be set default true if it is null
-            controller.enable(mapOrGeoModel.get('roam') || false);
-            var mainType = mapOrGeoModel.mainType;
+            controller.enable(mapOrGeoDto.get('roam') || false);
+            var mainType = mapOrGeoDto.mainType;
 
             function makeActionBase() {
                 var action = {
                     type: 'geoRoam',
                     componentType: mainType
                 };
-                action[mainType + 'Id'] = mapOrGeoModel.id;
+                action[mainType + 'Id'] = mapOrGeoDto.id;
                 return action;
             }
             controller.off('pan')

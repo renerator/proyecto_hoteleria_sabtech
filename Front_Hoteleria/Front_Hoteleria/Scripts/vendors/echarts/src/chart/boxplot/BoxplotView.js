@@ -23,12 +23,12 @@ define(function(require) {
     var emphasisStyleAccessPath = ['itemStyle', 'emphasis'];
 
     function updateStyle(itemGroup, data, idx) {
-        var itemModel = data.getItemModel(idx);
-        var normalItemStyleModel = itemModel.getModel(normalStyleAccessPath);
+        var itemDto = data.getItemDto(idx);
+        var normalItemStyleDto = itemDto.getDto(normalStyleAccessPath);
         var borderColor = data.getItemVisual(idx, 'color');
 
         // Exclude borderColor.
-        var itemStyle = normalItemStyleModel.getItemStyle(['borderColor']);
+        var itemStyle = normalItemStyleDto.getItemStyle(['borderColor']);
 
         var whiskerEl = itemGroup.childAt(itemGroup.whiskerIndex);
         whiskerEl.style.set(itemStyle);
@@ -40,7 +40,7 @@ define(function(require) {
         bodyEl.style.stroke = borderColor;
         bodyEl.dirty();
 
-        var hoverStyle = itemModel.getModel(emphasisStyleAccessPath).getItemStyle();
+        var hoverStyle = itemDto.getDto(emphasisStyleAccessPath).getItemStyle();
         graphic.setHoverStyle(itemGroup, hoverStyle);
     }
 

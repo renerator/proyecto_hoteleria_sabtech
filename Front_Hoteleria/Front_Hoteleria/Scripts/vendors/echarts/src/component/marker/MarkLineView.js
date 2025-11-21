@@ -3,7 +3,7 @@ define(function (require) {
     var zrUtil = require('zrender/core/util');
     var List = require('../../data/List');
     var formatUtil = require('../../util/format');
-    var modelUtil = require('../../util/model');
+    var DtoUtil = require('../../util/Dto');
     var numberUtil = require('../../util/number');
 
     var addCommas = formatUtil.addCommas;
@@ -13,8 +13,8 @@ define(function (require) {
 
     var LineDraw = require('../../chart/helper/LineDraw');
 
-    var markLineTransform = function (seriesModel, coordSys, mlModel, item) {
-        var data = seriesModel.getData();
+    var markLineTransform = function (seriesDto, coordSys, mlDto, item) {
+        var data = seriesDto.getData();
         // Special type markLine like 'min', 'max', 'average'
         var mlType = item.type;
 
@@ -39,7 +39,7 @@ define(function (require) {
                 value = zrUtil.retrieve(item.yAxis, item.xAxis);
             }
             else {
-                var axisInfo = markerHelper.getAxisInfo(item, data, coordSys, seriesModel);
+                var axisInfo = markerHelper.getAxisInfo(item, data, coordSys, seriesDto);
                 valueDataDim = axisInfo.valueDataDim;
                 valueAxis = axisInfo.valueAxis;
                 value = markerHelper.numCalculate(data, valueDataDim, mlType);
@@ -57,7 +57,7 @@ define(function (require) {
             mlFrom.coord[baseIndex] = -Infinity;
             mlTo.coord[baseIndex] = Infinity;
 
-            var precision = mlModel.get('precision');
+            var precision = mlDto.get('precision');
             if (precision >= 0) {
                 value = +value.toFixed(precision);
             }
@@ -73,8 +73,8 @@ define(function (require) {
         }
 
         item = [
-            markerHelper.dataTransform(seriesModel, item[0]),
-            markerHelper.dataTransform(seriesModel, item[1]),
+            markerHelper.dataTransform(seriesDto, item[0]),
+            markerHelper.dataTransform(seriesDto, item[1]),
             zrUtil.extend({}, item[2])
         ];
 
@@ -123,14 +123,14 @@ define(function (require) {
     }
 
     function updateSingleMarkerEndLayout(
-        data, idx, isFrom, mlType, valueIndex, seriesModel, api
+        data, idx, isFrom, mlType, valueIndex, seriesDto, api
     ) {
-        var coordSys = seriesModel.coordinateSystem;
-        var itemModel = data.getItemModel(idx);
+        var coordSys = seriesDto.coordinateSystem;
+        var itemDto = data.getItemDto(idx);
 
         var point;
-        var xPx = itemModel.get('x');
-        var yPx = itemModel.get('y');
+        var xPx = itemDto.get('x');
+        var yPx = itemDto.get('y');
         if (xPx != null && yPx != null) {
             point = [
                 numberUtil.parsePercent(xPx, api.getWidth()),
@@ -139,9 +139,9 @@ define(function (require) {
         }
         else {
             // Chart like bar may have there own marker positioning logic
-            if (seriesModel.getMarkerPosition) {
+            if (seriesDto.getMarkerPosition) {
                 // Use the getMarkerPoisition
-                point = seriesModel.getMarkerPosition(
+                point = seriesDto.getMarkerPosition(
                     data.getValues(data.dimensions, idx)
                 );
             }
@@ -196,7 +196,7 @@ define(function (require) {
         }
     };
 
-    zrUtil.defaults(markLineFormatMixin, modelUtil.dataFormatMixin);
+    zrUtil.defaults(markLineFormatMixin, DtoUtil.dataFormatMixin);
 
     require('../../echarts').extendComponentView({
 
@@ -211,15 +211,15 @@ define(function (require) {
             this._markLineMap = {};
         },
 
-        render: function (markLineModel, ecModel, api) {
+        render: function (markLineDto, ecDto, api) {
             var lineDrawMap = this._markLineMap;
             for (var name in lineDrawMap) {
                 lineDrawMap[name].__keep = false;
             }
 
-            ecModel.eachSeries(function (seriesModel) {
-                var mlModel = seriesModel.markLineModel;
-                mlModel && this._renderSeriesML(seriesModel, mlModel, ecModel, api);
+            ecDto.eachSeries(function (seriesDto) {
+                var mlDto = seriesDto.markLineDto;
+                mlDto && this._renderSeriesML(seriesDto, mlDto, ecDto, api);
             }, this);
 
             for (var name in lineDrawMap) {
@@ -229,20 +229,20 @@ define(function (require) {
             }
         },
 
-        updateLayout: function (markLineModel, ecModel, api) {
-            ecModel.eachSeries(function (seriesModel) {
-                var mlModel = seriesModel.markLineModel;
-                if (mlModel) {
-                    var mlData = mlModel.getData();
-                    var fromData = mlModel.__from;
-                    var toData = mlModel.__to;
+        updateLayout: function (markLineDto, ecDto, api) {
+            ecDto.eachSeries(function (seriesDto) {
+                var mlDto = seriesDto.markLineDto;
+                if (mlDto) {
+                    var mlData = mlDto.getData();
+                    var fromData = mlDto.__from;
+                    var toData = mlDto.__to;
                     // Update visual and layout of from symbol and to symbol
                     fromData.each(function (idx) {
-                        var lineModel = mlData.getItemModel(idx);
-                        var mlType = lineModel.get('type');
-                        var valueIndex = lineModel.get('valueIndex');
-                        updateSingleMarkerEndLayout(fromData, idx, true, mlType, valueIndex, seriesModel, api);
-                        updateSingleMarkerEndLayout(toData, idx, false, mlType, valueIndex, seriesModel, api);
+                        var lineDto = mlData.getItemDto(idx);
+                        var mlType = lineDto.get('type');
+                        var valueIndex = lineDto.get('valueIndex');
+                        updateSingleMarkerEndLayout(fromData, idx, true, mlType, valueIndex, seriesDto, api);
+                        updateSingleMarkerEndLayout(toData, idx, false, mlType, valueIndex, seriesDto, api);
                     });
                     // Update layout of line
                     mlData.each(function (idx) {
@@ -252,15 +252,15 @@ define(function (require) {
                         ]);
                     });
 
-                    this._markLineMap[seriesModel.name].updateLayout();
+                    this._markLineMap[seriesDto.name].updateLayout();
                 }
             }, this);
         },
 
-        _renderSeriesML: function (seriesModel, mlModel, ecModel, api) {
-            var coordSys = seriesModel.coordinateSystem;
-            var seriesName = seriesModel.name;
-            var seriesData = seriesModel.getData();
+        _renderSeriesML: function (seriesDto, mlDto, ecDto, api) {
+            var coordSys = seriesDto.coordinateSystem;
+            var seriesName = seriesDto.name;
+            var seriesData = seriesDto.getData();
 
             var lineDrawMap = this._markLineMap;
             var lineDraw = lineDrawMap[seriesName];
@@ -269,20 +269,20 @@ define(function (require) {
             }
             this.group.add(lineDraw.group);
 
-            var mlData = createList(coordSys, seriesModel, mlModel);
+            var mlData = createList(coordSys, seriesDto, mlDto);
 
             var fromData = mlData.from;
             var toData = mlData.to;
             var lineData = mlData.line;
 
-            mlModel.__from = fromData;
-            mlModel.__to = toData;
+            mlDto.__from = fromData;
+            mlDto.__to = toData;
             // Line data for tooltip and formatter
-            zrUtil.extend(mlModel, markLineFormatMixin);
-            mlModel.setData(lineData);
+            zrUtil.extend(mlDto, markLineFormatMixin);
+            mlDto.setData(lineData);
 
-            var symbolType = mlModel.get('symbol');
-            var symbolSize = mlModel.get('symbolSize');
+            var symbolType = mlDto.get('symbol');
+            var symbolSize = mlDto.get('symbolSize');
             if (!zrUtil.isArray(symbolType)) {
                 symbolType = [symbolType, symbolType];
             }
@@ -292,16 +292,16 @@ define(function (require) {
 
             // Update visual and layout of from symbol and to symbol
             mlData.from.each(function (idx) {
-                var lineModel = lineData.getItemModel(idx);
-                var mlType = lineModel.get('type');
-                var valueIndex = lineModel.get('valueIndex');
+                var lineDto = lineData.getItemDto(idx);
+                var mlType = lineDto.get('type');
+                var valueIndex = lineDto.get('valueIndex');
                 updateDataVisualAndLayout(fromData, idx, true, mlType, valueIndex);
                 updateDataVisualAndLayout(toData, idx, false, mlType, valueIndex);
             });
 
             // Update visual and layout of line
             lineData.each(function (idx) {
-                var lineColor = lineData.getItemModel(idx).get('lineStyle.normal.color');
+                var lineColor = lineData.getItemDto(idx).get('lineStyle.normal.color');
                 lineData.setItemVisual(idx, {
                     color: lineColor || fromData.getItemVisual(idx, 'color')
                 });
@@ -320,25 +320,25 @@ define(function (require) {
 
             lineDraw.updateData(lineData);
 
-            // Set host model for tooltip
+            // Set host Dto for tooltip
             // FIXME
             mlData.line.eachItemGraphicEl(function (el, idx) {
                 el.traverse(function (child) {
-                    child.dataModel = mlModel;
+                    child.dataDto = mlDto;
                 });
             });
 
             function updateDataVisualAndLayout(data, idx, isFrom, mlType, valueIndex) {
-                var itemModel = data.getItemModel(idx);
+                var itemDto = data.getItemDto(idx);
 
                 updateSingleMarkerEndLayout(
-                    data, idx, isFrom, mlType, valueIndex, seriesModel, api
+                    data, idx, isFrom, mlType, valueIndex, seriesDto, api
                 );
 
                 data.setItemVisual(idx, {
-                    symbolSize: itemModel.get('symbolSize') || symbolSize[isFrom ? 0 : 1],
-                    symbol: itemModel.get('symbol', true) || symbolType[isFrom ? 0 : 1],
-                    color: itemModel.get('itemStyle.normal.color') || seriesData.getVisual('color')
+                    symbolSize: itemDto.get('symbolSize') || symbolSize[isFrom ? 0 : 1],
+                    symbol: itemDto.get('symbol', true) || symbolType[isFrom ? 0 : 1],
+                    color: itemDto.get('itemStyle.normal.color') || seriesData.getVisual('color')
                 });
             }
 
@@ -349,16 +349,16 @@ define(function (require) {
     /**
      * @inner
      * @param {module:echarts/coord/*} coordSys
-     * @param {module:echarts/model/Series} seriesModel
-     * @param {module:echarts/model/Model} mpModel
+     * @param {module:echarts/Dto/Series} seriesDto
+     * @param {module:echarts/Dto/Dto} mpDto
      */
-    function createList(coordSys, seriesModel, mlModel) {
+    function createList(coordSys, seriesDto, mlDto) {
 
         var coordDimsInfos;
         if (coordSys) {
             coordDimsInfos = zrUtil.map(coordSys && coordSys.dimensions, function (coordDim) {
-                var info = seriesModel.getData().getDimensionInfo(
-                    seriesModel.coordDimToDataDim(coordDim)[0]
+                var info = seriesDto.getData().getDimensionInfo(
+                    seriesDto.coordDimToDataDim(coordDim)[0]
                 ) || {}; // In map series data don't have lng and lat dimension. Fallback to same with coordSys
                 info.name = coordDim;
                 return info;
@@ -371,13 +371,13 @@ define(function (require) {
             }];
         }
 
-        var fromData = new List(coordDimsInfos, mlModel);
-        var toData = new List(coordDimsInfos, mlModel);
+        var fromData = new List(coordDimsInfos, mlDto);
+        var toData = new List(coordDimsInfos, mlDto);
         // No dimensions
-        var lineData = new List([], mlModel);
+        var lineData = new List([], mlDto);
 
-        var optData = zrUtil.map(mlModel.get('data'), zrUtil.curry(
-            markLineTransform, seriesModel, coordSys, mlModel
+        var optData = zrUtil.map(mlDto.get('data'), zrUtil.curry(
+            markLineTransform, seriesDto, coordSys, mlDto
         ));
         if (coordSys) {
             optData = zrUtil.filter(

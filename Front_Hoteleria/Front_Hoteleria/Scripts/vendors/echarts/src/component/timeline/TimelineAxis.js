@@ -35,10 +35,10 @@ define(function (require) {
         this._autoLabelInterval;
 
         /**
-         * Axis model
-         * @param {module:echarts/component/TimelineModel}
+         * Axis Dto
+         * @param {module:echarts/component/TimelineDto}
          */
-        this.model = null;
+        this.Dto = null;
     };
 
     TimelineAxis.prototype = {
@@ -50,9 +50,9 @@ define(function (require) {
          * @return {number}
          */
         getLabelInterval: function () {
-            var timelineModel = this.model;
-            var labelModel = timelineModel.getModel('label.normal');
-            var labelInterval = labelModel.get('interval');
+            var timelineDto = this.Dto;
+            var labelDto = timelineDto.getDto('label.normal');
+            var labelInterval = labelDto.get('interval');
 
             if (labelInterval != null && labelInterval != 'auto') {
                 return labelInterval;
@@ -63,9 +63,9 @@ define(function (require) {
             if (!labelInterval) {
                 labelInterval = this._autoLabelInterval = axisHelper.getAxisLabelInterval(
                     zrUtil.map(this.scale.getTicks(), this.dataToCoord, this),
-                    axisHelper.getFormattedLabels(this, labelModel.get('formatter')),
-                    labelModel.getModel('textStyle').getFont(),
-                    timelineModel.get('orient') === 'horizontal'
+                    axisHelper.getFormattedLabels(this, labelDto.get('formatter')),
+                    labelDto.getDto('textStyle').getFont(),
+                    timelineDto.get('orient') === 'horizontal'
                 );
             }
 

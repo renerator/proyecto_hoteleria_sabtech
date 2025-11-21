@@ -4,12 +4,12 @@ define(function(require) {
 
     var List = require('../../data/List');
     var zrUtil = require('zrender/core/util');
-    var modelUtil = require('../../util/model');
+    var DtoUtil = require('../../util/Dto');
     var completeDimensions = require('../../data/helper/completeDimensions');
 
     var dataSelectableMixin = require('../../component/helper/selectableMixin');
 
-    var PieSeries = require('../../echarts').extendSeriesModel({
+    var PieSeries = require('../../echarts').extendSeriesDto({
 
         type: 'series.pie',
 
@@ -34,7 +34,7 @@ define(function(require) {
             this.updateSelectedMap(this.option.data);
         },
 
-        getInitialData: function (option, ecModel) {
+        getInitialData: function (option, ecDto) {
             var dimensions = completeDimensions(['value'], option.data);
             var list = new List(dimensions, this);
             list.initData(option.data);
@@ -57,7 +57,7 @@ define(function(require) {
 
         _defaultLabelLine: function (option) {
             // Extend labelLine emphasis
-            modelUtil.defaultEmphasis(option.labelLine, ['show']);
+            DtoUtil.defaultEmphasis(option.labelLine, ['show']);
 
             var labelLineNormalOpt = option.labelLine.normal;
             var labelLineEmphasisOpt = option.labelLine.emphasis;

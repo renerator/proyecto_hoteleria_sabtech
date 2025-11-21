@@ -133,8 +133,8 @@ define(function (require) {
         }
     }
 
-    return function (seriesModel, r, viewWidth, viewHeight) {
-        var data = seriesModel.getData();
+    return function (seriesDto, r, viewWidth, viewHeight) {
+        var data = seriesDto.getData();
         var labelLayoutList = [];
         var cx;
         var cy;
@@ -143,14 +143,14 @@ define(function (require) {
         data.each(function (idx) {
             var layout = data.getItemLayout(idx);
 
-            var itemModel = data.getItemModel(idx);
-            var labelModel = itemModel.getModel('label.normal');
+            var itemDto = data.getItemDto(idx);
+            var labelDto = itemDto.getDto('label.normal');
             // Use position in normal or emphasis
-            var labelPosition = labelModel.get('position') || itemModel.get('label.emphasis.position');
+            var labelPosition = labelDto.get('position') || itemDto.get('label.emphasis.position');
 
-            var labelLineModel = itemModel.getModel('labelLine.normal');
-            var labelLineLen = labelLineModel.get('length');
-            var labelLineLen2 = labelLineModel.get('length2');
+            var labelLineDto = itemDto.getDto('labelLine.normal');
+            var labelLineLen = labelLineDto.get('length');
+            var labelLineLen2 = labelLineDto.get('length2');
 
             var midAngle = (layout.startAngle + layout.endAngle) / 2;
             var dx = Math.cos(midAngle);
@@ -191,11 +191,11 @@ define(function (require) {
 
                 textAlign = isLabelInside ? 'center' : (dx > 0 ? 'left' : 'right');
             }
-            var font = labelModel.getModel('textStyle').getFont();
+            var font = labelDto.getDto('textStyle').getFont();
 
-            var labelRotate = labelModel.get('rotate')
+            var labelRotate = labelDto.get('rotate')
                 ? (dx < 0 ? -midAngle + Math.PI : -midAngle) : 0;
-            var text = seriesModel.getFormattedLabel(idx, 'normal')
+            var text = seriesDto.getFormattedLabel(idx, 'normal')
                         || data.getName(idx);
             var textRect = textContain.getBoundingRect(
                 text, font, textAlign, 'top'
@@ -220,7 +220,7 @@ define(function (require) {
                 labelLayoutList.push(layout.label);
             }
         });
-        if (!hasLabelRotate && seriesModel.get('avoidLabelOverlap')) {
+        if (!hasLabelRotate && seriesDto.get('avoidLabelOverlap')) {
             avoidOverlap(labelLayoutList, cx, cy, r, viewWidth, viewHeight);
         }
     };

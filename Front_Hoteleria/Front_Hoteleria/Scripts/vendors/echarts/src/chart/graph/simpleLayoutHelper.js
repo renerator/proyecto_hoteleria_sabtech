@@ -2,16 +2,16 @@ define(function (require) {
 
     var simpleLayoutEdge = require('./simpleLayoutEdge');
 
-    return function (seriesModel) {
-        var coordSys = seriesModel.coordinateSystem;
+    return function (seriesDto) {
+        var coordSys = seriesDto.coordinateSystem;
         if (coordSys && coordSys.type !== 'view') {
             return;
         }
-        var graph = seriesModel.getGraph();
+        var graph = seriesDto.getGraph();
 
         graph.eachNode(function (node) {
-            var model = node.getModel();
-            node.setLayout([+model.get('x'), +model.get('y')]);
+            var Dto = node.getDto();
+            node.setLayout([+Dto.get('x'), +Dto.get('y')]);
         });
 
         simpleLayoutEdge(graph);

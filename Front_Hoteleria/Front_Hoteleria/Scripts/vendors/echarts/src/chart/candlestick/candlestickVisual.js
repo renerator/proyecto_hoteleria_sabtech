@@ -5,29 +5,29 @@ define(function (require) {
     var positiveColorQuery = ['itemStyle', 'normal', 'color'];
     var negativeColorQuery = ['itemStyle', 'normal', 'color0'];
 
-    return function (ecModel, api) {
+    return function (ecDto, api) {
 
-        ecModel.eachRawSeriesByType('candlestick', function (seriesModel) {
+        ecDto.eachRawSeriesByType('candlestick', function (seriesDto) {
 
-            var data = seriesModel.getData();
+            var data = seriesDto.getData();
 
             data.setVisual({
                 legendSymbol: 'roundRect'
             });
 
             // Only visible series has each data be visual encoded
-            if (!ecModel.isSeriesFiltered(seriesModel)) {
+            if (!ecDto.isSeriesFiltered(seriesDto)) {
                 data.each(function (idx) {
-                    var itemModel = data.getItemModel(idx);
+                    var itemDto = data.getItemDto(idx);
                     var sign = data.getItemLayout(idx).sign;
 
                     data.setItemVisual(
                         idx,
                         {
-                            color: itemModel.get(
+                            color: itemDto.get(
                                 sign > 0 ? positiveColorQuery : negativeColorQuery
                             ),
-                            borderColor: itemModel.get(
+                            borderColor: itemDto.get(
                                 sign > 0 ? positiveBorderColorQuery : negativeBorderColorQuery
                             )
                         }

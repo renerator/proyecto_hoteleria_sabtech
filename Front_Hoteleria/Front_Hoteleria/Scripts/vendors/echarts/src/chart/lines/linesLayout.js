@@ -1,11 +1,11 @@
 define(function (require) {
 
-    return function (ecModel) {
-        ecModel.eachSeriesByType('lines', function (seriesModel) {
-            var coordSys = seriesModel.coordinateSystem;
-            var fromData = seriesModel.fromData;
-            var toData = seriesModel.toData;
-            var lineData = seriesModel.getData();
+    return function (ecDto) {
+        ecDto.eachSeriesByType('lines', function (seriesDto) {
+            var coordSys = seriesDto.coordinateSystem;
+            var fromData = seriesDto.fromData;
+            var toData = seriesDto.toData;
+            var lineData = seriesDto.getData();
 
             var dims = coordSys.dimensions;
             fromData.each(dims, function (x, y, idx) {
@@ -17,7 +17,7 @@ define(function (require) {
             lineData.each(function (idx) {
                 var p1 = fromData.getItemLayout(idx);
                 var p2 = toData.getItemLayout(idx);
-                var curveness = lineData.getItemModel(idx).get('lineStyle.normal.curveness');
+                var curveness = lineData.getItemDto(idx).get('lineStyle.normal.curveness');
                 var cp1;
                 if (curveness > 0) {
                     cp1 = [

@@ -50,18 +50,18 @@ define(function (require) {
         });
     }
 
-    return function (ecModel) {
+    return function (ecDto) {
         var seriesGroupByMapType = {};
-        ecModel.eachSeriesByType('map', function (seriesModel) {
-            var mapType = seriesModel.get('map');
+        ecDto.eachSeriesByType('map', function (seriesDto) {
+            var mapType = seriesDto.get('map');
             seriesGroupByMapType[mapType] = seriesGroupByMapType[mapType] || [];
-            seriesGroupByMapType[mapType].push(seriesModel);
+            seriesGroupByMapType[mapType].push(seriesDto);
         });
 
         zrUtil.each(seriesGroupByMapType, function (seriesList, mapType) {
             var data = dataStatistics(
-                zrUtil.map(seriesList, function (seriesModel) {
-                    return seriesModel.getData();
+                zrUtil.map(seriesList, function (seriesDto) {
+                    return seriesDto.getData();
                 }),
                 seriesList[0].get('mapValueCalculation')
             );

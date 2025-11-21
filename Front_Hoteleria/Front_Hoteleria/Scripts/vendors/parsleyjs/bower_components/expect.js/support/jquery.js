@@ -463,7 +463,7 @@ jQuery.extend({
       // A fallback to window.onload, that will always work
       window.addEventListener( "load", jQuery.ready, false );
 
-    // If IE event model is used
+    // If IE event Dto is used
     } else if ( document.attachEvent ) {
       // ensure firing before onload,
       // maybe late but safe also for iframes
@@ -1559,10 +1559,10 @@ jQuery.support = (function() {
     // (IE <= 8 fail this test)
     support.reliableHiddenOffsets = isSupported && ( tds[ 0 ].offsetHeight === 0 );
 
-    // Figure out if the W3C box model works as expected
+    // Figure out if the W3C box Dto works as expected
     div.innerHTML = "";
     div.style.width = div.style.paddingLeft = "1px";
-    jQuery.boxModel = support.boxModel = div.offsetWidth === 2;
+    jQuery.boxDto = support.boxDto = div.offsetWidth === 2;
 
     if ( typeof div.style.zoom !== "undefined" ) {
       // Check if natively block-level elements act like inline-block
@@ -8932,8 +8932,8 @@ if ( "getBoundingClientRect" in document.documentElement ) {
       win = getWindow(doc),
       clientTop  = docElem.clientTop  || body.clientTop  || 0,
       clientLeft = docElem.clientLeft || body.clientLeft || 0,
-      scrollTop  = win.pageYOffset || jQuery.support.boxModel && docElem.scrollTop  || body.scrollTop,
-      scrollLeft = win.pageXOffset || jQuery.support.boxModel && docElem.scrollLeft || body.scrollLeft,
+      scrollTop  = win.pageYOffset || jQuery.support.boxDto && docElem.scrollTop  || body.scrollTop,
+      scrollLeft = win.pageXOffset || jQuery.support.boxDto && docElem.scrollLeft || body.scrollLeft,
       top  = box.top  + scrollTop  - clientTop,
       left = box.left + scrollLeft - clientLeft;
 
@@ -9135,7 +9135,7 @@ jQuery.each( ["Left", "Top"], function( i, name ) {
 
       // Return the scroll offset
       return win ? ("pageXOffset" in win) ? win[ i ? "pageYOffset" : "pageXOffset" ] :
-        jQuery.support.boxModel && win.document.documentElement[ method ] ||
+        jQuery.support.boxDto && win.document.documentElement[ method ] ||
           win.document.body[ method ] :
         elem[ method ];
     }

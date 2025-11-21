@@ -3,7 +3,7 @@ define(function (require) {
 
     var zrUtil = require('zrender/core/util');
     var graphic = require('../../util/graphic');
-    var Model = require('../../model/Model');
+    var Dto = require('../../Dto/Dto');
 
     var elementList = ['axisLine', 'axisLabel', 'axisTick', 'splitLine', 'splitArea'];
 
@@ -22,15 +22,15 @@ define(function (require) {
 
         type: 'angleAxis',
 
-        render: function (angleAxisModel, ecModel) {
+        render: function (angleAxisDto, ecDto) {
             this.group.removeAll();
-            if (!angleAxisModel.get('show')) {
+            if (!angleAxisDto.get('show')) {
                 return;
             }
 
-            var polarModel = ecModel.getComponent('polar', angleAxisModel.get('polarIndex'));
-            var angleAxis = angleAxisModel.axis;
-            var polar = polarModel.coordinateSystem;
+            var polarDto = ecDto.getComponent('polar', angleAxisDto.get('polarIndex'));
+            var angleAxis = angleAxisDto.axis;
+            var polar = polarDto.coordinateSystem;
             var radiusExtent = polar.getRadiusAxis().getExtent();
             var ticksAngles = angleAxis.getTicksCoords();
 
@@ -40,8 +40,8 @@ define(function (require) {
             }
 
             zrUtil.each(elementList, function (name) {
-                if (angleAxisModel.get(name +'.show')) {
-                    this['_' + name](angleAxisModel, polar, ticksAngles, radiusExtent);
+                if (angleAxisDto.get(name +'.show')) {
+                    this['_' + name](angleAxisDto, polar, ticksAngles, radiusExtent);
                 }
             }, this);
         },
@@ -49,8 +49,8 @@ define(function (require) {
         /**
          * @private
          */
-        _axisLine: function (angleAxisModel, polar, ticksAngles, radiusExtent) {
-            var lineStyleModel = angleAxisModel.getModel('axisLine.lineStyle');
+        _axisLine: function (angleAxisDto, polar, ticksAngles, radiusExtent) {
+            var lineStyleDto = angleAxisDto.getDto('axisLine.lineStyle');
 
             var circle = new graphic.Circle({
                 shape: {
@@ -58,7 +58,7 @@ define(function (require) {
                     cy: polar.cy,
                     r: radiusExtent[1]
                 },
-                style: lineStyleModel.getLineStyle(),
+                style: lineStyleDto.getLineStyle(),
                 z2: 1,
                 silent: true
             });
@@ -70,10 +70,10 @@ define(function (require) {
         /**
          * @private
          */
-        _axisTick: function (angleAxisModel, polar, ticksAngles, radiusExtent) {
-            var tickModel = angleAxisModel.getModel('axisTick');
+        _axisTick: function (angleAxisDto, polar, ticksAngles, radiusExtent) {
+            var tickDto = angleAxisDto.getDto('axisTick');
 
-            var tickLen = (tickModel.get('inside') ? -1 : 1) * tickModel.get('length');
+            var tickLen = (tickDto.get('inside') ? -1 : 1) * tickDto.get('length');
 
             var lines = zrUtil.map(ticksAngles, function (tickAngle) {
                 return new graphic.Line({
@@ -82,7 +82,7 @@ define(function (require) {
             });
             this.group.add(graphic.mergePath(
                 lines, {
-                    style: tickModel.getModel('lineStyle').getLineStyle()
+                    style: tickDto.getDto('lineStyle').getLineStyle()
                 }
             ));
         },
@@ -90,17 +90,17 @@ define(function (require) {
         /**
          * @private
          */
-        _axisLabel: function (angleAxisModel, polar, ticksAngles, radiusExtent) {
-            var axis = angleAxisModel.axis;
+        _axisLabel: function (angleAxisDto, polar, ticksAngles, radiusExtent) {
+            var axis = angleAxisDto.axis;
 
-            var categoryData = angleAxisModel.get('data');
+            var categoryData = angleAxisDto.get('data');
 
-            var labelModel = angleAxisModel.getModel('axisLabel');
-            var axisTextStyleModel = labelModel.getModel('textStyle');
+            var labelDto = angleAxisDto.getDto('axisLabel');
+            var axisTextStyleDto = labelDto.getDto('textStyle');
 
-            var labels = angleAxisModel.getFormattedLabels();
+            var labels = angleAxisDto.getFormattedLabels();
 
-            var labelMargin = labelModel.get('margin');
+            var labelMargin = labelDto.get('margin');
             var labelsAngles = axis.getLabelsCoords();
 
             // Use length of ticksAngles because it may remove the last tick to avoid overlapping
@@ -115,21 +115,21 @@ define(function (require) {
                 var labelTextBaseline = Math.abs(p[1] - cy) / r < 0.3
                     ? 'middle' : (p[1] > cy ? 'top' : 'bottom');
 
-                var textStyleModel = axisTextStyleModel;
+                var textStyleDto = axisTextStyleDto;
                 if (categoryData && categoryData[i] && categoryData[i].textStyle) {
-                    textStyleModel = new Model(
-                        categoryData[i].textStyle, axisTextStyleModel
+                    textStyleDto = new Dto(
+                        categoryData[i].textStyle, axisTextStyleDto
                     );
                 }
                 this.group.add(new graphic.Text({
                     style: {
                         x: p[0],
                         y: p[1],
-                        fill: textStyleModel.getTextColor(),
+                        fill: textStyleDto.getTextColor(),
                         text: labels[i],
                         textAlign: labelTextAlign,
                         textVerticalAlign: labelTextBaseline,
-                        textFont: textStyleModel.getFont()
+                        textFont: textStyleDto.getFont()
                     },
                     silent: true
                 }));
@@ -139,10 +139,10 @@ define(function (require) {
         /**
          * @private
          */
-        _splitLine: function (angleAxisModel, polar, ticksAngles, radiusExtent) {
-            var splitLineModel = angleAxisModel.getModel('splitLine');
-            var lineStyleModel = splitLineModel.getModel('lineStyle');
-            var lineColors = lineStyleModel.get('color');
+        _splitLine: function (angleAxisDto, polar, ticksAngles, radiusExtent) {
+            var splitLineDto = angleAxisDto.getDto('splitLine');
+            var lineStyleDto = splitLineDto.getDto('lineStyle');
+            var lineColors = lineStyleDto.get('color');
             var lineCount = 0;
 
             lineColors = lineColors instanceof Array ? lineColors : [lineColors];
@@ -163,9 +163,9 @@ define(function (require) {
                 this.group.add(graphic.mergePath(splitLines[i], {
                     style: zrUtil.defaults({
                         stroke: lineColors[i % lineColors.length]
-                    }, lineStyleModel.getLineStyle()),
+                    }, lineStyleDto.getLineStyle()),
                     silent: true,
-                    z: angleAxisModel.get('z')
+                    z: angleAxisDto.get('z')
                 }));
             }
         },
@@ -173,11 +173,11 @@ define(function (require) {
         /**
          * @private
          */
-        _splitArea: function (angleAxisModel, polar, ticksAngles, radiusExtent) {
+        _splitArea: function (angleAxisDto, polar, ticksAngles, radiusExtent) {
 
-            var splitAreaModel = angleAxisModel.getModel('splitArea');
-            var areaStyleModel = splitAreaModel.getModel('areaStyle');
-            var areaColors = areaStyleModel.get('color');
+            var splitAreaDto = angleAxisDto.getDto('splitArea');
+            var areaStyleDto = splitAreaDto.getDto('areaStyle');
+            var areaColors = areaStyleDto.get('color');
             var lineCount = 0;
 
             areaColors = areaColors instanceof Array ? areaColors : [areaColors];
@@ -189,7 +189,7 @@ define(function (require) {
             var r0 = Math.min(radiusExtent[0], radiusExtent[1]);
             var r1 = Math.max(radiusExtent[0], radiusExtent[1]);
 
-            var clockwise = angleAxisModel.get('clockwise');
+            var clockwise = angleAxisDto.get('clockwise');
 
             for (var i = 1; i < ticksAngles.length; i++) {
                 var colorIndex = (lineCount++) % areaColors.length;
@@ -215,7 +215,7 @@ define(function (require) {
                 this.group.add(graphic.mergePath(splitAreas[i], {
                     style: zrUtil.defaults({
                         fill: areaColors[i % areaColors.length]
-                    }, areaStyleModel.getAreaStyle()),
+                    }, areaStyleDto.getAreaStyle()),
                     silent: true
                 }));
             }

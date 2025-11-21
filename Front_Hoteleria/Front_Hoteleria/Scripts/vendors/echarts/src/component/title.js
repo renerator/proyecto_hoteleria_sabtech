@@ -6,8 +6,8 @@ define(function(require) {
     var graphic = require('../util/graphic');
     var layout = require('../util/layout');
 
-    // Model
-    echarts.extendComponentModel({
+    // Dto
+    echarts.extendComponentDto({
 
         type: 'title',
 
@@ -76,25 +76,25 @@ define(function(require) {
 
         type: 'title',
 
-        render: function (titleModel, ecModel, api) {
+        render: function (titleDto, ecDto, api) {
             this.group.removeAll();
 
-            if (!titleModel.get('show')) {
+            if (!titleDto.get('show')) {
                 return;
             }
 
             var group = this.group;
 
-            var textStyleModel = titleModel.getModel('textStyle');
-            var subtextStyleModel = titleModel.getModel('subtextStyle');
+            var textStyleDto = titleDto.getDto('textStyle');
+            var subtextStyleDto = titleDto.getDto('subtextStyle');
 
-            var textAlign = titleModel.get('textAlign');
+            var textAlign = titleDto.get('textAlign');
 
             var textEl = new graphic.Text({
                 style: {
-                    text: titleModel.get('text'),
-                    textFont: textStyleModel.getFont(),
-                    fill: textStyleModel.getTextColor(),
+                    text: titleDto.get('text'),
+                    textFont: textStyleDto.getFont(),
+                    fill: textStyleDto.getTextColor(),
                     textBaseline: 'top'
                 },
                 z2: 10
@@ -102,32 +102,32 @@ define(function(require) {
 
             var textRect = textEl.getBoundingRect();
 
-            var subText = titleModel.get('subtext');
+            var subText = titleDto.get('subtext');
             var subTextEl = new graphic.Text({
                 style: {
                     text: subText,
-                    textFont: subtextStyleModel.getFont(),
-                    fill: subtextStyleModel.getTextColor(),
-                    y: textRect.height + titleModel.get('itemGap'),
+                    textFont: subtextStyleDto.getFont(),
+                    fill: subtextStyleDto.getTextColor(),
+                    y: textRect.height + titleDto.get('itemGap'),
                     textBaseline: 'top'
                 },
                 z2: 10
             });
 
-            var link = titleModel.get('link');
-            var sublink = titleModel.get('sublink');
+            var link = titleDto.get('link');
+            var sublink = titleDto.get('sublink');
 
             textEl.silent = !link;
             subTextEl.silent = !sublink;
 
             if (link) {
                 textEl.on('click', function () {
-                    window.open(link, '_' + titleModel.get('target'));
+                    window.open(link, '_' + titleDto.get('target'));
                 });
             }
             if (sublink) {
                 subTextEl.on('click', function () {
-                    window.open(sublink, '_' + titleModel.get('subtarget'));
+                    window.open(sublink, '_' + titleDto.get('subtarget'));
                 });
             }
 
@@ -136,19 +136,19 @@ define(function(require) {
             // If no subText, but add subTextEl, there will be an empty line.
 
             var groupRect = group.getBoundingRect();
-            var layoutOption = titleModel.getBoxLayoutParams();
+            var layoutOption = titleDto.getBoxLayoutParams();
             layoutOption.width = groupRect.width;
             layoutOption.height = groupRect.height;
             var layoutRect = layout.getLayoutRect(
                 layoutOption, {
                     width: api.getWidth(),
                     height: api.getHeight()
-                }, titleModel.get('padding')
+                }, titleDto.get('padding')
             );
             // Adjust text align based on position
             if (!textAlign) {
                 // Align left if title is on the left. center and right is same
-                textAlign = titleModel.get('left') || titleModel.get('right');
+                textAlign = titleDto.get('left') || titleDto.get('right');
                 if (textAlign === 'middle') {
                     textAlign = 'center';
                 }
@@ -168,8 +168,8 @@ define(function(require) {
             // Get groupRect again because textAlign has been changed
             groupRect = group.getBoundingRect();
             var padding = layoutRect.margin;
-            var style = titleModel.getItemStyle(['color', 'opacity']);
-            style.fill = titleModel.get('backgroundColor');
+            var style = titleDto.getItemStyle(['color', 'opacity']);
+            style.fill = titleDto.get('backgroundColor');
             var rect = new graphic.Rect({
                 shape: {
                     x: groupRect.x - padding[3],

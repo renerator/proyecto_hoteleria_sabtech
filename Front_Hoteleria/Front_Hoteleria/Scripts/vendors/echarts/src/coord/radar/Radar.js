@@ -7,27 +7,27 @@ define(function (require) {
     var numberUtil = require('../../util/number');
     var axisHelper = require('../axisHelper');
 
-    function Radar(radarModel, ecModel, api) {
+    function Radar(radarDto, ecDto, api) {
 
-        this._model = radarModel;
+        this._Dto = radarDto;
         /**
          * Radar dimensions
          * @type {Array.<string>}
          */
         this.dimensions = [];
 
-        this._indicatorAxes = zrUtil.map(radarModel.getIndicatorModels(), function (indicatorModel, idx) {
+        this._indicatorAxes = zrUtil.map(radarDto.getIndicatorDtos(), function (indicatorDto, idx) {
             var dim = 'indicator_' + idx;
             var indicatorAxis = new IndicatorAxis(dim, new IntervalScale());
-            indicatorAxis.name = indicatorModel.get('name');
-            // Inject model and axis
-            indicatorAxis.model = indicatorModel;
-            indicatorModel.axis = indicatorAxis;
+            indicatorAxis.name = indicatorDto.get('name');
+            // Inject Dto and axis
+            indicatorAxis.Dto = indicatorDto;
+            indicatorDto.axis = indicatorAxis;
             this.dimensions.push(dim);
             return indicatorAxis;
         }, this);
 
-        this.resize(radarModel, api);
+        this.resize(radarDto, api);
 
         /**
          * @type {number}
@@ -96,17 +96,17 @@ define(function (require) {
         return [closestAxisIdx, +(closestAxis && closestAxis.coodToData(radius))];
     };
 
-    Radar.prototype.resize = function (radarModel, api) {
-        var center = radarModel.get('center');
+    Radar.prototype.resize = function (radarDto, api) {
+        var center = radarDto.get('center');
         var viewWidth = api.getWidth();
         var viewHeight = api.getHeight();
         var viewSize = Math.min(viewWidth, viewHeight) / 2;
         this.cx = numberUtil.parsePercent(center[0], viewWidth);
         this.cy = numberUtil.parsePercent(center[1], viewHeight);
 
-        this.startAngle = radarModel.get('startAngle') * Math.PI / 180;
+        this.startAngle = radarDto.get('startAngle') * Math.PI / 180;
 
-        this.r = numberUtil.parsePercent(radarModel.get('radius'), viewSize);
+        this.r = numberUtil.parsePercent(radarDto.get('radius'), viewSize);
 
         zrUtil.each(this._indicatorAxes, function (indicatorAxis, idx) {
             indicatorAxis.setExtent(0, this.r);
@@ -117,15 +117,15 @@ define(function (require) {
         }, this);
     };
 
-    Radar.prototype.update = function (ecModel, api) {
+    Radar.prototype.update = function (ecDto, api) {
         var indicatorAxes = this._indicatorAxes;
-        var radarModel = this._model;
+        var radarDto = this._Dto;
         zrUtil.each(indicatorAxes, function (indicatorAxis) {
             indicatorAxis.scale.setExtent(Infinity, -Infinity);
         });
-        ecModel.eachSeriesByType('radar', function (radarSeries, idx) {
+        ecDto.eachSeriesByType('radar', function (radarSeries, idx) {
             if (radarSeries.get('coordinateSystem') !== 'radar'
-                || ecModel.getComponent('radar', radarSeries.get('radarIndex')) !== radarModel
+                || ecDto.getComponent('radar', radarSeries.get('radarIndex')) !== radarDto
             ) {
                 return;
             }
@@ -135,7 +135,7 @@ define(function (require) {
             });
         }, this);
 
-        var splitNumber = radarModel.get('splitNumber');
+        var splitNumber = radarDto.get('splitNumber');
 
         function increaseInterval(interval) {
             var exp10 = Math.pow(10, Math.floor(Math.log(interval) / Math.LN10));
@@ -151,13 +151,13 @@ define(function (require) {
         }
         // Force all the axis fixing the maxSplitNumber.
         zrUtil.each(indicatorAxes, function (indicatorAxis, idx) {
-            var rawExtent = axisHelper.getScaleExtent(indicatorAxis, indicatorAxis.model);
-            axisHelper.niceScaleExtent(indicatorAxis, indicatorAxis.model);
+            var rawExtent = axisHelper.getScaleExtent(indicatorAxis, indicatorAxis.Dto);
+            axisHelper.niceScaleExtent(indicatorAxis, indicatorAxis.Dto);
 
-            var axisModel = indicatorAxis.model;
+            var axisDto = indicatorAxis.Dto;
             var scale = indicatorAxis.scale;
-            var fixedMin = axisModel.get('min');
-            var fixedMax = axisModel.get('max');
+            var fixedMin = axisDto.get('min');
+            var fixedMax = axisDto.get('max');
             var interval = scale.getInterval();
 
             if (fixedMin != null && fixedMax != null) {
@@ -213,14 +213,14 @@ define(function (require) {
      */
     Radar.dimensions = [];
 
-    Radar.create = function (ecModel, api) {
+    Radar.create = function (ecDto, api) {
         var radarList = [];
-        ecModel.eachComponent('radar', function (radarModel) {
-            var radar = new Radar(radarModel, ecModel, api);
+        ecDto.eachComponent('radar', function (radarDto) {
+            var radar = new Radar(radarDto, ecDto, api);
             radarList.push(radar);
-            radarModel.coordinateSystem = radar;
+            radarDto.coordinateSystem = radar;
         });
-        ecModel.eachSeriesByType('radar', function (radarSeries) {
+        ecDto.eachSeriesByType('radar', function (radarSeries) {
             if (radarSeries.get('coordinateSystem') === 'radar') {
                 // Inject coordinate system
                 radarSeries.coordinateSystem = radarList[radarSeries.get('radarIndex') || 0];

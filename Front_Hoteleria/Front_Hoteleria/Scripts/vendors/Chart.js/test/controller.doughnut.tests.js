@@ -93,12 +93,12 @@ describe('Doughnut controller tests', function() {
 			{ c: 0,           },
 			{ c: 0 }
 		].forEach(function(expected, i) {
-			expect(meta.data[i]._model.x).toBeCloseToPixel(256);
-			expect(meta.data[i]._model.y).toBeCloseToPixel(272);
-			expect(meta.data[i]._model.outerRadius).toBeCloseToPixel(239);
-			expect(meta.data[i]._model.innerRadius).toBeCloseToPixel(179);
-			expect(meta.data[i]._model.circumference).toBeCloseTo(expected.c, 8);
-			expect(meta.data[i]._model).toEqual(jasmine.objectContaining({
+			expect(meta.data[i]._Dto.x).toBeCloseToPixel(256);
+			expect(meta.data[i]._Dto.y).toBeCloseToPixel(272);
+			expect(meta.data[i]._Dto.outerRadius).toBeCloseToPixel(239);
+			expect(meta.data[i]._Dto.innerRadius).toBeCloseToPixel(179);
+			expect(meta.data[i]._Dto.circumference).toBeCloseTo(expected.c, 8);
+			expect(meta.data[i]._Dto).toEqual(jasmine.objectContaining({
 				startAngle: Math.PI * -0.5,
 				endAngle: Math.PI * -0.5,
 				label: chart.data.labels[i],
@@ -116,14 +116,14 @@ describe('Doughnut controller tests', function() {
 			{ c: 0,            s:  2.2689280275, e: 2.2689280275 },
 			{ c: 2.4434609527, s:  2.2689280275, e: 4.7123889803 }
 		].forEach(function(expected, i) {
-			expect(meta.data[i]._model.x).toBeCloseToPixel(256);
-			expect(meta.data[i]._model.y).toBeCloseToPixel(272);
-			expect(meta.data[i]._model.outerRadius).toBeCloseToPixel(239);
-			expect(meta.data[i]._model.innerRadius).toBeCloseToPixel(179);
-			expect(meta.data[i]._model.circumference).toBeCloseTo(expected.c, 8);
-			expect(meta.data[i]._model.startAngle).toBeCloseTo(expected.s, 8);
-			expect(meta.data[i]._model.endAngle).toBeCloseTo(expected.e, 8);
-			expect(meta.data[i]._model).toEqual(jasmine.objectContaining({
+			expect(meta.data[i]._Dto.x).toBeCloseToPixel(256);
+			expect(meta.data[i]._Dto.y).toBeCloseToPixel(272);
+			expect(meta.data[i]._Dto.outerRadius).toBeCloseToPixel(239);
+			expect(meta.data[i]._Dto.innerRadius).toBeCloseToPixel(179);
+			expect(meta.data[i]._Dto.circumference).toBeCloseTo(expected.c, 8);
+			expect(meta.data[i]._Dto.startAngle).toBeCloseTo(expected.s, 8);
+			expect(meta.data[i]._Dto.endAngle).toBeCloseTo(expected.e, 8);
+			expect(meta.data[i]._Dto).toEqual(jasmine.objectContaining({
 				label: chart.data.labels[i],
 				hoverBackgroundColor: 'rgb(255, 255, 255)',
 				backgroundColor: 'rgb(255, 0, 0)',
@@ -188,13 +188,13 @@ describe('Doughnut controller tests', function() {
 		[	{ c:     Math.PI / 8, s: Math.PI,               e: Math.PI + Math.PI / 8 },
 			{ c: 3 * Math.PI / 8, s: Math.PI + Math.PI / 8, e: Math.PI + Math.PI / 2 }
 		].forEach(function(expected, i) {
-			expect(meta.data[i]._model.x).toBeCloseToPixel(495);
-			expect(meta.data[i]._model.y).toBeCloseToPixel(511);
-			expect(meta.data[i]._model.outerRadius).toBeCloseToPixel(478);
-			expect(meta.data[i]._model.innerRadius).toBeCloseToPixel(359);
-			expect(meta.data[i]._model.circumference).toBeCloseTo(expected.c,8);
-			expect(meta.data[i]._model.startAngle).toBeCloseTo(expected.s, 8);
-			expect(meta.data[i]._model.endAngle).toBeCloseTo(expected.e, 8);
+			expect(meta.data[i]._Dto.x).toBeCloseToPixel(495);
+			expect(meta.data[i]._Dto.y).toBeCloseToPixel(511);
+			expect(meta.data[i]._Dto.outerRadius).toBeCloseToPixel(478);
+			expect(meta.data[i]._Dto.innerRadius).toBeCloseToPixel(359);
+			expect(meta.data[i]._Dto.circumference).toBeCloseTo(expected.c,8);
+			expect(meta.data[i]._Dto.startAngle).toBeCloseTo(expected.s, 8);
+			expect(meta.data[i]._Dto.endAngle).toBeCloseTo(expected.e, 8);
 		})
 	});
 
@@ -248,9 +248,9 @@ describe('Doughnut controller tests', function() {
 		var arc = meta.data[0];
 
 		meta.controller.setHoverStyle(arc);
-		expect(arc._model.backgroundColor).toBe('rgb(230, 0, 0)');
-		expect(arc._model.borderColor).toBe('rgb(0, 0, 230)');
-		expect(arc._model.borderWidth).toBe(2);
+		expect(arc._Dto.backgroundColor).toBe('rgb(230, 0, 0)');
+		expect(arc._Dto.borderColor).toBe('rgb(0, 0, 230)');
+		expect(arc._Dto.borderWidth).toBe(2);
 
 		// Set a dataset style to take precedence
 		chart.data.datasets[0].hoverBackgroundColor = 'rgb(9, 9, 9)';
@@ -258,9 +258,9 @@ describe('Doughnut controller tests', function() {
 		chart.data.datasets[0].hoverBorderWidth = 1.56;
 
 		meta.controller.setHoverStyle(arc);
-		expect(arc._model.backgroundColor).toBe('rgb(9, 9, 9)');
-		expect(arc._model.borderColor).toBe('rgb(18, 18, 18)');
-		expect(arc._model.borderWidth).toBe(1.56);
+		expect(arc._Dto.backgroundColor).toBe('rgb(9, 9, 9)');
+		expect(arc._Dto.borderColor).toBe('rgb(18, 18, 18)');
+		expect(arc._Dto.borderWidth).toBe(1.56);
 
 		// Dataset styles can be an array
 		chart.data.datasets[0].hoverBackgroundColor = ['rgb(255, 255, 255)', 'rgb(9, 9, 9)'];
@@ -268,9 +268,9 @@ describe('Doughnut controller tests', function() {
 		chart.data.datasets[0].hoverBorderWidth = [0.1, 1.56];
 
 		meta.controller.setHoverStyle(arc);
-		expect(arc._model.backgroundColor).toBe('rgb(255, 255, 255)');
-		expect(arc._model.borderColor).toBe('rgb(18, 18, 18)');
-		expect(arc._model.borderWidth).toBe(0.1);
+		expect(arc._Dto.backgroundColor).toBe('rgb(255, 255, 255)');
+		expect(arc._Dto.borderColor).toBe('rgb(18, 18, 18)');
+		expect(arc._Dto.borderWidth).toBe(0.1);
 
 		// Element custom styles also work
 		arc.custom = {
@@ -280,9 +280,9 @@ describe('Doughnut controller tests', function() {
 		};
 
 		meta.controller.setHoverStyle(arc);
-		expect(arc._model.backgroundColor).toBe('rgb(7, 7, 7)');
-		expect(arc._model.borderColor).toBe('rgb(17, 17, 17)');
-		expect(arc._model.borderWidth).toBe(3.14159);
+		expect(arc._Dto.backgroundColor).toBe('rgb(7, 7, 7)');
+		expect(arc._Dto.borderColor).toBe('rgb(17, 17, 17)');
+		expect(arc._Dto.borderWidth).toBe(3.14159);
 	});
 
 	it ('should unset the hover style of an arc', function() {
@@ -309,9 +309,9 @@ describe('Doughnut controller tests', function() {
 		var arc = meta.data[0];
 
 		meta.controller.removeHoverStyle(arc);
-		expect(arc._model.backgroundColor).toBe('rgb(255, 0, 0)');
-		expect(arc._model.borderColor).toBe('rgb(0, 0, 255)');
-		expect(arc._model.borderWidth).toBe(2);
+		expect(arc._Dto.backgroundColor).toBe('rgb(255, 0, 0)');
+		expect(arc._Dto.borderColor).toBe('rgb(0, 0, 255)');
+		expect(arc._Dto.borderWidth).toBe(2);
 
 		// Set a dataset style to take precedence
 		chart.data.datasets[0].backgroundColor = 'rgb(9, 9, 9)';
@@ -319,9 +319,9 @@ describe('Doughnut controller tests', function() {
 		chart.data.datasets[0].borderWidth = 1.56;
 
 		meta.controller.removeHoverStyle(arc);
-		expect(arc._model.backgroundColor).toBe('rgb(9, 9, 9)');
-		expect(arc._model.borderColor).toBe('rgb(18, 18, 18)');
-		expect(arc._model.borderWidth).toBe(1.56);
+		expect(arc._Dto.backgroundColor).toBe('rgb(9, 9, 9)');
+		expect(arc._Dto.borderColor).toBe('rgb(18, 18, 18)');
+		expect(arc._Dto.borderWidth).toBe(1.56);
 
 		// Dataset styles can be an array
 		chart.data.datasets[0].backgroundColor = ['rgb(255, 255, 255)', 'rgb(9, 9, 9)'];
@@ -329,9 +329,9 @@ describe('Doughnut controller tests', function() {
 		chart.data.datasets[0].borderWidth = [0.1, 1.56];
 
 		meta.controller.removeHoverStyle(arc);
-		expect(arc._model.backgroundColor).toBe('rgb(255, 255, 255)');
-		expect(arc._model.borderColor).toBe('rgb(18, 18, 18)');
-		expect(arc._model.borderWidth).toBe(0.1);
+		expect(arc._Dto.backgroundColor).toBe('rgb(255, 255, 255)');
+		expect(arc._Dto.borderColor).toBe('rgb(18, 18, 18)');
+		expect(arc._Dto.borderWidth).toBe(0.1);
 
 		// Element custom styles also work
 		arc.custom = {
@@ -341,8 +341,8 @@ describe('Doughnut controller tests', function() {
 		};
 
 		meta.controller.removeHoverStyle(arc);
-		expect(arc._model.backgroundColor).toBe('rgb(7, 7, 7)');
-		expect(arc._model.borderColor).toBe('rgb(17, 17, 17)');
-		expect(arc._model.borderWidth).toBe(3.14159);
+		expect(arc._Dto.backgroundColor).toBe('rgb(7, 7, 7)');
+		expect(arc._Dto.borderColor).toBe('rgb(17, 17, 17)');
+		expect(arc._Dto.borderWidth).toBe(3.14159);
 	});
 });

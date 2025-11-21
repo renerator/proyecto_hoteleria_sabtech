@@ -2,7 +2,7 @@
 define(function(require) {
     'use strict';
 
-    require('../coord/cartesian/AxisModel');
+    require('../coord/cartesian/AxisDto');
 
     require('./axis/AxisView');
 });

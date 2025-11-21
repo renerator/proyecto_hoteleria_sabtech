@@ -1,9 +1,9 @@
 define(function (require) {
 
-    return function (seriesType, ecModel, api) {
-        ecModel.eachSeriesByType(seriesType, function (seriesModel) {
-            var data = seriesModel.getData();
-            var coordSys = seriesModel.coordinateSystem;
+    return function (seriesType, ecDto, api) {
+        ecDto.eachSeriesByType(seriesType, function (seriesDto) {
+            var data = seriesDto.getData();
+            var coordSys = seriesDto.coordinateSystem;
 
             if (coordSys) {
                 var dims = coordSys.dimensions;

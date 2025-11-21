@@ -50,7 +50,7 @@ define(function(require) {
 
     /**
      * Topological travel on Activity Network (Activity On Vertices).
-     * Dependencies is defined in Model.prototype.dependencies, like ['xAxis', 'yAxis'].
+     * Dependencies is defined in Dto.prototype.dependencies, like ['xAxis', 'yAxis'].
      *
      * If 'xAxis' or 'yAxis' is absent in componentTypeList, just ignore it in topology.
      *
@@ -108,7 +108,7 @@ define(function(require) {
 
             // Consider this case: legend depends on series, and we call
             // chart.setOption({series: [...]}), where only series is in option.
-            // If we do not have 'removeEdgeAndAdd', legendModel.mergeOption will
+            // If we do not have 'removeEdgeAndAdd', legendDto.mergeOption will
             // not be called, but only sereis.mergeOption is called. Thus legend
             // have no chance to update its local record about series (like which
             // name of series is available in legend).

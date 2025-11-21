@@ -1,17 +1,17 @@
 /**
- * @file Data zoom model
+ * @file Data zoom Dto
  */
 define(function(require) {
 
     var zrUtil = require('zrender/core/util');
     var env = require('zrender/core/env');
     var echarts = require('../../echarts');
-    var modelUtil = require('../../util/model');
+    var DtoUtil = require('../../util/Dto');
     var AxisProxy = require('./AxisProxy');
     var each = zrUtil.each;
-    var eachAxisDim = modelUtil.eachAxisDim;
+    var eachAxisDim = DtoUtil.eachAxisDim;
 
-    var DataZoomModel = echarts.extendComponentModel({
+    var DataZoomDto = echarts.extendComponentDto({
 
         type: 'dataZoom',
 
@@ -37,7 +37,7 @@ define(function(require) {
                                     //          This option is applicable when user should not neglect
                                     //          that there are some data items out of window.
                                     // Taking line chart as an example, line will be broken in
-                                    // the filtered points when filterModel is set to 'empty', but
+                                    // the filtered points when filterDto is set to 'empty', but
                                     // be connected when set to 'filter'.
 
             throttle: 100,          // Dispatch action by the fixed rate, avoid frequency.
@@ -51,7 +51,7 @@ define(function(require) {
         /**
          * @override
          */
-        init: function (option, parentModel, ecModel) {
+        init: function (option, parentDto, ecDto) {
 
             /**
              * key like x_0, y_1
@@ -74,11 +74,11 @@ define(function(require) {
             /**
              * @readOnly
              */
-            this.textStyleModel;
+            this.textStyleDto;
 
             var rawOption = retrieveRaw(option);
 
-            this.mergeDefaultAndTheme(option, ecModel);
+            this.mergeDefaultAndTheme(option, ecDto);
 
             this.doInit(rawOption);
         },
@@ -109,7 +109,7 @@ define(function(require) {
             processRangeProp('start', 'startValue', rawOption, thisOption);
             processRangeProp('end', 'endValue', rawOption, thisOption);
 
-            this.textStyleModel = this.getModel('textStyle');
+            this.textStyleDto = this.getDto('textStyle');
 
             this._resetTarget();
 
@@ -122,14 +122,14 @@ define(function(require) {
         _giveAxisProxies: function () {
             var axisProxies = this._axisProxies;
 
-            this.eachTargetAxis(function (dimNames, axisIndex, dataZoomModel, ecModel) {
-                var axisModel = this.dependentModels[dimNames.axis][axisIndex];
+            this.eachTargetAxis(function (dimNames, axisIndex, dataZoomDto, ecDto) {
+                var axisDto = this.dependentDtos[dimNames.axis][axisIndex];
 
-                // If exists, share axisProxy with other dataZoomModels.
-                var axisProxy = axisModel.__dzAxisProxy || (
-                    // Use the first dataZoomModel as the main model of axisProxy.
-                    axisModel.__dzAxisProxy = new AxisProxy(
-                        dimNames.name, axisIndex, this, ecModel
+                // If exists, share axisProxy with other dataZoomDtos.
+                var axisProxy = axisDto.__dzAxisProxy || (
+                    // Use the first dataZoomDto as the main Dto of axisProxy.
+                    axisDto.__dzAxisProxy = new AxisProxy(
+                        dimNames.name, axisIndex, this, ecDto
                     )
                 );
                 // FIXME
@@ -149,7 +149,7 @@ define(function(require) {
 
             eachAxisDim(function (dimNames) {
                 var axisIndexName = dimNames.axisIndex;
-                thisOption[axisIndexName] = modelUtil.normalizeToArray(
+                thisOption[axisIndexName] = DtoUtil.normalizeToArray(
                     thisOption[axisIndexName]
                 );
             }, this);
@@ -208,7 +208,7 @@ define(function(require) {
                     ? {dim: 'y', axisIndex: 'yAxisIndex', axis: 'yAxis'}
                     : {dim: 'x', axisIndex: 'xAxisIndex', axis: 'xAxis'};
 
-                if (this.dependentModels[dimNames.axis].length) {
+                if (this.dependentDtos[dimNames.axis].length) {
                     thisOption[dimNames.axisIndex] = [0];
                     autoAxisIndex = false;
                 }
@@ -221,10 +221,10 @@ define(function(require) {
                         return;
                     }
                     var axisIndices = [];
-                    var axisModels = this.dependentModels[dimNames.axis];
-                    if (axisModels.length && !axisIndices.length) {
-                        for (var i = 0, len = axisModels.length; i < len; i++) {
-                            if (axisModels[i].get('type') === 'category') {
+                    var axisDtos = this.dependentDtos[dimNames.axis];
+                    if (axisDtos.length && !axisIndices.length) {
+                        for (var i = 0, len = axisDtos.length; i < len; i++) {
+                            if (axisDtos[i].get('type') === 'category') {
                                 axisIndices.push(i);
                             }
                         }
@@ -244,11 +244,11 @@ define(function(require) {
                 // If both dataZoom.xAxisIndex and dataZoom.yAxisIndex is not specified,
                 // dataZoom component auto adopts series that reference to
                 // both xAxis and yAxis which type is 'value'.
-                this.ecModel.eachSeries(function (seriesModel) {
-                    if (this._isSeriesHasAllAxesTypeOf(seriesModel, 'value')) {
+                this.ecDto.eachSeries(function (seriesDto) {
+                    if (this._isSeriesHasAllAxesTypeOf(seriesDto, 'value')) {
                         eachAxisDim(function (dimNames) {
                             var axisIndices = thisOption[dimNames.axisIndex];
-                            var axisIndex = seriesModel.get(dimNames.axisIndex);
+                            var axisIndex = seriesDto.get(dimNames.axisIndex);
                             if (zrUtil.indexOf(axisIndices, axisIndex) < 0) {
                                 axisIndices.push(axisIndex);
                             }
@@ -275,17 +275,17 @@ define(function(require) {
         /**
          * @private
          */
-        _isSeriesHasAllAxesTypeOf: function (seriesModel, axisType) {
+        _isSeriesHasAllAxesTypeOf: function (seriesDto, axisType) {
             // FIXME
             // 需要series的xAxisIndex和yAxisIndex都首先自动设置上。
             // 例如series.type === scatter时。
 
             var is = true;
             eachAxisDim(function (dimNames) {
-                var seriesAxisIndex = seriesModel.get(dimNames.axisIndex);
-                var axisModel = this.dependentModels[dimNames.axis][seriesAxisIndex];
+                var seriesAxisIndex = seriesDto.get(dimNames.axisIndex);
+                var axisDto = this.dependentDtos[dimNames.axis][seriesAxisIndex];
 
-                if (!axisModel || axisModel.get('type') !== axisType) {
+                if (!axisDto || axisDto.get('type') !== axisType) {
                     is = false;
                 }
             }, this);
@@ -295,31 +295,31 @@ define(function(require) {
         /**
          * @public
          */
-        getFirstTargetAxisModel: function () {
-            var firstAxisModel;
+        getFirstTargetAxisDto: function () {
+            var firstAxisDto;
             eachAxisDim(function (dimNames) {
-                if (firstAxisModel == null) {
+                if (firstAxisDto == null) {
                     var indices = this.get(dimNames.axisIndex);
                     if (indices.length) {
-                        firstAxisModel = this.dependentModels[dimNames.axis][indices[0]];
+                        firstAxisDto = this.dependentDtos[dimNames.axis][indices[0]];
                     }
                 }
             }, this);
 
-            return firstAxisModel;
+            return firstAxisDto;
         },
 
         /**
          * @public
-         * @param {Function} callback param: axisModel, dimNames, axisIndex, dataZoomModel, ecModel
+         * @param {Function} callback param: axisDto, dimNames, axisIndex, dataZoomDto, ecDto
          */
         eachTargetAxis: function (callback, context) {
-            var ecModel = this.ecModel;
+            var ecDto = this.ecDto;
             eachAxisDim(function (dimNames) {
                 each(
                     this.get(dimNames.axisIndex),
                     function (axisIndex) {
-                        callback.call(context, dimNames, axisIndex, this, ecModel);
+                        callback.call(context, dimNames, axisIndex, this, ecDto);
                     },
                     this
                 );
@@ -362,7 +362,7 @@ define(function(require) {
 
         /**
          * @public
-         * For example, chart.getModel().getComponent('dataZoom').getValueRange('y', 0);
+         * For example, chart.getDto().getComponent('dataZoom').getValueRange('y', 0);
          *
          * @param {string} [axisDimName]
          * @param {number} [axisIndex]
@@ -394,7 +394,7 @@ define(function(require) {
             }
 
             // If no hosted axis find not hosted axisProxy.
-            // Consider this case: dataZoomModel1 and dataZoomModel2 control the same axis,
+            // Consider this case: dataZoomDto1 and dataZoomDto2 control the same axis,
             // and the option.start or option.end settings are different. The percentRange
             // should follow axisProxy.
             // (We encounter this problem in toolbox data zoom.)
@@ -428,5 +428,5 @@ define(function(require) {
         // Otherwise do nothing and use the merge result.
     }
 
-    return DataZoomModel;
+    return DataZoomDto;
 });

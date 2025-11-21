@@ -59,11 +59,11 @@ define(function (require) {
 
         type: 'heatmap',
 
-        render: function (seriesModel, ecModel, api) {
+        render: function (seriesDto, ecDto, api) {
             var visualMapOfThisSeries;
-            ecModel.eachComponent('visualMap', function (visualMap) {
+            ecDto.eachComponent('visualMap', function (visualMap) {
                 visualMap.eachTargetSeries(function (targetSeries) {
-                    if (targetSeries === seriesModel) {
+                    if (targetSeries === seriesDto) {
                         visualMapOfThisSeries = visualMap;
                     }
                 });
@@ -74,18 +74,18 @@ define(function (require) {
             }
 
             this.group.removeAll();
-            var coordSys = seriesModel.coordinateSystem;
+            var coordSys = seriesDto.coordinateSystem;
             if (coordSys.type === 'cartesian2d') {
-                this._renderOnCartesian(coordSys, seriesModel, api);
+                this._renderOnCartesian(coordSys, seriesDto, api);
             }
             else if (isGeoCoordSys(coordSys)) {
                 this._renderOnGeo(
-                    coordSys, seriesModel, visualMapOfThisSeries, api
+                    coordSys, seriesDto, visualMapOfThisSeries, api
                 );
             }
         },
 
-        _renderOnCartesian: function (cartesian, seriesModel, api) {
+        _renderOnCartesian: function (cartesian, seriesDto, api) {
             var xAxis = cartesian.getAxis('x');
             var yAxis = cartesian.getAxis('y');
             var group = this.group;
@@ -99,9 +99,9 @@ define(function (require) {
             var width = xAxis.getBandWidth();
             var height = yAxis.getBandWidth();
 
-            var data = seriesModel.getData();
+            var data = seriesDto.getData();
             data.each(['x', 'y', 'z'], function (x, y, z, idx) {
-                var itemModel = data.getItemModel(idx);
+                var itemDto = data.getItemDto(idx);
                 var point = cartesian.dataToPoint([x, y]);
                 // Ignore empty data
                 if (isNaN(z)) {
@@ -119,23 +119,23 @@ define(function (require) {
                         opacity: data.getItemVisual(idx, 'opacity')
                     }
                 });
-                var style = itemModel.getModel('itemStyle.normal').getItemStyle(['color']);
-                var hoverStl = itemModel.getModel('itemStyle.emphasis').getItemStyle();
-                var labelModel = itemModel.getModel('label.normal');
-                var hoverLabelModel = itemModel.getModel('label.emphasis');
+                var style = itemDto.getDto('itemStyle.normal').getItemStyle(['color']);
+                var hoverStl = itemDto.getDto('itemStyle.emphasis').getItemStyle();
+                var labelDto = itemDto.getDto('label.normal');
+                var hoverLabelDto = itemDto.getDto('label.emphasis');
 
-                var rawValue = seriesModel.getRawValue(idx);
+                var rawValue = seriesDto.getRawValue(idx);
                 var defaultText = '-';
                 if (rawValue && rawValue[2] != null) {
                     defaultText = rawValue[2];
                 }
-                if (labelModel.get('show')) {
-                    graphic.setText(style, labelModel);
-                    style.text = seriesModel.getFormattedLabel(idx, 'normal') || defaultText;
+                if (labelDto.get('show')) {
+                    graphic.setText(style, labelDto);
+                    style.text = seriesDto.getFormattedLabel(idx, 'normal') || defaultText;
                 }
-                if (hoverLabelModel.get('show')) {
-                    graphic.setText(hoverStl, hoverLabelModel);
-                    hoverStl.text = seriesModel.getFormattedLabel(idx, 'emphasis') || defaultText;
+                if (hoverLabelDto.get('show')) {
+                    graphic.setText(hoverStl, hoverLabelDto);
+                    hoverStl.text = seriesDto.getFormattedLabel(idx, 'emphasis') || defaultText;
                 }
 
                 rect.setStyle(style);
@@ -147,19 +147,19 @@ define(function (require) {
             });
         },
 
-        _renderOnGeo: function (geo, seriesModel, visualMapModel, api) {
-            var inRangeVisuals = visualMapModel.targetVisuals.inRange;
-            var outOfRangeVisuals = visualMapModel.targetVisuals.outOfRange;
+        _renderOnGeo: function (geo, seriesDto, visualMapDto, api) {
+            var inRangeVisuals = visualMapDto.targetVisuals.inRange;
+            var outOfRangeVisuals = visualMapDto.targetVisuals.outOfRange;
             // if (!visualMapping) {
             //     throw new Error('Data range must have color visuals');
             // }
 
-            var data = seriesModel.getData();
+            var data = seriesDto.getData();
             var hmLayer = this._hmLayer || (this._hmLayer || new HeatmapLayer());
-            hmLayer.blurSize = seriesModel.get('blurSize');
-            hmLayer.pointSize = seriesModel.get('pointSize');
-            hmLayer.minOpacity = seriesModel.get('minOpacity');
-            hmLayer.maxOpacity = seriesModel.get('maxOpacity');
+            hmLayer.blurSize = seriesDto.get('blurSize');
+            hmLayer.pointSize = seriesDto.get('pointSize');
+            hmLayer.minOpacity = seriesDto.get('minOpacity');
+            hmLayer.maxOpacity = seriesDto.get('maxOpacity');
 
             var rect = geo.getViewRect().clone();
             var roamTransform = geo.getRoamTransform().transform;
@@ -181,11 +181,11 @@ define(function (require) {
                 return pt;
             });
 
-            var dataExtent = visualMapModel.getExtent();
-            var isInRange = visualMapModel.type === 'visualMap.continuous'
-                ? getIsInContinuousRange(dataExtent, visualMapModel.option.range)
+            var dataExtent = visualMapDto.getExtent();
+            var isInRange = visualMapDto.type === 'visualMap.continuous'
+                ? getIsInContinuousRange(dataExtent, visualMapDto.option.range)
                 : getIsInPiecewiseRange(
-                    dataExtent, visualMapModel.getPieceList(), visualMapModel.option.selected
+                    dataExtent, visualMapDto.getPieceList(), visualMapDto.option.selected
                 );
 
             hmLayer.update(

@@ -12,11 +12,11 @@ define(function(require) {
 
         /**
          * @public
-         * @param {module:echarts/model/Global} ecModel
+         * @param {module:echarts/Dto/Global} ecDto
          * @param {Object} newSnapshot {dataZoomId, batch: [payloadInfo, ...]}
          */
-        push: function (ecModel, newSnapshot) {
-            var store = giveStore(ecModel);
+        push: function (ecDto, newSnapshot) {
+            var store = giveStore(ecDto);
 
             // If previous dataZoom can not be found,
             // complete an range with current range.
@@ -30,11 +30,11 @@ define(function(require) {
                 }
                 if (i < 0) {
                     // No origin range set, create one by current range.
-                    var dataZoomModel = ecModel.queryComponents(
+                    var dataZoomDto = ecDto.queryComponents(
                         {mainType: 'dataZoom', subType: 'select', id: dataZoomId}
                     )[0];
-                    if (dataZoomModel) {
-                        var percentRange = dataZoomModel.getPercentRange();
+                    if (dataZoomDto) {
+                        var percentRange = dataZoomDto.getPercentRange();
                         store[0][dataZoomId] = {
                             dataZoomId: dataZoomId,
                             start: percentRange[0],
@@ -49,11 +49,11 @@ define(function(require) {
 
         /**
          * @public
-         * @param {module:echarts/model/Global} ecModel
+         * @param {module:echarts/Dto/Global} ecDto
          * @return {Object} snapshot
          */
-        pop: function (ecModel) {
-            var store = giveStore(ecModel);
+        pop: function (ecDto) {
+            var store = giveStore(ecDto);
             var head = store[store.length - 1];
             store.length > 1 && store.pop();
 
@@ -75,17 +75,17 @@ define(function(require) {
         /**
          * @public
          */
-        clear: function (ecModel) {
-            ecModel[ATTR] = null;
+        clear: function (ecDto) {
+            ecDto[ATTR] = null;
         },
 
         /**
          * @public
-         * @param {module:echarts/model/Global} ecModel
+         * @param {module:echarts/Dto/Global} ecDto
          * @return {number} records. always >= 1.
          */
-        count: function (ecModel) {
-            return giveStore(ecModel).length;
+        count: function (ecDto) {
+            return giveStore(ecDto).length;
         }
 
     };
@@ -96,10 +96,10 @@ define(function(require) {
      * this._history[0] is used to store origin range.
      * @type {Array.<Object>}
      */
-    function giveStore(ecModel) {
-        var store = ecModel[ATTR];
+    function giveStore(ecDto) {
+        var store = ecDto[ATTR];
         if (!store) {
-            store = ecModel[ATTR] = [{}];
+            store = ecDto[ATTR] = [{}];
         }
         return store;
     }

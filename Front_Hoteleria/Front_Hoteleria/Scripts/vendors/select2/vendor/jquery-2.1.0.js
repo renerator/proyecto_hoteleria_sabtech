@@ -629,7 +629,7 @@
             // http://www.w3.org/TR/css3-syntax/#characters
                 characterEncoding = "(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+",
 
-            // Loosely modeled on CSS identifier characters
+            // Loosely Dtoed on CSS identifier characters
             // An unquoted value should be a CSS identifier http://www.w3.org/TR/css3-selectors/#attribute-selectors
             // Proper syntax: http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
                 identifier = characterEncoding.replace( "w", "w#" ),
@@ -5694,7 +5694,7 @@
             val = 0;
 
         for ( ; i < 4; i += 2 ) {
-            // both box models exclude margin, so add it if we want it
+            // both box Dtos exclude margin, so add it if we want it
             if ( extra === "margin" ) {
                 val += jQuery.css( elem, extra + cssExpand[ i ], true, styles );
             }
@@ -5755,7 +5755,7 @@
             val = parseFloat( val ) || 0;
         }
 
-        // use the active box-sizing model to add/subtract irrelevant styles
+        // use the active box-sizing Dto to add/subtract irrelevant styles
         return ( val +
             augmentWidthOrHeight(
                 elem,

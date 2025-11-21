@@ -59,7 +59,7 @@ define(function (require) {
 
         var symbolEl = this._symbolEl;
 
-        var seriesModel = data.hostModel;
+        var seriesDto = data.hostDto;
 
         symbolEl.setShape({
             points: data.mapArray(data.getItemLayout),
@@ -82,7 +82,7 @@ define(function (require) {
         symbolEl.setColor = symbolEl.symbolProxy.setColor;
 
         symbolEl.useStyle(
-            seriesModel.getModel('itemStyle.normal').getItemStyle(['color'])
+            seriesDto.getDto('itemStyle.normal').getItemStyle(['color'])
         );
 
         var visualColor = data.getVisual('color');
@@ -94,8 +94,8 @@ define(function (require) {
         this.group.add(this._symbolEl);
     };
 
-    largeSymbolProto.updateLayout = function (seriesModel) {
-        var data = seriesModel.getData();
+    largeSymbolProto.updateLayout = function (seriesDto) {
+        var data = seriesDto.getData();
         this._symbolEl.setShape({
             points: data.mapArray(data.getItemLayout)
         });

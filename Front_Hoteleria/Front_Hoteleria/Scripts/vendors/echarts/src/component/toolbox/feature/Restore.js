@@ -3,8 +3,8 @@ define(function(require) {
 
     var history = require('../../dataZoom/history');
 
-    function Restore(model) {
-        this.model = model;
+    function Restore(Dto) {
+        this.Dto = Dto;
     }
 
     Restore.defaultOption = {
@@ -15,8 +15,8 @@ define(function(require) {
 
     var proto = Restore.prototype;
 
-    proto.onclick = function (ecModel, api, type) {
-        history.clear(ecModel);
+    proto.onclick = function (ecDto, api, type) {
+        history.clear(ecDto);
 
         api.dispatchAction({
             type: 'restore',
@@ -30,8 +30,8 @@ define(function(require) {
 
     require('../../../echarts').registerAction(
         {type: 'restore', event: 'restore', update: 'prepareAndUpdate'},
-        function (payload, ecModel) {
-            ecModel.resetOption('recreate');
+        function (payload, ecDto) {
+            ecDto.resetOption('recreate');
         }
     );
 

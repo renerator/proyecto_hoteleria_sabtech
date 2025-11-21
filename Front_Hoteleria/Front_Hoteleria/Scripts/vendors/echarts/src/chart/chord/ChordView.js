@@ -11,10 +11,10 @@ define(function (require) {
 
         },
 
-        render: function (seriesModel, ecModel, api) {
-            var data = seriesModel.getData();
-            var graph = seriesModel.getGraph();
-            var edgeData = seriesModel.getEdgeData();
+        render: function (seriesDto, ecDto, api) {
+            var data = seriesDto.getData();
+            var graph = seriesDto.getGraph();
+            var edgeData = seriesDto.getEdgeData();
 
             var group = this.group;
             group.removeAll();

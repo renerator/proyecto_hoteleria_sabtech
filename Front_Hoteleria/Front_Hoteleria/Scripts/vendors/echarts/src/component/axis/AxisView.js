@@ -17,50 +17,50 @@ define(function (require) {
 
         type: 'axis',
 
-        render: function (axisModel, ecModel) {
+        render: function (axisDto, ecDto) {
 
             this.group.removeAll();
 
-            if (!axisModel.get('show')) {
+            if (!axisDto.get('show')) {
                 return;
             }
 
-            var gridModel = ecModel.getComponent('grid', axisModel.get('gridIndex'));
+            var gridDto = ecDto.getComponent('grid', axisDto.get('gridIndex'));
 
-            var layout = layoutAxis(gridModel, axisModel);
+            var layout = layoutAxis(gridDto, axisDto);
 
-            var axisBuilder = new AxisBuilder(axisModel, layout);
+            var axisBuilder = new AxisBuilder(axisDto, layout);
 
             zrUtil.each(axisBuilderAttrs, axisBuilder.add, axisBuilder);
 
             this.group.add(axisBuilder.getGroup());
 
             zrUtil.each(selfBuilderAttrs, function (name) {
-                if (axisModel.get(name +'.show')) {
-                    this['_' + name](axisModel, gridModel, layout.labelInterval);
+                if (axisDto.get(name +'.show')) {
+                    this['_' + name](axisDto, gridDto, layout.labelInterval);
                 }
             }, this);
         },
 
         /**
-         * @param {module:echarts/coord/cartesian/AxisModel} axisModel
-         * @param {module:echarts/coord/cartesian/GridModel} gridModel
+         * @param {module:echarts/coord/cartesian/AxisDto} axisDto
+         * @param {module:echarts/coord/cartesian/GridDto} gridDto
          * @param {number|Function} labelInterval
          * @private
          */
-        _splitLine: function (axisModel, gridModel, labelInterval) {
-            var axis = axisModel.axis;
+        _splitLine: function (axisDto, gridDto, labelInterval) {
+            var axis = axisDto.axis;
 
-            var splitLineModel = axisModel.getModel('splitLine');
-            var lineStyleModel = splitLineModel.getModel('lineStyle');
-            var lineWidth = lineStyleModel.get('width');
-            var lineColors = lineStyleModel.get('color');
+            var splitLineDto = axisDto.getDto('splitLine');
+            var lineStyleDto = splitLineDto.getDto('lineStyle');
+            var lineWidth = lineStyleDto.get('width');
+            var lineColors = lineStyleDto.get('color');
 
-            var lineInterval = getInterval(splitLineModel, labelInterval);
+            var lineInterval = getInterval(splitLineDto, labelInterval);
 
             lineColors = zrUtil.isArray(lineColors) ? lineColors : [lineColors];
 
-            var gridRect = gridModel.coordinateSystem.getRect();
+            var gridRect = gridDto.coordinateSystem.getRect();
             var isHorizontal = axis.isHorizontal();
 
             var splitLines = [];
@@ -108,7 +108,7 @@ define(function (require) {
 
             // Simple optimization
             // Batching the lines if color are the same
-            var lineStyle = lineStyleModel.getLineStyle();
+            var lineStyle = lineStyleDto.getLineStyle();
             for (var i = 0; i < splitLines.length; i++) {
                 this.group.add(graphic.mergePath(splitLines[i], {
                     style: zrUtil.defaults({
@@ -120,19 +120,19 @@ define(function (require) {
         },
 
         /**
-         * @param {module:echarts/coord/cartesian/AxisModel} axisModel
-         * @param {module:echarts/coord/cartesian/GridModel} gridModel
+         * @param {module:echarts/coord/cartesian/AxisDto} axisDto
+         * @param {module:echarts/coord/cartesian/GridDto} gridDto
          * @param {number|Function} labelInterval
          * @private
          */
-        _splitArea: function (axisModel, gridModel, labelInterval) {
-            var axis = axisModel.axis;
+        _splitArea: function (axisDto, gridDto, labelInterval) {
+            var axis = axisDto.axis;
 
-            var splitAreaModel = axisModel.getModel('splitArea');
-            var areaStyleModel = splitAreaModel.getModel('areaStyle');
-            var areaColors = areaStyleModel.get('color');
+            var splitAreaDto = axisDto.getDto('splitArea');
+            var areaStyleDto = splitAreaDto.getDto('areaStyle');
+            var areaColors = areaStyleDto.get('color');
 
-            var gridRect = gridModel.coordinateSystem.getRect();
+            var gridRect = gridDto.coordinateSystem.getRect();
             var ticksCoords = axis.getTicksCoords();
 
             var prevX = axis.toGlobalCoord(ticksCoords[0]);
@@ -141,7 +141,7 @@ define(function (require) {
             var splitAreaRects = [];
             var count = 0;
 
-            var areaInterval = getInterval(splitAreaModel, labelInterval);
+            var areaInterval = getInterval(splitAreaDto, labelInterval);
 
             areaColors = zrUtil.isArray(areaColors) ? areaColors : [areaColors];
 
@@ -187,7 +187,7 @@ define(function (require) {
 
             // Simple optimization
             // Batching the rects if color are the same
-            var areaStyle = areaStyleModel.getAreaStyle();
+            var areaStyle = areaStyleDto.getAreaStyle();
             for (var i = 0; i < splitAreaRects.length; i++) {
                 this.group.add(graphic.mergePath(splitAreaRects[i], {
                     style: zrUtil.defaults({
@@ -209,9 +209,9 @@ define(function (require) {
     /**
      * @inner
      */
-    function layoutAxis(gridModel, axisModel) {
-        var grid = gridModel.coordinateSystem;
-        var axis = axisModel.axis;
+    function layoutAxis(gridDto, axisDto) {
+        var grid = gridDto.coordinateSystem;
+        var axis = axisDto.axis;
         var layout = {};
 
         var rawAxisPosition = axis.position;
@@ -252,15 +252,15 @@ define(function (require) {
             layout.labelOffset = posMap[axisDim][rawAxisPosition] - posMap[axisDim].onZero;
         }
 
-        if (axisModel.getModel('axisTick').get('inside')) {
+        if (axisDto.getDto('axisTick').get('inside')) {
             layout.tickDirection = -layout.tickDirection;
         }
-        if (axisModel.getModel('axisLabel').get('inside')) {
+        if (axisDto.getDto('axisLabel').get('inside')) {
             layout.labelDirection = -layout.labelDirection;
         }
 
         // Special label rotation
-        var labelRotation = axisModel.getModel('axisLabel').get('rotate');
+        var labelRotation = axisDto.getDto('axisLabel').get('rotate');
         layout.labelRotation = axisPosition === 'top' ? -labelRotation : labelRotation;
 
         // label interval when auto mode.

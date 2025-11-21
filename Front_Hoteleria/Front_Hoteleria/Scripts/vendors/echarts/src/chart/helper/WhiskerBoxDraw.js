@@ -58,10 +58,10 @@ define(function (require) {
         this.updateData(data, idx, isInit);
 
         /**
-         * Last series model.
-         * @type {module:echarts/model/Series}
+         * Last series Dto.
+         * @type {module:echarts/Dto/Series}
          */
-        this._seriesModel;
+        this._seriesDto;
     }
 
     var whiskerBoxProto = WhiskerBox.prototype;
@@ -118,7 +118,7 @@ define(function (require) {
      * @param  {number} idx
      */
     whiskerBoxProto.updateData = function (data, idx, isInit) {
-        var seriesModel = this._seriesModel = data.hostModel;
+        var seriesDto = this._seriesDto = data.hostDto;
         var itemLayout = data.getItemLayout(idx);
         var updateMethod = graphic[isInit ? 'initProps' : 'updateProps'];
         // this.childAt(this.bodyIndex).stopAnimation(true);
@@ -126,12 +126,12 @@ define(function (require) {
         updateMethod(
             this.childAt(this.bodyIndex),
             {shape: {points: itemLayout.bodyEnds}},
-            seriesModel, idx
+            seriesDto, idx
         );
         updateMethod(
             this.childAt(this.whiskerIndex),
             {shape: makeWhiskerEndsShape(itemLayout.whiskerEnds)},
-            seriesModel, idx
+            seriesDto, idx
         );
 
         this.styleUpdater.call(null, this, data, idx);

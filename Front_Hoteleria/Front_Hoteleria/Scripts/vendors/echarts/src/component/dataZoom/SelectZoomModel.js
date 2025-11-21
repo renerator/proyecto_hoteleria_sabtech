@@ -1,11 +1,11 @@
 /**
- * @file Data zoom model
+ * @file Data zoom Dto
  */
 define(function(require) {
 
-    var DataZoomModel = require('./DataZoomModel');
+    var DataZoomDto = require('./DataZoomDto');
 
-    return DataZoomModel.extend({
+    return DataZoomDto.extend({
 
         type: 'dataZoom.select'
 

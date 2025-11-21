@@ -22,9 +22,9 @@ define(function (require) {
 
         constructor: Component,
 
-        init: function (ecModel, api) {},
+        init: function (ecDto, api) {},
 
-        render: function (componentModel, ecModel, api, payload) {},
+        render: function (componentDto, ecDto, api, payload) {},
 
         dispose: function () {}
     };
@@ -33,7 +33,7 @@ define(function (require) {
     componentProto.updateView
         = componentProto.updateLayout
         = componentProto.updateVisual
-        = function (seriesModel, ecModel, api, payload) {
+        = function (seriesDto, ecDto, api, payload) {
             // Do nothing;
         };
     // Enable Component.extend.

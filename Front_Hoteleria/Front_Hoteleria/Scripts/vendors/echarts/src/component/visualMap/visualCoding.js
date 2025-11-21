@@ -7,23 +7,23 @@ define(function (require) {
     var VisualMapping = require('../../visual/VisualMapping');
     var zrUtil = require('zrender/core/util');
 
-    echarts.registerVisualCoding('component', function (ecModel) {
-        ecModel.eachComponent('visualMap', function (visualMapModel) {
-            processSingleVisualMap(visualMapModel, ecModel);
+    echarts.registerVisualCoding('component', function (ecDto) {
+        ecDto.eachComponent('visualMap', function (visualMapDto) {
+            processSingleVisualMap(visualMapDto, ecDto);
         });
     });
 
-    function processSingleVisualMap(visualMapModel, ecModel) {
-        var visualMappings = visualMapModel.targetVisuals;
+    function processSingleVisualMap(visualMapDto, ecDto) {
+        var visualMappings = visualMapDto.targetVisuals;
         var visualTypesMap = {};
         zrUtil.each(['inRange', 'outOfRange'], function (state) {
             var visualTypes = VisualMapping.prepareVisualTypes(visualMappings[state]);
             visualTypesMap[state] = visualTypes;
         });
 
-        visualMapModel.eachTargetSeries(function (seriesModel) {
-            var data = seriesModel.getData();
-            var dimension = visualMapModel.getDataDimension(data);
+        visualMapDto.eachTargetSeries(function (seriesDto) {
+            var data = seriesDto.getData();
+            var dimension = visualMapDto.getDataDimension(data);
             var dataIndex;
 
             function getVisual(key) {
@@ -37,7 +37,7 @@ define(function (require) {
             data.each([dimension], function (value, index) {
                 // For performance consideration, do not use curry.
                 dataIndex = index;
-                var valueState = visualMapModel.getValueState(value);
+                var valueState = visualMapDto.getValueState(value);
                 var mappings = visualMappings[valueState];
                 var visualTypes = visualTypesMap[valueState];
                 for (var i = 0, len = visualTypes.length; i < len; i++) {

@@ -14,16 +14,16 @@ define(function (require) {
      * Group series into two types
      *  1. on category axis, like line, bar
      *  2. others, like scatter, pie
-     * @param {module:echarts/model/Global} ecModel
+     * @param {module:echarts/Dto/Global} ecDto
      * @return {Object}
      * @inner
      */
-    function groupSeries(ecModel) {
+    function groupSeries(ecDto) {
         var seriesGroupByCategoryAxis = {};
         var otherSeries = [];
         var meta = [];
-        ecModel.eachRawSeries(function (seriesModel) {
-            var coordSys = seriesModel.coordinateSystem;
+        ecDto.eachRawSeries(function (seriesDto) {
+            var coordSys = seriesDto.coordinateSystem;
 
             if (coordSys && (coordSys.type === 'cartesian2d' || coordSys.type === 'polar')) {
                 var baseAxis = coordSys.getBaseAxis();
@@ -40,14 +40,14 @@ define(function (require) {
                             axisIndex: baseAxis.index
                         });
                     }
-                    seriesGroupByCategoryAxis[key].series.push(seriesModel);
+                    seriesGroupByCategoryAxis[key].series.push(seriesDto);
                 }
                 else {
-                    otherSeries.push(seriesModel);
+                    otherSeries.push(seriesDto);
                 }
             }
             else {
-                otherSeries.push(seriesModel);
+                otherSeries.push(seriesDto);
             }
         });
 
@@ -60,7 +60,7 @@ define(function (require) {
 
     /**
      * Assemble content of series on cateogory axis
-     * @param {Array.<module:echarts/model/Series>} series
+     * @param {Array.<module:echarts/Dto/Series>} series
      * @return {string}
      * @inner
      */
@@ -74,7 +74,7 @@ define(function (require) {
             var headers = [' '].concat(zrUtil.map(group.series, function (series) {
                 return series.name;
             }));
-            var columns = [categoryAxis.model.getCategories()];
+            var columns = [categoryAxis.Dto.getCategories()];
             zrUtil.each(group.series, function (series) {
                 columns.push(series.getRawData().mapArray(valueAxisDim, function (val) {
                     return val;
@@ -96,7 +96,7 @@ define(function (require) {
 
     /**
      * Assemble content of other series
-     * @param {Array.<module:echarts/model/Series>} series
+     * @param {Array.<module:echarts/Dto/Series>} series
      * @return {string}
      * @inner
      */
@@ -119,13 +119,13 @@ define(function (require) {
     }
 
     /**
-     * @param {module:echarts/model/Global}
+     * @param {module:echarts/Dto/Global}
      * @return {string}
      * @inner
      */
-    function getContentFromModel(ecModel) {
+    function getContentFromDto(ecDto) {
 
-        var result = groupSeries(ecModel);
+        var result = groupSeries(ecDto);
 
         return {
             value: zrUtil.filter([
@@ -261,13 +261,13 @@ define(function (require) {
     /**
      * @alias {module:echarts/component/toolbox/feature/DataView}
      * @constructor
-     * @param {module:echarts/model/Model} model
+     * @param {module:echarts/Dto/Dto} Dto
      */
-    function DataView(model) {
+    function DataView(Dto) {
 
         this._dom = null;
 
-        this.model = model;
+        this.Dto = Dto;
     }
 
     DataView.defaultOption = {
@@ -287,30 +287,30 @@ define(function (require) {
         buttonTextColor: '#fff'
     };
 
-    DataView.prototype.onclick = function (ecModel, api) {
+    DataView.prototype.onclick = function (ecDto, api) {
         var container = api.getDom();
-        var model = this.model;
+        var Dto = this.Dto;
         if (this._dom) {
             container.removeChild(this._dom);
         }
         var root = document.createElement('div');
         root.style.cssText = 'position:absolute;left:5px;top:5px;bottom:5px;right:5px;';
-        root.style.backgroundColor = model.get('backgroundColor') || '#fff';
+        root.style.backgroundColor = Dto.get('backgroundColor') || '#fff';
 
         // Create elements
         var header = document.createElement('h4');
-        var lang = model.get('lang') || [];
-        header.innerHTML = lang[0] || model.get('title');
+        var lang = Dto.get('lang') || [];
+        header.innerHTML = lang[0] || Dto.get('title');
         header.style.cssText = 'margin: 10px 20px;';
-        header.style.color = model.get('textColor');
+        header.style.color = Dto.get('textColor');
 
         var viewMain = document.createElement('div');
         var textarea = document.createElement('textarea');
         viewMain.style.cssText = 'display:block;width:100%;overflow:hidden;';
 
-        var optionToContent = model.get('optionToContent');
-        var contentToOption = model.get('contentToOption');
-        var result = getContentFromModel(ecModel);
+        var optionToContent = Dto.get('optionToContent');
+        var contentToOption = Dto.get('contentToOption');
+        var result = getContentFromDto(ecDto);
         if (typeof optionToContent === 'function') {
             var htmlOrDom = optionToContent(api.getOption());
             if (typeof htmlOrDom === 'string') {
@@ -323,11 +323,11 @@ define(function (require) {
         else {
             // Use default textarea
             viewMain.appendChild(textarea);
-            textarea.readOnly = model.get('readOnly');
+            textarea.readOnly = Dto.get('readOnly');
             textarea.style.cssText = 'width:100%;height:100%;font-family:monospace;font-size:14px;line-height:1.6rem;';
-            textarea.style.color = model.get('textColor');
-            textarea.style.borderColor = model.get('textareaBorderColor');
-            textarea.style.backgroundColor = model.get('textareaColor');
+            textarea.style.color = Dto.get('textColor');
+            textarea.style.borderColor = Dto.get('textareaBorderColor');
+            textarea.style.backgroundColor = Dto.get('textareaColor');
             textarea.value = result.value;
         }
 
@@ -341,8 +341,8 @@ define(function (require) {
         var closeButton = document.createElement('div');
         var refreshButton = document.createElement('div');
 
-        buttonStyle += ';background-color:' + model.get('buttonColor');
-        buttonStyle += ';color:' + model.get('buttonTextColor');
+        buttonStyle += ';background-color:' + Dto.get('buttonColor');
+        buttonStyle += ';color:' + Dto.get('buttonTextColor');
 
         var self = this;
 
@@ -381,7 +381,7 @@ define(function (require) {
         refreshButton.style.cssText = buttonStyle;
         closeButton.style.cssText = buttonStyle;
 
-        !model.get('readOnly') && buttonContainer.appendChild(refreshButton);
+        !Dto.get('readOnly') && buttonContainer.appendChild(refreshButton);
         buttonContainer.appendChild(closeButton);
 
         // http://stackoverflow.com/questions/6637341/use-tab-to-indent-in-textarea
@@ -413,12 +413,12 @@ define(function (require) {
         this._dom = root;
     };
 
-    DataView.prototype.remove = function (ecModel, api) {
+    DataView.prototype.remove = function (ecDto, api) {
         this._dom && api.getDom().removeChild(this._dom);
     };
 
-    DataView.prototype.dispose = function (ecModel, api) {
-        this.remove(ecModel, api);
+    DataView.prototype.dispose = function (ecDto, api) {
+        this.remove(ecDto, api);
     };
 
     /**
@@ -448,11 +448,11 @@ define(function (require) {
         type: 'changeDataView',
         event: 'dataViewChanged',
         update: 'prepareAndUpdate'
-    }, function (payload, ecModel) {
+    }, function (payload, ecDto) {
         var newSeriesOptList = [];
         zrUtil.each(payload.newOption.series, function (seriesOpt) {
-            var seriesModel = ecModel.getSeriesByName(seriesOpt.name)[0];
-            if (!seriesModel) {
+            var seriesDto = ecDto.getSeriesByName(seriesOpt.name)[0];
+            if (!seriesDto) {
                 // New created series
                 // Geuss the series type
                 newSeriesOptList.push(zrUtil.extend({
@@ -461,7 +461,7 @@ define(function (require) {
                 }, seriesOpt));
             }
             else {
-                var originalData = seriesModel.get('data');
+                var originalData = seriesDto.get('data');
                 newSeriesOptList.push({
                     name: seriesOpt.name,
                     data: tryMergeDataOption(seriesOpt.data, originalData)
@@ -469,7 +469,7 @@ define(function (require) {
             }
         });
 
-        ecModel.mergeOption(zrUtil.defaults({
+        ecDto.mergeOption(zrUtil.defaults({
             series: newSeriesOptList
         }, payload.newOption));
     });

@@ -9,7 +9,7 @@ define(function (require) {
 
     require('./visualMap/typeDefaulter');
     require('./visualMap/visualCoding');
-    require('./visualMap/ContinuousModel');
+    require('./visualMap/ContinuousDto');
     require('./visualMap/ContinuousView');
     require('./visualMap/visualMapAction');
 

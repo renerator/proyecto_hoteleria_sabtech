@@ -3,7 +3,7 @@ define(function (require) {
     'use strict';
 
     var completeDimensions = require('../../data/helper/completeDimensions');
-    var SeriesModel = require('../../model/Series');
+    var SeriesDto = require('../../Dto/Series');
     var List = require('../../data/List');
     var zrUtil = require('zrender/core/util');
     var formatUtil = require('../../util/format');
@@ -12,7 +12,7 @@ define(function (require) {
 
     var DATA_NAME_INDEX = 2;
 
-    var ThemeRiverSeries = SeriesModel.extend({
+    var ThemeRiverSeries = SeriesDto.extend({
 
         type: 'series.themeRiver',
 
@@ -104,17 +104,17 @@ define(function (require) {
         /**
          * @override
          * @param  {Object} option  the initial option that user gived
-         * @param  {module:echarts/model/Model} ecModel
+         * @param  {module:echarts/Dto/Dto} ecDto
          * @return {module:echarts/data/List}
          */
-        getInitialData: function (option, ecModel) {
+        getInitialData: function (option, ecDto) {
 
             var dimensions = [];
 
-            var singleAxisModel = ecModel.getComponent(
+            var singleAxisDto = ecDto.getComponent(
                 'singleAxis', this.option.singleAxisIndex
             );
-            var axisType = singleAxisModel.get('type');
+            var axisType = singleAxisDto.get('type');
 
             dimensions = [
                 {

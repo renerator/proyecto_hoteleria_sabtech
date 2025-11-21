@@ -4,33 +4,33 @@
 define(function(require) {
 
     var zrUtil = require('zrender/core/util');
-    var modelUtil = require('../../util/model');
+    var DtoUtil = require('../../util/Dto');
     var echarts = require('../../echarts');
 
 
-    echarts.registerAction('dataZoom', function (payload, ecModel) {
+    echarts.registerAction('dataZoom', function (payload, ecDto) {
 
-        var linkedNodesFinder = modelUtil.createLinkedNodesFinder(
-            zrUtil.bind(ecModel.eachComponent, ecModel, 'dataZoom'),
-            modelUtil.eachAxisDim,
-            function (model, dimNames) {
-                return model.get(dimNames.axisIndex);
+        var linkedNodesFinder = DtoUtil.createLinkedNodesFinder(
+            zrUtil.bind(ecDto.eachComponent, ecDto, 'dataZoom'),
+            DtoUtil.eachAxisDim,
+            function (Dto, dimNames) {
+                return Dto.get(dimNames.axisIndex);
             }
         );
 
-        var effectedModels = [];
+        var effectedDtos = [];
 
-        ecModel.eachComponent(
+        ecDto.eachComponent(
             {mainType: 'dataZoom', query: payload},
-            function (model, index) {
-                effectedModels.push.apply(
-                    effectedModels, linkedNodesFinder(model).nodes
+            function (Dto, index) {
+                effectedDtos.push.apply(
+                    effectedDtos, linkedNodesFinder(Dto).nodes
                 );
             }
         );
 
-        zrUtil.each(effectedModels, function (dataZoomModel, index) {
-            dataZoomModel.setRawRange({
+        zrUtil.each(effectedDtos, function (dataZoomDto, index) {
+            dataZoomDto.setRawRange({
                 start: payload.start,
                 end: payload.end,
                 startValue: payload.startValue,

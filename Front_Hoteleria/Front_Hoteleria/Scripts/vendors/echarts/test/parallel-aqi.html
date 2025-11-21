@@ -170,7 +170,7 @@
 
                 chart.on('axisAreaSelected', function (event) {
 
-                    var indices = chart.getModel().getSeries()[0].getRawIndicesByActiveState('active');
+                    var indices = chart.getDto().getSeries()[0].getRawIndicesByActiveState('active');
                     console.log('北京: ', indices);
 
                 });

@@ -16,15 +16,15 @@ define(function (require) {
     /**
      * @public
      */
-    function update(ecModel, api, payload) {
+    function update(ecDto, api, payload) {
         // Layout result in each node:
         // {x, y, width, height, area, borderWidth}
         var condition = {mainType: 'series', subType: 'treemap', query: payload};
-        ecModel.eachComponent(condition, function (seriesModel) {
+        ecDto.eachComponent(condition, function (seriesDto) {
 
             var ecWidth = api.getWidth();
             var ecHeight = api.getHeight();
-            var seriesOption = seriesModel.option;
+            var seriesOption = seriesDto.option;
 
             var size = seriesOption.size || []; // Compatible with ec2.
             var containerWidth = parsePercent(
@@ -37,7 +37,7 @@ define(function (require) {
             );
 
             var layoutInfo = layout.getLayoutRect(
-                seriesModel.getBoxLayoutParams(),
+                seriesDto.getBoxLayoutParams(),
                 {
                     width: api.getWidth(),
                     height: api.getHeight()
@@ -46,16 +46,16 @@ define(function (require) {
 
             // Fetch payload info.
             var payloadType = payload && payload.type;
-            var targetInfo = helper.retrieveTargetInfo(payload, seriesModel);
+            var targetInfo = helper.retrieveTargetInfo(payload, seriesDto);
             var rootRect = (payloadType === 'treemapRender' || payloadType === 'treemapMove')
                 ? payload.rootRect : null;
-            var viewRoot = seriesModel.getViewRoot();
+            var viewRoot = seriesDto.getViewRoot();
             var viewAbovePath = helper.getPathToRoot(viewRoot);
 
             if (payloadType !== 'treemapMove') {
                 var rootSize = payloadType === 'treemapZoomToNode'
                     ? estimateRootSize(
-                        seriesModel, targetInfo, viewRoot, containerWidth, containerHeight
+                        seriesDto, targetInfo, viewRoot, containerWidth, containerHeight
                     )
                     : rootRect
                     ? [rootRect.width, rootRect.height]
@@ -98,14 +98,14 @@ define(function (require) {
                 });
             }
 
-            var treeRoot = seriesModel.getData().tree.root;
+            var treeRoot = seriesDto.getData().tree.root;
 
             treeRoot.setLayout(
                 calculateRootPosition(layoutInfo, rootRect, targetInfo),
                 true
             );
 
-            seriesModel.setLayoutInfo(layoutInfo);
+            seriesDto.setLayoutInfo(layoutInfo);
 
             // FIXME
             // 现在没有clip功能，暂时取ec高宽。
@@ -146,11 +146,11 @@ define(function (require) {
         height = thisLayout.height;
 
         // Considering border and gap
-        var itemStyleModel = node.getModel('itemStyle.normal');
-        var borderWidth = itemStyleModel.get('borderWidth');
-        var halfGapWidth = itemStyleModel.get('gapWidth') / 2;
+        var itemStyleDto = node.getDto('itemStyle.normal');
+        var borderWidth = itemStyleDto.get('borderWidth');
+        var halfGapWidth = itemStyleDto.get('gapWidth') / 2;
         var layoutOffset = borderWidth - halfGapWidth;
-        var nodeModel = node.getModel();
+        var nodeDto = node.getDto();
 
         node.setLayout({borderWidth: borderWidth}, true);
 
@@ -159,7 +159,7 @@ define(function (require) {
 
         var totalArea = width * height;
         var viewChildren = initChildren(
-            node, nodeModel, totalArea, options, hideChildren, depth
+            node, nodeDto, totalArea, options, hideChildren, depth
         );
 
         if (!viewChildren.length) {
@@ -199,7 +199,7 @@ define(function (require) {
         }
 
         if (!hideChildren) {
-            var childrenVisibleMin = nodeModel.get('childrenVisibleMin');
+            var childrenVisibleMin = nodeDto.get('childrenVisibleMin');
             if (childrenVisibleMin != null && totalArea < childrenVisibleMin) {
                 hideChildren = true;
             }
@@ -213,7 +213,7 @@ define(function (require) {
     /**
      * Set area to each child, and calculate data extent for visual coding.
      */
-    function initChildren(node, nodeModel, totalArea, options, hideChildren, depth) {
+    function initChildren(node, nodeDto, totalArea, options, hideChildren, depth) {
         var viewChildren = node.children || [];
         var orderBy = options.sort;
         orderBy !== 'asc' && orderBy !== 'desc' && (orderBy = null);
@@ -232,13 +232,13 @@ define(function (require) {
 
         sort(viewChildren, orderBy);
 
-        var info = statistic(nodeModel, viewChildren, orderBy);
+        var info = statistic(nodeDto, viewChildren, orderBy);
 
         if (info.sum === 0) {
             return (node.viewChildren = []);
         }
 
-        info.sum = filterByThreshold(nodeModel, totalArea, info.sum, orderBy, viewChildren);
+        info.sum = filterByThreshold(nodeDto, totalArea, info.sum, orderBy, viewChildren);
 
         if (info.sum === 0) {
             return (node.viewChildren = []);
@@ -265,14 +265,14 @@ define(function (require) {
     /**
      * Consider 'visibleMin'. Modify viewChildren and get new sum.
      */
-    function filterByThreshold(nodeModel, totalArea, sum, orderBy, orderedChildren) {
+    function filterByThreshold(nodeDto, totalArea, sum, orderBy, orderedChildren) {
 
         // visibleMin is not supported yet when no option.sort.
         if (!orderBy) {
             return sum;
         }
 
-        var visibleMin = nodeModel.get('visibleMin');
+        var visibleMin = nodeDto.get('visibleMin');
         var len = orderedChildren.length;
         var deletePoint = len;
 
@@ -311,7 +311,7 @@ define(function (require) {
     /**
      * Statistic
      */
-    function statistic(nodeModel, children, orderBy) {
+    function statistic(nodeDto, children, orderBy) {
         // Calculate sum.
         var sum = 0;
         for (var i = 0, len = children.length; i < len; i++) {
@@ -323,7 +323,7 @@ define(function (require) {
         // but not filtered view children, otherwise visual mapping will not
         // be stable when zoom (where children is filtered by visibleMin).
 
-        var dimension = nodeModel.get('visualDimension');
+        var dimension = nodeDto.get('visualDimension');
         var dataExtent;
 
         // The same as area dimension.
@@ -427,7 +427,7 @@ define(function (require) {
     }
 
     // Return [containerWidth, containerHeight] as defualt.
-    function estimateRootSize(seriesModel, targetInfo, viewRoot, containerWidth, containerHeight) {
+    function estimateRootSize(seriesDto, targetInfo, viewRoot, containerWidth, containerHeight) {
         // If targetInfo.node exists, we zoom to the node,
         // so estimate whold width and heigth by target node.
         var currNode = (targetInfo || {}).node;
@@ -439,7 +439,7 @@ define(function (require) {
 
         var parent;
         var viewArea = containerWidth * containerHeight;
-        var area = viewArea * seriesModel.option.zoomToNodeRatio;
+        var area = viewArea * seriesDto.option.zoomToNodeRatio;
 
         while (parent = currNode.parentNode) { // jshint ignore:line
             var sum = 0;
@@ -454,7 +454,7 @@ define(function (require) {
             }
             area *= sum / currNodeValue;
 
-            var borderWidth = parent.getModel('itemStyle.normal').get('borderWidth');
+            var borderWidth = parent.getDto('itemStyle.normal').get('borderWidth');
 
             if (isFinite(borderWidth)) {
                 // Considering border, suppose aspect ratio is 1.

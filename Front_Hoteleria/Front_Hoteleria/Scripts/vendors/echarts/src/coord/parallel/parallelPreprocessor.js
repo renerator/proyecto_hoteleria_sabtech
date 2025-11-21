@@ -1,7 +1,7 @@
 define(function (require) {
 
     var zrUtil = require('zrender/core/util');
-    var modelUtil = require('../../util/model');
+    var DtoUtil = require('../../util/Dto');
 
     return function (option) {
         createParallelIfNeeded(option);
@@ -35,7 +35,7 @@ define(function (require) {
      * @inner
      */
     function mergeAxisOptionFromParallel(option) {
-        var axes = modelUtil.normalizeToArray(option.parallelAxis);
+        var axes = DtoUtil.normalizeToArray(option.parallelAxis);
 
         zrUtil.each(axes, function (axisOption) {
             if (!zrUtil.isObject(axisOption)) {
@@ -43,7 +43,7 @@ define(function (require) {
             }
 
             var parallelIndex = axisOption.parallelIndex || 0;
-            var parallelOption = modelUtil.normalizeToArray(option.parallel)[parallelIndex];
+            var parallelOption = DtoUtil.normalizeToArray(option.parallel)[parallelIndex];
 
             if (parallelOption && parallelOption.parallelAxisDefault) {
                 zrUtil.merge(axisOption, parallelOption.parallelAxisDefault, false);

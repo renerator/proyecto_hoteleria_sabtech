@@ -5,10 +5,10 @@ define(function (require) {
 
     require('./dataZoom/typeDefaulter');
 
-    require('./dataZoom/DataZoomModel');
+    require('./dataZoom/DataZoomDto');
     require('./dataZoom/DataZoomView');
 
-    require('./dataZoom/InsideZoomModel');
+    require('./dataZoom/InsideZoomDto');
     require('./dataZoom/InsideZoomView');
 
     require('./dataZoom/dataZoomProcessor');

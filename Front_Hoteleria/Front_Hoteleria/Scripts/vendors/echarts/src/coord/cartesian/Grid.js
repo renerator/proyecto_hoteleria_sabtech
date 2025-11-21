@@ -17,20 +17,20 @@ define(function(require, factory) {
     var ifAxisCrossZero = axisHelper.ifAxisCrossZero;
     var niceScaleExtent = axisHelper.niceScaleExtent;
 
-    // 依赖 GridModel, AxisModel 做预处理
-    require('./GridModel');
+    // 依赖 GridDto, AxisDto 做预处理
+    require('./GridDto');
 
     /**
      * Check if the axis is used in the specified grid
      * @inner
      */
-    function isAxisUsedInTheGrid(axisModel, gridModel, ecModel) {
-        return ecModel.getComponent('grid', axisModel.get('gridIndex')) === gridModel;
+    function isAxisUsedInTheGrid(axisDto, gridDto, ecDto) {
+        return ecDto.getComponent('grid', axisDto.get('gridIndex')) === gridDto;
     }
 
     function getLabelUnionRect(axis) {
-        var axisModel = axis.model;
-        var labels = axisModel.getFormattedLabels();
+        var axisDto = axis.Dto;
+        var labels = axisDto.getFormattedLabels();
         var rect;
         var step = 1;
         var labelCount = labels.length;
@@ -40,7 +40,7 @@ define(function(require, factory) {
         }
         for (var i = 0; i < labelCount; i += step) {
             if (!axis.isLabelIgnored(i)) {
-                var singleRect = axisModel.getTextRect(labels[i]);
+                var singleRect = axisDto.getTextRect(labels[i]);
                 // FIXME consider label rotate
                 rect ? rect.union(singleRect) : (rect = singleRect);
             }
@@ -48,7 +48,7 @@ define(function(require, factory) {
         return rect;
     }
 
-    function Grid(gridModel, ecModel, api) {
+    function Grid(gridDto, ecDto, api) {
         /**
          * @type {Object.<string, module:echarts/coord/cartesian/Cartesian2D>}
          * @private
@@ -73,9 +73,9 @@ define(function(require, factory) {
          */
         this._axesList = [];
 
-        this._initCartesian(gridModel, ecModel, api);
+        this._initCartesian(gridDto, ecDto, api);
 
-        this._model = gridModel;
+        this._Dto = gridDto;
     }
 
     var gridProto = Grid.prototype;
@@ -86,11 +86,11 @@ define(function(require, factory) {
         return this._rect;
     };
 
-    gridProto.update = function (ecModel, api) {
+    gridProto.update = function (ecDto, api) {
 
         var axesMap = this._axesMap;
 
-        this._updateScale(ecModel, this._model);
+        this._updateScale(ecDto, this._Dto);
 
         function ifAxisCanNotOnZero(otherAxisDim) {
             var axes = axesMap[otherAxisDim];
@@ -104,10 +104,10 @@ define(function(require, factory) {
         }
 
         each(axesMap.x, function (xAxis) {
-            niceScaleExtent(xAxis, xAxis.model);
+            niceScaleExtent(xAxis, xAxis.Dto);
         });
         each(axesMap.y, function (yAxis) {
-            niceScaleExtent(yAxis, yAxis.model);
+            niceScaleExtent(yAxis, yAxis.Dto);
         });
         // Fix configuration
         each(axesMap.x, function (xAxis) {
@@ -126,18 +126,18 @@ define(function(require, factory) {
 
         // Resize again if containLabel is enabled
         // FIXME It may cause getting wrong grid size in data processing stage
-        this.resize(this._model, api);
+        this.resize(this._Dto, api);
     };
 
     /**
      * Resize the grid
-     * @param {module:echarts/coord/cartesian/GridModel} gridModel
+     * @param {module:echarts/coord/cartesian/GridDto} gridDto
      * @param {module:echarts/ExtensionAPI} api
      */
-    gridProto.resize = function (gridModel, api) {
+    gridProto.resize = function (gridDto, api) {
 
         var gridRect = layout.getLayoutRect(
-            gridModel.getBoxLayoutParams(), {
+            gridDto.getBoxLayoutParams(), {
                 width: api.getWidth(),
                 height: api.getHeight()
             });
@@ -149,13 +149,13 @@ define(function(require, factory) {
         adjustAxes();
 
         // Minus label size
-        if (gridModel.get('containLabel')) {
+        if (gridDto.get('containLabel')) {
             each(axesList, function (axis) {
-                if (!axis.model.get('axisLabel.inside')) {
+                if (!axis.Dto.get('axisLabel.inside')) {
                     var labelUnionRect = getLabelUnionRect(axis);
                     if (labelUnionRect) {
                         var dim = axis.isHorizontal() ? 'height' : 'width';
-                        var margin = axis.model.get('axisLabel.margin');
+                        var margin = axis.Dto.get('axisLabel.margin');
                         gridRect[dim] -= labelUnionRect[dim] + margin;
                         if (axis.position === 'top') {
                             gridRect.y += labelUnionRect.height + margin;
@@ -207,7 +207,7 @@ define(function(require, factory) {
      * Initialize cartesian coordinate systems
      * @private
      */
-    gridProto._initCartesian = function (gridModel, ecModel, api) {
+    gridProto._initCartesian = function (gridDto, ecDto, api) {
         var axisPositionUsed = {
             left: false,
             right: false,
@@ -225,8 +225,8 @@ define(function(require, factory) {
         };
 
         /// Create axis
-        ecModel.eachComponent('xAxis', createAxisCreator('x'), this);
-        ecModel.eachComponent('yAxis', createAxisCreator('y'), this);
+        ecDto.eachComponent('xAxis', createAxisCreator('x'), this);
+        ecDto.eachComponent('yAxis', createAxisCreator('y'), this);
 
         if (!axesCount.x || !axesCount.y) {
             // Roll back when there no either x or y axis
@@ -254,12 +254,12 @@ define(function(require, factory) {
         }, this);
 
         function createAxisCreator(axisType) {
-            return function (axisModel, idx) {
-                if (!isAxisUsedInTheGrid(axisModel, gridModel, ecModel)) {
+            return function (axisDto, idx) {
+                if (!isAxisUsedInTheGrid(axisDto, gridDto, ecDto)) {
                     return;
                 }
 
-                var axisPosition = axisModel.get('position');
+                var axisPosition = axisDto.get('position');
                 if (axisType === 'x') {
                     // Fix position
                     if (axisPosition !== 'top' && axisPosition !== 'bottom') {
@@ -283,23 +283,23 @@ define(function(require, factory) {
                 axisPositionUsed[axisPosition] = true;
 
                 var axis = new Axis2D(
-                    axisType, axisHelper.createScaleByModel(axisModel),
+                    axisType, axisHelper.createScaleByDto(axisDto),
                     [0, 0],
-                    axisModel.get('type'),
+                    axisDto.get('type'),
                     axisPosition
                 );
 
                 var isCategory = axis.type === 'category';
-                axis.onBand = isCategory && axisModel.get('boundaryGap');
-                axis.inverse = axisModel.get('inverse');
+                axis.onBand = isCategory && axisDto.get('boundaryGap');
+                axis.inverse = axisDto.get('inverse');
 
-                axis.onZero = axisModel.get('axisLine.onZero');
+                axis.onZero = axisDto.get('axisLine.onZero');
 
-                // Inject axis into axisModel
-                axisModel.axis = axis;
+                // Inject axis into axisDto
+                axisDto.axis = axis;
 
-                // Inject axisModel into axis
-                axis.model = axisModel;
+                // Inject axisDto into axis
+                axis.Dto = axisDto;
 
                 // Index of axis, can be used as key
                 axis.index = idx;
@@ -314,42 +314,42 @@ define(function(require, factory) {
 
     /**
      * Update cartesian properties from series
-     * @param  {module:echarts/model/Option} option
+     * @param  {module:echarts/Dto/Option} option
      * @private
      */
-    gridProto._updateScale = function (ecModel, gridModel) {
+    gridProto._updateScale = function (ecDto, gridDto) {
         // Reset scale
         zrUtil.each(this._axesList, function (axis) {
             axis.scale.setExtent(Infinity, -Infinity);
         });
-        ecModel.eachSeries(function (seriesModel) {
-            if (seriesModel.get('coordinateSystem') === 'cartesian2d') {
-                var xAxisIndex = seriesModel.get('xAxisIndex');
-                var yAxisIndex = seriesModel.get('yAxisIndex');
+        ecDto.eachSeries(function (seriesDto) {
+            if (seriesDto.get('coordinateSystem') === 'cartesian2d') {
+                var xAxisIndex = seriesDto.get('xAxisIndex');
+                var yAxisIndex = seriesDto.get('yAxisIndex');
 
-                var xAxisModel = ecModel.getComponent('xAxis', xAxisIndex);
-                var yAxisModel = ecModel.getComponent('yAxis', yAxisIndex);
+                var xAxisDto = ecDto.getComponent('xAxis', xAxisIndex);
+                var yAxisDto = ecDto.getComponent('yAxis', yAxisIndex);
 
-                if (!isAxisUsedInTheGrid(xAxisModel, gridModel, ecModel)
-                    || !isAxisUsedInTheGrid(yAxisModel, gridModel, ecModel)
+                if (!isAxisUsedInTheGrid(xAxisDto, gridDto, ecDto)
+                    || !isAxisUsedInTheGrid(yAxisDto, gridDto, ecDto)
                  ) {
                     return;
                 }
 
                 var cartesian = this.getCartesian(xAxisIndex, yAxisIndex);
-                var data = seriesModel.getData();
+                var data = seriesDto.getData();
                 var xAxis = cartesian.getAxis('x');
                 var yAxis = cartesian.getAxis('y');
 
                 if (data.type === 'list') {
-                    unionExtent(data, xAxis, seriesModel);
-                    unionExtent(data, yAxis, seriesModel);
+                    unionExtent(data, xAxis, seriesDto);
+                    unionExtent(data, yAxis, seriesDto);
                 }
             }
         }, this);
 
-        function unionExtent(data, axis, seriesModel) {
-            each(seriesModel.coordDimToDataDim(axis.dim), function (dim) {
+        function unionExtent(data, axis, seriesDto) {
+            each(seriesDto.coordDimToDataDim(axis.dim), function (dim) {
                 axis.scale.unionExtent(data.getDataExtent(
                     dim, axis.scale.type !== 'ordinal'
                 ));
@@ -381,29 +381,29 @@ define(function(require, factory) {
             };
     }
 
-    Grid.create = function (ecModel, api) {
+    Grid.create = function (ecDto, api) {
         var grids = [];
-        ecModel.eachComponent('grid', function (gridModel, idx) {
-            var grid = new Grid(gridModel, ecModel, api);
+        ecDto.eachComponent('grid', function (gridDto, idx) {
+            var grid = new Grid(gridDto, ecDto, api);
             grid.name = 'grid_' + idx;
-            grid.resize(gridModel, api);
+            grid.resize(gridDto, api);
 
-            gridModel.coordinateSystem = grid;
+            gridDto.coordinateSystem = grid;
 
             grids.push(grid);
         });
 
-        // Inject the coordinateSystems into seriesModel
-        ecModel.eachSeries(function (seriesModel) {
-            if (seriesModel.get('coordinateSystem') !== 'cartesian2d') {
+        // Inject the coordinateSystems into seriesDto
+        ecDto.eachSeries(function (seriesDto) {
+            if (seriesDto.get('coordinateSystem') !== 'cartesian2d') {
                 return;
             }
-            var xAxisIndex = seriesModel.get('xAxisIndex');
+            var xAxisIndex = seriesDto.get('xAxisIndex');
             // TODO Validate
-            var xAxisModel = ecModel.getComponent('xAxis', xAxisIndex);
-            var grid = grids[xAxisModel.get('gridIndex')];
-            seriesModel.coordinateSystem = grid.getCartesian(
-                xAxisIndex, seriesModel.get('yAxisIndex')
+            var xAxisDto = ecDto.getComponent('xAxis', xAxisIndex);
+            var grid = grids[xAxisDto.get('gridIndex')];
+            seriesDto.coordinateSystem = grid.getCartesian(
+                xAxisIndex, seriesDto.get('yAxisIndex')
             );
         });
 

@@ -5,9 +5,9 @@ define(function (require) {
 
     var parsePercent = number.parsePercent;
 
-    function getViewRect(seriesModel, api) {
+    function getViewRect(seriesDto, api) {
         return layout.getLayoutRect(
-            seriesModel.getBoxLayoutParams(), {
+            seriesDto.getBoxLayoutParams(), {
                 width: api.getWidth(),
                 height: api.getHeight()
             }
@@ -31,11 +31,11 @@ define(function (require) {
 
     function labelLayout (data) {
         data.each(function (idx) {
-            var itemModel = data.getItemModel(idx);
-            var labelModel = itemModel.getModel('label.normal');
-            var labelPosition = labelModel.get('position');
+            var itemDto = data.getItemDto(idx);
+            var labelDto = itemDto.getDto('label.normal');
+            var labelPosition = labelDto.get('position');
 
-            var labelLineModel = itemModel.getModel('labelLine.normal');
+            var labelLineDto = itemDto.getDto('labelLine.normal');
 
             var layout = data.getItemLayout(idx);
             var points = layout.points;
@@ -60,7 +60,7 @@ define(function (require) {
                 var x1;
                 var y1;
                 var x2;
-                var labelLineLen = labelLineModel.get('length');
+                var labelLineLen = labelLineDto.get('length');
                 if (labelPosition === 'left') {
                     // Left side
                     x1 = (points[3][0] + points[0][0]) / 2;
@@ -94,20 +94,20 @@ define(function (require) {
         });
     }
 
-    return function (ecModel, api) {
-        ecModel.eachSeriesByType('funnel', function (seriesModel) {
-            var data = seriesModel.getData();
-            var sort = seriesModel.get('sort');
-            var viewRect = getViewRect(seriesModel, api);
+    return function (ecDto, api) {
+        ecDto.eachSeriesByType('funnel', function (seriesDto) {
+            var data = seriesDto.getData();
+            var sort = seriesDto.get('sort');
+            var viewRect = getViewRect(seriesDto, api);
             var indices = getSortedIndices(data, sort);
 
             var sizeExtent = [
-                parsePercent(seriesModel.get('minSize'), viewRect.width),
-                parsePercent(seriesModel.get('maxSize'), viewRect.width)
+                parsePercent(seriesDto.get('minSize'), viewRect.width),
+                parsePercent(seriesDto.get('maxSize'), viewRect.width)
             ];
             var dataExtent = data.getDataExtent('value');
-            var min = seriesModel.get('min');
-            var max = seriesModel.get('max');
+            var min = seriesDto.get('min');
+            var max = seriesDto.get('max');
             if (min == null) {
                 min = Math.min(dataExtent[0], 0);
             }
@@ -115,8 +115,8 @@ define(function (require) {
                 max = dataExtent[1];
             }
 
-            var funnelAlign = seriesModel.get('funnelAlign');
-            var gap = seriesModel.get('gap');
+            var funnelAlign = seriesDto.get('funnelAlign');
+            var gap = seriesDto.get('gap');
             var itemHeight = (viewRect.height - gap * (data.count() - 1)) / data.count();
 
             var y = viewRect.y;

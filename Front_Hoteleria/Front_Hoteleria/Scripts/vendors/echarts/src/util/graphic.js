@@ -356,39 +356,39 @@ define(function(require) {
     /**
      * Set text option in the style
      * @param {Object} textStyle
-     * @param {module:echarts/model/Model} labelModel
+     * @param {module:echarts/Dto/Dto} labelDto
      * @param {string} color
      */
-    graphic.setText = function (textStyle, labelModel, color) {
-        var labelPosition = labelModel.getShallow('position') || 'inside';
+    graphic.setText = function (textStyle, labelDto, color) {
+        var labelPosition = labelDto.getShallow('position') || 'inside';
         var labelColor = labelPosition.indexOf('inside') >= 0 ? 'white' : color;
-        var textStyleModel = labelModel.getModel('textStyle');
+        var textStyleDto = labelDto.getDto('textStyle');
         zrUtil.extend(textStyle, {
-            textDistance: labelModel.getShallow('distance') || 5,
-            textFont: textStyleModel.getFont(),
+            textDistance: labelDto.getShallow('distance') || 5,
+            textFont: textStyleDto.getFont(),
             textPosition: labelPosition,
-            textFill: textStyleModel.getTextColor() || labelColor
+            textFill: textStyleDto.getTextColor() || labelColor
         });
     };
 
-    function animateOrSetProps(isUpdate, el, props, animatableModel, dataIndex, cb) {
+    function animateOrSetProps(isUpdate, el, props, animatableDto, dataIndex, cb) {
         if (typeof dataIndex === 'function') {
             cb = dataIndex;
             dataIndex = null;
         }
 
         var postfix = isUpdate ? 'Update' : '';
-        var duration = animatableModel
-            && animatableModel.getShallow('animationDuration' + postfix);
-        var animationEasing = animatableModel
-            && animatableModel.getShallow('animationEasing' + postfix);
-        var animationDelay = animatableModel
-            && animatableModel.getShallow('animationDelay' + postfix);
+        var duration = animatableDto
+            && animatableDto.getShallow('animationDuration' + postfix);
+        var animationEasing = animatableDto
+            && animatableDto.getShallow('animationEasing' + postfix);
+        var animationDelay = animatableDto
+            && animatableDto.getShallow('animationDelay' + postfix);
         if (typeof animationDelay === 'function') {
             animationDelay = animationDelay(dataIndex);
         }
 
-        animatableModel && animatableModel.getShallow('animation')
+        animatableDto && animatableDto.getShallow('animation')
             ? el.animateTo(props, duration, animationDelay || 0, animationEasing, cb)
             : (el.attr(props), cb && cb());
     }
@@ -396,17 +396,17 @@ define(function(require) {
      * Update graphic element properties with or without animation according to the configuration in series
      * @param {module:zrender/Element} el
      * @param {Object} props
-     * @param {module:echarts/model/Model} [animatableModel]
+     * @param {module:echarts/Dto/Dto} [animatableDto]
      * @param {number} [dataIndex]
      * @param {Function} [cb]
      * @example
      *     graphic.updateProps(el, {
      *         position: [100, 100]
-     *     }, seriesModel, dataIndex, function () { console.log('Animation done!'); });
+     *     }, seriesDto, dataIndex, function () { console.log('Animation done!'); });
      *     // Or
      *     graphic.updateProps(el, {
      *         position: [100, 100]
-     *     }, seriesModel, function () { console.log('Animation done!'); });
+     *     }, seriesDto, function () { console.log('Animation done!'); });
      */
     graphic.updateProps = zrUtil.curry(animateOrSetProps, true);
 
@@ -414,7 +414,7 @@ define(function(require) {
      * Init graphic element properties with or without animation according to the configuration in series
      * @param {module:zrender/Element} el
      * @param {Object} props
-     * @param {module:echarts/model/Model} [animatableModel]
+     * @param {module:echarts/Dto/Dto} [animatableDto]
      * @param {Function} cb
      */
     graphic.initProps = zrUtil.curry(animateOrSetProps, false);

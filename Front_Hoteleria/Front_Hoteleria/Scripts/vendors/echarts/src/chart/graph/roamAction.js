@@ -19,17 +19,17 @@ define(function (require) {
      * @property {number} [originY]
      */
 
-    echarts.registerAction(actionInfo, function (payload, ecModel) {
-        ecModel.eachComponent({mainType: 'series', query: payload}, function (seriesModel) {
-            var coordSys = seriesModel.coordinateSystem;
+    echarts.registerAction(actionInfo, function (payload, ecDto) {
+        ecDto.eachComponent({mainType: 'series', query: payload}, function (seriesDto) {
+            var coordSys = seriesDto.coordinateSystem;
 
             var res = roamHelper.updateCenterAndZoom(coordSys, payload);
 
-            seriesModel.setCenter
-                && seriesModel.setCenter(res.center);
+            seriesDto.setCenter
+                && seriesDto.setCenter(res.center);
 
-            seriesModel.setZoom
-                && seriesModel.setZoom(res.zoom);
+            seriesDto.setZoom
+                && seriesDto.setZoom(res.zoom);
         });
     });
 });

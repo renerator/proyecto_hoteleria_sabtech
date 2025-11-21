@@ -5,13 +5,13 @@ define(function (require) {
 
     var echarts = require('../../echarts');
 
-    echarts.registerProcessor('filter', function (ecModel, api) {
+    echarts.registerProcessor('filter', function (ecDto, api) {
 
-        ecModel.eachComponent('dataZoom', function (dataZoomModel) {
-            // We calculate window and reset axis here but not in model
+        ecDto.eachComponent('dataZoom', function (dataZoomDto) {
+            // We calculate window and reset axis here but not in Dto
             // init stage and not after action dispatch handler, because
             // reset should be called after seriesData.restoreData.
-            dataZoomModel.eachTargetAxis(resetSingleAxis);
+            dataZoomDto.eachTargetAxis(resetSingleAxis);
 
             // Caution: data zoom filtering is order sensitive when using
             // percent range and no min/max/scale set on axis.
@@ -27,17 +27,17 @@ define(function (require) {
             // while sliding y-dataZoom will only change the range of yAxis.
             // So we should filter x-axis after reset x-axis immediately,
             // and then reset y-axis and filter y-axis.
-            dataZoomModel.eachTargetAxis(filterSingleAxis);
+            dataZoomDto.eachTargetAxis(filterSingleAxis);
         });
 
-        ecModel.eachComponent('dataZoom', function (dataZoomModel) {
+        ecDto.eachComponent('dataZoom', function (dataZoomDto) {
             // Fullfill all of the range props so that user
             // is able to get them from chart.getOption().
-            var axisProxy = dataZoomModel.findRepresentativeAxisProxy();
+            var axisProxy = dataZoomDto.findRepresentativeAxisProxy();
             var percentRange = axisProxy.getDataPercentWindow();
             var valueRange = axisProxy.getDataValueWindow();
 
-            dataZoomModel.setRawRange({
+            dataZoomDto.setRawRange({
                 start: percentRange[0],
                 end: percentRange[1],
                 startValue: valueRange[0],
@@ -46,12 +46,12 @@ define(function (require) {
         });
     });
 
-    function resetSingleAxis(dimNames, axisIndex, dataZoomModel) {
-        dataZoomModel.getAxisProxy(dimNames.name, axisIndex).reset(dataZoomModel);
+    function resetSingleAxis(dimNames, axisIndex, dataZoomDto) {
+        dataZoomDto.getAxisProxy(dimNames.name, axisIndex).reset(dataZoomDto);
     }
 
-    function filterSingleAxis(dimNames, axisIndex, dataZoomModel) {
-        dataZoomModel.getAxisProxy(dimNames.name, axisIndex).filterData(dataZoomModel);
+    function filterSingleAxis(dimNames, axisIndex, dataZoomDto) {
+        dataZoomDto.getAxisProxy(dimNames.name, axisIndex).filterData(dataZoomDto);
     }
 
 });

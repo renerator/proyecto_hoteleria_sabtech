@@ -1,4 +1,4 @@
-describe('modelAndOptionMapping', function() {
+describe('DtoAndOptionMapping', function() {
 
     var utHelper = window.utHelper;
 
@@ -16,21 +16,21 @@ describe('modelAndOptionMapping', function() {
     }
 
     function getSeries(chart, seriesIndex) {
-        return chart.getModel().getComponent('series', seriesIndex);
+        return chart.getDto().getComponent('series', seriesIndex);
     }
 
-    function getModel(chart, type, index) {
-        return chart.getModel().getComponent(type, index);
+    function getDto(chart, type, index) {
+        return chart.getDto().getComponent(type, index);
     }
 
     function countSeries(chart) {
-        return countModel(chart, 'series');
+        return countDto(chart, 'series');
     }
 
-    function countModel(chart, type) {
+    function countDto(chart, type) {
         // FIXME
         // access private
-        return chart.getModel()._componentsMap[type].length;
+        return chart.getDto()._componentsMap[type].length;
     }
 
     function getChartView(chart, series) {
@@ -47,17 +47,17 @@ describe('modelAndOptionMapping', function() {
         for (var i = 0; i < count; i++) {
             var series = getSeries(chart, i);
             origins.push({
-                model: series,
+                Dto: series,
                 view: getChartView(chart, series)
             });
         }
         return origins;
     }
 
-    function modelEqualsToOrigin(chart, idxList, origins, boolResult) {
+    function DtoEqualsToOrigin(chart, idxList, origins, boolResult) {
         for (var i = 0; i < idxList.length; i++) {
             var idx = idxList[i];
-            expect(origins[idx].model === getSeries(chart, idx)).toEqual(boolResult);
+            expect(origins[idx].Dto === getSeries(chart, idx)).toEqual(boolResult);
         }
     }
 
@@ -92,7 +92,7 @@ describe('modelAndOptionMapping', function() {
             chart.setOption(option, true);
             expect(countChartViews(chart)).toEqual(3);
             expect(countSeries(chart)).toEqual(3);
-            modelEqualsToOrigin(chart, [0, 1, 2], origins, false);
+            DtoEqualsToOrigin(chart, [0, 1, 2], origins, false);
             viewEqualsToOrigin(chart, [0, 1, 2], origins, true);
         });
 
@@ -125,7 +125,7 @@ describe('modelAndOptionMapping', function() {
             expect(getData0(chart, 1)).toEqual(222);
             expect(getData0(chart, 2)).toEqual(333);
             viewEqualsToOrigin(chart, [0, 1, 2], origins, true);
-            modelEqualsToOrigin(chart, [0, 1, 2], origins, true);
+            DtoEqualsToOrigin(chart, [0, 1, 2], origins, true);
         });
 
         testCase.createChart()('sameTypeMergePartial', function () {
@@ -155,7 +155,7 @@ describe('modelAndOptionMapping', function() {
             expect(getData0(chart, 1)).toEqual(22);
             expect(getData0(chart, 2)).toEqual(33);
             viewEqualsToOrigin(chart, [0, 1, 2], origins, true);
-            modelEqualsToOrigin(chart, [0, 1, 2], origins, true);
+            DtoEqualsToOrigin(chart, [0, 1, 2], origins, true);
         });
 
         testCase.createChart()('differentTypeMerge', function () {
@@ -187,8 +187,8 @@ describe('modelAndOptionMapping', function() {
             expect(getData0(chart, 1)).toEqual(222);
             expect(getData0(chart, 2)).toEqual(333);
             expect(getSeries(chart, 1).type === 'series.bar').toEqual(true);
-            modelEqualsToOrigin(chart, [0, 2], origins, true);
-            modelEqualsToOrigin(chart, [1], origins, false);
+            DtoEqualsToOrigin(chart, [0, 2], origins, true);
+            DtoEqualsToOrigin(chart, [1], origins, false);
             viewEqualsToOrigin(chart, [0, 2], origins, true);
             viewEqualsToOrigin(chart, [1], origins, false);
         });
@@ -229,7 +229,7 @@ describe('modelAndOptionMapping', function() {
             expect(countChartViews(chart)).toEqual(5);
             expect(countSeries(chart)).toEqual(5);
 
-            modelEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, false);
+            DtoEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, false);
             viewEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, true);
         });
 
@@ -253,7 +253,7 @@ describe('modelAndOptionMapping', function() {
             expect(countChartViews(chart)).toEqual(5);
             expect(countSeries(chart)).toEqual(5);
 
-            modelEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, true);
+            DtoEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, true);
             viewEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, true);
         });
 
@@ -288,7 +288,7 @@ describe('modelAndOptionMapping', function() {
             expect(countChartViews(chart)).toEqual(5);
             expect(countSeries(chart)).toEqual(5);
 
-            modelEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, false);
+            DtoEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, false);
             viewEqualsToOrigin(chart, [0, 2, 4], origins, true);
             viewEqualsToOrigin(chart, [1, 3], origins, false);
         });
@@ -322,8 +322,8 @@ describe('modelAndOptionMapping', function() {
             expect(countChartViews(chart)).toEqual(5);
             expect(countSeries(chart)).toEqual(5);
 
-            modelEqualsToOrigin(chart, [0, 2, 4], origins, true);
-            modelEqualsToOrigin(chart, [1, 3], origins, false);
+            DtoEqualsToOrigin(chart, [0, 2, 4], origins, true);
+            DtoEqualsToOrigin(chart, [1, 3], origins, false);
             viewEqualsToOrigin(chart, [0, 2, 4], origins, true);
             viewEqualsToOrigin(chart, [1, 3], origins, false);
         });
@@ -360,8 +360,8 @@ describe('modelAndOptionMapping', function() {
             expect(getData0(chart, 2)).toEqual(33);
             expect(getData0(chart, 3)).toEqual(444);
             expect(getData0(chart, 4)).toEqual(55);
-            modelEqualsToOrigin(chart, [0, 1, 2, 4], origins, true);
-            modelEqualsToOrigin(chart, [3], origins, false);
+            DtoEqualsToOrigin(chart, [0, 1, 2, 4], origins, true);
+            DtoEqualsToOrigin(chart, [3], origins, false);
             viewEqualsToOrigin(chart, [0, 1, 2, 4], origins, true);
             viewEqualsToOrigin(chart, [3], origins, false);
         });
@@ -486,7 +486,7 @@ describe('modelAndOptionMapping', function() {
             expect(countChartViews(chart)).toEqual(5);
             expect(countSeries(chart)).toEqual(5);
 
-            modelEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, false);
+            DtoEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, false);
             viewEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, true);
         });
 
@@ -510,7 +510,7 @@ describe('modelAndOptionMapping', function() {
             expect(countChartViews(chart)).toEqual(5);
             expect(countSeries(chart)).toEqual(5);
 
-            modelEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, true);
+            DtoEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, true);
             viewEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, true);
         });
 
@@ -545,7 +545,7 @@ describe('modelAndOptionMapping', function() {
             expect(countChartViews(chart)).toEqual(5);
             expect(countSeries(chart)).toEqual(5);
 
-            modelEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, false);
+            DtoEqualsToOrigin(chart, [0, 1, 2, 3, 4], origins, false);
             viewEqualsToOrigin(chart, [0, 2, 4], origins, true);
             viewEqualsToOrigin(chart, [1, 3], origins, false);
         });
@@ -583,8 +583,8 @@ describe('modelAndOptionMapping', function() {
             expect(getData0(chart, 3)).toEqual(44);
             expect(getData0(chart, 4)).toEqual(55);
             expect(getData0(chart, 5)).toEqual(444);
-            modelEqualsToOrigin(chart, [0, 2, 3, 4], origins, true);
-            modelEqualsToOrigin(chart, [1], origins, false);
+            DtoEqualsToOrigin(chart, [0, 2, 3, 4], origins, true);
+            DtoEqualsToOrigin(chart, [1], origins, false);
             viewEqualsToOrigin(chart, [0, 2, 3, 4], origins, true);
             viewEqualsToOrigin(chart, [1], origins, false);
         });
@@ -753,14 +753,14 @@ describe('modelAndOptionMapping', function() {
             };
             var chart = this.chart;
             chart.setOption(option);
-            expect(chart._model.option.backgroundColor).toEqual('rgba(1,1,1,1)');
+            expect(chart._Dto.option.backgroundColor).toEqual('rgba(1,1,1,1)');
 
             // Not merge
             chart.setOption({
                 backgroundColor: '#fff'
             }, true);
 
-            expect(chart._model.option.backgroundColor).toEqual('#fff');
+            expect(chart._Dto.option.backgroundColor).toEqual('#fff');
         });
 
         testCase.createChart()('innerId', function () {
@@ -784,9 +784,9 @@ describe('modelAndOptionMapping', function() {
             var chart = this.chart;
             chart.setOption(option);
 
-            expect(countModel(chart, 'dataZoom')).toEqual(4);
-            expect(getModel(chart, 'dataZoom', 0).id).toEqual('a');
-            expect(getModel(chart, 'dataZoom', 1).id).toEqual('b');
+            expect(countDto(chart, 'dataZoom')).toEqual(4);
+            expect(getDto(chart, 'dataZoom', 0).id).toEqual('a');
+            expect(getDto(chart, 'dataZoom', 1).id).toEqual('b');
 
             // Merge
             chart.setOption({
@@ -796,10 +796,10 @@ describe('modelAndOptionMapping', function() {
                 ]
             });
 
-            expect(countModel(chart, 'dataZoom')).toEqual(5);
-            expect(getModel(chart, 'dataZoom', 0).id).toEqual('a');
-            expect(getModel(chart, 'dataZoom', 1).id).toEqual('b');
-            expect(getModel(chart, 'dataZoom', 4).id).toEqual('c');
+            expect(countDto(chart, 'dataZoom')).toEqual(5);
+            expect(getDto(chart, 'dataZoom', 0).id).toEqual('a');
+            expect(getDto(chart, 'dataZoom', 1).id).toEqual('b');
+            expect(getDto(chart, 'dataZoom', 4).id).toEqual('c');
         });
 
     });

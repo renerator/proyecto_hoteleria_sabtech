@@ -1,16 +1,16 @@
 define(function (require) {
 
     'use strict';
-    var modelUtil = require('../../util/model');
-    var ComponentModel = require('../../model/Component');
-    var Model = require('../../model/Model');
+    var DtoUtil = require('../../util/Dto');
+    var ComponentDto = require('../../Dto/Component');
+    var Dto = require('../../Dto/Dto');
     var zrUtil = require('zrender/core/util');
 
     var selectableMixin = require('../../component/helper/selectableMixin');
 
     var geoCreator = require('./geoCreator');
 
-    var GeoModel = ComponentModel.extend({
+    var GeoDto = ComponentDto.extend({
 
         type: 'geo',
 
@@ -20,10 +20,10 @@ define(function (require) {
         coordinateSystem: null,
 
         init: function (option) {
-            ComponentModel.prototype.init.apply(this, arguments);
+            ComponentDto.prototype.init.apply(this, arguments);
 
             // Default label emphasis `position` and `show`
-            modelUtil.defaultEmphasis(
+            DtoUtil.defaultEmphasis(
                 option.label, ['position', 'show', 'textStyle', 'distance', 'formatter']
             );
         },
@@ -34,9 +34,9 @@ define(function (require) {
 
             option.regions = geoCreator.getFilledRegions(option.regions, option.map);
 
-            this._optionModelMap = zrUtil.reduce(option.regions || [], function (obj, regionOpt) {
+            this._optionDtoMap = zrUtil.reduce(option.regions || [], function (obj, regionOpt) {
                 if (regionOpt.name) {
-                    obj[regionOpt.name] = new Model(regionOpt, self);
+                    obj[regionOpt.name] = new Dto(regionOpt, self);
                 }
                 return obj;
             }, {});
@@ -105,12 +105,12 @@ define(function (require) {
         },
 
         /**
-         * Get model of region
+         * Get Dto of region
          * @param  {string} name
-         * @return {module:echarts/model/Model}
+         * @return {module:echarts/Dto/Dto}
          */
-        getRegionModel: function (name) {
-            return this._optionModelMap[name];
+        getRegionDto: function (name) {
+            return this._optionDtoMap[name];
         },
 
         /**
@@ -142,7 +142,7 @@ define(function (require) {
         }
     });
 
-    zrUtil.mixin(GeoModel, selectableMixin);
+    zrUtil.mixin(GeoDto, selectableMixin);
 
-    return GeoModel;
+    return GeoDto;
 });

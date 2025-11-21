@@ -1,10 +1,10 @@
 define(function (require) {
 
-    var SeriesModel = require('../../model/Series');
+    var SeriesDto = require('../../Dto/Series');
     var createGraphFromNodeEdge = require('../helper/createGraphFromNodeEdge');
     var createGraphFromNodeMatrix = require('../helper/createGraphFromNodeMatrix');
 
-    var ChordSeries = SeriesModel.extend({
+    var ChordSeries = SeriesDto.extend({
 
         type: 'series.chord',
 

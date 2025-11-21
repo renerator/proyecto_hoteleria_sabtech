@@ -1,8 +1,8 @@
 // Test the core element functionality
 describe('Core element tests', function() {
-	it ('should transition model properties', function() {
+	it ('should transition Dto properties', function() {
 		var element = new Chart.Element({
-			_model: {
+			_Dto: {
 				numberProp: 0,
 				numberProp2: 100,
 				_underscoreProp: 0,
@@ -14,20 +14,20 @@ describe('Core element tests', function() {
 			}
 		});
 
-		// First transition clones model into view
+		// First transition clones Dto into view
 		element.transition(0.25);
-		expect(element._view).toEqual(element._model);
-		expect(element._start).toEqual(element._model); // also cloned
+		expect(element._view).toEqual(element._Dto);
+		expect(element._start).toEqual(element._Dto); // also cloned
 
-		expect(element._view.objectProp).toBe(element._model.objectProp); // not cloned
-		expect(element._start.objectProp).toEqual(element._model.objectProp); // not cloned
+		expect(element._view.objectProp).toBe(element._Dto.objectProp); // not cloned
+		expect(element._start.objectProp).toEqual(element._Dto.objectProp); // not cloned
 
-		element._model.numberProp = 100;
-		element._model.numberProp2 = 250;
-		element._model._underscoreProp = 200;
-		element._model.stringProp = 'def'
-		element._model.newStringProp = 'newString';
-		element._model.colorProp = 'rgb(255, 255, 0)'
+		element._Dto.numberProp = 100;
+		element._Dto.numberProp2 = 250;
+		element._Dto._underscoreProp = 200;
+		element._Dto.stringProp = 'def'
+		element._Dto.newStringProp = 'newString';
+		element._Dto.colorProp = 'rgb(255, 255, 0)'
 
 		element.transition(0.25);
 		expect(element._view).toEqual({

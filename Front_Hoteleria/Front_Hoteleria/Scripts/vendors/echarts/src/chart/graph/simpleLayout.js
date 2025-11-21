@@ -2,12 +2,12 @@ define(function (require) {
 
     var simpleLayoutHelper = require('./simpleLayoutHelper');
     var simpleLayoutEdge = require('./simpleLayoutEdge');
-    return function (ecModel, api) {
-        ecModel.eachSeriesByType('graph', function (seriesModel) {
-            var layout = seriesModel.get('layout');
-            var coordSys = seriesModel.coordinateSystem;
+    return function (ecDto, api) {
+        ecDto.eachSeriesByType('graph', function (seriesDto) {
+            var layout = seriesDto.get('layout');
+            var coordSys = seriesDto.coordinateSystem;
             if (coordSys && coordSys.type !== 'view') {
-                var data = seriesModel.getData();
+                var data = seriesDto.getData();
                 data.each(coordSys.dimensions, function (x, y, idx) {
                     if (!isNaN(x) && !isNaN(y)) {
                         data.setItemLayout(idx, coordSys.dataToPoint([x, y]));
@@ -21,7 +21,7 @@ define(function (require) {
                 simpleLayoutEdge(data.graph);
             }
             else if (!layout || layout === 'none') {
-                simpleLayoutHelper(seriesModel);
+                simpleLayoutHelper(seriesDto);
             }
         });
     };

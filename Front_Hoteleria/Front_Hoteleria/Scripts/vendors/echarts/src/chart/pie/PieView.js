@@ -4,28 +4,28 @@ define(function (require) {
     var zrUtil = require('zrender/core/util');
 
     /**
-     * @param {module:echarts/model/Series} seriesModel
+     * @param {module:echarts/Dto/Series} seriesDto
      * @param {boolean} hasAnimation
      * @inner
      */
-    function updateDataSelected(uid, seriesModel, hasAnimation, api) {
-        var data = seriesModel.getData();
+    function updateDataSelected(uid, seriesDto, hasAnimation, api) {
+        var data = seriesDto.getData();
         var dataIndex = this.dataIndex;
         var name = data.getName(dataIndex);
-        var selectedOffset = seriesModel.get('selectedOffset');
+        var selectedOffset = seriesDto.get('selectedOffset');
 
         api.dispatchAction({
             type: 'pieToggleSelect',
             from: uid,
             name: name,
-            seriesId: seriesModel.id
+            seriesId: seriesDto.id
         });
 
         data.each(function (idx) {
             toggleItemSelected(
                 data.getItemGraphicEl(idx),
                 data.getItemLayout(idx),
-                seriesModel.isSelected(data.getName(idx)),
+                seriesDto.isSelected(data.getName(idx)),
                 selectedOffset,
                 hasAnimation
             );
@@ -96,16 +96,16 @@ define(function (require) {
 
     var piePieceProto = PiePiece.prototype;
 
-    function getLabelStyle(data, idx, state, labelModel, labelPosition) {
-        var textStyleModel = labelModel.getModel('textStyle');
+    function getLabelStyle(data, idx, state, labelDto, labelPosition) {
+        var textStyleDto = labelDto.getDto('textStyle');
         var isLabelInside = labelPosition === 'inside' || labelPosition === 'inner';
         return {
-            fill: textStyleModel.getTextColor()
+            fill: textStyleDto.getTextColor()
                 || (isLabelInside ? '#fff' : data.getItemVisual(idx, 'color')),
             opacity: data.getItemVisual(idx, 'opacity'),
-            textFont: textStyleModel.getFont(),
+            textFont: textStyleDto.getFont(),
             text: zrUtil.retrieve(
-                data.hostModel.getFormattedLabel(idx, state), data.getName(idx)
+                data.hostDto.getFormattedLabel(idx, state), data.getName(idx)
             )
         };
     }
@@ -114,8 +114,8 @@ define(function (require) {
 
         var sector = this.childAt(0);
 
-        var seriesModel = data.hostModel;
-        var itemModel = data.getItemModel(idx);
+        var seriesDto = data.hostDto;
+        var itemDto = data.getItemDto(idx);
         var layout = data.getItemLayout(idx);
         var sectorShape = zrUtil.extend({}, layout);
         sectorShape.label = null;
@@ -126,16 +126,16 @@ define(function (require) {
                 shape: {
                     endAngle: layout.endAngle
                 }
-            }, seriesModel, idx);
+            }, seriesDto, idx);
         }
         else {
             graphic.updateProps(sector, {
                 shape: sectorShape
-            }, seriesModel, idx);
+            }, seriesDto, idx);
         }
 
         // Update common style
-        var itemStyleModel = itemModel.getModel('itemStyle');
+        var itemStyleDto = itemDto.getDto('itemStyle');
         var visualColor = data.getItemVisual(idx, 'color');
 
         sector.useStyle(
@@ -143,18 +143,18 @@ define(function (require) {
                 {
                     fill: visualColor
                 },
-                itemStyleModel.getModel('normal').getItemStyle()
+                itemStyleDto.getDto('normal').getItemStyle()
             )
         );
-        sector.hoverStyle = itemStyleModel.getModel('emphasis').getItemStyle();
+        sector.hoverStyle = itemStyleDto.getDto('emphasis').getItemStyle();
 
         // Toggle selected
         toggleItemSelected(
             this,
             data.getItemLayout(idx),
-            itemModel.get('selected'),
-            seriesModel.get('selectedOffset'),
-            seriesModel.get('animation')
+            itemDto.get('selected'),
+            seriesDto.get('selectedOffset'),
+            seriesDto.get('animation')
         );
 
         function onEmphasis() {
@@ -176,7 +176,7 @@ define(function (require) {
             }, 300, 'elasticOut');
         }
         sector.off('mouseover').off('mouseout').off('emphasis').off('normal');
-        if (itemModel.get('hoverAnimation')) {
+        if (itemDto.get('hoverAnimation')) {
             sector
                 .on('mouseover', onEmphasis)
                 .on('mouseout', onNormal)
@@ -194,8 +194,8 @@ define(function (require) {
         var labelLine = this.childAt(1);
         var labelText = this.childAt(2);
 
-        var seriesModel = data.hostModel;
-        var itemModel = data.getItemModel(idx);
+        var seriesDto = data.hostDto;
+        var itemDto = data.getItemDto(idx);
         var layout = data.getItemLayout(idx);
         var labelLayout = layout.label;
         var visualColor = data.getItemVisual(idx, 'color');
@@ -206,14 +206,14 @@ define(function (require) {
                     [labelLayout.x, labelLayout.y], [labelLayout.x, labelLayout.y], [labelLayout.x, labelLayout.y]
                 ]
             }
-        }, seriesModel, idx);
+        }, seriesDto, idx);
 
         graphic.updateProps(labelText, {
             style: {
                 x: labelLayout.x,
                 y: labelLayout.y
             }
-        }, seriesModel, idx);
+        }, seriesDto, idx);
         labelText.attr({
             style: {
                 textVerticalAlign: labelLayout.verticalAlign,
@@ -225,31 +225,31 @@ define(function (require) {
             z2: 10
         });
 
-        var labelModel = itemModel.getModel('label.normal');
-        var labelHoverModel = itemModel.getModel('label.emphasis');
-        var labelLineModel = itemModel.getModel('labelLine.normal');
-        var labelLineHoverModel = itemModel.getModel('labelLine.emphasis');
-        var labelPosition = labelModel.get('position') || labelHoverModel.get('position');
+        var labelDto = itemDto.getDto('label.normal');
+        var labelHoverDto = itemDto.getDto('label.emphasis');
+        var labelLineDto = itemDto.getDto('labelLine.normal');
+        var labelLineHoverDto = itemDto.getDto('labelLine.emphasis');
+        var labelPosition = labelDto.get('position') || labelHoverDto.get('position');
 
-        labelText.setStyle(getLabelStyle(data, idx, 'normal', labelModel, labelPosition));
+        labelText.setStyle(getLabelStyle(data, idx, 'normal', labelDto, labelPosition));
 
-        labelText.ignore = labelText.normalIgnore = !labelModel.get('show');
-        labelText.hoverIgnore = !labelHoverModel.get('show');
+        labelText.ignore = labelText.normalIgnore = !labelDto.get('show');
+        labelText.hoverIgnore = !labelHoverDto.get('show');
 
-        labelLine.ignore = labelLine.normalIgnore = !labelLineModel.get('show');
-        labelLine.hoverIgnore = !labelLineHoverModel.get('show');
+        labelLine.ignore = labelLine.normalIgnore = !labelLineDto.get('show');
+        labelLine.hoverIgnore = !labelLineHoverDto.get('show');
 
         // Default use item visual color
         labelLine.setStyle({
             stroke: visualColor,
             opacity: data.getItemVisual(idx, 'opacity')
         });
-        labelLine.setStyle(labelLineModel.getModel('lineStyle').getLineStyle());
+        labelLine.setStyle(labelLineDto.getDto('lineStyle').getLineStyle());
 
-        labelText.hoverStyle = getLabelStyle(data, idx, 'emphasis', labelHoverModel, labelPosition);
-        labelLine.hoverStyle = labelLineHoverModel.getModel('lineStyle').getLineStyle();
+        labelText.hoverStyle = getLabelStyle(data, idx, 'emphasis', labelHoverDto, labelPosition);
+        labelLine.hoverStyle = labelLineHoverDto.getDto('lineStyle').getLineStyle();
 
-        var smooth = labelLineModel.get('smooth');
+        var smooth = labelLineDto.get('smooth');
         if (smooth && smooth === true) {
             smooth = 0.4;
         }
@@ -271,23 +271,23 @@ define(function (require) {
             this._sectorGroup = sectorGroup;
         },
 
-        render: function (seriesModel, ecModel, api, payload) {
+        render: function (seriesDto, ecDto, api, payload) {
             if (payload && (payload.from === this.uid)) {
                 return;
             }
 
-            var data = seriesModel.getData();
+            var data = seriesDto.getData();
             var oldData = this._data;
             var group = this.group;
 
-            var hasAnimation = ecModel.get('animation');
+            var hasAnimation = ecDto.get('animation');
             var isFirstRender = !oldData;
 
             var onSectorClick = zrUtil.curry(
-                updateDataSelected, this.uid, seriesModel, hasAnimation, api
+                updateDataSelected, this.uid, seriesDto, hasAnimation, api
             );
 
-            var selectedMode = seriesModel.get('selectedMode');
+            var selectedMode = seriesDto.get('selectedMode');
 
             data.diff(oldData)
                 .add(function (idx) {
@@ -326,7 +326,7 @@ define(function (require) {
 
                 var removeClipPath = zrUtil.bind(group.removeClipPath, group);
                 group.setClipPath(this._createClipPath(
-                    shape.cx, shape.cy, r, shape.startAngle, shape.clockwise, removeClipPath, seriesModel
+                    shape.cx, shape.cy, r, shape.startAngle, shape.clockwise, removeClipPath, seriesDto
                 ));
             }
 
@@ -334,7 +334,7 @@ define(function (require) {
         },
 
         _createClipPath: function (
-            cx, cy, r, startAngle, clockwise, cb, seriesModel
+            cx, cy, r, startAngle, clockwise, cb, seriesDto
         ) {
             var clipPath = new graphic.Sector({
                 shape: {
@@ -352,7 +352,7 @@ define(function (require) {
                 shape: {
                     endAngle: startAngle + (clockwise ? 1 : -1) * Math.PI * 2
                 }
-            }, seriesModel, cb);
+            }, seriesDto, cb);
 
             return clipPath;
         }

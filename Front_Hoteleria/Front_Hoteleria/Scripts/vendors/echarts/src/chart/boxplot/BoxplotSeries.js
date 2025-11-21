@@ -3,10 +3,10 @@ define(function(require) {
     'use strict';
 
     var zrUtil = require('zrender/core/util');
-    var SeriesModel = require('../../model/Series');
+    var SeriesDto = require('../../Dto/Series');
     var whiskerBoxCommon = require('../helper/whiskerBoxCommon');
 
-    var BoxplotSeries = SeriesModel.extend({
+    var BoxplotSeries = SeriesDto.extend({
 
         type: 'series.boxplot',
 
@@ -65,7 +65,7 @@ define(function(require) {
         }
     });
 
-    zrUtil.mixin(BoxplotSeries, whiskerBoxCommon.seriesModelMixin, true);
+    zrUtil.mixin(BoxplotSeries, whiskerBoxCommon.seriesDtoMixin, true);
 
     return BoxplotSeries;
 

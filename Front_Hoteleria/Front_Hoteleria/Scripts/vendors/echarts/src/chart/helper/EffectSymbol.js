@@ -109,12 +109,12 @@ define(function (require) {
      * @param  {number} idx
      */
     effectSymbolProto.updateData = function (data, idx) {
-        var seriesModel = data.hostModel;
+        var seriesDto = data.hostDto;
 
         this.childAt(0).updateData(data, idx);
 
         var rippleGroup = this.childAt(1);
-        var itemModel = data.getItemModel(idx);
+        var itemDto = data.getItemDto(idx);
         var symbolType = data.getItemVisual(idx, 'symbol');
         var symbolSize = normalizeSymbolSize(data.getItemVisual(idx, 'symbolSize'));
         var color = data.getItemVisual(idx, 'color');
@@ -127,24 +127,24 @@ define(function (require) {
             });
         });
 
-        var symbolOffset = itemModel.getShallow('symbolOffset');
+        var symbolOffset = itemDto.getShallow('symbolOffset');
         if (symbolOffset) {
             var pos = rippleGroup.position;
             pos[0] = numberUtil.parsePercent(symbolOffset[0], symbolSize[0]);
             pos[1] = numberUtil.parsePercent(symbolOffset[1], symbolSize[1]);
         }
-        rippleGroup.rotation = (itemModel.getShallow('symbolRotate') || 0) * Math.PI / 180 || 0;
+        rippleGroup.rotation = (itemDto.getShallow('symbolRotate') || 0) * Math.PI / 180 || 0;
 
         this._symbolType = symbolType;
         this._color = color;
 
-        var showEffectOn = seriesModel.get('showEffectOn');
-        var rippleScale = itemModel.get('rippleEffect.scale');
-        var brushType = itemModel.get('rippleEffect.brushType');
-        var effectPeriod = itemModel.get('rippleEffect.period') * 1000;
+        var showEffectOn = seriesDto.get('showEffectOn');
+        var rippleScale = itemDto.get('rippleEffect.scale');
+        var brushType = itemDto.get('rippleEffect.brushType');
+        var effectPeriod = itemDto.get('rippleEffect.period') * 1000;
         var effectOffset = idx / data.count();
-        var z = itemModel.getShallow('z') || 0;
-        var zlevel = itemModel.getShallow('zlevel') || 0;
+        var z = itemDto.getShallow('z') || 0;
+        var zlevel = itemDto.getShallow('zlevel') || 0;
 
         this.stopEffectAnimation();
         if (showEffectOn === 'render') {

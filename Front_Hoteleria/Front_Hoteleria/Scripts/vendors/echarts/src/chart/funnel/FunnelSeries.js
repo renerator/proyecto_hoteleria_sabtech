@@ -3,10 +3,10 @@ define(function(require) {
     'use strict';
 
     var List = require('../../data/List');
-    var modelUtil = require('../../util/model');
+    var DtoUtil = require('../../util/Dto');
     var completeDimensions = require('../../data/helper/completeDimensions');
 
-    var FunnelSeries = require('../../echarts').extendSeriesModel({
+    var FunnelSeries = require('../../echarts').extendSeriesDto({
 
         type: 'series.funnel',
 
@@ -22,7 +22,7 @@ define(function(require) {
             this._defaultLabelLine(option);
         },
 
-        getInitialData: function (option, ecModel) {
+        getInitialData: function (option, ecDto) {
             var dimensions = completeDimensions(['value'], option.data);
             var list = new List(dimensions, this);
             list.initData(option.data);
@@ -31,7 +31,7 @@ define(function(require) {
 
         _defaultLabelLine: function (option) {
             // Extend labelLine emphasis
-            modelUtil.defaultEmphasis(option.labelLine, ['show']);
+            DtoUtil.defaultEmphasis(option.labelLine, ['show']);
 
             var labelLineNormalOpt = option.labelLine.normal;
             var labelLineEmphasisOpt = option.labelLine.emphasis;

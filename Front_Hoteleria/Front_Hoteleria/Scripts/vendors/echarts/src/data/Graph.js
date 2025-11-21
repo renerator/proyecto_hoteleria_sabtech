@@ -394,16 +394,16 @@ define(function(require) {
 
         /**
          * @param {string} [path]
-         * @return {module:echarts/model/Model}
+         * @return {module:echarts/Dto/Dto}
          */
-        getModel: function (path) {
+        getDto: function (path) {
             if (this.dataIndex < 0) {
                 return;
             }
             var graph = this.hostGraph;
-            var itemModel = graph.data.getItemModel(this.dataIndex);
+            var itemDto = graph.data.getItemDto(this.dataIndex);
 
-            return itemModel.getModel(path);
+            return itemDto.getDto(path);
         }
     };
 
@@ -433,16 +433,16 @@ define(function(require) {
 
     /**
      * @param {string} [path]
-     * @return {module:echarts/model/Model}
+     * @return {module:echarts/Dto/Dto}
      */
-     Edge.prototype.getModel = function (path) {
+     Edge.prototype.getDto = function (path) {
         if (this.dataIndex < 0) {
             return;
         }
         var graph = this.hostGraph;
-        var itemModel = graph.edgeData.getItemModel(this.dataIndex);
+        var itemDto = graph.edgeData.getItemDto(this.dataIndex);
 
-        return itemModel.getModel(path);
+        return itemDto.getDto(path);
     };
 
     var createGraphDataProxyMixin = function (hostName, dataName) {

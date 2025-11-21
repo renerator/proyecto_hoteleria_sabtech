@@ -2,8 +2,8 @@ define(function (require) {
 
     var env = require('zrender/core/env');
 
-    function SaveAsImage (model) {
-        this.model = model;
+    function SaveAsImage (Dto) {
+        this.Dto = Dto;
     }
 
     SaveAsImage.defaultOption = {
@@ -23,19 +23,19 @@ define(function (require) {
 
     var proto = SaveAsImage.prototype;
 
-    proto.onclick = function (ecModel, api) {
-        var model = this.model;
-        var title = model.get('name') || ecModel.get('title.0.text') || 'echarts';
+    proto.onclick = function (ecDto, api) {
+        var Dto = this.Dto;
+        var title = Dto.get('name') || ecDto.get('title.0.text') || 'echarts';
         var $a = document.createElement('a');
-        var type = model.get('type', true) || 'png';
+        var type = Dto.get('type', true) || 'png';
         $a.download = title + '.' + type;
         $a.target = '_blank';
         var url = api.getConnectedDataURL({
             type: type,
-            backgroundColor: model.get('backgroundColor', true)
-                || ecModel.get('backgroundColor') || '#fff',
-            excludeComponents: model.get('excludeComponents'),
-            pixelRatio: model.get('pixelRatio')
+            backgroundColor: Dto.get('backgroundColor', true)
+                || ecDto.get('backgroundColor') || '#fff',
+            excludeComponents: Dto.get('excludeComponents'),
+            pixelRatio: Dto.get('pixelRatio')
         });
         $a.href = url;
         // Chrome and Firefox
@@ -49,7 +49,7 @@ define(function (require) {
         }
         // IE
         else {
-            var lang = model.get('lang');
+            var lang = Dto.get('lang');
             var html = ''
                 + '<body style="margin:0;">'
                 + '<img src="' + url + '" style="max-width:100%;" title="' + ((lang && lang[0]) || '') + '" />'

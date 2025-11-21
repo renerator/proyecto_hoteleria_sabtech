@@ -1,11 +1,11 @@
 /**
- * Component model
+ * Component Dto
  *
- * @module echarts/model/Component
+ * @module echarts/Dto/Component
  */
 define(function(require) {
 
-    var Model = require('./Model');
+    var Dto = require('./Dto');
     var zrUtil = require('zrender/core/util');
     var arrayPush = Array.prototype.push;
     var componentUtil = require('../util/component');
@@ -13,13 +13,13 @@ define(function(require) {
     var layout = require('../util/layout');
 
     /**
-     * @alias module:echarts/model/Component
+     * @alias module:echarts/Dto/Component
      * @constructor
      * @param {Object} option
-     * @param {module:echarts/model/Model} parentModel
-     * @param {module:echarts/model/Model} ecModel
+     * @param {module:echarts/Dto/Dto} parentDto
+     * @param {module:echarts/Dto/Dto} ecDto
      */
-    var ComponentModel = Model.extend({
+    var ComponentDto = Dto.extend({
 
         type: 'component',
 
@@ -59,18 +59,18 @@ define(function(require) {
         defaultOption: null,
 
         /**
-         * @type {module:echarts/model/Global}
+         * @type {module:echarts/Dto/Global}
          * @readOnly
          */
-        ecModel: null,
+        ecDto: null,
 
         /**
          * key: componentType
-         * value:  Component model list, can not be null.
-         * @type {Object.<string, Array.<module:echarts/model/Model>>}
+         * value:  Component Dto list, can not be null.
+         * @type {Object.<string, Array.<module:echarts/Dto/Dto>>}
          * @readOnly
          */
-        dependentModels: [],
+        dependentDtos: [],
 
         /**
          * @type {string}
@@ -87,17 +87,17 @@ define(function(require) {
         layoutMode: null,
 
 
-        init: function (option, parentModel, ecModel, extraOpt) {
-            this.mergeDefaultAndTheme(this.option, this.ecModel);
+        init: function (option, parentDto, ecDto, extraOpt) {
+            this.mergeDefaultAndTheme(this.option, this.ecDto);
         },
 
-        mergeDefaultAndTheme: function (option, ecModel) {
+        mergeDefaultAndTheme: function (option, ecDto) {
             var layoutMode = this.layoutMode;
             var inputPositionParams = layoutMode
                 ? layout.getLayoutParams(option) : {};
 
-            var themeModel = ecModel.getTheme();
-            zrUtil.merge(option, themeModel.get(this.mainType));
+            var themeDto = ecDto.getTheme();
+            zrUtil.merge(option, themeDto.get(this.mainType));
             zrUtil.merge(option, this.getDefaultOption());
 
             if (layoutMode) {
@@ -115,7 +115,7 @@ define(function(require) {
         },
 
         // Hooker after init or mergeOption
-        optionUpdated: function (ecModel) {},
+        optionUpdated: function (ecDto) {},
 
         getDefaultOption: function () {
             if (!this.hasOwnProperty('__defaultOption')) {
@@ -138,34 +138,34 @@ define(function(require) {
 
     });
 
-    // Reset ComponentModel.extend, add preConstruct.
+    // Reset ComponentDto.extend, add preConstruct.
     clazzUtil.enableClassExtend(
-        ComponentModel,
-        function (option, parentModel, ecModel, extraOpt) {
-            // Set dependentModels, componentIndex, name, id, mainType, subType.
+        ComponentDto,
+        function (option, parentDto, ecDto, extraOpt) {
+            // Set dependentDtos, componentIndex, name, id, mainType, subType.
             zrUtil.extend(this, extraOpt);
 
-            this.uid = componentUtil.getUID('componentModel');
+            this.uid = componentUtil.getUID('componentDto');
 
             // this.setReadOnly([
             //     'type', 'id', 'uid', 'name', 'mainType', 'subType',
-            //     'dependentModels', 'componentIndex'
+            //     'dependentDtos', 'componentIndex'
             // ]);
         }
     );
 
     // Add capability of registerClass, getClass, hasClass, registerSubTypeDefaulter and so on.
     clazzUtil.enableClassManagement(
-        ComponentModel, {registerWhenExtend: true}
+        ComponentDto, {registerWhenExtend: true}
     );
-    componentUtil.enableSubTypeDefaulter(ComponentModel);
+    componentUtil.enableSubTypeDefaulter(ComponentDto);
 
-    // Add capability of ComponentModel.topologicalTravel.
-    componentUtil.enableTopologicalTravel(ComponentModel, getDependencies);
+    // Add capability of ComponentDto.topologicalTravel.
+    componentUtil.enableTopologicalTravel(ComponentDto, getDependencies);
 
     function getDependencies(componentType) {
         var deps = [];
-        zrUtil.each(ComponentModel.getClassesByMainType(componentType), function (Clazz) {
+        zrUtil.each(ComponentDto.getClassesByMainType(componentType), function (Clazz) {
             arrayPush.apply(deps, Clazz.prototype.dependencies || []);
         });
         // Ensure main type
@@ -174,7 +174,7 @@ define(function(require) {
         });
     }
 
-    zrUtil.mixin(ComponentModel, require('./mixin/boxLayout'));
+    zrUtil.mixin(ComponentDto, require('./mixin/boxLayout'));
 
-    return ComponentModel;
+    return ComponentDto;
 });

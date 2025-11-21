@@ -3,7 +3,7 @@
  */
 define(function (require) {
 
-    require('./legend/LegendModel');
+    require('./legend/LegendDto');
     require('./legend/legendAction');
     require('./legend/LegendView');
 

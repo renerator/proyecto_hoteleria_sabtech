@@ -1,13 +1,13 @@
 define(function (require) {
 
-    return function (ecModel) {
-        var legendModels = ecModel.findComponents({
+    return function (ecDto) {
+        var legendDtos = ecDto.findComponents({
             mainType: 'legend'
         });
-        if (!legendModels || !legendModels.length) {
+        if (!legendDtos || !legendDtos.length) {
             return;
         }
-        ecModel.eachSeriesByType('graph', function (graphSeries) {
+        ecDto.eachSeriesByType('graph', function (graphSeries) {
             var categoriesData = graphSeries.getCategoriesData();
             var graph = graphSeries.getGraph();
             var data = graph.data;
@@ -15,15 +15,15 @@ define(function (require) {
             var categoryNames = categoriesData.mapArray(categoriesData.getName);
 
             data.filterSelf(function (idx) {
-                var model = data.getItemModel(idx);
-                var category = model.getShallow('category');
+                var Dto = data.getItemDto(idx);
+                var category = Dto.getShallow('category');
                 if (category != null) {
                     if (typeof category === 'number') {
                         category = categoryNames[category];
                     }
                     // If in any legend component the status is not selected.
-                    for (var i = 0; i < legendModels.length; i++) {
-                        if (!legendModels[i].isSelected(category)) {
+                    for (var i = 0; i < legendDtos.length; i++) {
+                        if (!legendDtos[i].isSelected(category)) {
                             return false;
                         }
                     }

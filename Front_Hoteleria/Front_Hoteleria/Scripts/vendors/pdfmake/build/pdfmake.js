@@ -10037,20 +10037,20 @@
 	     *
 	     * // cancel a debounced call
 	     * var todoChanges = _.debounce(batchLog, 1000);
-	     * Object.observe(models.todo, todoChanges);
+	     * Object.observe(Dtos.todo, todoChanges);
 	     *
-	     * Object.observe(models, function(changes) {
+	     * Object.observe(Dtos, function(changes) {
 	     *   if (_.find(changes, { 'user': 'todo', 'type': 'delete'})) {
 	     *     todoChanges.cancel();
 	     *   }
 	     * }, ['delete']);
 	     *
-	     * // ...at some point `models.todo` is changed
-	     * models.todo.completed = true;
+	     * // ...at some point `Dtos.todo` is changed
+	     * Dtos.todo.completed = true;
 	     *
-	     * // ...before 1 second has passed `models.todo` is deleted
+	     * // ...before 1 second has passed `Dtos.todo` is deleted
 	     * // which cancels the debounced `todoChanges` call
-	     * delete models.todo;
+	     * delete Dtos.todo;
 	     */
 	    function debounce(func, wait, options) {
 	      var args,

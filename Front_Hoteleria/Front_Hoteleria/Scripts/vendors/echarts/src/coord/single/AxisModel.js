@@ -1,10 +1,10 @@
 define(function (require) {
 
-    var ComponentModel = require('../../model/Component');
-    var axisModelCreator = require('../axisModelCreator');
+    var ComponentDto = require('../../Dto/Component');
+    var axisDtoCreator = require('../axisDtoCreator');
     var zrUtil =  require('zrender/core/util');
 
-    var AxisModel = ComponentModel.extend({
+    var AxisDto = ComponentDto.extend({
 
         type: 'singleAxis',
 
@@ -70,9 +70,9 @@ define(function (require) {
         return option.type || (option.data ? 'category' : 'value');
     }
 
-    zrUtil.merge(AxisModel.prototype, require('../axisModelCommonMixin'));
+    zrUtil.merge(AxisDto.prototype, require('../axisDtoCommonMixin'));
 
-    axisModelCreator('single', AxisModel, getAxisType, defaultOption);
+    axisDtoCreator('single', AxisDto, getAxisType, defaultOption);
 
-    return AxisModel;
+    return AxisDto;
 });

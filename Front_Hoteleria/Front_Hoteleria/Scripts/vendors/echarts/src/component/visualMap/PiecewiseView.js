@@ -20,13 +20,13 @@ define(function(require) {
 
             thisGroup.removeAll();
 
-            var visualMapModel = this.visualMapModel;
-            var textGap = visualMapModel.get('textGap');
-            var textStyleModel = visualMapModel.textStyleModel;
-            var textFont = textStyleModel.getFont();
-            var textFill = textStyleModel.getTextColor();
+            var visualMapDto = this.visualMapDto;
+            var textGap = visualMapDto.get('textGap');
+            var textStyleDto = visualMapDto.textStyleDto;
+            var textFont = textStyleDto.getFont();
+            var textFill = textStyleDto.getTextColor();
             var itemAlign = this._getItemAlign();
-            var itemSize = visualMapModel.itemSize;
+            var itemSize = visualMapDto.itemSize;
 
             var viewData = this._getViewData();
             var showLabel = !viewData.endsText;
@@ -39,7 +39,7 @@ define(function(require) {
             showEndsText && this._renderEndsText(thisGroup, viewData.endsText[1], itemSize);
 
             layout.box(
-                visualMapModel.get('orient'), thisGroup, visualMapModel.get('itemGap')
+                visualMapDto.get('orient'), thisGroup, visualMapDto.get('itemGap')
             );
 
             this.renderBackground(thisGroup);
@@ -52,7 +52,7 @@ define(function(require) {
                 var itemGroup = new graphic.Group();
                 itemGroup.onclick = zrUtil.bind(this._onItemClick, this, piece);
 
-                this._enableHoverLink(itemGroup, item.indexInModelPieceList);
+                this._enableHoverLink(itemGroup, item.indexInDtoPieceList);
 
                 var representValue = this._getRepresentValue(piece);
 
@@ -61,7 +61,7 @@ define(function(require) {
                 );
 
                 if (showLabel) {
-                    var visualState = this.visualMapModel.getValueState(representValue);
+                    var visualState = this.visualMapDto.getValueState(representValue);
 
                     itemGroup.add(new graphic.Text({
                         style: {
@@ -90,12 +90,12 @@ define(function(require) {
                 .on('mouseout', zrUtil.bind(onHoverLink, this, 'downplay'));
 
             function onHoverLink(method) {
-                var visualMapModel = this.visualMapModel;
+                var visualMapDto = this.visualMapDto;
 
-                visualMapModel.option.hoverLink && this.api.dispatchAction({
+                visualMapDto.option.hoverLink && this.api.dispatchAction({
                     type: method,
                     batch: helper.convertDataIndicesToBatch(
-                        visualMapModel.findTargetDataIndices(pieceIndex)
+                        visualMapDto.findTargetDataIndices(pieceIndex)
                     )
                 });
             }
@@ -105,16 +105,16 @@ define(function(require) {
          * @private
          */
         _getItemAlign: function () {
-            var visualMapModel = this.visualMapModel;
-            var modelOption = visualMapModel.option;
+            var visualMapDto = this.visualMapDto;
+            var DtoOption = visualMapDto.option;
 
-            if (modelOption.orient === 'vertical') {
+            if (DtoOption.orient === 'vertical') {
                 return helper.getItemAlign(
-                    visualMapModel, this.api, visualMapModel.itemSize
+                    visualMapDto, this.api, visualMapDto.itemSize
                 );
             }
             else { // horizontal, most case left unless specifying right.
-                var align = modelOption.align;
+                var align = DtoOption.align;
                 if (!align || align === 'auto') {
                     align = 'left';
                 }
@@ -131,7 +131,7 @@ define(function(require) {
             }
 
             var itemGroup = new graphic.Group();
-            var textStyleModel = this.visualMapModel.textStyleModel;
+            var textStyleDto = this.visualMapDto.textStyleDto;
 
             itemGroup.add(new graphic.Text({
                 style: {
@@ -140,8 +140,8 @@ define(function(require) {
                     textVerticalAlign: 'middle',
                     textAlign: 'center',
                     text: text,
-                    textFont: textStyleModel.getFont(),
-                    fill: textStyleModel.getTextColor()
+                    textFont: textStyleDto.getFont(),
+                    fill: textStyleDto.getTextColor()
                 }
             }));
 
@@ -153,18 +153,18 @@ define(function(require) {
          * @return {Object} {peiceList, endsText} The order is the same as screen pixel order.
          */
         _getViewData: function () {
-            var visualMapModel = this.visualMapModel;
+            var visualMapDto = this.visualMapDto;
 
-            var viewPieceList = zrUtil.map(visualMapModel.getPieceList(), function (piece, index) {
-                return {piece: piece, indexInModelPieceList: index};
+            var viewPieceList = zrUtil.map(visualMapDto.getPieceList(), function (piece, index) {
+                return {piece: piece, indexInDtoPieceList: index};
             });
-            var endsText = visualMapModel.get('text');
+            var endsText = visualMapDto.get('text');
 
             // Consider orient and inverse.
-            var orient = visualMapModel.get('orient');
-            var inverse = visualMapModel.get('inverse');
+            var orient = visualMapDto.get('orient');
+            var inverse = visualMapDto.get('inverse');
 
-            // Order of model pieceList is always [low, ..., high]
+            // Order of Dto pieceList is always [low, ..., high]
             if (orient === 'horizontal' ? inverse : !inverse) {
                 viewPieceList.reverse();
             }
@@ -181,7 +181,7 @@ define(function(require) {
          */
         _getRepresentValue: function (piece) {
             var representValue;
-            if (this.visualMapModel.isCategory()) {
+            if (this.visualMapDto.isCategory()) {
                 representValue = piece.value;
             }
             else {
@@ -211,10 +211,10 @@ define(function(require) {
          * @private
          */
         _onItemClick: function (piece) {
-            var visualMapModel = this.visualMapModel;
-            var option = visualMapModel.option;
+            var visualMapDto = this.visualMapDto;
+            var option = visualMapDto.option;
             var selected = zrUtil.clone(option.selected);
-            var newKey = visualMapModel.getSelectedMapKey(piece);
+            var newKey = visualMapDto.getSelectedMapKey(piece);
 
             if (option.selectedMode === 'single') {
                 selected[newKey] = true;
@@ -229,7 +229,7 @@ define(function(require) {
             this.api.dispatchAction({
                 type: 'selectDataRange',
                 from: this.uid,
-                visualMapId: this.visualMapModel.id,
+                visualMapId: this.visualMapDto.id,
                 selected: selected
             });
         }

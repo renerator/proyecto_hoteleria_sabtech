@@ -28,41 +28,41 @@
 
         constructor: Breadcrumb,
 
-        render: function (seriesModel, api, targetNode) {
-            var model = seriesModel.getModel('breadcrumb');
+        render: function (seriesDto, api, targetNode) {
+            var Dto = seriesDto.getDto('breadcrumb');
             var thisGroup = this.group;
 
             thisGroup.removeAll();
 
-            if (!model.get('show') || !targetNode) {
+            if (!Dto.get('show') || !targetNode) {
                 return;
             }
 
-            var normalStyleModel = model.getModel('itemStyle.normal');
-            // var emphasisStyleModel = model.getModel('itemStyle.emphasis');
-            var textStyleModel = normalStyleModel.getModel('textStyle');
+            var normalStyleDto = Dto.getDto('itemStyle.normal');
+            // var emphasisStyleDto = Dto.getDto('itemStyle.emphasis');
+            var textStyleDto = normalStyleDto.getDto('textStyle');
 
             var layoutParam = {
                 pos: {
-                    left: model.get('left'),
-                    right: model.get('right'),
-                    top: model.get('top'),
-                    bottom: model.get('bottom')
+                    left: Dto.get('left'),
+                    right: Dto.get('right'),
+                    top: Dto.get('top'),
+                    bottom: Dto.get('bottom')
                 },
                 box: {
                     width: api.getWidth(),
                     height: api.getHeight()
                 },
-                emptyItemWidth: model.get('emptyItemWidth'),
+                emptyItemWidth: Dto.get('emptyItemWidth'),
                 totalWidth: 0,
                 renderList: []
             };
 
             this._prepare(
-                model, targetNode, layoutParam, textStyleModel
+                Dto, targetNode, layoutParam, textStyleDto
             );
             this._renderContent(
-                model, targetNode, layoutParam, normalStyleModel, textStyleModel
+                Dto, targetNode, layoutParam, normalStyleDto, textStyleDto
             );
 
             layout.positionGroup(thisGroup, layoutParam.pos, layoutParam.box);
@@ -72,10 +72,10 @@
          * Prepare render list and total width
          * @private
          */
-        _prepare: function (model, targetNode, layoutParam, textStyleModel) {
+        _prepare: function (Dto, targetNode, layoutParam, textStyleDto) {
             for (var node = targetNode; node; node = node.parentNode) {
-                var text = node.getModel().get('name');
-                var textRect = textStyleModel.getTextRect(text);
+                var text = node.getDto().get('name');
+                var textRect = textStyleDto.getTextRect(text);
                 var itemWidth = Math.max(
                     textRect.width + TEXT_PADDING * 2,
                     layoutParam.emptyItemWidth
@@ -89,12 +89,12 @@
          * @private
          */
         _renderContent: function (
-            model, targetNode, layoutParam, normalStyleModel, textStyleModel
+            Dto, targetNode, layoutParam, normalStyleDto, textStyleDto
         ) {
             // Start rendering.
             var lastX = 0;
             var emptyItemWidth = layoutParam.emptyItemWidth;
-            var height = model.get('height');
+            var height = Dto.get('height');
             var availableSize = layout.getAvailableSize(layoutParam.pos, layoutParam.box);
             var totalWidth = layoutParam.totalWidth;
             var renderList = layoutParam.renderList;
@@ -119,12 +119,12 @@
                         )
                     },
                     style: zrUtil.defaults(
-                        normalStyleModel.getItemStyle(),
+                        normalStyleDto.getItemStyle(),
                         {
                             lineJoin: 'bevel',
                             text: text,
-                            textFill: textStyleModel.getTextColor(),
-                            textFont: textStyleModel.getFont()
+                            textFill: textStyleDto.getTextColor(),
+                            textFont: textStyleDto.getFont()
                         }
                     ),
                     z: 10,

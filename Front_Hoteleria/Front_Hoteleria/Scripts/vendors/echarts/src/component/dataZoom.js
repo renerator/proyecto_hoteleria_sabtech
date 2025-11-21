@@ -5,13 +5,13 @@ define(function (require) {
 
     require('./dataZoom/typeDefaulter');
 
-    require('./dataZoom/DataZoomModel');
+    require('./dataZoom/DataZoomDto');
     require('./dataZoom/DataZoomView');
 
-    require('./dataZoom/SliderZoomModel');
+    require('./dataZoom/SliderZoomDto');
     require('./dataZoom/SliderZoomView');
 
-    require('./dataZoom/InsideZoomModel');
+    require('./dataZoom/InsideZoomDto');
     require('./dataZoom/InsideZoomView');
 
     require('./dataZoom/dataZoomProcessor');

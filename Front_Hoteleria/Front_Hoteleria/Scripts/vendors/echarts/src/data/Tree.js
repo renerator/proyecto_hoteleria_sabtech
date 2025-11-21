@@ -6,7 +6,7 @@
 define(function(require) {
 
     var zrUtil = require('zrender/core/util');
-    var Model = require('../model/Model');
+    var Dto = require('../Dto/Dto');
     var List = require('./List');
     var linkList = require('./helper/linkList');
     var completeDimensions = require('./helper/completeDimensions');
@@ -221,24 +221,24 @@ define(function(require) {
 
         /**
          * @param {string} path
-         * @return {module:echarts/model/Model}
+         * @return {module:echarts/Dto/Dto}
          */
-        getModel: function (path) {
+        getDto: function (path) {
             if (this.dataIndex < 0) {
                 return;
             }
             var hostTree = this.hostTree;
-            var itemModel = hostTree.data.getItemModel(this.dataIndex);
-            var levelModel = this.getLevelModel();
+            var itemDto = hostTree.data.getItemDto(this.dataIndex);
+            var levelDto = this.getLevelDto();
 
-            return itemModel.getModel(path, (levelModel || hostTree.hostModel).getModel(path));
+            return itemDto.getDto(path, (levelDto || hostTree.hostDto).getDto(path));
         },
 
         /**
-         * @return {module:echarts/model/Model}
+         * @return {module:echarts/Dto/Dto}
          */
-        getLevelModel: function () {
-            return (this.hostTree.levelModels || [])[this.depth];
+        getLevelDto: function () {
+            return (this.hostTree.levelDtos || [])[this.depth];
         },
 
         /**
@@ -280,10 +280,10 @@ define(function(require) {
     /**
      * @constructor
      * @alias module:echarts/data/Tree
-     * @param {module:echarts/model/Model} hostModel
+     * @param {module:echarts/Dto/Dto} hostDto
      * @param {Array.<Object>} levelOptions
      */
-    function Tree(hostModel, levelOptions) {
+    function Tree(hostDto, levelOptions) {
         /**
          * @type {module:echarts/data/Tree~TreeNode}
          * @readOnly
@@ -306,17 +306,17 @@ define(function(require) {
         /**
          * @private
          * @readOnly
-         * @type {module:echarts/model/Model}
+         * @type {module:echarts/Dto/Dto}
          */
-        this.hostModel = hostModel;
+        this.hostDto = hostDto;
 
         /**
          * @private
          * @readOnly
-         * @type {Array.<module:echarts/model/Model}
+         * @type {Array.<module:echarts/Dto/Dto}
          */
-        this.levelModels = zrUtil.map(levelOptions || [], function (levelDefine) {
-            return new Model(levelDefine, hostModel, hostModel.ecModel);
+        this.levelDtos = zrUtil.map(levelOptions || [], function (levelDefine) {
+            return new Dto(levelDefine, hostDto, hostDto.ecDto);
         });
     }
 
@@ -406,13 +406,13 @@ define(function(require) {
      *
      * @static
      * @param {Objec} dataRoot Root node.
-     * @param {module:echarts/model/Model} hostModel
+     * @param {module:echarts/Dto/Dto} hostDto
      * @param {Array.<Object>} levelOptions
      * @return module:echarts/data/Tree
      */
-    Tree.createTree = function (dataRoot, hostModel, levelOptions) {
+    Tree.createTree = function (dataRoot, hostDto, levelOptions) {
 
-        var tree = new Tree(hostModel, levelOptions);
+        var tree = new Tree(hostDto, levelOptions);
         var listData = [];
 
         buildHierarchy(dataRoot);
@@ -438,7 +438,7 @@ define(function(require) {
         tree.root.updateDepthAndHeight(0);
 
         var dimensions = completeDimensions([{name: 'value'}], listData);
-        var list = new List(dimensions, hostModel);
+        var list = new List(dimensions, hostDto);
         list.initData(listData);
 
         linkList({
@@ -453,7 +453,7 @@ define(function(require) {
     };
 
     /**
-     * It is needed to consider the mess of 'list', 'hostModel' when creating a TreeNote,
+     * It is needed to consider the mess of 'list', 'hostDto' when creating a TreeNote,
      * so this function is not ready and not necessary to be public.
      *
      * @param {(module:echarts/data/Tree~TreeNode|Object)} child

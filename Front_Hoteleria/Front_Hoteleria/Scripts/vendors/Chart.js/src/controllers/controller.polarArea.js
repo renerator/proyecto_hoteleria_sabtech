@@ -158,7 +158,7 @@ module.exports = function(Chart) {
 			var startAngle = (-0.5 * Math.PI) + (circumference * visibleCount);
 			var endAngle = startAngle + (arc.hidden? 0 : circumference);
 
-			var resetModel = {
+			var resetDto = {
 				x: centerX,
 				y: centerY,
 				innerRadius: 0,
@@ -180,7 +180,7 @@ module.exports = function(Chart) {
 				_scale: scale,
 
 				// Desired view properties
-				_model: reset ? resetModel : {
+				_Dto: reset ? resetDto : {
 					x: centerX,
 					y: centerY,
 					innerRadius: 0,

@@ -1,12 +1,12 @@
 /**
- * @file Data zoom model
+ * @file Data zoom Dto
  */
 define(function(require) {
 
     var zrUtil = require('zrender/core/util');
     var env = require('zrender/core/env');
     var echarts = require('../../echarts');
-    var modelUtil = require('../../util/model');
+    var DtoUtil = require('../../util/Dto');
     var visualDefault = require('../../visual/visualDefault');
     var VisualMapping = require('../../visual/VisualMapping');
     var mapVisual = VisualMapping.mapVisual;
@@ -17,7 +17,7 @@ define(function(require) {
     var asc = numberUtil.asc;
     var linearMap = numberUtil.linearMap;
 
-    var VisualMapModel = echarts.extendComponentModel({
+    var VisualMapDto = echarts.extendComponentDto({
 
         type: 'visualMap',
 
@@ -96,7 +96,7 @@ define(function(require) {
         /**
          * @protected
          */
-        init: function (option, parentModel, ecModel) {
+        init: function (option, parentDto, ecDto) {
 
             /**
              * @private
@@ -117,7 +117,7 @@ define(function(require) {
             /**
              * @readOnly
              */
-            this.textStyleModel;
+            this.textStyleDto;
 
             /**
              * [width, height]
@@ -126,7 +126,7 @@ define(function(require) {
              */
             this.itemSize;
 
-            this.mergeDefaultAndTheme(option, ecModel);
+            this.mergeDefaultAndTheme(option, ecDto);
 
             this.doMergeOption({}, true);
         },
@@ -135,7 +135,7 @@ define(function(require) {
          * @public
          */
         mergeOption: function (option) {
-            VisualMapModel.superApply(this, 'mergeOption', arguments);
+            VisualMapDto.superApply(this, 'mergeOption', arguments);
             this.doMergeOption(option, false);
         },
 
@@ -154,7 +154,7 @@ define(function(require) {
                 thisOption.realtime = false;
             }
 
-            this.textStyleModel = this.getModel('textStyle');
+            this.textStyleDto = this.getDto('textStyle');
 
             this.resetItemSize();
 
@@ -236,10 +236,10 @@ define(function(require) {
             var thisOption = this.option;
             var allSeriesIndex = thisOption.seriesIndex == null;
             thisOption.seriesIndex = allSeriesIndex
-                ? [] : modelUtil.normalizeToArray(thisOption.seriesIndex);
+                ? [] : DtoUtil.normalizeToArray(thisOption.seriesIndex);
 
-            allSeriesIndex && this.ecModel.eachSeries(function (seriesModel, index) {
-                var data = seriesModel.getData();
+            allSeriesIndex && this.ecDto.eachSeries(function (seriesDto, index) {
+                var data = seriesDto.getData();
                 // FIXME
                 // 只考虑了list，还没有考虑map等。
 
@@ -475,7 +475,7 @@ define(function(require) {
          */
         eachTargetSeries: function (callback, context) {
             zrUtil.each(this.option.seriesIndex, function (seriesIndex) {
-                callback.call(context, this.ecModel.getSeriesByIndex(seriesIndex));
+                callback.call(context, this.ecDto.getSeriesByIndex(seriesIndex));
             }, this);
         },
 
@@ -534,6 +534,6 @@ define(function(require) {
         });
     }
 
-    return VisualMapModel;
+    return VisualMapDto;
 
 });

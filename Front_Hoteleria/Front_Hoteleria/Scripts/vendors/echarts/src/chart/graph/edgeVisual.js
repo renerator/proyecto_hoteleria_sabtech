@@ -6,22 +6,22 @@ define(function (require) {
         }
         return a;
     }
-    return function (ecModel) {
-        ecModel.eachSeriesByType('graph', function (seriesModel) {
-            var edgeData = seriesModel.getEdgeData();
-            var symbolType = normalize(seriesModel.get('edgeSymbol'));
-            var symbolSize = normalize(seriesModel.get('edgeSymbolSize'));
+    return function (ecDto) {
+        ecDto.eachSeriesByType('graph', function (seriesDto) {
+            var edgeData = seriesDto.getEdgeData();
+            var symbolType = normalize(seriesDto.get('edgeSymbol'));
+            var symbolSize = normalize(seriesDto.get('edgeSymbolSize'));
 
             edgeData.setVisual('fromSymbol', symbolType && symbolType[0]);
             edgeData.setVisual('toSymbol', symbolType && symbolType[1]);
             edgeData.setVisual('fromSymbolSize', symbolSize && symbolSize[0]);
             edgeData.setVisual('toSymbolSize', symbolSize && symbolSize[1]);
-            edgeData.setVisual('color', seriesModel.get('lineStyle.normal.color'));
+            edgeData.setVisual('color', seriesDto.get('lineStyle.normal.color'));
 
             edgeData.each(function (idx) {
-                var itemModel = edgeData.getItemModel(idx);
-                var symbolType = normalize(itemModel.getShallow('symbol', true));
-                var symbolSize = normalize(itemModel.getShallow('symbolSize', true));
+                var itemDto = edgeData.getItemDto(idx);
+                var symbolType = normalize(itemDto.getShallow('symbol', true));
+                var symbolSize = normalize(itemDto.getShallow('symbolSize', true));
 
                 symbolType[0] && edgeData.setItemVisual(idx, 'fromSymbol', symbolType[0]);
                 symbolType[1] && edgeData.setItemVisual(idx, 'toSymbol', symbolType[1]);

@@ -1,14 +1,14 @@
 /**
  * ECharts option manager
  *
- * @module {echarts/model/OptionManager}
+ * @module {echarts/Dto/OptionManager}
  */
 
 define(function (require) {
 
     var zrUtil = require('zrender/core/util');
-    var modelUtil = require('../util/model');
-    var ComponentModel = require('./Component');
+    var DtoUtil = require('../util/Dto');
+    var ComponentDto = require('./Component');
     var each = zrUtil.each;
     var clone = zrUtil.clone;
     var map = zrUtil.map;
@@ -68,7 +68,7 @@ define(function (require) {
      *         ]
      *     };
      *
-     * @alias module:echarts/model/OptionManager
+     * @alias module:echarts/Dto/OptionManager
      * @param {module:echarts/ExtensionAPI} api
      */
     function OptionManager(api) {
@@ -134,7 +134,7 @@ define(function (require) {
         /**
          * @public
          * @param {Object} rawOption Raw option.
-         * @param {module:echarts/model/Global} ecModel
+         * @param {module:echarts/Dto/Global} ecDto
          * @param {Array.<Function>} optionPreprocessorFuncs
          * @return {Object} Init option
          */
@@ -193,26 +193,26 @@ define(function (require) {
                 // called, and is merged into every new option by inner method `mergeOption`
                 // each time `setOption` called, can be only used in `isRecreate`, because
                 // its reliability is under suspicion. In other cases option merge is
-                // proformed by `model.mergeOption`.
+                // proformed by `Dto.mergeOption`.
                 ? optionBackup.baseOption : this._newBaseOption
             );
         },
 
         /**
-         * @param {module:echarts/model/Global} ecModel
+         * @param {module:echarts/Dto/Global} ecDto
          * @return {Object}
          */
-        getTimelineOption: function (ecModel) {
+        getTimelineOption: function (ecDto) {
             var option;
             var timelineOptions = this._timelineOptions;
 
             if (timelineOptions.length) {
-                // getTimelineOption can only be called after ecModel inited,
-                // so we can get currentIndex from timelineModel.
-                var timelineModel = ecModel.getComponent('timeline');
-                if (timelineModel) {
+                // getTimelineOption can only be called after ecDto inited,
+                // so we can get currentIndex from timelineDto.
+                var timelineDto = ecDto.getComponent('timeline');
+                if (timelineDto) {
                     option = clone(
-                        timelineOptions[timelineModel.getCurrentIndex()],
+                        timelineOptions[timelineDto.getCurrentIndex()],
                         true
                     );
                 }
@@ -222,10 +222,10 @@ define(function (require) {
         },
 
         /**
-         * @param {module:echarts/model/Global} ecModel
+         * @param {module:echarts/Dto/Global} ecDto
          * @return {Array.<Object>}
          */
-        getMediaOption: function (ecModel) {
+        getMediaOption: function (ecDto) {
             var ecWidth = this._api.getWidth();
             var ecHeight = this._api.getHeight();
             var mediaList = this._mediaList;
@@ -399,9 +399,9 @@ define(function (require) {
      * this might be the only simple way to implement that feature.
      *
      * MEMO: We've considered some other approaches:
-     * 1. Each model handle its self restoration but not uniform treatment.
+     * 1. Each Dto handle its self restoration but not uniform treatment.
      *     (Too complex in logic and error-prone)
-     * 2. Use a shadow ecModel. (Performace expensive)
+     * 2. Use a shadow ecDto. (Performace expensive)
      */
     function mergeOption(oldOption, newOption) {
         newOption = newOption || {};
@@ -413,14 +413,14 @@ define(function (require) {
 
             var oldCptOpt = oldOption[mainType];
 
-            if (!ComponentModel.hasClass(mainType)) {
+            if (!ComponentDto.hasClass(mainType)) {
                 oldOption[mainType] = merge(oldCptOpt, newCptOpt, true);
             }
             else {
-                newCptOpt = modelUtil.normalizeToArray(newCptOpt);
-                oldCptOpt = modelUtil.normalizeToArray(oldCptOpt);
+                newCptOpt = DtoUtil.normalizeToArray(newCptOpt);
+                oldCptOpt = DtoUtil.normalizeToArray(oldCptOpt);
 
-                var mapResult = modelUtil.mappingToExists(oldCptOpt, newCptOpt);
+                var mapResult = DtoUtil.mappingToExists(oldCptOpt, newCptOpt);
 
                 oldOption[mainType] = map(mapResult, function (item) {
                     return (item.option && item.exist)

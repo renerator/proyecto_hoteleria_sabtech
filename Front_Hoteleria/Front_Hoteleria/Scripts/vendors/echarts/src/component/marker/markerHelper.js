@@ -67,14 +67,14 @@ define(function (require) {
      * Transform markPoint data item to format used in List by do the following
      * 1. Calculate statistic like `max`, `min`, `average`
      * 2. Convert `item.xAxis`, `item.yAxis` to `item.coord` array
-     * @param  {module:echarts/model/Series} seriesModel
+     * @param  {module:echarts/Dto/Series} seriesDto
      * @param  {module:echarts/coord/*} [coordSys]
      * @param  {Object} item
      * @return {Object}
      */
-    var dataTransform = function (seriesModel, item) {
-        var data = seriesModel.getData();
-        var coordSys = seriesModel.coordinateSystem;
+    var dataTransform = function (seriesDto, item) {
+        var data = seriesDto.getData();
+        var coordSys = seriesDto.coordinateSystem;
 
         // 1. If not specify the position with pixel directly
         // 2. If `coord` is not a data array. Which uses `xAxis`,
@@ -85,7 +85,7 @@ define(function (require) {
             && !zrUtil.isArray(item.coord)
             && coordSys
         ) {
-            var axisInfo = getAxisInfo(item, data, coordSys, seriesModel);
+            var axisInfo = getAxisInfo(item, data, coordSys, seriesDto);
 
             // Clone the option
             // Transform the properties xAxis, yAxis, radiusAxis, angleAxis, geoCoord to value
@@ -117,21 +117,21 @@ define(function (require) {
         return item;
     };
 
-    var getAxisInfo = function (item, data, coordSys, seriesModel) {
+    var getAxisInfo = function (item, data, coordSys, seriesDto) {
         var ret = {};
 
         if (item.valueIndex != null || item.valueDim != null) {
             ret.valueDataDim = item.valueIndex != null
                 ? data.getDimension(item.valueIndex) : item.valueDim;
-            ret.valueAxis = coordSys.getAxis(seriesModel.dataDimToCoordDim(ret.valueDataDim));
+            ret.valueAxis = coordSys.getAxis(seriesDto.dataDimToCoordDim(ret.valueDataDim));
             ret.baseAxis = coordSys.getOtherAxis(ret.valueAxis);
-            ret.baseDataDim = seriesModel.coordDimToDataDim(ret.baseAxis.dim)[0];
+            ret.baseDataDim = seriesDto.coordDimToDataDim(ret.baseAxis.dim)[0];
         }
         else {
-            ret.baseAxis = seriesModel.getBaseAxis();
+            ret.baseAxis = seriesDto.getBaseAxis();
             ret.valueAxis = coordSys.getOtherAxis(ret.baseAxis);
-            ret.baseDataDim = seriesModel.coordDimToDataDim(ret.baseAxis.dim)[0];
-            ret.valueDataDim = seriesModel.coordDimToDataDim(ret.valueAxis.dim)[0];
+            ret.baseDataDim = seriesDto.coordDimToDataDim(ret.baseAxis.dim)[0];
+            ret.valueDataDim = seriesDto.coordDimToDataDim(ret.valueAxis.dim)[0];
         }
 
         return ret;

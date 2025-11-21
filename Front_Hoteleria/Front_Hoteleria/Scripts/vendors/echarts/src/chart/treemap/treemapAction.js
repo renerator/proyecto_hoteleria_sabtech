@@ -20,23 +20,23 @@ define(function(require) {
 
     echarts.registerAction(
         {type: 'treemapRootToNode', update: 'updateView'},
-        function (payload, ecModel) {
+        function (payload, ecDto) {
 
-            ecModel.eachComponent(
+            ecDto.eachComponent(
                 {mainType: 'series', subType: 'treemap', query: payload},
                 handleRootToNode
             );
 
-            function handleRootToNode(model, index) {
-                var targetInfo = helper.retrieveTargetInfo(payload, model);
+            function handleRootToNode(Dto, index) {
+                var targetInfo = helper.retrieveTargetInfo(payload, Dto);
 
                 if (targetInfo) {
-                    var originViewRoot = model.getViewRoot();
+                    var originViewRoot = Dto.getViewRoot();
                     if (originViewRoot) {
                         payload.direction = helper.aboveViewRoot(originViewRoot, targetInfo.node)
                             ? 'rollUp' : 'drillDown';
                     }
-                    model.resetViewRoot(targetInfo.node);
+                    Dto.resetViewRoot(targetInfo.node);
                 }
             }
         }

@@ -21,7 +21,7 @@
      *     // this.echarts can be visited.
      * });
      *
-     * testCase.requireId(['echarts/model/Component'])('test_case_2', function (Component) {
+     * testCase.requireId(['echarts/Dto/Component'])('test_case_2', function (Component) {
      *     // Real test case.
      *     // this.echarts can be visited.
      * });

@@ -186,9 +186,9 @@ describe('Line controller tests', function() {
 			expect(meta.data[i]._index).toBe(i);
 			expect(meta.data[i]._xScale).toBe(chart.scales.firstXScaleID);
 			expect(meta.data[i]._yScale).toBe(chart.scales.firstYScaleID);
-			expect(meta.data[i]._model.x).toBeCloseToPixel(expected.x);
-			expect(meta.data[i]._model.y).toBeCloseToPixel(expected.y);
-			expect(meta.data[i]._model).toEqual(jasmine.objectContaining({
+			expect(meta.data[i]._Dto.x).toBeCloseToPixel(expected.x);
+			expect(meta.data[i]._Dto.y).toBeCloseToPixel(expected.y);
+			expect(meta.data[i]._Dto).toEqual(jasmine.objectContaining({
 				backgroundColor: 'red',
 				borderColor: 'blue',
 			}));
@@ -229,8 +229,8 @@ describe('Line controller tests', function() {
 			{ x: 341, y: 161 },
 			{ x: 492, y: 419 }
 		].forEach(function(values, i) {
-				expect(meta0.data[i]._model.x).toBeCloseToPixel(values.x);
-				expect(meta0.data[i]._model.y).toBeCloseToPixel(values.y);
+				expect(meta0.data[i]._Dto.x).toBeCloseToPixel(values.x);
+				expect(meta0.data[i]._Dto.y).toBeCloseToPixel(values.y);
 		});
 
 		var meta1 = chart.getDatasetMeta(1);
@@ -240,8 +240,8 @@ describe('Line controller tests', function() {
 			{ x: 341, y: 161 },
 			{ x: 492, y: 471 }
 		].forEach(function(values, i) {
-				expect(meta1.data[i]._model.x).toBeCloseToPixel(values.x);
-				expect(meta1.data[i]._model.y).toBeCloseToPixel(values.y);
+				expect(meta1.data[i]._Dto.x).toBeCloseToPixel(values.x);
+				expect(meta1.data[i]._Dto.y).toBeCloseToPixel(values.y);
 		});
 		
 	});
@@ -260,7 +260,7 @@ describe('Line controller tests', function() {
 		
 		var meta = chart.getDatasetMeta(0);
 		
-		expect(meta.dataset._model).toEqual(jasmine.objectContaining({
+		expect(meta.dataset._Dto).toEqual(jasmine.objectContaining({
 			scaleTop: 32,
 			scaleBottom: 484,
 			scaleZero: 484,
@@ -281,7 +281,7 @@ describe('Line controller tests', function() {
 		
 		var meta = chart.getDatasetMeta(0);
 		
-		expect(meta.dataset._model).toEqual(jasmine.objectContaining({
+		expect(meta.dataset._Dto).toEqual(jasmine.objectContaining({
 			scaleTop: 32,
 			scaleBottom: 484,
 			scaleZero: 32,
@@ -307,9 +307,9 @@ describe('Line controller tests', function() {
 
 		var meta = chart.getDatasetMeta(0);
 
-		expect(meta.dataset._model.backgroundColor).toBe('rgb(98, 98, 98)');
-		expect(meta.dataset._model.borderColor).toBe('rgb(8, 8, 8)');
-		expect(meta.dataset._model.borderWidth).toBe(0.55);
+		expect(meta.dataset._Dto.backgroundColor).toBe('rgb(98, 98, 98)');
+		expect(meta.dataset._Dto.borderColor).toBe('rgb(8, 8, 8)');
+		expect(meta.dataset._Dto.borderWidth).toBe(0.55);
 	});
 
 	it('should handle number of data point changes in update', function() {
@@ -371,10 +371,10 @@ describe('Line controller tests', function() {
 		var point = meta.data[0];
 
 		meta.controller.setHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(229, 230, 0)');
-		expect(point._model.borderColor).toBe('rgb(230, 230, 230)');
-		expect(point._model.borderWidth).toBe(1);
-		expect(point._model.radius).toBe(4);
+		expect(point._Dto.backgroundColor).toBe('rgb(229, 230, 0)');
+		expect(point._Dto.borderColor).toBe('rgb(230, 230, 230)');
+		expect(point._Dto.borderWidth).toBe(1);
+		expect(point._Dto.radius).toBe(4);
 
 		// Can set hover style per dataset
 		chart.data.datasets[0].pointHoverRadius = 3.3;
@@ -383,10 +383,10 @@ describe('Line controller tests', function() {
 		chart.data.datasets[0].pointHoverBorderWidth = 2.1;
 
 		meta.controller.setHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(77, 79, 81)');
-		expect(point._model.borderColor).toBe('rgb(123, 125, 127)');
-		expect(point._model.borderWidth).toBe(2.1);
-		expect(point._model.radius).toBe(3.3);
+		expect(point._Dto.backgroundColor).toBe('rgb(77, 79, 81)');
+		expect(point._Dto.borderColor).toBe('rgb(123, 125, 127)');
+		expect(point._Dto.borderWidth).toBe(2.1);
+		expect(point._Dto.radius).toBe(3.3);
 
 		// Use the consistent name "pointRadius", setting but overwriting
 		// another value in "radius"
@@ -394,10 +394,10 @@ describe('Line controller tests', function() {
 		chart.data.datasets[0].radius = 20;
 
 		meta.controller.setHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(77, 79, 81)');
-		expect(point._model.borderColor).toBe('rgb(123, 125, 127)');
-		expect(point._model.borderWidth).toBe(2.1);
-		expect(point._model.radius).toBe(3.3);
+		expect(point._Dto.backgroundColor).toBe('rgb(77, 79, 81)');
+		expect(point._Dto.borderColor).toBe('rgb(123, 125, 127)');
+		expect(point._Dto.borderWidth).toBe(2.1);
+		expect(point._Dto.radius).toBe(3.3);
 
 		// Custom style
 		point.custom = {
@@ -408,10 +408,10 @@ describe('Line controller tests', function() {
 		};
 
 		meta.controller.setHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(0, 0, 0)');
-		expect(point._model.borderColor).toBe('rgb(10, 10, 10)');
-		expect(point._model.borderWidth).toBe(5.5);
-		expect(point._model.radius).toBe(4.4);
+		expect(point._Dto.backgroundColor).toBe('rgb(0, 0, 0)');
+		expect(point._Dto.borderColor).toBe('rgb(10, 10, 10)');
+		expect(point._Dto.borderWidth).toBe(5.5);
+		expect(point._Dto.radius).toBe(4.4);
 	});
 
 	it('should remove hover styles', function() {
@@ -448,10 +448,10 @@ describe('Line controller tests', function() {
 		chart.options.elements.point.radius = 1.01;
 
 		meta.controller.removeHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(45, 46, 47)');
-		expect(point._model.borderColor).toBe('rgb(50, 51, 52)');
-		expect(point._model.borderWidth).toBe(10.1);
-		expect(point._model.radius).toBe(1.01);
+		expect(point._Dto.backgroundColor).toBe('rgb(45, 46, 47)');
+		expect(point._Dto.borderColor).toBe('rgb(50, 51, 52)');
+		expect(point._Dto.borderWidth).toBe(10.1);
+		expect(point._Dto.radius).toBe(1.01);
 
 		// Can set hover style per dataset
 		chart.data.datasets[0].radius = 3.3;
@@ -460,10 +460,10 @@ describe('Line controller tests', function() {
 		chart.data.datasets[0].pointBorderWidth = 2.1;
 
 		meta.controller.removeHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(77, 79, 81)');
-		expect(point._model.borderColor).toBe('rgb(123, 125, 127)');
-		expect(point._model.borderWidth).toBe(2.1);
-		expect(point._model.radius).toBe(3.3);
+		expect(point._Dto.backgroundColor).toBe('rgb(77, 79, 81)');
+		expect(point._Dto.borderColor).toBe('rgb(123, 125, 127)');
+		expect(point._Dto.borderWidth).toBe(2.1);
+		expect(point._Dto.radius).toBe(3.3);
 
 		// Use the consistent name "pointRadius", setting but overwriting
 		// another value in "radius"
@@ -471,10 +471,10 @@ describe('Line controller tests', function() {
 		chart.data.datasets[0].radius = 20;
 
 		meta.controller.removeHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(77, 79, 81)');
-		expect(point._model.borderColor).toBe('rgb(123, 125, 127)');
-		expect(point._model.borderWidth).toBe(2.1);
-		expect(point._model.radius).toBe(250);
+		expect(point._Dto.backgroundColor).toBe('rgb(77, 79, 81)');
+		expect(point._Dto.borderColor).toBe('rgb(123, 125, 127)');
+		expect(point._Dto.borderWidth).toBe(2.1);
+		expect(point._Dto.radius).toBe(250);
 
 		// Custom style
 		point.custom = {
@@ -485,9 +485,9 @@ describe('Line controller tests', function() {
 		};
 
 		meta.controller.removeHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(0, 0, 0)');
-		expect(point._model.borderColor).toBe('rgb(10, 10, 10)');
-		expect(point._model.borderWidth).toBe(5.5);
-		expect(point._model.radius).toBe(4.4);
+		expect(point._Dto.backgroundColor).toBe('rgb(0, 0, 0)');
+		expect(point._Dto.borderColor).toBe('rgb(10, 10, 10)');
+		expect(point._Dto.borderWidth).toBe(5.5);
+		expect(point._Dto.radius).toBe(4.4);
 	});
 });

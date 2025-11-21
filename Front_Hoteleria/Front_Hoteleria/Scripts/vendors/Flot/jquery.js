@@ -859,7 +859,7 @@ jQuery.ready.promise = function( obj ) {
 			// A fallback to window.onload, that will always work
 			window.addEventListener( "load", jQuery.ready, false );
 
-		// If IE event model is used
+		// If IE event Dto is used
 		} else {
 			// Ensure firing before onload, maybe late but safe also for iframes
 			document.attachEvent( "onreadystatechange", DOMContentLoaded );
@@ -1320,8 +1320,8 @@ jQuery.support = (function() {
 		// Where outerHTML is undefined, this still works
 		html5Clone: document.createElement("nav").cloneNode( true ).outerHTML !== "<:nav></:nav>",
 
-		// jQuery.support.boxModel DEPRECATED in 1.8 since we don't support Quirks Mode
-		boxModel: ( document.compatMode === "CSS1Compat" ),
+		// jQuery.support.boxDto DEPRECATED in 1.8 since we don't support Quirks Mode
+		boxDto: ( document.compatMode === "CSS1Compat" ),
 
 		// Will be defined later
 		submitBubbles: true,
@@ -3736,7 +3736,7 @@ var cachedruns,
 	// http://www.w3.org/TR/css3-syntax/#characters
 	characterEncoding = "(?:\\\\.|[-\\w]|[^\\x00-\\xa0])+",
 
-	// Loosely modeled on CSS identifier characters
+	// Loosely Dtoed on CSS identifier characters
 	// An unquoted value should be a CSS identifier (http://www.w3.org/TR/css3-selectors/#attribute-selectors)
 	// Proper syntax: http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
 	identifier = characterEncoding.replace( "w", "w#" ),
@@ -6914,7 +6914,7 @@ function augmentWidthOrHeight( elem, name, extra, isBorderBox ) {
 		val = 0;
 
 	for ( ; i < 4; i += 2 ) {
-		// both box models exclude margin, so add it if we want it
+		// both box Dtos exclude margin, so add it if we want it
 		if ( extra === "margin" ) {
 			// we use jQuery.css instead of curCSS here
 			// because of the reliableMarginRight CSS hook!
@@ -6976,7 +6976,7 @@ function getWidthOrHeight( elem, name, extra ) {
 		val = parseFloat( val ) || 0;
 	}
 
-	// use the active box-sizing model to add/subtract irrelevant styles
+	// use the active box-sizing Dto to add/subtract irrelevant styles
 	return ( val +
 		augmentWidthOrHeight(
 			elem,

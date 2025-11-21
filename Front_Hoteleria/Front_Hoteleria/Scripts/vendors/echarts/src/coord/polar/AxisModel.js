@@ -3,10 +3,10 @@ define(function(require) {
     'use strict';
 
     var zrUtil = require('zrender/core/util');
-    var ComponentModel = require('../../model/Component');
-    var axisModelCreator = require('../axisModelCreator');
+    var ComponentDto = require('../../Dto/Component');
+    var axisDtoCreator = require('../axisDtoCreator');
 
-    var PolarAxisModel = ComponentModel.extend({
+    var PolarAxisDto = ComponentDto.extend({
         type: 'polarAxis',
         /**
          * @type {module:echarts/coord/polar/AngleAxis|module:echarts/coord/polar/RadiusAxis}
@@ -14,7 +14,7 @@ define(function(require) {
         axis: null
     });
 
-    zrUtil.merge(PolarAxisModel.prototype, require('../axisModelCommonMixin'));
+    zrUtil.merge(PolarAxisDto.prototype, require('../axisDtoCommonMixin'));
 
     var polarAxisDefaultExtendedOption = {
         angle: {
@@ -42,7 +42,7 @@ define(function(require) {
         return option.type || (option.data ? 'category' : 'value');
     }
 
-    axisModelCreator('angle', PolarAxisModel, getAxisType, polarAxisDefaultExtendedOption.angle);
-    axisModelCreator('radius', PolarAxisModel, getAxisType, polarAxisDefaultExtendedOption.radius);
+    axisDtoCreator('angle', PolarAxisDto, getAxisType, polarAxisDefaultExtendedOption.angle);
+    axisDtoCreator('radius', PolarAxisDto, getAxisType, polarAxisDefaultExtendedOption.radius);
 
 });

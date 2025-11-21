@@ -13,13 +13,13 @@
  */
 define(function (require) {
 
-    var GlobalModel = require('./model/Global');
+    var GlobalDto = require('./Dto/Global');
     var ExtensionAPI = require('./ExtensionAPI');
     var CoordinateSystemManager = require('./CoordinateSystem');
-    var OptionManager = require('./model/OptionManager');
+    var OptionManager = require('./Dto/OptionManager');
 
-    var ComponentModel = require('./model/Component');
-    var SeriesModel = require('./model/Series');
+    var ComponentDto = require('./Dto/Component');
+    var SeriesDto = require('./Dto/Series');
 
     var ComponentView = require('./view/Component');
     var ChartView = require('./view/Chart');
@@ -173,13 +173,13 @@ define(function (require) {
      * @param {boolean} [notRefreshImmediately=false] Useful when setOption frequently.
      */
     echartsProto.setOption = function (option, notMerge, notRefreshImmediately) {
-        if (!this._model || notMerge) {
-            this._model = new GlobalModel(
+        if (!this._Dto || notMerge) {
+            this._Dto = new GlobalDto(
                 null, null, this._theme, new OptionManager(this._api)
             );
         }
 
-        this._model.setOption(option, optionPreprocessorFuncs);
+        this._Dto.setOption(option, optionPreprocessorFuncs);
 
         updateMethods.prepareAndUpdate.call(this);
 
@@ -194,17 +194,17 @@ define(function (require) {
     };
 
     /**
-     * @return {module:echarts/model/Global}
+     * @return {module:echarts/Dto/Global}
      */
-    echartsProto.getModel = function () {
-        return this._model;
+    echartsProto.getDto = function () {
+        return this._Dto;
     };
 
     /**
      * @return {Object}
      */
     echartsProto.getOption = function () {
-        return this._model.getOption();
+        return this._Dto.getOption();
     };
 
     /**
@@ -233,7 +233,7 @@ define(function (require) {
         opts = opts || {};
         opts.pixelRatio = opts.pixelRatio || 1;
         opts.backgroundColor = opts.backgroundColor
-            || this._model.get('backgroundColor');
+            || this._Dto.get('backgroundColor');
         var zr = this._zr;
         var list = zr.storage.getDisplayList();
         // Stop animations
@@ -252,12 +252,12 @@ define(function (require) {
     echartsProto.getDataURL = function (opts) {
         opts = opts || {};
         var excludeComponents = opts.excludeComponents;
-        var ecModel = this._model;
+        var ecDto = this._Dto;
         var excludesComponentViews = [];
         var self = this;
 
         each(excludeComponents, function (componentType) {
-            ecModel.eachComponent({
+            ecDto.eachComponent({
                 mainType: componentType
             }, function (component) {
                 var view = self._componentsMap[component.__viewId];
@@ -359,39 +359,39 @@ define(function (require) {
         update: function (payload) {
             // console.time && console.time('update');
 
-            var ecModel = this._model;
+            var ecDto = this._Dto;
             var api = this._api;
             var coordSysMgr = this._coordSysMgr;
             // update before setOption
-            if (!ecModel) {
+            if (!ecDto) {
                 return;
             }
 
             // Fixme First time update ?
-            ecModel.restoreData();
+            ecDto.restoreData();
 
             // TODO
-            // Save total ecModel here for undo/redo (after restoring data and before processing data).
-            // Undo (restoration of total ecModel) can be carried out in 'action' or outside API call.
+            // Save total ecDto here for undo/redo (after restoring data and before processing data).
+            // Undo (restoration of total ecDto) can be carried out in 'action' or outside API call.
 
             // Create new coordinate system each update
             // In LineView may save the old coordinate system and use it to get the orignal point
-            coordSysMgr.create(this._model, this._api);
+            coordSysMgr.create(this._Dto, this._api);
 
-            processData.call(this, ecModel, api);
+            processData.call(this, ecDto, api);
 
-            stackSeriesData.call(this, ecModel);
+            stackSeriesData.call(this, ecDto);
 
-            coordSysMgr.update(ecModel, api);
+            coordSysMgr.update(ecDto, api);
 
-            doLayout.call(this, ecModel, payload);
+            doLayout.call(this, ecDto, payload);
 
-            doVisualCoding.call(this, ecModel, payload);
+            doVisualCoding.call(this, ecDto, payload);
 
-            doRender.call(this, ecModel, payload);
+            doRender.call(this, ecDto, payload);
 
             // Set background
-            var backgroundColor = ecModel.get('backgroundColor') || 'transparent';
+            var backgroundColor = ecDto.get('backgroundColor') || 'transparent';
 
             var painter = this._zr.painter;
             // TODO all use clearColor ?
@@ -422,18 +422,18 @@ define(function (require) {
          * @private
          */
         updateView: function (payload) {
-            var ecModel = this._model;
+            var ecDto = this._Dto;
 
             // update before setOption
-            if (!ecModel) {
+            if (!ecDto) {
                 return;
             }
 
-            doLayout.call(this, ecModel, payload);
+            doLayout.call(this, ecDto, payload);
 
-            doVisualCoding.call(this, ecModel, payload);
+            doVisualCoding.call(this, ecDto, payload);
 
-            invokeUpdateMethod.call(this, 'updateView', ecModel, payload);
+            invokeUpdateMethod.call(this, 'updateView', ecDto, payload);
         },
 
         /**
@@ -441,16 +441,16 @@ define(function (require) {
          * @private
          */
         updateVisual: function (payload) {
-            var ecModel = this._model;
+            var ecDto = this._Dto;
 
             // update before setOption
-            if (!ecModel) {
+            if (!ecDto) {
                 return;
             }
 
-            doVisualCoding.call(this, ecModel, payload);
+            doVisualCoding.call(this, ecDto, payload);
 
-            invokeUpdateMethod.call(this, 'updateVisual', ecModel, payload);
+            invokeUpdateMethod.call(this, 'updateVisual', ecDto, payload);
         },
 
         /**
@@ -458,16 +458,16 @@ define(function (require) {
          * @private
          */
         updateLayout: function (payload) {
-            var ecModel = this._model;
+            var ecDto = this._Dto;
 
             // update before setOption
-            if (!ecModel) {
+            if (!ecDto) {
                 return;
             }
 
-            doLayout.call(this, ecModel, payload);
+            doLayout.call(this, ecDto, payload);
 
-            invokeUpdateMethod.call(this, 'updateLayout', ecModel, payload);
+            invokeUpdateMethod.call(this, 'updateLayout', ecDto, payload);
         },
 
         /**
@@ -491,11 +491,11 @@ define(function (require) {
          * @private
          */
         prepareAndUpdate: function (payload) {
-            var ecModel = this._model;
+            var ecDto = this._Dto;
 
-            prepareView.call(this, 'component', ecModel);
+            prepareView.call(this, 'component', ecDto);
 
-            prepareView.call(this, 'chart', ecModel);
+            prepareView.call(this, 'chart', ecDto);
 
             updateMethods.update.call(this, payload);
         }
@@ -506,20 +506,20 @@ define(function (require) {
      * @private
      */
     function toggleHighlight(method, payload) {
-        var ecModel = this._model;
+        var ecDto = this._Dto;
 
         // dispatchAction before setOption
-        if (!ecModel) {
+        if (!ecDto) {
             return;
         }
 
-        ecModel.eachComponent(
+        ecDto.eachComponent(
             {mainType: 'series', query: payload},
-            function (seriesModel, index) {
-                var chartView = this._chartsMap[seriesModel.__viewId];
+            function (seriesDto, index) {
+                var chartView = this._chartsMap[seriesDto.__viewId];
                 if (chartView && chartView.__alive) {
                     chartView[method](
-                        seriesModel, ecModel, this._api, payload
+                        seriesDto, ecDto, this._api, payload
                     );
                 }
             },
@@ -533,7 +533,7 @@ define(function (require) {
     echartsProto.resize = function () {
         this._zr.resize();
 
-        var optionChanged = this._model && this._model.resetOption('media');
+        var optionChanged = this._Dto && this._Dto.resetOption('media');
         updateMethods[optionChanged ? 'prepareAndUpdate' : 'update'].call(this);
 
         // Resize loading effect
@@ -607,7 +607,7 @@ define(function (require) {
             for (var i = 0; i < payloads.length; i++) {
                 var batchItem = payloads[i];
                 // Action can specify the event by return it.
-                eventObj = actionWrap.action(batchItem, this._model);
+                eventObj = actionWrap.action(batchItem, this._Dto);
                 // Emit event outside
                 eventObj = eventObj || zrUtil.extend({}, batchItem);
                 // Convert type to eventType
@@ -649,33 +649,33 @@ define(function (require) {
      * @param {string} methodName
      * @private
      */
-    function invokeUpdateMethod(methodName, ecModel, payload) {
+    function invokeUpdateMethod(methodName, ecDto, payload) {
         var api = this._api;
 
         // Update all components
         each(this._componentsViews, function (component) {
-            var componentModel = component.__model;
-            component[methodName](componentModel, ecModel, api, payload);
+            var componentDto = component.__Dto;
+            component[methodName](componentDto, ecDto, api, payload);
 
-            updateZ(componentModel, component);
+            updateZ(componentDto, component);
         }, this);
 
         // Upate all charts
-        ecModel.eachSeries(function (seriesModel, idx) {
-            var chart = this._chartsMap[seriesModel.__viewId];
-            chart[methodName](seriesModel, ecModel, api, payload);
+        ecDto.eachSeries(function (seriesDto, idx) {
+            var chart = this._chartsMap[seriesDto.__viewId];
+            chart[methodName](seriesDto, ecDto, api, payload);
 
-            updateZ(seriesModel, chart);
+            updateZ(seriesDto, chart);
         }, this);
 
     }
 
     /**
      * Prepare view instances of charts and components
-     * @param  {module:echarts/model/Global} ecModel
+     * @param  {module:echarts/Dto/Global} ecDto
      * @private
      */
-    function prepareView(type, ecModel) {
+    function prepareView(type, ecDto) {
         var isComponent = type === 'component';
         var viewList = isComponent ? this._componentsViews : this._chartsViews;
         var viewMap = isComponent ? this._componentsMap : this._chartsMap;
@@ -685,27 +685,27 @@ define(function (require) {
             viewList[i].__alive = false;
         }
 
-        ecModel[isComponent ? 'eachComponent' : 'eachSeries'](function (componentType, model) {
+        ecDto[isComponent ? 'eachComponent' : 'eachSeries'](function (componentType, Dto) {
             if (isComponent) {
                 if (componentType === 'series') {
                     return;
                 }
             }
             else {
-                model = componentType;
+                Dto = componentType;
             }
 
             // Consider: id same and type changed.
-            var viewId = model.id + '_' + model.type;
+            var viewId = Dto.id + '_' + Dto.type;
             var view = viewMap[viewId];
             if (!view) {
-                var classType = ComponentModel.parseClassType(model.type);
+                var classType = ComponentDto.parseClassType(Dto.type);
                 var Clazz = isComponent
                     ? ComponentView.getClass(classType.main, classType.sub)
                     : ChartView.getClass(classType.sub);
                 if (Clazz) {
                     view = new Clazz();
-                    view.init(ecModel, this._api);
+                    view.init(ecDto, this._api);
                     viewMap[viewId] = view;
                     viewList.push(view);
                     zr.add(view.group);
@@ -716,17 +716,17 @@ define(function (require) {
                 }
             }
 
-            model.__viewId = viewId;
+            Dto.__viewId = viewId;
             view.__alive = true;
             view.__id = viewId;
-            view.__model = model;
+            view.__Dto = Dto;
         }, this);
 
         for (var i = 0; i < viewList.length;) {
             var view = viewList[i];
             if (!view.__alive) {
                 zr.remove(view.group);
-                view.dispose(ecModel, this._api);
+                view.dispose(ecDto, this._api);
                 viewList.splice(i, 1);
                 delete viewMap[view.__id];
             }
@@ -739,13 +739,13 @@ define(function (require) {
     /**
      * Processor data in each series
      *
-     * @param {module:echarts/model/Global} ecModel
+     * @param {module:echarts/Dto/Global} ecDto
      * @private
      */
-    function processData(ecModel, api) {
+    function processData(ecDto, api) {
         each(PROCESSOR_STAGES, function (stage) {
             each(dataProcessorFuncs[stage] || [], function (process) {
-                process(ecModel, api);
+                process(ecDto, api);
             });
         });
     }
@@ -753,9 +753,9 @@ define(function (require) {
     /**
      * @private
      */
-    function stackSeriesData(ecModel) {
+    function stackSeriesData(ecDto) {
         var stackedDataMap = {};
-        ecModel.eachSeries(function (series) {
+        ecDto.eachSeries(function (series) {
             var stack = series.get('stack');
             var data = series.getData();
             if (stack && data.type === 'list') {
@@ -771,26 +771,26 @@ define(function (require) {
     /**
      * Layout before each chart render there series, after visual coding and data processing
      *
-     * @param {module:echarts/model/Global} ecModel
+     * @param {module:echarts/Dto/Global} ecDto
      * @private
      */
-    function doLayout(ecModel, payload) {
+    function doLayout(ecDto, payload) {
         var api = this._api;
         each(layoutFuncs, function (layout) {
-            layout(ecModel, api, payload);
+            layout(ecDto, api, payload);
         });
     }
 
     /**
      * Code visual infomation from data after data processing
      *
-     * @param {module:echarts/model/Global} ecModel
+     * @param {module:echarts/Dto/Global} ecDto
      * @private
      */
-    function doVisualCoding(ecModel, payload) {
+    function doVisualCoding(ecDto, payload) {
         each(VISUAL_CODING_STAGES, function (stage) {
             each(visualCodingFuncs[stage] || [], function (visualCoding) {
-                visualCoding(ecModel, payload);
+                visualCoding(ecDto, payload);
             });
         });
     }
@@ -799,14 +799,14 @@ define(function (require) {
      * Render each chart and component
      * @private
      */
-    function doRender(ecModel, payload) {
+    function doRender(ecDto, payload) {
         var api = this._api;
         // Render all components
         each(this._componentsViews, function (componentView) {
-            var componentModel = componentView.__model;
-            componentView.render(componentModel, ecModel, api, payload);
+            var componentDto = componentView.__Dto;
+            componentView.render(componentDto, ecDto, api, payload);
 
-            updateZ(componentModel, componentView);
+            updateZ(componentDto, componentView);
         }, this);
 
         each(this._chartsViews, function (chart) {
@@ -814,20 +814,20 @@ define(function (require) {
         }, this);
 
         // Render all charts
-        ecModel.eachSeries(function (seriesModel, idx) {
-            var chartView = this._chartsMap[seriesModel.__viewId];
+        ecDto.eachSeries(function (seriesDto, idx) {
+            var chartView = this._chartsMap[seriesDto.__viewId];
             chartView.__alive = true;
-            chartView.render(seriesModel, ecModel, api, payload);
+            chartView.render(seriesDto, ecDto, api, payload);
 
-            chartView.group.silent = !!seriesModel.get('silent');
+            chartView.group.silent = !!seriesDto.get('silent');
 
-            updateZ(seriesModel, chartView);
+            updateZ(seriesDto, chartView);
         }, this);
 
         // Remove groups of unrendered charts
         each(this._chartsViews, function (chart) {
             if (!chart.__alive) {
-                chart.remove(ecModel, api);
+                chart.remove(ecDto, api);
             }
         }, this);
     }
@@ -841,11 +841,11 @@ define(function (require) {
     echartsProto._initEvents = function () {
         each(MOUSE_EVENT_NAMES, function (eveName) {
             this._zr.on(eveName, function (e) {
-                var ecModel = this.getModel();
+                var ecDto = this.getDto();
                 var el = e.target;
                 if (el && el.dataIndex != null) {
-                    var dataModel = el.dataModel || ecModel.getSeriesByIndex(el.seriesIndex);
-                    var params = dataModel && dataModel.getDataParams(el.dataIndex, el.dataType) || {};
+                    var dataDto = el.dataDto || ecDto.getSeriesByIndex(el.seriesIndex);
+                    var params = dataDto && dataDto.getDataParams(el.dataIndex, el.dataType) || {};
                     params.event = e;
                     params.type = eveName;
                     this.trigger(eveName, params);
@@ -883,13 +883,13 @@ define(function (require) {
     echartsProto.dispose = function () {
         this._disposed = true;
         var api = this._api;
-        var ecModel = this._model;
+        var ecDto = this._Dto;
 
         each(this._componentsViews, function (component) {
-            component.dispose(ecModel, api);
+            component.dispose(ecDto, api);
         });
         each(this._chartsViews, function (chart) {
-            chart.dispose(ecModel, api);
+            chart.dispose(ecDto, api);
         });
 
         this._zr.dispose();
@@ -900,13 +900,13 @@ define(function (require) {
     zrUtil.mixin(ECharts, Eventful);
 
     /**
-     * @param {module:echarts/model/Series|module:echarts/model/Component} model
+     * @param {module:echarts/Dto/Series|module:echarts/Dto/Component} Dto
      * @param {module:echarts/view/Component|module:echarts/view/Chart} view
      * @return {string}
      */
-    function updateZ(model, view) {
-        var z = model.get('z');
-        var zlevel = model.get('zlevel');
+    function updateZ(Dto, view) {
+        var z = Dto.get('z');
+        var zlevel = Dto.get('zlevel');
         // Set z and zlevel
         view.group.traverse(function (el) {
             z != null && (el.z = z);
@@ -1208,15 +1208,15 @@ define(function (require) {
     /**
      * @param {Object} opts
      */
-    echarts.extendComponentModel = function (opts) {
-        return ComponentModel.extend(opts);
+    echarts.extendComponentDto = function (opts) {
+        return ComponentDto.extend(opts);
     };
 
     /**
      * @param {Object} opts
      */
-    echarts.extendSeriesModel = function (opts) {
-        return SeriesModel.extend(opts);
+    echarts.extendSeriesDto = function (opts) {
+        return SeriesDto.extend(opts);
     };
 
     /**

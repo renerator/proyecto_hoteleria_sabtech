@@ -6,14 +6,14 @@ define(function (require) {
     var numberUtil = require('../../util/number');
     var parsePercent = numberUtil.parsePercent;
 
-    function parsePosition(seriesModel, api) {
-        var center = seriesModel.get('center');
+    function parsePosition(seriesDto, api) {
+        var center = seriesDto.get('center');
         var width = api.getWidth();
         var height = api.getHeight();
         var size = Math.min(width, height);
         var cx = parsePercent(center[0], api.getWidth());
         var cy = parsePercent(center[1], api.getHeight());
-        var r = parsePercent(seriesModel.get('radius'), size / 2);
+        var r = parsePercent(seriesDto.get('radius'), size / 2);
 
         return {
             cx: cx,
@@ -41,32 +41,32 @@ define(function (require) {
 
         type: 'gauge',
 
-        render: function (seriesModel, ecModel, api) {
+        render: function (seriesDto, ecDto, api) {
 
             this.group.removeAll();
 
-            var colorList = seriesModel.get('axisLine.lineStyle.color');
-            var posInfo = parsePosition(seriesModel, api);
+            var colorList = seriesDto.get('axisLine.lineStyle.color');
+            var posInfo = parsePosition(seriesDto, api);
 
             this._renderMain(
-                seriesModel, ecModel, api, colorList, posInfo
+                seriesDto, ecDto, api, colorList, posInfo
             );
         },
 
-        _renderMain: function (seriesModel, ecModel, api, colorList, posInfo) {
+        _renderMain: function (seriesDto, ecDto, api, colorList, posInfo) {
             var group = this.group;
 
-            var axisLineModel = seriesModel.getModel('axisLine');
-            var lineStyleModel = axisLineModel.getModel('lineStyle');
+            var axisLineDto = seriesDto.getDto('axisLine');
+            var lineStyleDto = axisLineDto.getDto('lineStyle');
 
-            var clockwise = seriesModel.get('clockwise');
-            var startAngle = -seriesModel.get('startAngle') / 180 * Math.PI;
-            var endAngle = -seriesModel.get('endAngle') / 180 * Math.PI;
+            var clockwise = seriesDto.get('clockwise');
+            var startAngle = -seriesDto.get('startAngle') / 180 * Math.PI;
+            var endAngle = -seriesDto.get('endAngle') / 180 * Math.PI;
 
             var angleRangeSpan = (endAngle - startAngle) % PI2;
 
             var prevEndAngle = startAngle;
-            var axisLineWidth = lineStyleModel.get('width');
+            var axisLineWidth = lineStyleDto.get('width');
 
             for (var i = 0; i < colorList.length; i++) {
                 // Clamp
@@ -89,7 +89,7 @@ define(function (require) {
                     fill: colorList[i][1]
                 });
 
-                sector.setStyle(lineStyleModel.getLineStyle(
+                sector.setStyle(lineStyleDto.getLineStyle(
                     // Because we use sector to simulate arc
                     // so the properties for stroking are useless
                     ['color', 'borderWidth', 'borderColor']
@@ -123,25 +123,25 @@ define(function (require) {
             }
 
             this._renderTicks(
-                seriesModel, ecModel, api, getColor, posInfo,
+                seriesDto, ecDto, api, getColor, posInfo,
                 startAngle, endAngle, clockwise
             );
 
             this._renderPointer(
-                seriesModel, ecModel, api, getColor, posInfo,
+                seriesDto, ecDto, api, getColor, posInfo,
                 startAngle, endAngle, clockwise
             );
 
             this._renderTitle(
-                seriesModel, ecModel, api, getColor, posInfo
+                seriesDto, ecDto, api, getColor, posInfo
             );
             this._renderDetail(
-                seriesModel, ecModel, api, getColor, posInfo
+                seriesDto, ecDto, api, getColor, posInfo
             );
         },
 
         _renderTicks: function (
-            seriesModel, ecModel, api, getColor, posInfo,
+            seriesDto, ecDto, api, getColor, posInfo,
             startAngle, endAngle, clockwise
         ) {
             var group = this.group;
@@ -149,36 +149,36 @@ define(function (require) {
             var cy = posInfo.cy;
             var r = posInfo.r;
 
-            var minVal = seriesModel.get('min');
-            var maxVal = seriesModel.get('max');
+            var minVal = seriesDto.get('min');
+            var maxVal = seriesDto.get('max');
 
-            var splitLineModel = seriesModel.getModel('splitLine');
-            var tickModel = seriesModel.getModel('axisTick');
-            var labelModel = seriesModel.getModel('axisLabel');
+            var splitLineDto = seriesDto.getDto('splitLine');
+            var tickDto = seriesDto.getDto('axisTick');
+            var labelDto = seriesDto.getDto('axisLabel');
 
-            var splitNumber = seriesModel.get('splitNumber');
-            var subSplitNumber = tickModel.get('splitNumber');
+            var splitNumber = seriesDto.get('splitNumber');
+            var subSplitNumber = tickDto.get('splitNumber');
 
             var splitLineLen = parsePercent(
-                splitLineModel.get('length'), r
+                splitLineDto.get('length'), r
             );
             var tickLen = parsePercent(
-                tickModel.get('length'), r
+                tickDto.get('length'), r
             );
 
             var angle = startAngle;
             var step = (endAngle - startAngle) / splitNumber;
             var subStep = step / subSplitNumber;
 
-            var splitLineStyle = splitLineModel.getModel('lineStyle').getLineStyle();
-            var tickLineStyle = tickModel.getModel('lineStyle').getLineStyle();
-            var textStyleModel = labelModel.getModel('textStyle');
+            var splitLineStyle = splitLineDto.getDto('lineStyle').getLineStyle();
+            var tickLineStyle = tickDto.getDto('lineStyle').getLineStyle();
+            var textStyleDto = labelDto.getDto('textStyle');
 
             for (var i = 0; i <= splitNumber; i++) {
                 var unitX = Math.cos(angle);
                 var unitY = Math.sin(angle);
                 // Split line
-                if (splitLineModel.get('show')) {
+                if (splitLineDto.get('show')) {
                     var splitLine = new graphic.Line({
                         shape: {
                             x1: unitX * r + cx,
@@ -199,10 +199,10 @@ define(function (require) {
                 }
 
                 // Label
-                if (labelModel.get('show')) {
+                if (labelDto.get('show')) {
                     var label = formatLabel(
                         numberUtil.round(i / splitNumber * (maxVal - minVal) + minVal),
-                        labelModel.get('formatter')
+                        labelDto.get('formatter')
                     );
 
                     var text = new graphic.Text({
@@ -210,8 +210,8 @@ define(function (require) {
                             text: label,
                             x: unitX * (r - splitLineLen - 5) + cx,
                             y: unitY * (r - splitLineLen - 5) + cy,
-                            fill: textStyleModel.getTextColor(),
-                            textFont: textStyleModel.getFont(),
+                            fill: textStyleDto.getTextColor(),
+                            textFont: textStyleDto.getFont(),
                             textVerticalAlign: unitY < -0.4 ? 'top' : (unitY > 0.4 ? 'bottom' : 'middle'),
                             textAlign: unitX < -0.4 ? 'left' : (unitX > 0.4 ? 'right' : 'center')
                         },
@@ -227,7 +227,7 @@ define(function (require) {
                 }
 
                 // Axis tick
-                if (tickModel.get('show') && i !== splitNumber) {
+                if (tickDto.get('show') && i !== splitNumber) {
                     for (var j = 0; j <= subSplitNumber; j++) {
                         var unitX = Math.cos(angle);
                         var unitY = Math.sin(angle);
@@ -260,17 +260,17 @@ define(function (require) {
         },
 
         _renderPointer: function (
-            seriesModel, ecModel, api, getColor, posInfo,
+            seriesDto, ecDto, api, getColor, posInfo,
             startAngle, endAngle, clockwise
         ) {
-            var valueExtent = [+seriesModel.get('min'), +seriesModel.get('max')];
+            var valueExtent = [+seriesDto.get('min'), +seriesDto.get('max')];
             var angleExtent = [startAngle, endAngle];
 
             if (!clockwise) {
                 angleExtent = angleExtent.reverse();
             }
 
-            var data = seriesModel.getData();
+            var data = seriesDto.getData();
             var oldData = this._data;
 
             var group = this.group;
@@ -287,7 +287,7 @@ define(function (require) {
                         shape: {
                             angle: numberUtil.linearMap(data.get('value', idx), valueExtent, angleExtent, true)
                         }
-                    }, seriesModel);
+                    }, seriesDto);
 
                     group.add(pointer);
                     data.setItemGraphicEl(idx, pointer);
@@ -299,7 +299,7 @@ define(function (require) {
                         shape: {
                             angle: numberUtil.linearMap(data.get('value', newIdx), valueExtent, angleExtent, true)
                         }
-                    }, seriesModel);
+                    }, seriesDto);
 
                     group.add(pointer);
                     data.setItemGraphicEl(newIdx, pointer);
@@ -311,19 +311,19 @@ define(function (require) {
                 .execute();
 
             data.eachItemGraphicEl(function (pointer, idx) {
-                var itemModel = data.getItemModel(idx);
-                var pointerModel = itemModel.getModel('pointer');
+                var itemDto = data.getItemDto(idx);
+                var pointerDto = itemDto.getDto('pointer');
 
                 pointer.setShape({
                     x: posInfo.cx,
                     y: posInfo.cy,
                     width: parsePercent(
-                        pointerModel.get('width'), posInfo.r
+                        pointerDto.get('width'), posInfo.r
                     ),
-                    r: parsePercent(pointerModel.get('length'), posInfo.r)
+                    r: parsePercent(pointerDto.get('length'), posInfo.r)
                 });
 
-                pointer.useStyle(itemModel.getModel('itemStyle.normal').getItemStyle());
+                pointer.useStyle(itemDto.getDto('itemStyle.normal').getItemStyle());
 
                 if (pointer.style.fill === 'auto') {
                     pointer.setStyle('fill', getColor(
@@ -332,7 +332,7 @@ define(function (require) {
                 }
 
                 graphic.setHoverStyle(
-                    pointer, itemModel.getModel('itemStyle.emphasis').getItemStyle()
+                    pointer, itemDto.getDto('itemStyle.emphasis').getItemStyle()
                 );
             });
 
@@ -340,12 +340,12 @@ define(function (require) {
         },
 
         _renderTitle: function (
-            seriesModel, ecModel, api, getColor, posInfo
+            seriesDto, ecDto, api, getColor, posInfo
         ) {
-            var titleModel = seriesModel.getModel('title');
-            if (titleModel.get('show')) {
-                var textStyleModel = titleModel.getModel('textStyle');
-                var offsetCenter = titleModel.get('offsetCenter');
+            var titleDto = seriesDto.getDto('title');
+            if (titleDto.get('show')) {
+                var textStyleDto = titleDto.getDto('textStyle');
+                var offsetCenter = titleDto.get('offsetCenter');
                 var x = posInfo.cx + parsePercent(offsetCenter[0], posInfo.r);
                 var y = posInfo.cy + parsePercent(offsetCenter[1], posInfo.r);
                 var text = new graphic.Text({
@@ -353,9 +353,9 @@ define(function (require) {
                         x: x,
                         y: y,
                         // FIXME First data name ?
-                        text: seriesModel.getData().getName(0),
-                        fill: textStyleModel.getTextColor(),
-                        textFont: textStyleModel.getFont(),
+                        text: seriesDto.getData().getName(0),
+                        fill: textStyleDto.getTextColor(),
+                        textFont: textStyleDto.getFont(),
                         textAlign: 'center',
                         textVerticalAlign: 'middle'
                     }
@@ -365,19 +365,19 @@ define(function (require) {
         },
 
         _renderDetail: function (
-            seriesModel, ecModel, api, getColor, posInfo
+            seriesDto, ecDto, api, getColor, posInfo
         ) {
-            var detailModel = seriesModel.getModel('detail');
-            var minVal = seriesModel.get('min');
-            var maxVal = seriesModel.get('max');
-            if (detailModel.get('show')) {
-                var textStyleModel = detailModel.getModel('textStyle');
-                var offsetCenter = detailModel.get('offsetCenter');
+            var detailDto = seriesDto.getDto('detail');
+            var minVal = seriesDto.get('min');
+            var maxVal = seriesDto.get('max');
+            if (detailDto.get('show')) {
+                var textStyleDto = detailDto.getDto('textStyle');
+                var offsetCenter = detailDto.get('offsetCenter');
                 var x = posInfo.cx + parsePercent(offsetCenter[0], posInfo.r);
                 var y = posInfo.cy + parsePercent(offsetCenter[1], posInfo.r);
-                var width = parsePercent(detailModel.get('width'), posInfo.r);
-                var height = parsePercent(detailModel.get('height'), posInfo.r);
-                var value = seriesModel.getData().get('value', 0);
+                var width = parsePercent(detailDto.get('width'), posInfo.r);
+                var height = parsePercent(detailDto.get('height'), posInfo.r);
+                var value = seriesDto.getData().get('value', 0);
                 var rect = new graphic.Rect({
                     shape: {
                         x: x - width / 2,
@@ -388,11 +388,11 @@ define(function (require) {
                     style: {
                         text: formatLabel(
                             // FIXME First data name ?
-                            value, detailModel.get('formatter')
+                            value, detailDto.get('formatter')
                         ),
-                        fill: detailModel.get('backgroundColor'),
-                        textFill: textStyleModel.getTextColor(),
-                        textFont: textStyleModel.getFont()
+                        fill: detailDto.get('backgroundColor'),
+                        textFill: textStyleDto.getTextColor(),
+                        textFont: textStyleDto.getFont()
                     }
                 });
                 if (rect.style.textFill === 'auto') {
@@ -400,7 +400,7 @@ define(function (require) {
                         numberUtil.linearMap(value, [minVal, maxVal], [0, 1], true)
                     ));
                 }
-                rect.setStyle(detailModel.getItemStyle(['color']));
+                rect.setStyle(detailDto.getItemStyle(['color']));
                 this.group.add(rect);
             }
         }

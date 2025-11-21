@@ -3517,11 +3517,11 @@ module.exports = {
         return parts[0] === '+' ? minutes : -minutes;
     }
 
-    // Return a moment from input, that is local/utc/zone equivalent to model.
-    function cloneWithOffset(input, model) {
+    // Return a moment from input, that is local/utc/zone equivalent to Dto.
+    function cloneWithOffset(input, Dto) {
         var res, diff;
-        if (model._isUTC) {
-            res = model.clone();
+        if (Dto._isUTC) {
+            res = Dto.clone();
             diff = (isMoment(input) || isDate(input) ? input.valueOf() : local__createLocal(input).valueOf()) - res.valueOf();
             // Use low-level api, because this fn is low-level api.
             res._d.setTime(res._d.valueOf() + diff);
@@ -5944,7 +5944,7 @@ module.exports = function(Chart) {
 				_index: index,
 
 				// Desired view properties
-				_model: {
+				_Dto: {
 					x: this.calculateBarX(index, this.index),
 					y: reset ? scaleBase : this.calculateBarY(index, this.index),
 
@@ -6123,22 +6123,22 @@ module.exports = function(Chart) {
 			var index = rectangle._index;
 
 			var custom = rectangle.custom || {};
-			var model = rectangle._model;
-			model.backgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : helpers.getValueAtIndexOrDefault(dataset.hoverBackgroundColor, index, helpers.getHoverColor(model.backgroundColor));
-			model.borderColor = custom.hoverBorderColor ? custom.hoverBorderColor : helpers.getValueAtIndexOrDefault(dataset.hoverBorderColor, index, helpers.getHoverColor(model.borderColor));
-			model.borderWidth = custom.hoverBorderWidth ? custom.hoverBorderWidth : helpers.getValueAtIndexOrDefault(dataset.hoverBorderWidth, index, model.borderWidth);
+			var Dto = rectangle._Dto;
+			Dto.backgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : helpers.getValueAtIndexOrDefault(dataset.hoverBackgroundColor, index, helpers.getHoverColor(Dto.backgroundColor));
+			Dto.borderColor = custom.hoverBorderColor ? custom.hoverBorderColor : helpers.getValueAtIndexOrDefault(dataset.hoverBorderColor, index, helpers.getHoverColor(Dto.borderColor));
+			Dto.borderWidth = custom.hoverBorderWidth ? custom.hoverBorderWidth : helpers.getValueAtIndexOrDefault(dataset.hoverBorderWidth, index, Dto.borderWidth);
 		},
 
 		removeHoverStyle: function(rectangle) {
 			var dataset = this.chart.data.datasets[rectangle._datasetIndex];
 			var index = rectangle._index;
 			var custom = rectangle.custom || {};
-			var model = rectangle._model;
+			var Dto = rectangle._Dto;
 			var rectangleElementOptions = this.chart.options.elements.rectangle;
 
-			model.backgroundColor = custom.backgroundColor ? custom.backgroundColor : helpers.getValueAtIndexOrDefault(dataset.backgroundColor, index, rectangleElementOptions.backgroundColor);
-			model.borderColor = custom.borderColor ? custom.borderColor : helpers.getValueAtIndexOrDefault(dataset.borderColor, index, rectangleElementOptions.borderColor);
-			model.borderWidth = custom.borderWidth ? custom.borderWidth : helpers.getValueAtIndexOrDefault(dataset.borderWidth, index, rectangleElementOptions.borderWidth);
+			Dto.backgroundColor = custom.backgroundColor ? custom.backgroundColor : helpers.getValueAtIndexOrDefault(dataset.backgroundColor, index, rectangleElementOptions.backgroundColor);
+			Dto.borderColor = custom.borderColor ? custom.borderColor : helpers.getValueAtIndexOrDefault(dataset.borderColor, index, rectangleElementOptions.borderColor);
+			Dto.borderWidth = custom.borderWidth ? custom.borderWidth : helpers.getValueAtIndexOrDefault(dataset.borderWidth, index, rectangleElementOptions.borderWidth);
 		}
 
 	});
@@ -6217,7 +6217,7 @@ module.exports = function(Chart) {
 				_index: index,
 
 				// Desired view properties
-				_model: {
+				_Dto: {
 					x: reset ? scaleBase : this.calculateBarX(index, this.index),
 					y: this.calculateBarY(index, this.index),
 
@@ -6510,7 +6510,7 @@ module.exports = function(Chart) {
 				_index: index,
 
 				// Desired view properties
-				_model: {
+				_Dto: {
 					x: reset ? xScale.getPixelForDecimal(0.5) : xScale.getPixelForValue(data, index, this.index, this.chart.isCombo),
 					y: reset ? yScale.getBasePixel() : yScale.getPixelForValue(data, index, this.index),
 					// Appearance
@@ -6524,8 +6524,8 @@ module.exports = function(Chart) {
 				}
 			});
 
-			var model = point._model;
-			model.skip = custom.skip ? custom.skip : (isNaN(model.x) || isNaN(model.y));
+			var Dto = point._Dto;
+			Dto.skip = custom.skip ? custom.skip : (isNaN(Dto.x) || isNaN(Dto.y));
 
 			point.pivot();
 		},
@@ -6539,25 +6539,25 @@ module.exports = function(Chart) {
 			var dataset = this.chart.data.datasets[point._datasetIndex];
 			var index = point._index;
 			var custom = point.custom || {};
-			var model = point._model;
+			var Dto = point._Dto;
 
-			model.radius = custom.hoverRadius ? custom.hoverRadius : (helpers.getValueAtIndexOrDefault(dataset.hoverRadius, index, this.chart.options.elements.point.hoverRadius)) + this.getRadius(this.getDataset().data[point._index]);
-			model.backgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : helpers.getValueAtIndexOrDefault(dataset.hoverBackgroundColor, index, helpers.getHoverColor(model.backgroundColor));
-			model.borderColor = custom.hoverBorderColor ? custom.hoverBorderColor : helpers.getValueAtIndexOrDefault(dataset.hoverBorderColor, index, helpers.getHoverColor(model.borderColor));
-			model.borderWidth = custom.hoverBorderWidth ? custom.hoverBorderWidth : helpers.getValueAtIndexOrDefault(dataset.hoverBorderWidth, index, model.borderWidth);
+			Dto.radius = custom.hoverRadius ? custom.hoverRadius : (helpers.getValueAtIndexOrDefault(dataset.hoverRadius, index, this.chart.options.elements.point.hoverRadius)) + this.getRadius(this.getDataset().data[point._index]);
+			Dto.backgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : helpers.getValueAtIndexOrDefault(dataset.hoverBackgroundColor, index, helpers.getHoverColor(Dto.backgroundColor));
+			Dto.borderColor = custom.hoverBorderColor ? custom.hoverBorderColor : helpers.getValueAtIndexOrDefault(dataset.hoverBorderColor, index, helpers.getHoverColor(Dto.borderColor));
+			Dto.borderWidth = custom.hoverBorderWidth ? custom.hoverBorderWidth : helpers.getValueAtIndexOrDefault(dataset.hoverBorderWidth, index, Dto.borderWidth);
 		},
 
 		removeHoverStyle: function(point) {
 			var dataset = this.chart.data.datasets[point._datasetIndex];
 			var index = point._index;
 			var custom = point.custom || {};
-			var model = point._model;
+			var Dto = point._Dto;
 			var pointElementOptions = this.chart.options.elements.point;
 
-			model.radius = custom.radius ? custom.radius : this.getRadius(dataset.data[point._index]);
-			model.backgroundColor = custom.backgroundColor ? custom.backgroundColor : helpers.getValueAtIndexOrDefault(dataset.backgroundColor, index, pointElementOptions.backgroundColor);
-			model.borderColor = custom.borderColor ? custom.borderColor : helpers.getValueAtIndexOrDefault(dataset.borderColor, index, pointElementOptions.borderColor);
-			model.borderWidth = custom.borderWidth ? custom.borderWidth : helpers.getValueAtIndexOrDefault(dataset.borderWidth, index, pointElementOptions.borderWidth);
+			Dto.radius = custom.radius ? custom.radius : this.getRadius(dataset.data[point._index]);
+			Dto.backgroundColor = custom.backgroundColor ? custom.backgroundColor : helpers.getValueAtIndexOrDefault(dataset.backgroundColor, index, pointElementOptions.backgroundColor);
+			Dto.borderColor = custom.borderColor ? custom.borderColor : helpers.getValueAtIndexOrDefault(dataset.borderColor, index, pointElementOptions.borderColor);
+			Dto.borderWidth = custom.borderWidth ? custom.borderWidth : helpers.getValueAtIndexOrDefault(dataset.borderWidth, index, pointElementOptions.borderWidth);
 		}
 	});
 };
@@ -6772,7 +6772,7 @@ module.exports = function(Chart) {
 				_index: index,
 
 				// Desired view properties
-				_model: {
+				_Dto: {
 					x: centerX + chart.offsetX,
 					y: centerY + chart.offsetY,
 					startAngle: startAngle,
@@ -6784,21 +6784,21 @@ module.exports = function(Chart) {
 				}
 			});
 
-			var model = arc._model;
-			model.backgroundColor = custom.backgroundColor ? custom.backgroundColor : valueAtIndexOrDefault(dataset.backgroundColor, index, arcOpts.backgroundColor);
-			model.hoverBackgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : valueAtIndexOrDefault(dataset.hoverBackgroundColor, index, arcOpts.hoverBackgroundColor);
-			model.borderWidth = custom.borderWidth ? custom.borderWidth : valueAtIndexOrDefault(dataset.borderWidth, index, arcOpts.borderWidth);
-			model.borderColor = custom.borderColor ? custom.borderColor : valueAtIndexOrDefault(dataset.borderColor, index, arcOpts.borderColor);
+			var Dto = arc._Dto;
+			Dto.backgroundColor = custom.backgroundColor ? custom.backgroundColor : valueAtIndexOrDefault(dataset.backgroundColor, index, arcOpts.backgroundColor);
+			Dto.hoverBackgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : valueAtIndexOrDefault(dataset.hoverBackgroundColor, index, arcOpts.hoverBackgroundColor);
+			Dto.borderWidth = custom.borderWidth ? custom.borderWidth : valueAtIndexOrDefault(dataset.borderWidth, index, arcOpts.borderWidth);
+			Dto.borderColor = custom.borderColor ? custom.borderColor : valueAtIndexOrDefault(dataset.borderColor, index, arcOpts.borderColor);
 
 			// Set correct angles if not resetting
 			if (!reset || !animationOpts.animateRotate) {
 				if (index === 0) {
-					model.startAngle = opts.rotation;
+					Dto.startAngle = opts.rotation;
 				} else {
-					model.startAngle = _this.getMeta().data[index - 1]._model.endAngle;
+					Dto.startAngle = _this.getMeta().data[index - 1]._Dto.endAngle;
 				}
 
-				model.endAngle = model.startAngle + model.circumference;
+				Dto.endAngle = Dto.startAngle + Dto.circumference;
 			}
 
 			arc.pivot();
@@ -6904,8 +6904,8 @@ module.exports = function(Chart) {
 				line._datasetIndex = me.index;
 				// Data
 				line._children = points;
-				// Model
-				line._model = {
+				// Dto
+				line._Dto = {
 					// Appearance
 					tension: custom.tension ? custom.tension : helpers.getValueOrDefault(dataset.lineTension, lineElementOptions.tension),
 					backgroundColor: custom.backgroundColor ? custom.backgroundColor : (dataset.backgroundColor || lineElementOptions.backgroundColor),
@@ -7013,7 +7013,7 @@ module.exports = function(Chart) {
 			point._index = index;
 
 			// Desired view properties
-			point._model = {
+			point._Dto = {
 				x: x,
 				y: y,
 				skip: custom.skip || isNaN(x) || isNaN(y),
@@ -7023,7 +7023,7 @@ module.exports = function(Chart) {
 				backgroundColor: me.getPointBackgroundColor(point, index),
 				borderColor: me.getPointBorderColor(point, index),
 				borderWidth: me.getPointBorderWidth(point, index),
-				tension: meta.dataset._model ? meta.dataset._model.tension : 0,
+				tension: meta.dataset._Dto ? meta.dataset._Dto.tension : 0,
 				// Tooltip
 				hitRadius: custom.hitRadius || helpers.getValueAtIndexOrDefault(dataset.pointHitRadius, index, pointOptions.hitRadius)
 			};
@@ -7065,23 +7065,23 @@ module.exports = function(Chart) {
 			var meta = this.getMeta();
 			var area = this.chart.chartArea;
 			var points = meta.data || [];
-			var i, ilen, point, model, controlPoints;
+			var i, ilen, point, Dto, controlPoints;
 
 			for (i=0, ilen=points.length; i<ilen; ++i) {
 				point = points[i];
-				model = point._model;
+				Dto = point._Dto;
 				controlPoints = helpers.splineCurve(
-					helpers.previousItem(points, i)._model,
-					model,
-					helpers.nextItem(points, i)._model,
-					meta.dataset._model.tension
+					helpers.previousItem(points, i)._Dto,
+					Dto,
+					helpers.nextItem(points, i)._Dto,
+					meta.dataset._Dto.tension
 				);
 
 				// Prevent the bezier going outside of the bounds of the graph
-				model.controlPointPreviousX = Math.max(Math.min(controlPoints.previous.x, area.right), area.left);
-				model.controlPointPreviousY = Math.max(Math.min(controlPoints.previous.y, area.bottom), area.top);
-				model.controlPointNextX = Math.max(Math.min(controlPoints.next.x, area.right), area.left);
-				model.controlPointNextY = Math.max(Math.min(controlPoints.next.y, area.bottom), area.top);
+				Dto.controlPointPreviousX = Math.max(Math.min(controlPoints.previous.x, area.right), area.left);
+				Dto.controlPointPreviousY = Math.max(Math.min(controlPoints.previous.y, area.bottom), area.top);
+				Dto.controlPointNextX = Math.max(Math.min(controlPoints.next.x, area.right), area.left);
+				Dto.controlPointNextY = Math.max(Math.min(controlPoints.next.y, area.bottom), area.top);
 
 				// Now pivot the point for animation
 				point.pivot();
@@ -7115,12 +7115,12 @@ module.exports = function(Chart) {
 			var dataset = this.chart.data.datasets[point._datasetIndex];
 			var index = point._index;
 			var custom = point.custom || {};
-			var model = point._model;
+			var Dto = point._Dto;
 
-			model.radius = custom.hoverRadius || helpers.getValueAtIndexOrDefault(dataset.pointHoverRadius, index, this.chart.options.elements.point.hoverRadius);
-			model.backgroundColor = custom.hoverBackgroundColor || helpers.getValueAtIndexOrDefault(dataset.pointHoverBackgroundColor, index, helpers.getHoverColor(model.backgroundColor));
-			model.borderColor = custom.hoverBorderColor || helpers.getValueAtIndexOrDefault(dataset.pointHoverBorderColor, index, helpers.getHoverColor(model.borderColor));
-			model.borderWidth = custom.hoverBorderWidth || helpers.getValueAtIndexOrDefault(dataset.pointHoverBorderWidth, index, model.borderWidth);
+			Dto.radius = custom.hoverRadius || helpers.getValueAtIndexOrDefault(dataset.pointHoverRadius, index, this.chart.options.elements.point.hoverRadius);
+			Dto.backgroundColor = custom.hoverBackgroundColor || helpers.getValueAtIndexOrDefault(dataset.pointHoverBackgroundColor, index, helpers.getHoverColor(Dto.backgroundColor));
+			Dto.borderColor = custom.hoverBorderColor || helpers.getValueAtIndexOrDefault(dataset.pointHoverBorderColor, index, helpers.getHoverColor(Dto.borderColor));
+			Dto.borderWidth = custom.hoverBorderWidth || helpers.getValueAtIndexOrDefault(dataset.pointHoverBorderWidth, index, Dto.borderWidth);
 		},
 
 		removeHoverStyle: function(point) {
@@ -7128,17 +7128,17 @@ module.exports = function(Chart) {
 			var dataset = me.chart.data.datasets[point._datasetIndex];
 			var index = point._index;
 			var custom = point.custom || {};
-			var model = point._model;
+			var Dto = point._Dto;
 
 			// Compatibility: If the properties are defined with only the old name, use those values
 			if ((dataset.radius !== undefined) && (dataset.pointRadius === undefined)) {
 				dataset.pointRadius = dataset.radius;
 			}
 
-			model.radius = custom.radius || helpers.getValueAtIndexOrDefault(dataset.pointRadius, index, me.chart.options.elements.point.radius);
-			model.backgroundColor = me.getPointBackgroundColor(point, index);
-			model.borderColor = me.getPointBorderColor(point, index);
-			model.borderWidth = me.getPointBorderWidth(point, index);
+			Dto.radius = custom.radius || helpers.getValueAtIndexOrDefault(dataset.pointRadius, index, me.chart.options.elements.point.radius);
+			Dto.backgroundColor = me.getPointBackgroundColor(point, index);
+			Dto.borderColor = me.getPointBorderColor(point, index);
+			Dto.borderWidth = me.getPointBorderWidth(point, index);
 		}
 	});
 };
@@ -7304,7 +7304,7 @@ module.exports = function(Chart) {
 			var startAngle = (-0.5 * Math.PI) + (circumference * visibleCount);
 			var endAngle = startAngle + (arc.hidden? 0 : circumference);
 
-			var resetModel = {
+			var resetDto = {
 				x: centerX,
 				y: centerY,
 				innerRadius: 0,
@@ -7326,7 +7326,7 @@ module.exports = function(Chart) {
 				_scale: scale,
 
 				// Desired view properties
-				_model: reset ? resetModel : {
+				_Dto: reset ? resetDto : {
 					x: centerX,
 					y: centerY,
 					innerRadius: 0,
@@ -7427,8 +7427,8 @@ module.exports = function(Chart) {
 				// Data
 				_children: points,
 				_loop: true,
-				// Model
-				_model: {
+				// Dto
+				_Dto: {
 					// Appearance
 					tension: custom.tension ? custom.tension : helpers.getValueOrDefault(dataset.lineTension, lineElementOptions.tension),
 					backgroundColor: custom.backgroundColor ? custom.backgroundColor : (dataset.backgroundColor || lineElementOptions.backgroundColor),
@@ -7472,7 +7472,7 @@ module.exports = function(Chart) {
 				_scale: scale,
 
 				// Desired view properties
-				_model: {
+				_Dto: {
 					x: reset ? scale.xCenter : pointPosition.x, // value not used in dataset scale, but we want a consistent API between scales
 					y: reset ? scale.yCenter : pointPosition.y,
 
@@ -7489,27 +7489,27 @@ module.exports = function(Chart) {
 				}
 			});
 
-			point._model.skip = custom.skip ? custom.skip : (isNaN(point._model.x) || isNaN(point._model.y));
+			point._Dto.skip = custom.skip ? custom.skip : (isNaN(point._Dto.x) || isNaN(point._Dto.y));
 		},
 		updateBezierControlPoints: function() {
 			var chartArea = this.chart.chartArea;
 			var meta = this.getMeta();
 
 			helpers.each(meta.data, function(point, index) {
-				var model = point._model;
+				var Dto = point._Dto;
 				var controlPoints = helpers.splineCurve(
-					helpers.previousItem(meta.data, index, true)._model,
-					model,
-					helpers.nextItem(meta.data, index, true)._model,
-					model.tension
+					helpers.previousItem(meta.data, index, true)._Dto,
+					Dto,
+					helpers.nextItem(meta.data, index, true)._Dto,
+					Dto.tension
 				);
 
 				// Prevent the bezier going outside of the bounds of the graph
-				model.controlPointPreviousX = Math.max(Math.min(controlPoints.previous.x, chartArea.right), chartArea.left);
-				model.controlPointPreviousY = Math.max(Math.min(controlPoints.previous.y, chartArea.bottom), chartArea.top);
+				Dto.controlPointPreviousX = Math.max(Math.min(controlPoints.previous.x, chartArea.right), chartArea.left);
+				Dto.controlPointPreviousY = Math.max(Math.min(controlPoints.previous.y, chartArea.bottom), chartArea.top);
 
-				model.controlPointNextX = Math.max(Math.min(controlPoints.next.x, chartArea.right), chartArea.left);
-				model.controlPointNextY = Math.max(Math.min(controlPoints.next.y, chartArea.bottom), chartArea.top);
+				Dto.controlPointNextX = Math.max(Math.min(controlPoints.next.x, chartArea.right), chartArea.left);
+				Dto.controlPointNextY = Math.max(Math.min(controlPoints.next.y, chartArea.bottom), chartArea.top);
 
 				// Now pivot the point for animation
 				point.pivot();
@@ -7539,25 +7539,25 @@ module.exports = function(Chart) {
 			var dataset = this.chart.data.datasets[point._datasetIndex];
 			var custom = point.custom || {};
 			var index = point._index;
-			var model = point._model;
+			var Dto = point._Dto;
 
-			model.radius = custom.hoverRadius ? custom.hoverRadius : helpers.getValueAtIndexOrDefault(dataset.pointHoverRadius, index, this.chart.options.elements.point.hoverRadius);
-			model.backgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : helpers.getValueAtIndexOrDefault(dataset.pointHoverBackgroundColor, index, helpers.getHoverColor(model.backgroundColor));
-			model.borderColor = custom.hoverBorderColor ? custom.hoverBorderColor : helpers.getValueAtIndexOrDefault(dataset.pointHoverBorderColor, index, helpers.getHoverColor(model.borderColor));
-			model.borderWidth = custom.hoverBorderWidth ? custom.hoverBorderWidth : helpers.getValueAtIndexOrDefault(dataset.pointHoverBorderWidth, index, model.borderWidth);
+			Dto.radius = custom.hoverRadius ? custom.hoverRadius : helpers.getValueAtIndexOrDefault(dataset.pointHoverRadius, index, this.chart.options.elements.point.hoverRadius);
+			Dto.backgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : helpers.getValueAtIndexOrDefault(dataset.pointHoverBackgroundColor, index, helpers.getHoverColor(Dto.backgroundColor));
+			Dto.borderColor = custom.hoverBorderColor ? custom.hoverBorderColor : helpers.getValueAtIndexOrDefault(dataset.pointHoverBorderColor, index, helpers.getHoverColor(Dto.borderColor));
+			Dto.borderWidth = custom.hoverBorderWidth ? custom.hoverBorderWidth : helpers.getValueAtIndexOrDefault(dataset.pointHoverBorderWidth, index, Dto.borderWidth);
 		},
 
 		removeHoverStyle: function(point) {
 			var dataset = this.chart.data.datasets[point._datasetIndex];
 			var custom = point.custom || {};
 			var index = point._index;
-			var model = point._model;
+			var Dto = point._Dto;
 			var pointElementOptions = this.chart.options.elements.point;
 
-			model.radius = custom.radius ? custom.radius : helpers.getValueAtIndexOrDefault(dataset.radius, index, pointElementOptions.radius);
-			model.backgroundColor = custom.backgroundColor ? custom.backgroundColor : helpers.getValueAtIndexOrDefault(dataset.pointBackgroundColor, index, pointElementOptions.backgroundColor);
-			model.borderColor = custom.borderColor ? custom.borderColor : helpers.getValueAtIndexOrDefault(dataset.pointBorderColor, index, pointElementOptions.borderColor);
-			model.borderWidth = custom.borderWidth ? custom.borderWidth : helpers.getValueAtIndexOrDefault(dataset.pointBorderWidth, index, pointElementOptions.borderWidth);
+			Dto.radius = custom.radius ? custom.radius : helpers.getValueAtIndexOrDefault(dataset.radius, index, pointElementOptions.radius);
+			Dto.backgroundColor = custom.backgroundColor ? custom.backgroundColor : helpers.getValueAtIndexOrDefault(dataset.pointBackgroundColor, index, pointElementOptions.backgroundColor);
+			Dto.borderColor = custom.borderColor ? custom.borderColor : helpers.getValueAtIndexOrDefault(dataset.pointBorderColor, index, pointElementOptions.borderColor);
+			Dto.borderWidth = custom.borderWidth ? custom.borderWidth : helpers.getValueAtIndexOrDefault(dataset.pointBorderWidth, index, pointElementOptions.borderWidth);
 		}
 	});
 };
@@ -8437,11 +8437,11 @@ module.exports = function(Chart) {
 				custom = element.custom || {},
 				valueOrDefault = helpers.getValueAtIndexOrDefault,
 				color = helpers.color,
-				model = element._model;
+				Dto = element._Dto;
 
-			model.backgroundColor = custom.backgroundColor ? custom.backgroundColor : valueOrDefault(dataset.backgroundColor, index, elementOpts.backgroundColor);
-			model.borderColor = custom.borderColor ? custom.borderColor : valueOrDefault(dataset.borderColor, index, elementOpts.borderColor);
-			model.borderWidth = custom.borderWidth ? custom.borderWidth : valueOrDefault(dataset.borderWidth, index, elementOpts.borderWidth);
+			Dto.backgroundColor = custom.backgroundColor ? custom.backgroundColor : valueOrDefault(dataset.backgroundColor, index, elementOpts.backgroundColor);
+			Dto.borderColor = custom.borderColor ? custom.borderColor : valueOrDefault(dataset.borderColor, index, elementOpts.borderColor);
+			Dto.borderWidth = custom.borderWidth ? custom.borderWidth : valueOrDefault(dataset.borderWidth, index, elementOpts.borderWidth);
 		},
 
 		setHoverStyle: function(element) {
@@ -8451,11 +8451,11 @@ module.exports = function(Chart) {
 				valueOrDefault = helpers.getValueAtIndexOrDefault,
 				color = helpers.color,
 				getHoverColor = helpers.getHoverColor,
-				model = element._model;
+				Dto = element._Dto;
 
-			model.backgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : valueOrDefault(dataset.hoverBackgroundColor, index, getHoverColor(model.backgroundColor));
-			model.borderColor = custom.hoverBorderColor ? custom.hoverBorderColor : valueOrDefault(dataset.hoverBorderColor, index, getHoverColor(model.borderColor));
-			model.borderWidth = custom.hoverBorderWidth ? custom.hoverBorderWidth : valueOrDefault(dataset.hoverBorderWidth, index, model.borderWidth);
+			Dto.backgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : valueOrDefault(dataset.hoverBackgroundColor, index, getHoverColor(Dto.backgroundColor));
+			Dto.borderColor = custom.hoverBorderColor ? custom.hoverBorderColor : valueOrDefault(dataset.hoverBorderColor, index, getHoverColor(Dto.borderColor));
+			Dto.borderWidth = custom.hoverBorderWidth ? custom.hoverBorderWidth : valueOrDefault(dataset.hoverBorderWidth, index, Dto.borderWidth);
 		}
 	});
 
@@ -8480,19 +8480,19 @@ module.exports = function(Chart) {
     },
     pivot: function() {
       if (!this._view) {
-        this._view = helpers.clone(this._model);
+        this._view = helpers.clone(this._Dto);
       }
       this._start = helpers.clone(this._view);
       return this;
     },
     transition: function(ease) {
       if (!this._view) {
-        this._view = helpers.clone(this._model);
+        this._view = helpers.clone(this._Dto);
       }
 
       // No animation -> No Transition
       if (ease === 1) {
-        this._view = this._model;
+        this._view = this._Dto;
         this._start = null;
         return this;
       }
@@ -8501,7 +8501,7 @@ module.exports = function(Chart) {
         this.pivot();
       }
 
-      helpers.each(this._model, function(value, key) {
+      helpers.each(this._Dto, function(value, key) {
 
         if (key[0] === '_') {
           // Only non-underscored properties
@@ -8524,7 +8524,7 @@ module.exports = function(Chart) {
         // Color transitions if possible
         else if (typeof value === 'string') {
           try {
-            var color = helpers.color(this._model[key]).mix(helpers.color(this._start[key]), ease);
+            var color = helpers.color(this._Dto[key]).mix(helpers.color(this._start[key]), ease);
             this._view[key] = color.rgbString();
           } catch (err) {
             this._view[key] = value;
@@ -8533,7 +8533,7 @@ module.exports = function(Chart) {
         // Number transitions
         else if (typeof value === 'number') {
           var startVal = this._start[key] !== undefined && isNaN(this._start[key]) === false ? this._start[key] : 0;
-          this._view[key] = ((this._model[key] - startVal) * ease) + startVal;
+          this._view[key] = ((this._Dto[key] - startVal) * ease) + startVal;
         }
         // Everything else
         else {
@@ -8545,12 +8545,12 @@ module.exports = function(Chart) {
     },
     tooltipPosition: function() {
       return {
-        x: this._model.x,
-        y: this._model.y
+        x: this._Dto.x,
+        y: this._Dto.y
       };
     },
     hasValue: function() {
-      return helpers.isNumber(this._model.x) && helpers.isNumber(this._model.y);
+      return helpers.isNumber(this._Dto.x) && helpers.isNumber(this._Dto.y);
     }
   });
 
@@ -8802,7 +8802,7 @@ module.exports = function(Chart) {
 		}
 	};
 	helpers.inherits = function(extensions) {
-		//Basic javascript inheritance based on the model created in Backbone.js
+		//Basic javascript inheritance based on the Dto created in Backbone.js
 		var parent = this;
 		var ChartElement = (extensions && extensions.hasOwnProperty("constructor")) ? extensions.constructor : function() {
 			return parent.apply(this, arguments);
@@ -9230,7 +9230,7 @@ module.exports = function(Chart) {
 		var height = boundingRect.bottom - boundingRect.top - paddingTop - paddingBottom;
 
 		// We divide by the current device pixel ratio, because the canvas is scaled up by that amount in each direction. However
-		// the backend model is in unscaled coordinates. Since we are going to deal with our model coordinates, we go back here
+		// the backend Dto is in unscaled coordinates. Since we are going to deal with our Dto coordinates, we go back here
 		mouseX = Math.round((mouseX - boundingRect.left - paddingLeft) / (width) * canvas.width / chart.currentDevicePixelRatio);
 		mouseY = Math.round((mouseY - boundingRect.top - paddingTop) / (height) * canvas.height / chart.currentDevicePixelRatio);
 
@@ -11439,7 +11439,7 @@ module.exports = function(Chart) {
 			var tooltips = options.tooltips;
 
 			helpers.extend(this, {
-				_model: {
+				_Dto: {
 					// Positioning
 					xPadding: tooltips.xPadding,
 					yPadding: tooltips.yPadding,
@@ -11570,7 +11570,7 @@ module.exports = function(Chart) {
 
 		update: function(changed) {
 			if (this._active.length) {
-				this._model.opacity = 1;
+				this._Dto.opacity = 1;
 
 				var element = this._active[0],
 					labelColors = [],
@@ -11620,7 +11620,7 @@ module.exports = function(Chart) {
 				}
 
 				// Build the Text Lines
-				helpers.extend(this._model, {
+				helpers.extend(this._Dto, {
 					title: this.getTitle(tooltipItems, this._data),
 					beforeBody: this.getBeforeBody(tooltipItems, this._data),
 					body: this.getBody(tooltipItems, this._data),
@@ -11628,7 +11628,7 @@ module.exports = function(Chart) {
 					footer: this.getFooter(tooltipItems, this._data)
 				});
 
-				helpers.extend(this._model, {
+				helpers.extend(this._Dto, {
 					x: Math.round(tooltipPosition.x),
 					y: Math.round(tooltipPosition.y),
 					caretPadding: helpers.getValueOrDefault(tooltipPosition.padding, 2),
@@ -11636,16 +11636,16 @@ module.exports = function(Chart) {
 				});
 
 				// We need to determine alignment of
-				var tooltipSize = this.getTooltipSize(this._model);
+				var tooltipSize = this.getTooltipSize(this._Dto);
 				this.determineAlignment(tooltipSize); // Smart Tooltip placement to stay on the canvas
 
-				helpers.extend(this._model, this.getBackgroundPoint(this._model, tooltipSize));
+				helpers.extend(this._Dto, this.getBackgroundPoint(this._Dto, tooltipSize));
 			} else {
-				this._model.opacity = 0;
+				this._Dto.opacity = 0;
 			}
 
 			if (changed && this._options.tooltips.custom) {
-				this._options.tooltips.custom.call(this, this._model);
+				this._options.tooltips.custom.call(this, this._Dto);
 			}
 
 			return this;
@@ -11691,10 +11691,10 @@ module.exports = function(Chart) {
 			return size;
 		},
 		determineAlignment: function determineAlignment(size) {
-			if (this._model.y < size.height) {
-				this._model.yAlign = 'top';
-			} else if (this._model.y > (this._chart.height - size.height)) {
-				this._model.yAlign = 'bottom';
+			if (this._Dto.y < size.height) {
+				this._Dto.yAlign = 'top';
+			} else if (this._Dto.y > (this._chart.height - size.height)) {
+				this._Dto.yAlign = 'bottom';
 			}
 
 			var lf, rf; // functions to determine left, right alignment
@@ -11704,7 +11704,7 @@ module.exports = function(Chart) {
 			var midX = (this._chartInstance.chartArea.left + this._chartInstance.chartArea.right) / 2;
 			var midY = (this._chartInstance.chartArea.top + this._chartInstance.chartArea.bottom) / 2;
 
-			if (this._model.yAlign === 'center') {
+			if (this._Dto.yAlign === 'center') {
 				lf = function(x) {
 					return x <= midX;
 				};
@@ -11730,21 +11730,21 @@ module.exports = function(Chart) {
 				return y <= midY ? 'top' : 'bottom';
 			};
 
-			if (lf(this._model.x)) {
-				this._model.xAlign = 'left';
+			if (lf(this._Dto.x)) {
+				this._Dto.xAlign = 'left';
 
 				// Is tooltip too wide and goes over the right side of the chart.?
-				if (olf(this._model.x)) {
-					this._model.xAlign = 'center';
-					this._model.yAlign = yf(this._model.y);
+				if (olf(this._Dto.x)) {
+					this._Dto.xAlign = 'center';
+					this._Dto.yAlign = yf(this._Dto.y);
 				}
-			} else if (rf(this._model.x)) {
-				this._model.xAlign = 'right';
+			} else if (rf(this._Dto.x)) {
+				this._Dto.xAlign = 'right';
 
 				// Is tooltip too wide and goes outside left edge of canvas?
-				if (orf(this._model.x)) {
-					this._model.xAlign = 'center';
-					this._model.yAlign = yf(this._model.y);
+				if (orf(this._Dto.x)) {
+					this._Dto.xAlign = 'center';
+					this._Dto.yAlign = yf(this._Dto.y);
 				}
 			}
 		},

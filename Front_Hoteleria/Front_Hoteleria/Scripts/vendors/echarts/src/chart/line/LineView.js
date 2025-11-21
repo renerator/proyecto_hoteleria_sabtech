@@ -89,7 +89,7 @@ define(function(require) {
         }
     }
 
-    function createGridClipShape(cartesian, hasAnimation, seriesModel) {
+    function createGridClipShape(cartesian, hasAnimation, seriesDto) {
         var xExtent = getAxisExtentWithGap(cartesian.getAxis('x'));
         var yExtent = getAxisExtentWithGap(cartesian.getAxis('y'));
         var isHorizontal = cartesian.getBaseAxis().isHorizontal();
@@ -98,9 +98,9 @@ define(function(require) {
         var y = Math.min(yExtent[0], yExtent[1]);
         var width = Math.max(xExtent[0], xExtent[1]) - x;
         var height = Math.max(yExtent[0], yExtent[1]) - y;
-        var lineWidth = seriesModel.get('lineStyle.normal.width') || 2;
+        var lineWidth = seriesDto.get('lineStyle.normal.width') || 2;
         // Expand clip shape to avoid clipping when line value exceeds axis
-        var expandSize = seriesModel.get('clipOverflow') ? lineWidth / 2 : Math.max(width, height);
+        var expandSize = seriesDto.get('clipOverflow') ? lineWidth / 2 : Math.max(width, height);
         if (isHorizontal) {
             y -= expandSize;
             height += expandSize * 2;
@@ -126,13 +126,13 @@ define(function(require) {
                     width: width,
                     height: height
                 }
-            }, seriesModel);
+            }, seriesDto);
         }
 
         return clipPath;
     }
 
-    function createPolarClipShape(polar, hasAnimation, seriesModel) {
+    function createPolarClipShape(polar, hasAnimation, seriesDto) {
         var angleAxis = polar.getAngleAxis();
         var radiusAxis = polar.getRadiusAxis();
 
@@ -159,16 +159,16 @@ define(function(require) {
                 shape: {
                     endAngle: -angleExtent[1] * RADIAN
                 }
-            }, seriesModel);
+            }, seriesDto);
         }
 
         return clipPath;
     }
 
-    function createClipShape(coordSys, hasAnimation, seriesModel) {
+    function createClipShape(coordSys, hasAnimation, seriesDto) {
         return coordSys.type === 'polar'
-            ? createPolarClipShape(coordSys, hasAnimation, seriesModel)
-            : createGridClipShape(coordSys, hasAnimation, seriesModel);
+            ? createPolarClipShape(coordSys, hasAnimation, seriesDto)
+            : createGridClipShape(coordSys, hasAnimation, seriesDto);
     }
 
     return ChartView.extend({
@@ -185,12 +185,12 @@ define(function(require) {
             this._lineGroup = lineGroup;
         },
 
-        render: function (seriesModel, ecModel, api) {
-            var coordSys = seriesModel.coordinateSystem;
+        render: function (seriesDto, ecDto, api) {
+            var coordSys = seriesDto.coordinateSystem;
             var group = this.group;
-            var data = seriesModel.getData();
-            var lineStyleModel = seriesModel.getModel('lineStyle.normal');
-            var areaStyleModel = seriesModel.getModel('areaStyle.normal');
+            var data = seriesDto.getData();
+            var lineStyleDto = seriesDto.getDto('lineStyle.normal');
+            var areaStyleDto = seriesDto.getDto('areaStyle.normal');
 
             var points = data.mapArray(data.getItemLayout, true);
 
@@ -203,14 +203,14 @@ define(function(require) {
 
             var lineGroup = this._lineGroup;
 
-            var hasAnimation = seriesModel.get('animation');
+            var hasAnimation = seriesDto.get('animation');
 
-            var isAreaChart = !areaStyleModel.isEmpty();
+            var isAreaChart = !areaStyleDto.isEmpty();
             var stackedOnPoints = getStackedOnPoints(coordSys, data);
 
-            var showSymbol = seriesModel.get('showSymbol');
+            var showSymbol = seriesDto.get('showSymbol');
 
-            var isSymbolIgnore = showSymbol && !isCoordSysPolar && !seriesModel.get('showAllSymbol')
+            var isSymbolIgnore = showSymbol && !isCoordSysPolar && !seriesDto.get('showAllSymbol')
                 && this._getSymbolIgnoreFunc(data, coordSys);
 
             // Remove temporary symbols
@@ -242,7 +242,7 @@ define(function(require) {
                         coordSys, hasAnimation
                     );
                 }
-                lineGroup.setClipPath(createClipShape(coordSys, true, seriesModel));
+                lineGroup.setClipPath(createClipShape(coordSys, true, seriesDto));
             }
             else {
                 if (isAreaChart && !polygon) {
@@ -259,7 +259,7 @@ define(function(require) {
                 }
 
                 // Update clipPath
-                lineGroup.setClipPath(createClipShape(coordSys, false, seriesModel));
+                lineGroup.setClipPath(createClipShape(coordSys, false, seriesDto));
 
                 // Always update, or it is wrong in the case turning on legend
                 // because points are not changed
@@ -295,7 +295,7 @@ define(function(require) {
 
             polyline.useStyle(zrUtil.defaults(
                 // Use color in lineStyle first
-                lineStyleModel.getLineStyle(),
+                lineStyleDto.getLineStyle(),
                 {
                     fill: 'none',
                     stroke: data.getVisual('color'),
@@ -303,12 +303,12 @@ define(function(require) {
                 }
             ));
 
-            var smooth = seriesModel.get('smooth');
-            smooth = getSmooth(seriesModel.get('smooth'));
+            var smooth = seriesDto.get('smooth');
+            smooth = getSmooth(seriesDto.get('smooth'));
             polyline.setShape({
                 smooth: smooth,
-                smoothMonotone: seriesModel.get('smoothMonotone'),
-                connectNulls: seriesModel.get('connectNulls')
+                smoothMonotone: seriesDto.get('smoothMonotone'),
+                connectNulls: seriesDto.get('connectNulls')
             });
 
             if (polygon) {
@@ -316,7 +316,7 @@ define(function(require) {
                 var stackedOnSmooth = 0;
 
                 polygon.useStyle(zrUtil.defaults(
-                    areaStyleModel.getAreaStyle(),
+                    areaStyleDto.getAreaStyle(),
                     {
                         fill: data.getVisual('color'),
                         opacity: 0.7,
@@ -325,15 +325,15 @@ define(function(require) {
                 ));
 
                 if (stackedOn) {
-                    var stackedOnSeries = stackedOn.hostModel;
+                    var stackedOnSeries = stackedOn.hostDto;
                     stackedOnSmooth = getSmooth(stackedOnSeries.get('smooth'));
                 }
 
                 polygon.setShape({
                     smooth: smooth,
                     stackedOnSmooth: stackedOnSmooth,
-                    smoothMonotone: seriesModel.get('smoothMonotone'),
-                    connectNulls: seriesModel.get('connectNulls')
+                    smoothMonotone: seriesDto.get('smoothMonotone'),
+                    connectNulls: seriesDto.get('connectNulls')
                 });
             }
 
@@ -344,8 +344,8 @@ define(function(require) {
             this._points = points;
         },
 
-        highlight: function (seriesModel, ecModel, api, payload) {
-            var data = seriesModel.getData();
+        highlight: function (seriesDto, ecDto, api, payload) {
+            var data = seriesDto.getData();
             var dataIndex = queryDataIndex(data, payload);
 
             if (dataIndex != null && dataIndex >= 0) {
@@ -356,8 +356,8 @@ define(function(require) {
                     symbol = new Symbol(data, dataIndex, api);
                     symbol.position = pt;
                     symbol.setZ(
-                        seriesModel.get('zlevel'),
-                        seriesModel.get('z')
+                        seriesDto.get('zlevel'),
+                        seriesDto.get('z')
                     );
                     symbol.ignore = isNaN(pt[0]) || isNaN(pt[1]);
                     symbol.__temp = true;
@@ -373,13 +373,13 @@ define(function(require) {
             else {
                 // Highlight whole series
                 ChartView.prototype.highlight.call(
-                    this, seriesModel, ecModel, api, payload
+                    this, seriesDto, ecDto, api, payload
                 );
             }
         },
 
-        downplay: function (seriesModel, ecModel, api, payload) {
-            var data = seriesModel.getData();
+        downplay: function (seriesDto, ecDto, api, payload) {
+            var data = seriesDto.getData();
             var dataIndex = queryDataIndex(data, payload);
             if (dataIndex != null && dataIndex >= 0) {
                 var symbol = data.getItemGraphicEl(dataIndex);
@@ -396,7 +396,7 @@ define(function(require) {
             else {
                 // Downplay whole series
                 ChartView.prototype.downplay.call(
-                    this, seriesModel, ecModel, api, payload
+                    this, seriesDto, ecDto, api, payload
                 );
             }
         },
@@ -472,7 +472,7 @@ define(function(require) {
         _updateAnimation: function (data, stackedOnPoints, coordSys, api) {
             var polyline = this._polyline;
             var polygon = this._polygon;
-            var seriesModel = data.hostModel;
+            var seriesDto = data.hostDto;
 
             var diff = lineAnimationDiff(
                 this._data, data,
@@ -485,7 +485,7 @@ define(function(require) {
                 shape: {
                     points: diff.next
                 }
-            }, seriesModel);
+            }, seriesDto);
 
             if (polygon) {
                 polygon.setShape({
@@ -497,7 +497,7 @@ define(function(require) {
                         points: diff.next,
                         stackedOnPoints: diff.stackedOnNext
                     }
-                }, seriesModel);
+                }, seriesDto);
             }
 
             var updatedDataInfo = [];
@@ -526,7 +526,7 @@ define(function(require) {
             }
         },
 
-        remove: function (ecModel) {
+        remove: function (ecDto) {
             var group = this.group;
             var oldData = this._data;
             this._lineGroup.removeAll();

@@ -65,7 +65,7 @@ define(function (require) {
         options = options || {};
 
         /**
-         * Component model classes
+         * Component Dto classes
          * key: componentType,
          * value:
          *     componentClass, when componentType is 'xxx'

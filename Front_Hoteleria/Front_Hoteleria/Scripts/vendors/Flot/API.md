@@ -1119,7 +1119,7 @@ can call:
 
     Recalculate and set axis scaling, ticks, legend etc.
 
-    Note that because of the drawing model of the canvas, this
+    Note that because of the drawing Dto of the canvas, this
     function will immediately redraw (actually reinsert in the DOM)
     the labels and the legend, but not the actual tick lines because
     they're drawn on the canvas. You need to call draw() to get the
@@ -1448,7 +1448,7 @@ hooks in the plugins bundled with Flot.
     ```function (plot, canvascontext)```
 
     The drawOverlay hook is used for interactive things that need a
-    canvas to draw on. The model currently used by Flot works the way
+    canvas to draw on. The Dto currently used by Flot works the way
     that an extra overlay canvas is positioned on top of the static
     canvas. This overlay is cleared and then completely redrawn
     whenever something interesting happens. This hook is called when

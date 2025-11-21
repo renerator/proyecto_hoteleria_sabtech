@@ -6,31 +6,31 @@ define(function (require) {
     var Single = require('./Single');
 
     /**
-     * Create single coordinate system and inject it into seriesModel.
+     * Create single coordinate system and inject it into seriesDto.
      *
-     * @param {module:echarts/model/Global} ecModel
+     * @param {module:echarts/Dto/Global} ecDto
      * @param {module:echarts/ExtensionAPI} api
      * @return {Array.<module:echarts/coord/single/Single>}
      */
-    function create(ecModel, api) {
+    function create(ecDto, api) {
         var singles = [];
 
-        ecModel.eachComponent('singleAxis', function(axisModel, idx) {
+        ecDto.eachComponent('singleAxis', function(axisDto, idx) {
 
-            var single = new Single(axisModel, ecModel, api);
+            var single = new Single(axisDto, ecDto, api);
             single.name = 'single_' + idx;
-            single.resize(axisModel, api);
-            axisModel.coordinateSystem = single;
+            single.resize(axisDto, api);
+            axisDto.coordinateSystem = single;
             singles.push(single);
 
         });
 
-        ecModel.eachSeries(function (seriesModel) {
+        ecDto.eachSeries(function (seriesDto) {
 
-            if (seriesModel.get('coordinateSystem') === 'single') {
-                var singleAxisIndex = seriesModel.get('singleAxisIndex');
-                var axisModel = ecModel.getComponent('singleAxis', singleAxisIndex);
-                seriesModel.coordinateSystem = axisModel.coordinateSystem;
+            if (seriesDto.get('coordinateSystem') === 'single') {
+                var singleAxisIndex = seriesDto.get('singleAxisIndex');
+                var axisDto = ecDto.getComponent('singleAxis', singleAxisIndex);
+                seriesDto.coordinateSystem = axisDto.coordinateSystem;
             }
         });
 

@@ -20,11 +20,11 @@ define(function (require) {
         'time': Array
     };
 
-    var Model = require('../model/Model');
+    var Dto = require('../Dto/Dto');
     var DataDiffer = require('./DataDiffer');
 
     var zrUtil = require('zrender/core/util');
-    var modelUtil = require('../util/model');
+    var DtoUtil = require('../util/Dto');
     var isObject = zrUtil.isObject;
 
     var IMMUTABLE_PROPERTIES = [
@@ -47,9 +47,9 @@ define(function (require) {
      *
      * @param {Array.<string>} dimensions
      *        Dimensions should be concrete names like x, y, z, lng, lat, angle, radius
-     * @param {module:echarts/model/Model} hostModel
+     * @param {module:echarts/Dto/Dto} hostDto
      */
-    var List = function (dimensions, hostModel) {
+    var List = function (dimensions, hostDto) {
 
         dimensions = dimensions || ['x', 'y'];
 
@@ -89,12 +89,12 @@ define(function (require) {
         this._dimensionInfos = dimensionInfos;
 
         /**
-         * @type {module:echarts/model/Model}
+         * @type {module:echarts/Dto/Dto}
          */
-        this.hostModel = hostModel;
+        this.hostDto = hostDto;
 
         /**
-         * @type {module:echarts/model/Model}
+         * @type {module:echarts/Dto/Dto}
          */
         this.dataType;
 
@@ -122,11 +122,11 @@ define(function (require) {
          */
         this._idList = [];
         /**
-         * Models of data option is stored sparse for optimizing memory cost
-         * @type {Array.<module:echarts/model/Model>}
+         * Dtos of data option is stored sparse for optimizing memory cost
+         * @type {Array.<module:echarts/Dto/Dto>}
          * @private
          */
-        this._optionModels = [];
+        this._optionDtos = [];
 
         /**
          * @param {module:echarts/data/List}
@@ -245,8 +245,8 @@ define(function (require) {
 
         // Default dim value getter
         dimValueGetter = dimValueGetter || function (dataItem, dimName, dataIndex, dimIndex) {
-            var value = modelUtil.getDataItemValue(dataItem);
-            return modelUtil.converDataValue(
+            var value = DtoUtil.getDataItemValue(dataItem);
+            return DtoUtil.converDataValue(
                 zrUtil.isArray(value)
                     ? value[dimIndex]
                     // If value is a single number or something else not array.
@@ -693,7 +693,7 @@ define(function (require) {
         var allDimensions = original.dimensions;
         var list = new List(
             zrUtil.map(allDimensions, original.getDimensionInfo, original),
-            original.hostModel
+            original.hostDto
         );
         // FIXME If needs stackedOn, value may already been stacked
         transferImmuProperties(list, original);
@@ -808,15 +808,15 @@ define(function (require) {
     };
 
     /**
-     * Get model of one data item.
+     * Get Dto of one data item.
      *
      * @param {number} idx
      */
-    // FIXME Model proxy ?
-    listProto.getItemModel = function (idx) {
-        var hostModel = this.hostModel;
+    // FIXME Dto proxy ?
+    listProto.getItemDto = function (idx) {
+        var hostDto = this.hostDto;
         idx = this.indices[idx];
-        return new Model(this._rawData[idx], hostModel, hostModel && hostModel.ecModel);
+        return new Dto(this._rawData[idx], hostDto, hostDto && hostDto.ecDto);
     };
 
     /**
@@ -976,14 +976,14 @@ define(function (require) {
      * @param {module:zrender/Element} [el]
      */
     listProto.setItemGraphicEl = function (idx, el) {
-        var hostModel = this.hostModel;
+        var hostDto = this.hostDto;
 
         if (el) {
             // Add data index and series index for indexing the data by element
             // Useful in tooltip
             el.dataIndex = idx;
             el.dataType = this.dataType;
-            el.seriesIndex = hostModel && hostModel.seriesIndex;
+            el.seriesIndex = hostDto && hostDto.seriesIndex;
             if (el.type === 'group') {
                 el.traverse(setItemDataAndSeriesIndex, el);
             }
@@ -1018,7 +1018,7 @@ define(function (require) {
      */
     listProto.cloneShallow = function () {
         var dimensionInfoList = zrUtil.map(this.dimensions, this.getDimensionInfo, this);
-        var list = new List(dimensionInfoList, this.hostModel);
+        var list = new List(dimensionInfoList, this.hostDto);
 
         // FIXME
         list._storage = this._storage;

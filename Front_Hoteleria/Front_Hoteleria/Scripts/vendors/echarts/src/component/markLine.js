@@ -1,6 +1,6 @@
 define(function (require) {
 
-    require('./marker/MarkLineModel');
+    require('./marker/MarkLineDto');
     require('./marker/MarkLineView');
 
     require('../echarts').registerPreprocessor(function (opt) {

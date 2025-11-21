@@ -12,10 +12,10 @@ define(function(require) {
         update: 'update'
     };
 
-    echarts.registerAction(actionInfo, function (payload, ecModel) {
+    echarts.registerAction(actionInfo, function (payload, ecDto) {
 
-        ecModel.eachComponent({mainType: 'visualMap', query: payload}, function (model) {
-            model.setSelected(payload.selected);
+        ecDto.eachComponent({mainType: 'visualMap', query: payload}, function (Dto) {
+            Dto.setSelected(payload.selected);
         });
 
     });

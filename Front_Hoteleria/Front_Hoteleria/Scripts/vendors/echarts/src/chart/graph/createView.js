@@ -4,8 +4,8 @@ define(function (require) {
     var layout = require('../../util/layout');
     var bbox = require('zrender/core/bbox');
 
-    function getViewRect(seriesModel, api, aspect) {
-        var option = seriesModel.getBoxLayoutParams();
+    function getViewRect(seriesDto, api, aspect) {
+        var option = seriesDto.getBoxLayoutParams();
         option.aspect = aspect;
         return layout.getLayoutRect(option, {
             width: api.getWidth(),
@@ -13,18 +13,18 @@ define(function (require) {
         });
     }
 
-    return function (ecModel, api) {
+    return function (ecDto, api) {
         var viewList = [];
-        ecModel.eachSeriesByType('graph', function (seriesModel) {
-            var coordSysType = seriesModel.get('coordinateSystem');
+        ecDto.eachSeriesByType('graph', function (seriesDto) {
+            var coordSysType = seriesDto.get('coordinateSystem');
             if (!coordSysType || coordSysType === 'view') {
                 var viewCoordSys = new View();
                 viewList.push(viewCoordSys);
 
-                var data = seriesModel.getData();
+                var data = seriesDto.getData();
                 var positions = data.mapArray(function (idx) {
-                    var itemModel = data.getItemModel(idx);
-                    return [+itemModel.get('x'), +itemModel.get('y')];
+                    var itemDto = data.getItemDto(idx);
+                    return [+itemDto.get('x'), +itemDto.get('y')];
                 });
 
                 var min = [];
@@ -43,7 +43,7 @@ define(function (require) {
                 }
                 var aspect = (max[0] - min[0]) / (max[1] - min[1]);
                 // FIXME If get view rect after data processed?
-                var viewRect = getViewRect(seriesModel, api, aspect);
+                var viewRect = getViewRect(seriesDto, api, aspect);
                 // Position may be NaN, use view rect instead
                 if (isNaN(aspect)) {
                     min = [viewRect.x, viewRect.y];
@@ -56,8 +56,8 @@ define(function (require) {
                 var viewWidth = viewRect.width;
                 var viewHeight = viewRect.height;
 
-                viewCoordSys = seriesModel.coordinateSystem = new View();
-                viewCoordSys.zoomLimit = seriesModel.get('scaleLimit');
+                viewCoordSys = seriesDto.coordinateSystem = new View();
+                viewCoordSys.zoomLimit = seriesDto.get('scaleLimit');
 
                 viewCoordSys.setBoundingRect(
                     min[0], min[1], bbWidth, bbHeight
@@ -67,8 +67,8 @@ define(function (require) {
                 );
 
                 // Update roam info
-                viewCoordSys.setCenter(seriesModel.get('center'));
-                viewCoordSys.setZoom(seriesModel.get('zoom'));
+                viewCoordSys.setCenter(seriesDto.get('center'));
+                viewCoordSys.setZoom(seriesDto.get('zoom'));
             }
         });
         return viewList;

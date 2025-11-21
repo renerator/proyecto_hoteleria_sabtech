@@ -9,7 +9,7 @@ define(function (require) {
 
         type: 'map',
 
-        render: function (mapModel, ecModel, api, payload) {
+        render: function (mapDto, ecDto, api, payload) {
             // Not render if it is an toggleSelect action from self
             if (payload && payload.type === 'mapToggleSelect'
                 && payload.from === this.uid
@@ -22,13 +22,13 @@ define(function (require) {
             // Not update map if it is an roam action from self
             if (!(payload && payload.type === 'geoRoam'
                 && payload.component === 'series'
-                && payload.name === mapModel.name)) {
+                && payload.name === mapDto.name)) {
 
-                if (mapModel.needsDrawMap) {
+                if (mapDto.needsDrawMap) {
                     var mapDraw = this._mapDraw || new MapDraw(api, true);
                     group.add(mapDraw.group);
 
-                    mapDraw.draw(mapModel, ecModel, api, this, payload);
+                    mapDraw.draw(mapDto, ecDto, api, this, payload);
 
                     this._mapDraw = mapDraw;
                 }
@@ -43,8 +43,8 @@ define(function (require) {
                 mapDraw && group.add(mapDraw.group);
             }
 
-            mapModel.get('showLegendSymbol') && ecModel.getComponent('legend')
-                && this._renderSymbols(mapModel, ecModel, api);
+            mapDto.get('showLegendSymbol') && ecDto.getComponent('legend')
+                && this._renderSymbols(mapDto, ecDto, api);
         },
 
         remove: function () {
@@ -53,8 +53,8 @@ define(function (require) {
             this.group.removeAll();
         },
 
-        _renderSymbols: function (mapModel, ecModel, api) {
-            var data = mapModel.getData();
+        _renderSymbols: function (mapDto, ecDto, api) {
+            var data = mapDto.getData();
             var group = this.group;
 
             data.each('value', function (value, idx) {
@@ -89,12 +89,12 @@ define(function (require) {
                 if (!offset) {
                     var labelText = data.getName(idx);
 
-                    var itemModel = data.getItemModel(idx);
-                    var labelModel = itemModel.getModel('label.normal');
-                    var hoverLabelModel = itemModel.getModel('label.emphasis');
+                    var itemDto = data.getItemDto(idx);
+                    var labelDto = itemDto.getDto('label.normal');
+                    var hoverLabelDto = itemDto.getDto('label.emphasis');
 
-                    var textStyleModel = labelModel.getModel('textStyle');
-                    var hoverTextStyleModel = hoverLabelModel.getModel('textStyle');
+                    var textStyleDto = labelDto.getDto('textStyle');
+                    var hoverTextStyleDto = hoverLabelDto.getDto('textStyle');
 
                     var polygonGroups = data.getItemGraphicEl(idx);
                     circle.setStyle({
@@ -103,17 +103,17 @@ define(function (require) {
 
                     var onEmphasis = function () {
                         circle.setStyle({
-                            text: hoverLabelModel.get('show') ? labelText : '',
-                            textFill: hoverTextStyleModel.getTextColor(),
-                            textFont: hoverTextStyleModel.getFont()
+                            text: hoverLabelDto.get('show') ? labelText : '',
+                            textFill: hoverTextStyleDto.getTextColor(),
+                            textFont: hoverTextStyleDto.getFont()
                         });
                     };
 
                     var onNormal = function () {
                         circle.setStyle({
-                            text: labelModel.get('show') ? labelText : '',
-                            textFill: textStyleModel.getTextColor(),
-                            textFont: textStyleModel.getFont()
+                            text: labelDto.get('show') ? labelText : '',
+                            textFill: textStyleDto.getTextColor(),
+                            textFont: textStyleDto.getFont()
                         });
                     };
 

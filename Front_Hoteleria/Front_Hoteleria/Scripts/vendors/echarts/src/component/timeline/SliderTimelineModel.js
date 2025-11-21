@@ -1,13 +1,13 @@
 /**
- * @file Silder timeline model
+ * @file Silder timeline Dto
  */
 define(function(require) {
 
-    var TimelineModel = require('./TimelineModel');
+    var TimelineDto = require('./TimelineDto');
     var zrUtil = require('zrender/core/util');
-    var modelUtil = require('../../util/model');
+    var DtoUtil = require('../../util/Dto');
 
-    var SliderTimelineModel = TimelineModel.extend({
+    var SliderTimelineDto = TimelineDto.extend({
 
         type: 'timeline.slider',
 
@@ -105,7 +105,7 @@ define(function(require) {
 
     });
 
-    zrUtil.mixin(SliderTimelineModel, modelUtil.dataFormatMixin);
+    zrUtil.mixin(SliderTimelineDto, DtoUtil.dataFormatMixin);
 
-    return SliderTimelineModel;
+    return SliderTimelineDto;
 });

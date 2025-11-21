@@ -288,7 +288,7 @@ define(function(require) {
      * {right: 0} does not take effect.
      *
      * @example
-     * ComponentModel.extend({
+     * ComponentDto.extend({
      *     init: function () {
      *         ...
      *         var inputPositionParams = layout.getLayoutParams(option);

@@ -116,8 +116,8 @@ define(function(require) {
         /**
          * @public
          */
-        generateCoordId: function (coordModel) {
-            return coordModel.type + '\0_' + coordModel.id;
+        generateCoordId: function (coordDto) {
+            return coordDto.type + '\0_' + coordDto.id;
         }
     };
 

@@ -37,10 +37,10 @@ define(function (require) {
         constructor: ParallelAxis,
 
         /**
-         * Axis model
-         * @param {module:echarts/coord/parallel/AxisModel}
+         * Axis Dto
+         * @param {module:echarts/coord/parallel/AxisDto}
          */
-        model: null
+        Dto: null
 
     };
 

@@ -31,7 +31,7 @@ define(function (require) {
      */
     symbolDrawProto.updateData = function (data, isIgnore) {
         var group = this.group;
-        var seriesModel = data.hostModel;
+        var seriesDto = data.hostDto;
         var oldData = this._data;
 
         var SymbolCtor = this._symbolCtor;
@@ -61,7 +61,7 @@ define(function (require) {
                     symbolEl.updateData(data, newIdx);
                     graphic.updateProps(symbolEl, {
                         position: point
-                    }, seriesModel);
+                    }, seriesDto);
                 }
 
                 // Add back

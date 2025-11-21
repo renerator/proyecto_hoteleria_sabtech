@@ -9,13 +9,13 @@ define(function (require) {
 
     /**
      * Resize method bound to the geo
-     * @param {module:echarts/coord/geo/GeoModel|module:echarts/chart/map/MapModel} geoModel
+     * @param {module:echarts/coord/geo/GeoDto|module:echarts/chart/map/MapDto} geoDto
      * @param {module:echarts/ExtensionAPI} api
      */
-    function resizeGeo (geoModel, api) {
+    function resizeGeo (geoDto, api) {
         var rect = this.getBoundingRect();
 
-        var boxLayoutOption = geoModel.getBoxLayoutParams();
+        var boxLayoutOption = geoDto.getBoxLayoutParams();
         // 0.75 rate
         boxLayoutOption.aspect = rect.width / rect.height * 0.75;
 
@@ -26,17 +26,17 @@ define(function (require) {
 
         this.setViewRect(viewRect.x, viewRect.y, viewRect.width, viewRect.height);
 
-        this.setCenter(geoModel.get('center'));
-        this.setZoom(geoModel.get('zoom'));
+        this.setCenter(geoDto.get('center'));
+        this.setZoom(geoDto.get('zoom'));
     }
 
     /**
      * @param {module:echarts/coord/Geo} geo
-     * @param {module:echarts/model/Model} model
+     * @param {module:echarts/Dto/Dto} Dto
      * @inner
      */
-    function setGeoCoords(geo, model) {
-        zrUtil.each(model.get('geoCoord'), function (geoCoord, name) {
+    function setGeoCoords(geo, Dto) {
+        zrUtil.each(Dto.get('geoCoord'), function (geoCoord, name) {
             geo.addGeoCoord(name, geoCoord);
         });
     }
@@ -50,12 +50,12 @@ define(function (require) {
         // For deciding which dimensions to use when creating list data
         dimensions: Geo.prototype.dimensions,
 
-        create: function (ecModel, api) {
+        create: function (ecDto, api) {
             var geoList = [];
 
             // FIXME Create each time may be slow
-            ecModel.eachComponent('geo', function (geoModel, idx) {
-                var name = geoModel.get('map');
+            ecDto.eachComponent('geo', function (geoDto, idx) {
+                var name = geoDto.get('map');
                 var mapData = mapDataStores[name];
                 if (!mapData) {
                     mapNotExistsError(name);
@@ -63,42 +63,42 @@ define(function (require) {
                 var geo = new Geo(
                     name + idx, name,
                     mapData && mapData.geoJson, mapData && mapData.specialAreas,
-                    geoModel.get('nameMap')
+                    geoDto.get('nameMap')
                 );
-                geo.zoomLimit = geoModel.get('scaleLimit');
+                geo.zoomLimit = geoDto.get('scaleLimit');
                 geoList.push(geo);
 
-                setGeoCoords(geo, geoModel);
+                setGeoCoords(geo, geoDto);
 
-                geoModel.coordinateSystem = geo;
-                geo.model = geoModel;
+                geoDto.coordinateSystem = geo;
+                geo.Dto = geoDto;
 
                 // Inject resize method
                 geo.resize = resizeGeo;
 
-                geo.resize(geoModel, api);
+                geo.resize(geoDto, api);
             });
 
-            ecModel.eachSeries(function (seriesModel) {
-                var coordSys = seriesModel.get('coordinateSystem');
+            ecDto.eachSeries(function (seriesDto) {
+                var coordSys = seriesDto.get('coordinateSystem');
                 if (coordSys === 'geo') {
-                    var geoIndex = seriesModel.get('geoIndex') || 0;
-                    seriesModel.coordinateSystem = geoList[geoIndex];
+                    var geoIndex = seriesDto.get('geoIndex') || 0;
+                    seriesDto.coordinateSystem = geoList[geoIndex];
                 }
             });
 
             // If has map series
-            var mapModelGroupBySeries = {};
+            var mapDtoGroupBySeries = {};
 
-            ecModel.eachSeriesByType('map', function (seriesModel) {
-                var mapType = seriesModel.get('map');
+            ecDto.eachSeriesByType('map', function (seriesDto) {
+                var mapType = seriesDto.get('map');
 
-                mapModelGroupBySeries[mapType] = mapModelGroupBySeries[mapType] || [];
+                mapDtoGroupBySeries[mapType] = mapDtoGroupBySeries[mapType] || [];
 
-                mapModelGroupBySeries[mapType].push(seriesModel);
+                mapDtoGroupBySeries[mapType].push(seriesDto);
             });
 
-            zrUtil.each(mapModelGroupBySeries, function (mapSeries, mapType) {
+            zrUtil.each(mapDtoGroupBySeries, function (mapSeries, mapType) {
                 var mapData = mapDataStores[mapType];
                 if (!mapData) {
                     mapNotExistsError(name);

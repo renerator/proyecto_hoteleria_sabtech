@@ -1,10 +1,10 @@
 define(function (require) {
 
-    return function (ecModel) {
-        ecModel.eachSeriesByType('themeRiver', function (seriesModel) {
-            var data = seriesModel.getData();
-            var rawData = seriesModel.getRawData();
-            var colorList = seriesModel.get('color');
+    return function (ecDto) {
+        ecDto.eachSeriesByType('themeRiver', function (seriesDto) {
+            var data = seriesDto.getData();
+            var rawData = seriesDto.getRawData();
+            var colorList = seriesDto.get('color');
 
             data.each(function (index) {
                 var name = data.getName(index);
@@ -13,7 +13,7 @@ define(function (require) {
                 rawData.setItemVisual(
                     rawIndex,
                     'color',
-                    colorList[(seriesModel.nameMap[name] - 1) % colorList.length]
+                    colorList[(seriesDto.nameMap[name] - 1) % colorList.length]
                 );
             });
         });

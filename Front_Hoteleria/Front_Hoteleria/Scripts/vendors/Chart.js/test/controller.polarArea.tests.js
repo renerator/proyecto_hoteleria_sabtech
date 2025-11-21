@@ -109,13 +109,13 @@ describe('Polar area controller tests', function() {
 			{ o:  45, s:  0.5 * Math.PI, e:       Math.PI },
 			{ o:   0, s:        Math.PI, e: 1.5 * Math.PI }
 		].forEach(function(expected, i) {
-			expect(meta.data[i]._model.x).toBeCloseToPixel(256);
-			expect(meta.data[i]._model.y).toBeCloseToPixel(272);
-			expect(meta.data[i]._model.innerRadius).toBeCloseToPixel(0);
-			expect(meta.data[i]._model.outerRadius).toBeCloseToPixel(expected.o);
-			expect(meta.data[i]._model.startAngle).toBe(expected.s);
-			expect(meta.data[i]._model.endAngle).toBe(expected.e);
-			expect(meta.data[i]._model).toEqual(jasmine.objectContaining({
+			expect(meta.data[i]._Dto.x).toBeCloseToPixel(256);
+			expect(meta.data[i]._Dto.y).toBeCloseToPixel(272);
+			expect(meta.data[i]._Dto.innerRadius).toBeCloseToPixel(0);
+			expect(meta.data[i]._Dto.outerRadius).toBeCloseToPixel(expected.o);
+			expect(meta.data[i]._Dto.startAngle).toBe(expected.s);
+			expect(meta.data[i]._Dto.endAngle).toBe(expected.e);
+			expect(meta.data[i]._Dto).toEqual(jasmine.objectContaining({
 				backgroundColor: 'rgb(255, 0, 0)',
 				borderColor: 'rgb(0, 255, 0)',
 				borderWidth: 1.2,
@@ -131,9 +131,9 @@ describe('Polar area controller tests', function() {
 		chart.update();
 
 		for (var i = 0; i < 4; ++i) {
-			expect(meta.data[i]._model.backgroundColor).toBe('rgb(128, 129, 130)');
-			expect(meta.data[i]._model.borderColor).toBe('rgb(56, 57, 58)');
-			expect(meta.data[i]._model.borderWidth).toBe(1.123);
+			expect(meta.data[i]._Dto.backgroundColor).toBe('rgb(128, 129, 130)');
+			expect(meta.data[i]._Dto.borderColor).toBe('rgb(56, 57, 58)');
+			expect(meta.data[i]._Dto.borderWidth).toBe(1.123);
 		}
 
 		// arc styles
@@ -145,11 +145,11 @@ describe('Polar area controller tests', function() {
 
 		chart.update();
 
-		expect(meta.data[0]._model.x).toBeCloseToPixel(256);
-		expect(meta.data[0]._model.y).toBeCloseToPixel(272);
-		expect(meta.data[0]._model.innerRadius).toBeCloseToPixel(0);
-		expect(meta.data[0]._model.outerRadius).toBeCloseToPixel(156);
-		expect(meta.data[0]._model).toEqual(jasmine.objectContaining({
+		expect(meta.data[0]._Dto.x).toBeCloseToPixel(256);
+		expect(meta.data[0]._Dto.y).toBeCloseToPixel(272);
+		expect(meta.data[0]._Dto.innerRadius).toBeCloseToPixel(0);
+		expect(meta.data[0]._Dto.outerRadius).toBeCloseToPixel(156);
+		expect(meta.data[0]._Dto).toEqual(jasmine.objectContaining({
 			startAngle: -0.5 * Math.PI,
 			endAngle: 0,
 			backgroundColor: 'rgb(0, 1, 3)',
@@ -232,9 +232,9 @@ describe('Polar area controller tests', function() {
 		var arc = meta.data[0];
 
 		meta.controller.setHoverStyle(arc);
-		expect(arc._model.backgroundColor).toBe('rgb(230, 0, 0)');
-		expect(arc._model.borderColor).toBe('rgb(0, 230, 0)');
-		expect(arc._model.borderWidth).toBe(1.2);
+		expect(arc._Dto.backgroundColor).toBe('rgb(230, 0, 0)');
+		expect(arc._Dto.borderColor).toBe('rgb(0, 230, 0)');
+		expect(arc._Dto.borderWidth).toBe(1.2);
 
 		// Can set hover style per dataset
 		chart.data.datasets[0].hoverBackgroundColor = 'rgb(77, 79, 81)';
@@ -242,9 +242,9 @@ describe('Polar area controller tests', function() {
 		chart.data.datasets[0].hoverBorderWidth = 2.1;
 
 		meta.controller.setHoverStyle(arc);
-		expect(arc._model.backgroundColor).toBe('rgb(77, 79, 81)');
-		expect(arc._model.borderColor).toBe('rgb(123, 125, 127)');
-		expect(arc._model.borderWidth).toBe(2.1);
+		expect(arc._Dto.backgroundColor).toBe('rgb(77, 79, 81)');
+		expect(arc._Dto.borderColor).toBe('rgb(123, 125, 127)');
+		expect(arc._Dto.borderWidth).toBe(2.1);
 
 		// Custom style
 		arc.custom = {
@@ -254,9 +254,9 @@ describe('Polar area controller tests', function() {
 		};
 
 		meta.controller.setHoverStyle(arc);
-		expect(arc._model.backgroundColor).toBe('rgb(0, 0, 0)');
-		expect(arc._model.borderColor).toBe('rgb(10, 10, 10)');
-		expect(arc._model.borderWidth).toBe(5.5);
+		expect(arc._Dto.backgroundColor).toBe('rgb(0, 0, 0)');
+		expect(arc._Dto.borderColor).toBe('rgb(10, 10, 10)');
+		expect(arc._Dto.borderWidth).toBe(5.5);
 	});
 
 	it('should remove hover styles', function() {
@@ -289,9 +289,9 @@ describe('Polar area controller tests', function() {
 		chart.options.elements.arc.borderWidth = 10.1;
 
 		meta.controller.removeHoverStyle(arc);
-		expect(arc._model.backgroundColor).toBe('rgb(45, 46, 47)');
-		expect(arc._model.borderColor).toBe('rgb(50, 51, 52)');
-		expect(arc._model.borderWidth).toBe(10.1);
+		expect(arc._Dto.backgroundColor).toBe('rgb(45, 46, 47)');
+		expect(arc._Dto.borderColor).toBe('rgb(50, 51, 52)');
+		expect(arc._Dto.borderWidth).toBe(10.1);
 
 		// Can set hover style per dataset
 		chart.data.datasets[0].backgroundColor = 'rgb(77, 79, 81)';
@@ -299,9 +299,9 @@ describe('Polar area controller tests', function() {
 		chart.data.datasets[0].borderWidth = 2.1;
 
 		meta.controller.removeHoverStyle(arc);
-		expect(arc._model.backgroundColor).toBe('rgb(77, 79, 81)');
-		expect(arc._model.borderColor).toBe('rgb(123, 125, 127)');
-		expect(arc._model.borderWidth).toBe(2.1);
+		expect(arc._Dto.backgroundColor).toBe('rgb(77, 79, 81)');
+		expect(arc._Dto.borderColor).toBe('rgb(123, 125, 127)');
+		expect(arc._Dto.borderWidth).toBe(2.1);
 
 		// Custom style
 		arc.custom = {
@@ -311,8 +311,8 @@ describe('Polar area controller tests', function() {
 		};
 
 		meta.controller.removeHoverStyle(arc);
-		expect(arc._model.backgroundColor).toBe('rgb(0, 0, 0)');
-		expect(arc._model.borderColor).toBe('rgb(10, 10, 10)');
-		expect(arc._model.borderWidth).toBe(5.5);
+		expect(arc._Dto.backgroundColor).toBe('rgb(0, 0, 0)');
+		expect(arc._Dto.borderColor).toBe('rgb(10, 10, 10)');
+		expect(arc._Dto.borderWidth).toBe(5.5);
 	});
 });

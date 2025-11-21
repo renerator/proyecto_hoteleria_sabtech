@@ -5,7 +5,7 @@ define(function (require) {
     var zrUtil = require('zrender/core/util');
     var graphic = require('../../util/graphic');
 
-    zrUtil.extend(require('../../model/Model').prototype, require('./barItemStyle'));
+    zrUtil.extend(require('../../Dto/Dto').prototype, require('./barItemStyle'));
 
     function fixLayoutWithLineWidth(layout, lineWidth) {
         var signX = layout.width > 0 ? 1 : -1;
@@ -22,32 +22,32 @@ define(function (require) {
 
         type: 'bar',
 
-        render: function (seriesModel, ecModel, api) {
-            var coordinateSystemType = seriesModel.get('coordinateSystem');
+        render: function (seriesDto, ecDto, api) {
+            var coordinateSystemType = seriesDto.get('coordinateSystem');
 
             if (coordinateSystemType === 'cartesian2d') {
-                this._renderOnCartesian(seriesModel, ecModel, api);
+                this._renderOnCartesian(seriesDto, ecDto, api);
             }
 
             return this.group;
         },
 
-        _renderOnCartesian: function (seriesModel, ecModel, api) {
+        _renderOnCartesian: function (seriesDto, ecDto, api) {
             var group = this.group;
-            var data = seriesModel.getData();
+            var data = seriesDto.getData();
             var oldData = this._data;
 
-            var cartesian = seriesModel.coordinateSystem;
+            var cartesian = seriesDto.coordinateSystem;
             var baseAxis = cartesian.getBaseAxis();
             var isHorizontal = baseAxis.isHorizontal();
 
-            var enableAnimation = seriesModel.get('animation');
+            var enableAnimation = seriesDto.get('animation');
 
             var barBorderWidthQuery = ['itemStyle', 'normal', 'barBorderWidth'];
 
             function createRect(dataIndex, isUpdate) {
                 var layout = data.getItemLayout(dataIndex);
-                var lineWidth = data.getItemModel(dataIndex).get(barBorderWidthQuery) || 0;
+                var lineWidth = data.getItemDto(dataIndex).get(barBorderWidthQuery) || 0;
                 fixLayoutWithLineWidth(layout, lineWidth);
 
                 var rect = new graphic.Rect({
@@ -62,7 +62,7 @@ define(function (require) {
                     animateTarget[animateProperty] = layout[animateProperty];
                     graphic[isUpdate? 'updateProps' : 'initProps'](rect, {
                         shape: animateTarget
-                    }, seriesModel, dataIndex);
+                    }, seriesDto, dataIndex);
                 }
                 return rect;
             }
@@ -92,12 +92,12 @@ define(function (require) {
                     }
 
                     var layout = data.getItemLayout(newIndex);
-                    var lineWidth = data.getItemModel(newIndex).get(barBorderWidthQuery) || 0;
+                    var lineWidth = data.getItemDto(newIndex).get(barBorderWidthQuery) || 0;
                     fixLayoutWithLineWidth(layout, lineWidth);
 
                     graphic.updateProps(rect, {
                         shape: layout
-                    }, seriesModel, newIndex);
+                    }, seriesDto, newIndex);
 
                     data.setItemGraphicEl(newIndex, rect);
 
@@ -113,21 +113,21 @@ define(function (require) {
                             shape: {
                                 width: 0
                             }
-                        }, seriesModel, idx, function () {
+                        }, seriesDto, idx, function () {
                             group.remove(rect);
                         });
                     }
                 })
                 .execute();
 
-            this._updateStyle(seriesModel, data, isHorizontal);
+            this._updateStyle(seriesDto, data, isHorizontal);
 
             this._data = data;
         },
 
-        _updateStyle: function (seriesModel, data, isHorizontal) {
-            function setLabel(style, model, color, labelText, labelPositionOutside) {
-                graphic.setText(style, model, color);
+        _updateStyle: function (seriesDto, data, isHorizontal) {
+            function setLabel(style, Dto, color, labelText, labelPositionOutside) {
+                graphic.setText(style, Dto, color);
                 style.text = labelText;
                 if (style.textPosition === 'outside') {
                     style.textPosition = labelPositionOutside;
@@ -135,37 +135,37 @@ define(function (require) {
             }
 
             data.eachItemGraphicEl(function (rect, idx) {
-                var itemModel = data.getItemModel(idx);
+                var itemDto = data.getItemDto(idx);
                 var color = data.getItemVisual(idx, 'color');
                 var opacity = data.getItemVisual(idx, 'opacity');
                 var layout = data.getItemLayout(idx);
-                var itemStyleModel = itemModel.getModel('itemStyle.normal');
+                var itemStyleDto = itemDto.getDto('itemStyle.normal');
 
-                var hoverStyle = itemModel.getModel('itemStyle.emphasis').getBarItemStyle();
+                var hoverStyle = itemDto.getDto('itemStyle.emphasis').getBarItemStyle();
 
-                rect.setShape('r', itemStyleModel.get('barBorderRadius') || 0);
+                rect.setShape('r', itemStyleDto.get('barBorderRadius') || 0);
 
                 rect.useStyle(zrUtil.defaults(
                     {
                         fill: color,
                         opacity: opacity
                     },
-                    itemStyleModel.getBarItemStyle()
+                    itemStyleDto.getBarItemStyle()
                 ));
 
                 var labelPositionOutside = isHorizontal
                     ? (layout.height > 0 ? 'bottom' : 'top')
                     : (layout.width > 0 ? 'left' : 'right');
 
-                var labelModel = itemModel.getModel('label.normal');
-                var hoverLabelModel = itemModel.getModel('label.emphasis');
+                var labelDto = itemDto.getDto('label.normal');
+                var hoverLabelDto = itemDto.getDto('label.emphasis');
                 var rectStyle = rect.style;
-                if (labelModel.get('show')) {
+                if (labelDto.get('show')) {
                     setLabel(
-                        rectStyle, labelModel, color,
+                        rectStyle, labelDto, color,
                         zrUtil.retrieve(
-                            seriesModel.getFormattedLabel(idx, 'normal'),
-                            seriesModel.getRawValue(idx)
+                            seriesDto.getFormattedLabel(idx, 'normal'),
+                            seriesDto.getRawValue(idx)
                         ),
                         labelPositionOutside
                     );
@@ -173,12 +173,12 @@ define(function (require) {
                 else {
                     rectStyle.text = '';
                 }
-                if (hoverLabelModel.get('show')) {
+                if (hoverLabelDto.get('show')) {
                     setLabel(
-                        hoverStyle, hoverLabelModel, color,
+                        hoverStyle, hoverLabelDto, color,
                         zrUtil.retrieve(
-                            seriesModel.getFormattedLabel(idx, 'emphasis'),
-                            seriesModel.getRawValue(idx)
+                            seriesDto.getFormattedLabel(idx, 'emphasis'),
+                            seriesDto.getRawValue(idx)
                         ),
                         labelPositionOutside
                     );
@@ -190,9 +190,9 @@ define(function (require) {
             });
         },
 
-        remove: function (ecModel, api) {
+        remove: function (ecDto, api) {
             var group = this.group;
-            if (ecModel.get('animation')) {
+            if (ecDto.get('animation')) {
                 if (this._data) {
                     this._data.eachItemGraphicEl(function (el) {
                         // Not show text when animating
@@ -201,7 +201,7 @@ define(function (require) {
                             shape: {
                                 width: 0
                             }
-                        }, ecModel, el.dataIndex, function () {
+                        }, ecDto, el.dataIndex, function () {
                             group.remove(el);
                         });
                     });

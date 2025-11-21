@@ -15,7 +15,7 @@ define(function(require) {
 
     var PI = Math.PI;
 
-    function Parallel(parallelModel, ecModel, api) {
+    function Parallel(parallelDto, ecDto, api) {
 
         /**
          * key: dimension
@@ -37,7 +37,7 @@ define(function(require) {
          * @type {Array.<string>}
          * @readOnly
          */
-        this.dimensions = parallelModel.dimensions;
+        this.dimensions = parallelDto.dimensions;
 
         /**
          * @type {module:zrender/core/BoundingRect}
@@ -45,11 +45,11 @@ define(function(require) {
         this._rect;
 
         /**
-         * @type {module:echarts/coord/parallel/ParallelModel}
+         * @type {module:echarts/coord/parallel/ParallelDto}
          */
-        this._model = parallelModel;
+        this._Dto = parallelDto;
 
-        this._init(parallelModel, ecModel, api);
+        this._init(parallelDto, ecDto, api);
     }
 
     Parallel.prototype = {
@@ -62,81 +62,81 @@ define(function(require) {
          * Initialize cartesian coordinate systems
          * @private
          */
-        _init: function (parallelModel, ecModel, api) {
+        _init: function (parallelDto, ecDto, api) {
 
-            var dimensions = parallelModel.dimensions;
-            var parallelAxisIndex = parallelModel.parallelAxisIndex;
+            var dimensions = parallelDto.dimensions;
+            var parallelAxisIndex = parallelDto.parallelAxisIndex;
 
             each(dimensions, function (dim, idx) {
 
                 var axisIndex = parallelAxisIndex[idx];
-                var axisModel = ecModel.getComponent('parallelAxis', axisIndex);
+                var axisDto = ecDto.getComponent('parallelAxis', axisIndex);
 
                 var axis = this._axesMap[dim] = new ParallelAxis(
                     dim,
-                    axisHelper.createScaleByModel(axisModel),
+                    axisHelper.createScaleByDto(axisDto),
                     [0, 0],
-                    axisModel.get('type'),
+                    axisDto.get('type'),
                     axisIndex
                 );
 
                 var isCategory = axis.type === 'category';
-                axis.onBand = isCategory && axisModel.get('boundaryGap');
-                axis.inverse = axisModel.get('inverse');
+                axis.onBand = isCategory && axisDto.get('boundaryGap');
+                axis.inverse = axisDto.get('inverse');
 
-                // Inject axis into axisModel
-                axisModel.axis = axis;
+                // Inject axis into axisDto
+                axisDto.axis = axis;
 
-                // Inject axisModel into axis
-                axis.model = axisModel;
+                // Inject axisDto into axis
+                axis.Dto = axisDto;
             }, this);
         },
 
         /**
          * Update axis scale after data processed
-         * @param  {module:echarts/model/Global} ecModel
+         * @param  {module:echarts/Dto/Global} ecDto
          * @param  {module:echarts/ExtensionAPI} api
          */
-        update: function (ecModel, api) {
-            this._updateAxesFromSeries(this._model, ecModel);
+        update: function (ecDto, api) {
+            this._updateAxesFromSeries(this._Dto, ecDto);
         },
 
         /**
          * Update properties from series
          * @private
          */
-        _updateAxesFromSeries: function (parallelModel, ecModel) {
-            ecModel.eachSeries(function (seriesModel) {
+        _updateAxesFromSeries: function (parallelDto, ecDto) {
+            ecDto.eachSeries(function (seriesDto) {
 
-                if (!parallelModel.contains(seriesModel, ecModel)) {
+                if (!parallelDto.contains(seriesDto, ecDto)) {
                     return;
                 }
 
-                var data = seriesModel.getData();
+                var data = seriesDto.getData();
 
                 each(this.dimensions, function (dim) {
                     var axis = this._axesMap[dim];
                     axis.scale.unionExtent(data.getDataExtent(dim));
-                    axisHelper.niceScaleExtent(axis, axis.model);
+                    axisHelper.niceScaleExtent(axis, axis.Dto);
                 }, this);
             }, this);
         },
 
         /**
          * Resize the parallel coordinate system.
-         * @param {module:echarts/coord/parallel/ParallelModel} parallelModel
+         * @param {module:echarts/coord/parallel/ParallelDto} parallelDto
          * @param {module:echarts/ExtensionAPI} api
          */
-        resize: function (parallelModel, api) {
+        resize: function (parallelDto, api) {
             this._rect = layout.getLayoutRect(
-                parallelModel.getBoxLayoutParams(),
+                parallelDto.getBoxLayoutParams(),
                 {
                     width: api.getWidth(),
                     height: api.getHeight()
                 }
             );
 
-            this._layoutAxes(parallelModel);
+            this._layoutAxes(parallelDto);
         },
 
         /**
@@ -149,9 +149,9 @@ define(function(require) {
         /**
          * @private
          */
-        _layoutAxes: function (parallelModel) {
+        _layoutAxes: function (parallelDto) {
             var rect = this._rect;
-            var layout = parallelModel.get('layout');
+            var layout = parallelDto.get('layout');
             var axes = this._axesMap;
             var dimensions = this.dimensions;
 
@@ -244,7 +244,7 @@ define(function(require) {
             var hasActiveSet = false;
 
             for (var j = 0, lenj = dimensions.length; j < lenj; j++) {
-                if (axesMap[dimensions[j]].model.getActiveState() !== 'normal') {
+                if (axesMap[dimensions[j]].Dto.getActiveState() !== 'normal') {
                     hasActiveSet = true;
                 }
             }
@@ -260,7 +260,7 @@ define(function(require) {
                     activeState = 'active';
                     for (var j = 0, lenj = dimensions.length; j < lenj; j++) {
                         var dimName = dimensions[j];
-                        var state = axesMap[dimName].model.getActiveState(values[j], j);
+                        var state = axesMap[dimName].Dto.getActiveState(values[j], j);
 
                         if (state === 'inactive') {
                             activeState = 'inactive';

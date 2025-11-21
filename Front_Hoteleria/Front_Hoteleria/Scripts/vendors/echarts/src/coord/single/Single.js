@@ -10,11 +10,11 @@ define(function (require) {
     /**
      * Create a single coordinates system.
      *
-     * @param {module:echarts/coord/single/AxisModel} axisModel
-     * @param {module:echarts/model/Global} ecModel
+     * @param {module:echarts/coord/single/AxisDto} axisDto
+     * @param {module:echarts/Dto/Global} ecDto
      * @param {module:echarts/ExtensionAPI} api
      */
-    function Single(axisModel, ecModel, api) {
+    function Single(axisDto, ecDto, api) {
 
         /**
          * @type {string}
@@ -42,12 +42,12 @@ define(function (require) {
          */
         this._rect;
 
-        this._init(axisModel, ecModel, api);
+        this._init(axisDto, ecDto, api);
 
         /**
-         * @type {module:echarts/coord/single/AxisModel}
+         * @type {module:echarts/coord/single/AxisDto}
          */
-        this._model = axisModel;
+        this._Dto = axisDto;
     }
 
     Single.prototype = {
@@ -59,76 +59,76 @@ define(function (require) {
         /**
          * Initialize single coordinate system.
          *
-         * @param  {module:echarts/coord/single/AxisModel} axisModel
-         * @param  {module:echarts/model/Global} ecModel
+         * @param  {module:echarts/coord/single/AxisDto} axisDto
+         * @param  {module:echarts/Dto/Global} ecDto
          * @param  {module:echarts/ExtensionAPI} api
          * @private
          */
-        _init: function (axisModel, ecModel, api) {
+        _init: function (axisDto, ecDto, api) {
 
             var dim = this.dimension;
 
             var axis = new SingleAxis(
                 dim,
-                axisHelper.createScaleByModel(axisModel),
+                axisHelper.createScaleByDto(axisDto),
                 [0, 0],
-                axisModel.get('type'),
-                axisModel.get('position')
+                axisDto.get('type'),
+                axisDto.get('position')
             );
 
             var isCategory = axis.type === 'category';
-            axis.onBand = isCategory && axisModel.get('boundaryGap');
-            axis.inverse = axisModel.get('inverse');
-            axis.orient = axisModel.get('orient');
+            axis.onBand = isCategory && axisDto.get('boundaryGap');
+            axis.inverse = axisDto.get('inverse');
+            axis.orient = axisDto.get('orient');
 
-            axisModel.axis = axis;
-            axis.model = axisModel;
+            axisDto.axis = axis;
+            axis.Dto = axisDto;
             this._axis = axis;
         },
 
         /**
          * Update axis scale after data processed
-         * @param  {module:echarts/model/Global} ecModel
+         * @param  {module:echarts/Dto/Global} ecDto
          * @param  {module:echarts/ExtensionAPI} api
          */
-        update: function (ecModel, api) {
-            this._updateAxisFromSeries(ecModel);
+        update: function (ecDto, api) {
+            this._updateAxisFromSeries(ecDto);
         },
 
         /**
          * Update the axis extent from series.
          *
-         * @param  {module:echarts/model/Global} ecModel
+         * @param  {module:echarts/Dto/Global} ecDto
          * @private
          */
-        _updateAxisFromSeries: function (ecModel) {
+        _updateAxisFromSeries: function (ecDto) {
 
-            ecModel.eachSeries(function (seriesModel) {
+            ecDto.eachSeries(function (seriesDto) {
 
-                var data = seriesModel.getData();
+                var data = seriesDto.getData();
                 var dim = this.dimension;
                 this._axis.scale.unionExtent(
-                    data.getDataExtent(seriesModel.coordDimToDataDim(dim))
+                    data.getDataExtent(seriesDto.coordDimToDataDim(dim))
                 );
-                axisHelper.niceScaleExtent(this._axis, this._axis.model);
+                axisHelper.niceScaleExtent(this._axis, this._axis.Dto);
             }, this);
         },
 
         /**
          * Resize the single coordinate system.
          *
-         * @param  {module:echarts/coord/single/AxisModel} axisModel
+         * @param  {module:echarts/coord/single/AxisDto} axisDto
          * @param  {module:echarts/ExtensionAPI} api
          */
-        resize: function (axisModel, api) {
+        resize: function (axisDto, api) {
             this._rect = layout.getLayoutRect(
                 {
-                    left: axisModel.get('left'),
-                    top: axisModel.get('top'),
-                    right: axisModel.get('right'),
-                    bottom: axisModel.get('bottom'),
-                    width: axisModel.get('width'),
-                    height: axisModel.get('height')
+                    left: axisDto.get('left'),
+                    top: axisDto.get('top'),
+                    right: axisDto.get('right'),
+                    bottom: axisDto.get('bottom'),
+                    width: axisDto.get('width'),
+                    height: axisDto.get('height')
                 },
                 {
                     width: api.getWidth(),

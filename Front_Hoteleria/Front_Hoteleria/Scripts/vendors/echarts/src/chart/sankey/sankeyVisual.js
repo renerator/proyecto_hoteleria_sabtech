@@ -2,9 +2,9 @@ define(function (require) {
 
     var VisualMapping = require('../../visual/VisualMapping');
 
-    return function (ecModel, payload) {
-        ecModel.eachSeriesByType('sankey', function (seriesModel) {
-            var graph = seriesModel.getGraph();
+    return function (ecDto, payload) {
+        ecDto.eachSeriesByType('sankey', function (seriesDto) {
+            var graph = seriesDto.getGraph();
             var nodes = graph.nodes;
 
             nodes.sort(function (a, b) {
@@ -19,14 +19,14 @@ define(function (require) {
                     type: 'color',
                     mappingMethod: 'linear',
                     dataExtent: [minValue, maxValue],
-                    visual: seriesModel.get('color')
+                    visual: seriesDto.get('color')
                 });
 
                 var mapValueToColor = mapping.mapValueToVisual(node.getLayout().value);
                 node.setVisual('color', mapValueToColor);
                 // If set itemStyle.normal.color
-                var itemModel = node.getModel();
-                var customColor = itemModel.get('itemStyle.normal.color');
+                var itemDto = node.getDto();
+                var customColor = itemDto.get('itemStyle.normal.color');
                 if (customColor != null) {
                     node.setVisual('color', customColor);
                 }

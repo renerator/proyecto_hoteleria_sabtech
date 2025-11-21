@@ -28,7 +28,7 @@
 		.directive('easypiechart', [function() {
 			return {
 				restrict: 'A',
-				require: '?ngModel',
+				require: '?ngDto',
 				scope: {
 					percent: '=',
 					options: '='

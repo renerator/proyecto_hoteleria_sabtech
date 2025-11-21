@@ -4,12 +4,12 @@ define(function (require) {
 
     var List = require('../../data/List');
     var zrUtil = require('zrender/core/util');
-    var modelUtil = require('../../util/model');
-    var Model = require('../../model/Model');
+    var DtoUtil = require('../../util/Dto');
+    var Dto = require('../../Dto/Dto');
 
     var createGraphFromNodeEdge = require('../helper/createGraphFromNodeEdge');
 
-    var GraphSeries = require('../../echarts').extendSeriesModel({
+    var GraphSeries = require('../../echarts').extendSeriesDto({
 
         type: 'series.graph',
 
@@ -36,10 +36,10 @@ define(function (require) {
 
         mergeDefaultAndTheme: function (option) {
             GraphSeries.superApply(this, 'mergeDefaultAndTheme', arguments);
-            modelUtil.defaultEmphasis(option.edgeLabel, modelUtil.LABEL_OPTIONS);
+            DtoUtil.defaultEmphasis(option.edgeLabel, DtoUtil.LABEL_OPTIONS);
         },
 
-        getInitialData: function (option, ecModel) {
+        getInitialData: function (option, ecDto) {
             var edges = option.edges || option.links || [];
             var nodes = option.data || option.nodes || [];
             var self = this;
@@ -49,33 +49,33 @@ define(function (require) {
             }
 
             function beforeLink(nodeData, edgeData) {
-                // Overwrite nodeData.getItemModel to
-                nodeData.wrapMethod('getItemModel', function (model) {
-                    var categoriesModels = self._categoriesModels;
-                    var categoryIdx = model.getShallow('category');
-                    var categoryModel = categoriesModels[categoryIdx];
-                    if (categoryModel) {
-                        categoryModel.parentModel = model.parentModel;
-                        model.parentModel = categoryModel;
+                // Overwrite nodeData.getItemDto to
+                nodeData.wrapMethod('getItemDto', function (Dto) {
+                    var categoriesDtos = self._categoriesDtos;
+                    var categoryIdx = Dto.getShallow('category');
+                    var categoryDto = categoriesDtos[categoryIdx];
+                    if (categoryDto) {
+                        categoryDto.parentDto = Dto.parentDto;
+                        Dto.parentDto = categoryDto;
                     }
-                    return model;
+                    return Dto;
                 });
 
-                var edgeLabelModel = self.getModel('edgeLabel');
-                var wrappedGetEdgeModel = function (path, parentModel) {
+                var edgeLabelDto = self.getDto('edgeLabel');
+                var wrappedGetEdgeDto = function (path, parentDto) {
                     var pathArr = (path || '').split('.');
                     if (pathArr[0] === 'label') {
-                        parentModel = parentModel
-                            || edgeLabelModel.getModel(pathArr.slice(1));
+                        parentDto = parentDto
+                            || edgeLabelDto.getDto(pathArr.slice(1));
                     }
-                    var model = Model.prototype.getModel.call(this, pathArr, parentModel);
-                    model.getModel = wrappedGetEdgeModel;
-                    return model;
+                    var Dto = Dto.prototype.getDto.call(this, pathArr, parentDto);
+                    Dto.getDto = wrappedGetEdgeDto;
+                    return Dto;
                 };
-                edgeData.wrapMethod('getItemModel', function (model) {
+                edgeData.wrapMethod('getItemDto', function (Dto) {
                     // FIXME Wrap get method ?
-                    model.getModel = wrappedGetEdgeModel;
-                    return model;
+                    Dto.getDto = wrappedGetEdgeDto;
+                    return Dto;
                 });
             }
         },
@@ -134,8 +134,8 @@ define(function (require) {
 
             this._categoriesData = categoriesData;
 
-            this._categoriesModels = categoriesData.mapArray(function (idx) {
-                return categoriesData.getItemModel(idx, true);
+            this._categoriesDtos = categoriesData.mapArray(function (idx) {
+                return categoriesData.getItemDto(idx, true);
             });
         },
 

@@ -13,9 +13,9 @@ define(function (require) {
             this._layers = [];
         },
 
-        render: function (seriesModel, ecModel, api) {
-            var data = seriesModel.getData();
-            var rawData = seriesModel.getRawData();
+        render: function (seriesDto, ecDto, api) {
+            var data = seriesDto.getData();
+            var rawData = seriesDto.getRawData();
 
             if (!data.count()) {
                 return;
@@ -23,7 +23,7 @@ define(function (require) {
 
             var group = this.group;
 
-            var layerSeries = seriesModel.getLayerSeries();
+            var layerSeries = seriesDto.getLayerSeries();
 
             var layoutInfo = data.getLayout('layoutInfo');
             var rect = layoutInfo.rect;
@@ -73,9 +73,9 @@ define(function (require) {
                 var polygon;
                 var text;
                 var textLayout = data.getItemLayout(indices[0]);
-                var itemModel = data.getItemModel(indices[j - 1]);
-                var labelModel = itemModel.getModel('label.normal');
-                var margin = labelModel.get('margin');
+                var itemDto = data.getItemDto(indices[j - 1]);
+                var labelDto = itemDto.getDto('label.normal');
+                var margin = labelDto.get('margin');
                 if (status === 'add') {
                     var layerGroup = newLayersGroups[idx] = new graphic.Group();
                     polygon = new poly.Polygon({
@@ -98,7 +98,7 @@ define(function (require) {
                     layerGroup.add(text);
                     group.add(layerGroup);
 
-                    polygon.setClipPath(createGridClipShape(polygon.getBoundingRect(), seriesModel, function () {
+                    polygon.setClipPath(createGridClipShape(polygon.getBoundingRect(), seriesDto, function () {
                         polygon.removeClipPath();
                     }));
                 }
@@ -115,35 +115,35 @@ define(function (require) {
                             points: points0,
                             stackedOnPoints: points1
                         }
-                    }, seriesModel);
+                    }, seriesDto);
 
                     graphic.updateProps(text, {
                         style: {
                             x: textLayout.x - margin,
                             y: textLayout.y0 + textLayout.y / 2
                         }
-                    }, seriesModel);
+                    }, seriesDto);
                 }
 
-                var hoverItemStyleModel = itemModel.getModel('itemStyle.emphasis');
-                var itemStyleModel = itemModel.getModel('itemStyle.nomral');
-                var textStyleModel = labelModel.getModel('textStyle');
+                var hoverItemStyleDto = itemDto.getDto('itemStyle.emphasis');
+                var itemStyleDto = itemDto.getDto('itemStyle.nomral');
+                var textStyleDto = labelDto.getDto('textStyle');
 
                 text.setStyle({
-                    text: labelModel.get('show')
-                        ? seriesModel.getFormattedLabel(indices[j - 1], 'normal')
+                    text: labelDto.get('show')
+                        ? seriesDto.getFormattedLabel(indices[j - 1], 'normal')
                             || data.getName(indices[j - 1])
                         : '',
-                    textFont: textStyleModel.getFont(),
-                    textAlign: labelModel.get('textAlign'),
+                    textFont: textStyleDto.getFont(),
+                    textAlign: labelDto.get('textAlign'),
                     textVerticalAlign: 'middle'
                 });
 
                 polygon.setStyle(zrUtil.extend({
                     fill: color
-                }, itemStyleModel.getItemStyle(['color'])));
+                }, itemStyleDto.getItemStyle(['color'])));
 
-                graphic.setHoverStyle(polygon, hoverItemStyleModel.getItemStyle());
+                graphic.setHoverStyle(polygon, hoverItemStyleDto.getItemStyle());
             }
 
             this._layersSeries = layerSeries;
@@ -152,7 +152,7 @@ define(function (require) {
     });
 
     //add animation to the view
-    function createGridClipShape(rect, seriesModel, cb) {
+    function createGridClipShape(rect, seriesDto, cb) {
         var rectEl = new graphic.Rect({
             shape: {
                 x: rect.x - 10,
@@ -166,7 +166,7 @@ define(function (require) {
                 width: rect.width + 20,
                 height: rect.height + 20
             }
-        }, seriesModel, cb);
+        }, seriesDto, cb);
 
         return rectEl;
     }

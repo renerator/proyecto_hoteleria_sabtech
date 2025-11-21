@@ -74,12 +74,12 @@ define(function (require) {
         return Overlay;
     }
 
-    BMapCoordSys.create = function (ecModel, api) {
+    BMapCoordSys.create = function (ecDto, api) {
         var bmapCoordSys;
         var root = api.getDom();
 
         // TODO Dispose
-        ecModel.eachComponent('bmap', function (bmapModel) {
+        ecDto.eachComponent('bmap', function (bmapDto) {
             var viewportRoot = api.getZr().painter.getViewportRoot();
             if (typeof BMap === 'undefined') {
                 throw new Error('BMap api is not loaded');
@@ -88,7 +88,7 @@ define(function (require) {
             if (bmapCoordSys) {
                 throw new Error('Only one bmap component can exist');
             }
-            if (!bmapModel.__bmap) {
+            if (!bmapDto.__bmap) {
                 // Not support IE8
                 var bmapRoot = root.querySelector('.ec-extension-bmap');
                 if (bmapRoot) {
@@ -103,30 +103,30 @@ define(function (require) {
                 // Not support IE8
                 bmapRoot.classList.add('ec-extension-bmap');
                 root.appendChild(bmapRoot);
-                var bmap = bmapModel.__bmap = new BMap.Map(bmapRoot);
+                var bmap = bmapDto.__bmap = new BMap.Map(bmapRoot);
 
                 var overlay = new Overlay(viewportRoot);
                 bmap.addOverlay(overlay);
             }
-            var bmap = bmapModel.__bmap;
+            var bmap = bmapDto.__bmap;
 
             // Set bmap options
             // centerAndZoom before layout and render
-            var center = bmapModel.get('center');
-            var zoom = bmapModel.get('zoom');
+            var center = bmapDto.get('center');
+            var zoom = bmapDto.get('zoom');
             if (center && zoom) {
                 var pt = new BMap.Point(center[0], center[1]);
                 bmap.centerAndZoom(pt, zoom);
             }
 
             bmapCoordSys = new BMapCoordSys(bmap, api);
-            bmapCoordSys.setMapOffset(bmapModel.__mapOffset || [0, 0]);
-            bmapModel.coordinateSystem = bmapCoordSys;
+            bmapCoordSys.setMapOffset(bmapDto.__mapOffset || [0, 0]);
+            bmapDto.coordinateSystem = bmapCoordSys;
         });
 
-        ecModel.eachSeries(function (seriesModel) {
-            if (seriesModel.get('coordinateSystem') === 'bmap') {
-                seriesModel.coordinateSystem = bmapCoordSys;
+        ecDto.eachSeries(function (seriesDto) {
+            if (seriesDto.get('coordinateSystem') === 'bmap') {
+                seriesDto.coordinateSystem = bmapCoordSys;
             }
         });
     };

@@ -4,14 +4,14 @@ define(function (require) {
     var formatUtil = require('../../util/format');
     var graphic = require('../../util/graphic');
 
-    function positionGroup(group, model, api) {
+    function positionGroup(group, Dto, api) {
         layout.positionGroup(
-            group, model.getBoxLayoutParams(),
+            group, Dto.getBoxLayoutParams(),
             {
                 width: api.getWidth(),
                 height: api.getHeight()
             },
-            model.get('padding')
+            Dto.get('padding')
         );
     }
 
@@ -20,32 +20,32 @@ define(function (require) {
          * Layout list like component.
          * It will box layout each items in group of component and then position the whole group in the viewport
          * @param {module:zrender/group/Group} group
-         * @param {module:echarts/model/Component} componentModel
+         * @param {module:echarts/Dto/Component} componentDto
          * @param {module:echarts/ExtensionAPI}
          */
-        layout: function (group, componentModel, api) {
-            var rect = layout.getLayoutRect(componentModel.getBoxLayoutParams(), {
+        layout: function (group, componentDto, api) {
+            var rect = layout.getLayoutRect(componentDto.getBoxLayoutParams(), {
                 width: api.getWidth(),
                 height: api.getHeight()
-            }, componentModel.get('padding'));
+            }, componentDto.get('padding'));
             layout.box(
-                componentModel.get('orient'),
+                componentDto.get('orient'),
                 group,
-                componentModel.get('itemGap'),
+                componentDto.get('itemGap'),
                 rect.width,
                 rect.height
             );
 
-            positionGroup(group, componentModel, api);
+            positionGroup(group, componentDto, api);
         },
 
-        addBackground: function (group, componentModel) {
+        addBackground: function (group, componentDto) {
             var padding = formatUtil.normalizeCssArray(
-                componentModel.get('padding')
+                componentDto.get('padding')
             );
             var boundingRect = group.getBoundingRect();
-            var style = componentModel.getItemStyle(['color', 'opacity']);
-            style.fill = componentModel.get('backgroundColor');
+            var style = componentDto.getItemStyle(['color', 'opacity']);
+            style.fill = componentDto.get('backgroundColor');
             var rect = new graphic.Rect({
                 shape: {
                     x: boundingRect.x - padding[3],

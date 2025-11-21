@@ -57,10 +57,10 @@ define(function (require) {
         constructor: SingleAxis,
 
         /**
-         * Axis model
-         * @type {module:echarts/coord/single/AxisModel}
+         * Axis Dto
+         * @type {module:echarts/coord/single/AxisDto}
          */
-        model: null,
+        Dto: null,
 
         /**
          * Judge the orient of the axis.
@@ -79,9 +79,9 @@ define(function (require) {
         getLabelInterval: function () {
             var labelInterval = this._labelInterval;
             if (!labelInterval) {
-                var axisModel = this.model;
-                var labelModel = axisModel.getModel('axisLabel');
-                var interval = labelModel.get('interval');
+                var axisDto = this.Dto;
+                var labelDto = axisDto.getDto('axisLabel');
+                var interval = labelDto.get('interval');
                 if (!(this.type === 'category' && interval === 'auto')) {
 
                     labelInterval = this._labelInterval = interval === 'auto' ? 0 : interval;
@@ -90,8 +90,8 @@ define(function (require) {
                 labelInterval = this._labelInterval =
                     axisHelper.getAxisLabelInterval(
                         zrUtil.map(this.scale.getTicks(), this.dataToCoord, this),
-                        axisModel.getFormattedLabels(),
-                        labelModel.getModel('textStyle').getFont(),
+                        axisDto.getFormattedLabels(),
+                        labelDto.getDto('textStyle').getFont(),
                         this.isHorizontal()
                     );
             }

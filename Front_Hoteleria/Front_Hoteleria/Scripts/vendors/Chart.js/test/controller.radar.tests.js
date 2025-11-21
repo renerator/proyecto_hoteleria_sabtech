@@ -121,11 +121,11 @@ describe('Radar controller tests', function() {
 		meta.controller.reset(); // reset first
 
 		// Line element
-		expect(meta.dataset._model.scaleTop).toBeCloseToPixel(32);
-		expect(meta.dataset._model.scaleBottom).toBeCloseToPixel(512);
-		expect(meta.dataset._model.scaleZero.x).toBeCloseToPixel(256);
-		expect(meta.dataset._model.scaleZero.y).toBeCloseToPixel(272);
-		expect(meta.dataset._model).toEqual(jasmine.objectContaining({
+		expect(meta.dataset._Dto.scaleTop).toBeCloseToPixel(32);
+		expect(meta.dataset._Dto.scaleBottom).toBeCloseToPixel(512);
+		expect(meta.dataset._Dto.scaleZero.x).toBeCloseToPixel(256);
+		expect(meta.dataset._Dto.scaleZero.y).toBeCloseToPixel(272);
+		expect(meta.dataset._Dto).toEqual(jasmine.objectContaining({
 			backgroundColor: 'rgb(255, 0, 0)',
 			borderCapStyle: 'round',
 			borderColor: 'rgb(0, 255, 0)',
@@ -143,13 +143,13 @@ describe('Radar controller tests', function() {
 			{ x: 256, y: 272, cppx: 256, cppy: 272, cpnx: 256, cpny: 272},
 			{ x: 256, y: 272, cppx: 256, cppy: 272, cpnx: 256, cpny: 272},
 		].forEach(function(expected, i) {
-			expect(meta.data[i]._model.x).toBeCloseToPixel(expected.x);
-			expect(meta.data[i]._model.y).toBeCloseToPixel(expected.y);
-			expect(meta.data[i]._model.controlPointPreviousX).toBeCloseToPixel(expected.cppx);
-			expect(meta.data[i]._model.controlPointPreviousY).toBeCloseToPixel(expected.cppy);
-			expect(meta.data[i]._model.controlPointNextX).toBeCloseToPixel(expected.cpnx);
-			expect(meta.data[i]._model.controlPointNextY).toBeCloseToPixel(expected.cpny);
-			expect(meta.data[i]._model).toEqual(jasmine.objectContaining({
+			expect(meta.data[i]._Dto.x).toBeCloseToPixel(expected.x);
+			expect(meta.data[i]._Dto.y).toBeCloseToPixel(expected.y);
+			expect(meta.data[i]._Dto.controlPointPreviousX).toBeCloseToPixel(expected.cppx);
+			expect(meta.data[i]._Dto.controlPointPreviousY).toBeCloseToPixel(expected.cppy);
+			expect(meta.data[i]._Dto.controlPointNextX).toBeCloseToPixel(expected.cpnx);
+			expect(meta.data[i]._Dto.controlPointNextY).toBeCloseToPixel(expected.cpny);
+			expect(meta.data[i]._Dto).toEqual(jasmine.objectContaining({
 				backgroundColor: Chart.defaults.global.defaultColor,
 				borderWidth: 1,
 				borderColor: Chart.defaults.global.defaultColor,
@@ -170,13 +170,13 @@ describe('Radar controller tests', function() {
 			{ x: 256, y: 272, cppx: 276.9, cppy: 272, cpnx: 250.4, cpny: 272 },
 			{ x: 200, y: 272, cppx: 200, cppy: 275, cpnx: 200, cpny: 261 },
 		].forEach(function(expected, i) {
-			expect(meta.data[i]._model.x).toBeCloseToPixel(expected.x);
-			expect(meta.data[i]._model.y).toBeCloseToPixel(expected.y);
-			expect(meta.data[i]._model.controlPointPreviousX).toBeCloseToPixel(expected.cppx);
-			expect(meta.data[i]._model.controlPointPreviousY).toBeCloseToPixel(expected.cppy);
-			expect(meta.data[i]._model.controlPointNextX).toBeCloseToPixel(expected.cpnx);
-			expect(meta.data[i]._model.controlPointNextY).toBeCloseToPixel(expected.cpny);
-			expect(meta.data[i]._model).toEqual(jasmine.objectContaining({
+			expect(meta.data[i]._Dto.x).toBeCloseToPixel(expected.x);
+			expect(meta.data[i]._Dto.y).toBeCloseToPixel(expected.y);
+			expect(meta.data[i]._Dto.controlPointPreviousX).toBeCloseToPixel(expected.cppx);
+			expect(meta.data[i]._Dto.controlPointPreviousY).toBeCloseToPixel(expected.cppy);
+			expect(meta.data[i]._Dto.controlPointNextX).toBeCloseToPixel(expected.cpnx);
+			expect(meta.data[i]._Dto.controlPointNextY).toBeCloseToPixel(expected.cpny);
+			expect(meta.data[i]._Dto).toEqual(jasmine.objectContaining({
 				backgroundColor: Chart.defaults.global.defaultColor,
 				borderWidth: 1,
 				borderColor: Chart.defaults.global.defaultColor,
@@ -208,11 +208,11 @@ describe('Radar controller tests', function() {
 
 		meta.controller.update();
 
-		expect(meta.dataset._model.scaleTop).toBeCloseToPixel(32);
-		expect(meta.dataset._model.scaleBottom).toBeCloseToPixel(512);
-		expect(meta.dataset._model.scaleZero.x).toBeCloseToPixel(256);
-		expect(meta.dataset._model.scaleZero.y).toBeCloseToPixel(272);
-		expect(meta.dataset._model).toEqual(jasmine.objectContaining({
+		expect(meta.dataset._Dto.scaleTop).toBeCloseToPixel(32);
+		expect(meta.dataset._Dto.scaleBottom).toBeCloseToPixel(512);
+		expect(meta.dataset._Dto.scaleZero.x).toBeCloseToPixel(256);
+		expect(meta.dataset._Dto.scaleZero.y).toBeCloseToPixel(272);
+		expect(meta.dataset._Dto).toEqual(jasmine.objectContaining({
 			backgroundColor: 'rgb(98, 98, 98)',
 			borderCapStyle: 'butt',
 			borderColor: 'rgb(8, 8, 8)',
@@ -231,9 +231,9 @@ describe('Radar controller tests', function() {
 			{ x: 256, y: 272 },
 			{ x: 200, y: 272 },
 		].forEach(function(expected, i) {
-			expect(meta.data[i]._model.x).toBeCloseToPixel(expected.x);
-			expect(meta.data[i]._model.y).toBeCloseToPixel(expected.y);
-			expect(meta.data[i]._model).toEqual(jasmine.objectContaining({
+			expect(meta.data[i]._Dto.x).toBeCloseToPixel(expected.x);
+			expect(meta.data[i]._Dto.y).toBeCloseToPixel(expected.y);
+			expect(meta.data[i]._Dto).toEqual(jasmine.objectContaining({
 				backgroundColor: 'rgb(128, 129, 130)',
 				borderWidth: 1.123,
 				borderColor: 'rgb(56, 57, 58)',
@@ -272,11 +272,11 @@ describe('Radar controller tests', function() {
 
 		meta.controller.update();
 
-		expect(meta.dataset._model.scaleTop).toBeCloseToPixel(32);
-		expect(meta.dataset._model.scaleBottom).toBeCloseToPixel(512);
-		expect(meta.dataset._model.scaleZero.x).toBeCloseToPixel(256);
-		expect(meta.dataset._model.scaleZero.y).toBeCloseToPixel(272);
-		expect(meta.dataset._model).toEqual(jasmine.objectContaining({
+		expect(meta.dataset._Dto.scaleTop).toBeCloseToPixel(32);
+		expect(meta.dataset._Dto.scaleBottom).toBeCloseToPixel(512);
+		expect(meta.dataset._Dto.scaleZero.x).toBeCloseToPixel(256);
+		expect(meta.dataset._Dto.scaleZero.y).toBeCloseToPixel(272);
+		expect(meta.dataset._Dto).toEqual(jasmine.objectContaining({
 			backgroundColor: 'rgb(55, 55, 54)',
 			borderCapStyle: 'square',
 			borderColor: 'rgb(8, 7, 6)',
@@ -288,13 +288,13 @@ describe('Radar controller tests', function() {
 			tension: 0.25,
 		}));
 
-		expect(meta.data[0]._model.x).toBeCloseToPixel(256);
-		expect(meta.data[0]._model.y).toBeCloseToPixel(133);
-		expect(meta.data[0]._model.controlPointPreviousX).toBeCloseToPixel(241);
-		expect(meta.data[0]._model.controlPointPreviousY).toBeCloseToPixel(133);
-		expect(meta.data[0]._model.controlPointNextX).toBeCloseToPixel(281);
-		expect(meta.data[0]._model.controlPointNextY).toBeCloseToPixel(133);
-		expect(meta.data[0]._model).toEqual(jasmine.objectContaining({
+		expect(meta.data[0]._Dto.x).toBeCloseToPixel(256);
+		expect(meta.data[0]._Dto.y).toBeCloseToPixel(133);
+		expect(meta.data[0]._Dto.controlPointPreviousX).toBeCloseToPixel(241);
+		expect(meta.data[0]._Dto.controlPointPreviousY).toBeCloseToPixel(133);
+		expect(meta.data[0]._Dto.controlPointNextX).toBeCloseToPixel(281);
+		expect(meta.data[0]._Dto.controlPointNextY).toBeCloseToPixel(133);
+		expect(meta.data[0]._Dto).toEqual(jasmine.objectContaining({
 			radius: 2.2,
 			backgroundColor: 'rgb(0, 1, 3)',
 			borderColor: 'rgb(4, 6, 8)',
@@ -349,10 +349,10 @@ describe('Radar controller tests', function() {
 		var point = meta.data[0];
 
 		meta.controller.setHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(229, 230, 0)');
-		expect(point._model.borderColor).toBe('rgb(230, 230, 230)');
-		expect(point._model.borderWidth).toBe(1);
-		expect(point._model.radius).toBe(4);
+		expect(point._Dto.backgroundColor).toBe('rgb(229, 230, 0)');
+		expect(point._Dto.borderColor).toBe('rgb(230, 230, 230)');
+		expect(point._Dto.borderWidth).toBe(1);
+		expect(point._Dto.radius).toBe(4);
 
 		// Can set hover style per dataset
 		chart.data.datasets[0].pointHoverRadius = 3.3;
@@ -361,10 +361,10 @@ describe('Radar controller tests', function() {
 		chart.data.datasets[0].pointHoverBorderWidth = 2.1;
 
 		meta.controller.setHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(77, 79, 81)');
-		expect(point._model.borderColor).toBe('rgb(123, 125, 127)');
-		expect(point._model.borderWidth).toBe(2.1);
-		expect(point._model.radius).toBe(3.3);
+		expect(point._Dto.backgroundColor).toBe('rgb(77, 79, 81)');
+		expect(point._Dto.borderColor).toBe('rgb(123, 125, 127)');
+		expect(point._Dto.borderWidth).toBe(2.1);
+		expect(point._Dto.radius).toBe(3.3);
 
 		// Custom style
 		point.custom = {
@@ -375,10 +375,10 @@ describe('Radar controller tests', function() {
 		};
 
 		meta.controller.setHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(0, 0, 0)');
-		expect(point._model.borderColor).toBe('rgb(10, 10, 10)');
-		expect(point._model.borderWidth).toBe(5.5);
-		expect(point._model.radius).toBe(4.4);
+		expect(point._Dto.backgroundColor).toBe('rgb(0, 0, 0)');
+		expect(point._Dto.borderColor).toBe('rgb(10, 10, 10)');
+		expect(point._Dto.borderWidth).toBe(5.5);
+		expect(point._Dto.radius).toBe(4.4);
 	});
 
 
@@ -431,10 +431,10 @@ describe('Radar controller tests', function() {
 		chart.options.elements.point.radius = 1.01;
 
 		meta.controller.removeHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(45, 46, 47)');
-		expect(point._model.borderColor).toBe('rgb(50, 51, 52)');
-		expect(point._model.borderWidth).toBe(10.1);
-		expect(point._model.radius).toBe(1.01);
+		expect(point._Dto.backgroundColor).toBe('rgb(45, 46, 47)');
+		expect(point._Dto.borderColor).toBe('rgb(50, 51, 52)');
+		expect(point._Dto.borderWidth).toBe(10.1);
+		expect(point._Dto.radius).toBe(1.01);
 
 		// Can set hover style per dataset
 		chart.data.datasets[0].radius = 3.3;
@@ -443,10 +443,10 @@ describe('Radar controller tests', function() {
 		chart.data.datasets[0].pointBorderWidth = 2.1;
 
 		meta.controller.removeHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(77, 79, 81)');
-		expect(point._model.borderColor).toBe('rgb(123, 125, 127)');
-		expect(point._model.borderWidth).toBe(2.1);
-		expect(point._model.radius).toBe(3.3);
+		expect(point._Dto.backgroundColor).toBe('rgb(77, 79, 81)');
+		expect(point._Dto.borderColor).toBe('rgb(123, 125, 127)');
+		expect(point._Dto.borderWidth).toBe(2.1);
+		expect(point._Dto.radius).toBe(3.3);
 
 		// Custom style
 		point.custom = {
@@ -457,9 +457,9 @@ describe('Radar controller tests', function() {
 		};
 
 		meta.controller.removeHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(0, 0, 0)');
-		expect(point._model.borderColor).toBe('rgb(10, 10, 10)');
-		expect(point._model.borderWidth).toBe(5.5);
-		expect(point._model.radius).toBe(4.4);
+		expect(point._Dto.backgroundColor).toBe('rgb(0, 0, 0)');
+		expect(point._Dto.borderColor).toBe('rgb(10, 10, 10)');
+		expect(point._Dto.borderWidth).toBe(5.5);
+		expect(point._Dto.radius).toBe(4.4);
 	});
 });

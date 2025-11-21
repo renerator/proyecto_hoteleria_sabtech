@@ -1,6 +1,6 @@
 define(function (require) {
 
-    require('../coord/geo/GeoModel');
+    require('../coord/geo/GeoDto');
 
     require('../coord/geo/geoCreator');
 
@@ -13,16 +13,16 @@ define(function (require) {
 
     function makeAction(method, actionInfo) {
         actionInfo.update = 'updateView';
-        echarts.registerAction(actionInfo, function (payload, ecModel) {
+        echarts.registerAction(actionInfo, function (payload, ecDto) {
             var selected = {};
 
-            ecModel.eachComponent(
+            ecDto.eachComponent(
                 { mainType: 'geo', query: payload},
-                function (geoModel) {
-                    geoModel[method](payload.name);
-                    var geo = geoModel.coordinateSystem;
+                function (geoDto) {
+                    geoDto[method](payload.name);
+                    var geo = geoDto.coordinateSystem;
                     zrUtil.each(geo.regions, function (region) {
-                        selected[region.name] = geoModel.isSelected(region.name) || false;
+                        selected[region.name] = geoDto.isSelected(region.name) || false;
                     });
                 }
             );

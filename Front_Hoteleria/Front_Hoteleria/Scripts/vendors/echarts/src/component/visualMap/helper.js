@@ -7,14 +7,14 @@ define(function(require) {
     var helper = {
 
         /**
-         * @param {module:echarts/component/visualMap/VisualMapModel} visualMapModel\
+         * @param {module:echarts/component/visualMap/VisualMapDto} visualMapDto\
          * @param {module:echarts/ExtensionAPI} api
          * @param {Array.<number>} itemSize always [short, long]
          * @return {string} 'left' or 'right' or 'top' or 'bottom'
          */
-        getItemAlign: function (visualMapModel, api, itemSize) {
-            var modelOption = visualMapModel.option;
-            var itemAlign = modelOption.align;
+        getItemAlign: function (visualMapDto, api, itemSize) {
+            var DtoOption = visualMapDto.option;
+            var itemAlign = DtoOption.align;
 
             if (itemAlign != null && itemAlign !== 'auto') {
                 return itemAlign;
@@ -22,7 +22,7 @@ define(function(require) {
 
             // Auto decision align.
             var ecSize = {width: api.getWidth(), height: api.getHeight()};
-            var realIndex = modelOption.orient === 'horizontal' ? 1 : 0;
+            var realIndex = DtoOption.orient === 'horizontal' ? 1 : 0;
 
             var paramsSet = [
                 ['left', 'right', 'width'],
@@ -34,11 +34,11 @@ define(function(require) {
             var layoutInput = {};
             for (var i = 0; i < 3; i++) {
                 layoutInput[paramsSet[1 - realIndex][i]] = fakeValue[i];
-                layoutInput[reals[i]] = i === 2 ? itemSize[0] : modelOption[reals[i]];
+                layoutInput[reals[i]] = i === 2 ? itemSize[0] : DtoOption[reals[i]];
             }
 
             var rParam = [['x', 'width', 3], ['y', 'height', 0]][realIndex];
-            var rect = layout.getLayoutRect(layoutInput, ecSize, modelOption.padding);
+            var rect = layout.getLayoutRect(layoutInput, ecSize, DtoOption.padding);
 
             return reals[
                 (rect.margin[rParam[2]] || 0) + rect[rParam[0]] + rect[rParam[1]] * 0.5

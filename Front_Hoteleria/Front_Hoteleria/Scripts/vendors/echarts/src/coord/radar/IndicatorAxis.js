@@ -24,9 +24,9 @@ define(function (require) {
          */
         this.name = '';
         /**
-         * @type {module:echarts/model/Model}
+         * @type {module:echarts/Dto/Dto}
          */
-        this.model;
+        this.Dto;
     }
 
     zrUtil.inherits(IndicatorAxis, Axis);

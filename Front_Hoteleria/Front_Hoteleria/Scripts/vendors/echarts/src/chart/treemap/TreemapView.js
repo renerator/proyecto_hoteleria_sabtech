@@ -76,22 +76,22 @@
         /**
          * @override
          */
-        render: function (seriesModel, ecModel, api, payload) {
+        render: function (seriesDto, ecDto, api, payload) {
 
-            var models = ecModel.findComponents({
+            var Dtos = ecDto.findComponents({
                 mainType: 'series', subType: 'treemap', query: payload
             });
-            if (zrUtil.indexOf(models, seriesModel) < 0) {
+            if (zrUtil.indexOf(Dtos, seriesDto) < 0) {
                 return;
             }
 
-            this.seriesModel = seriesModel;
+            this.seriesDto = seriesDto;
             this.api = api;
-            this.ecModel = ecModel;
+            this.ecDto = ecDto;
 
-            var targetInfo = helper.retrieveTargetInfo(payload, seriesModel);
+            var targetInfo = helper.retrieveTargetInfo(payload, seriesDto);
             var payloadType = payload && payload.type;
-            var layoutInfo = seriesModel.layoutInfo;
+            var layoutInfo = seriesDto.layoutInfo;
             var isInit = !this._oldTree;
             var thisStorage = this._storage;
 
@@ -105,7 +105,7 @@
 
             var containerGroup = this._giveContainerGroup(layoutInfo);
 
-            var renderResult = this._doRender(containerGroup, seriesModel, reRoot);
+            var renderResult = this._doRender(containerGroup, seriesDto, reRoot);
             (
                 !isInit && (
                     !payloadType
@@ -113,12 +113,12 @@
                     || payloadType === 'treemapRootToNode'
                 )
             )
-                ? this._doAnimation(containerGroup, renderResult, seriesModel, reRoot)
+                ? this._doAnimation(containerGroup, renderResult, seriesDto, reRoot)
                 : renderResult.renderFinally();
 
             this._resetController(api);
 
-            this._renderBreadcrumb(seriesModel, api, targetInfo);
+            this._renderBreadcrumb(seriesDto, api, targetInfo);
         },
 
         /**
@@ -141,8 +141,8 @@
         /**
          * @private
          */
-        _doRender: function (containerGroup, seriesModel, reRoot) {
-            var thisTree = seriesModel.getData().tree;
+        _doRender: function (containerGroup, seriesDto, reRoot) {
+            var thisTree = seriesDto.getData().tree;
             var oldTree = this._oldTree;
 
             // Clear last shape records.
@@ -151,7 +151,7 @@
             var oldStorage = this._storage;
             var willInvisibleEls = [];
             var doRenderNode = zrUtil.curry(
-                renderNode, seriesModel,
+                renderNode, seriesDto,
                 thisStorage, oldStorage, reRoot,
                 lastsForAnimation, willInvisibleEls
             );
@@ -251,13 +251,13 @@
         /**
          * @private
          */
-        _doAnimation: function (containerGroup, renderResult, seriesModel, reRoot) {
-            if (!seriesModel.get('animation')) {
+        _doAnimation: function (containerGroup, renderResult, seriesDto, reRoot) {
+            if (!seriesDto.get('animation')) {
                 return;
             }
 
-            var duration = seriesModel.get('animationDurationUpdate');
-            var easing = seriesModel.get('animationEasing');
+            var duration = seriesDto.get('animationDurationUpdate');
+            var easing = seriesDto.get('animationEasing');
             var animationWrap = animationUtil.createWrap();
 
             // Make delete animations.
@@ -369,7 +369,7 @@
             // Init controller.
             if (!controller) {
                 controller = this._controller = new RoamController(api.getZr());
-                controller.enable(this.seriesModel.get('roam'));
+                controller.enable(this.seriesDto.get('roam'));
                 controller.on('pan', bind(this._onPan, this));
                 controller.on('zoom', bind(this._onZoom, this));
             }
@@ -401,7 +401,7 @@
                 && (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)
             ) {
                 // These param must not be cached.
-                var root = this.seriesModel.getData().tree.root;
+                var root = this.seriesDto.getData().tree.root;
 
                 if (!root) {
                     return;
@@ -416,7 +416,7 @@
                 this.api.dispatchAction({
                     type: 'treemapMove',
                     from: this.uid,
-                    seriesId: this.seriesModel.id,
+                    seriesId: this.seriesDto.id,
                     rootRect: {
                         x: rootLayout.x + dx, y: rootLayout.y + dy,
                         width: rootLayout.width, height: rootLayout.height
@@ -433,7 +433,7 @@
 
             if (this._state !== 'animating') {
                 // These param must not be cached.
-                var root = this.seriesModel.getData().tree.root;
+                var root = this.seriesDto.getData().tree.root;
 
                 if (!root) {
                     return;
@@ -448,7 +448,7 @@
                 var rect = new BoundingRect(
                     rootLayout.x, rootLayout.y, rootLayout.width, rootLayout.height
                 );
-                var layoutInfo = this.seriesModel.layoutInfo;
+                var layoutInfo = this.seriesDto.layoutInfo;
 
                 // Transform mouse coord from global to containerGroup.
                 mouseX -= layoutInfo.x;
@@ -465,7 +465,7 @@
                 this.api.dispatchAction({
                     type: 'treemapRender',
                     from: this.uid,
-                    seriesId: this.seriesModel.id,
+                    seriesId: this.seriesDto.id,
                     rootRect: {
                         x: rect.x, y: rect.y,
                         width: rect.width, height: rect.height
@@ -497,7 +497,7 @@
             }, this);
 
             function onClick(e) {
-                var nodeClick = this.seriesModel.get('nodeClick', true);
+                var nodeClick = this.seriesDto.get('nodeClick', true);
 
                 if (!nodeClick) {
                     return;
@@ -518,9 +518,9 @@
                         this._zoomToNode(targetInfo);
                     }
                     else if (nodeClick === 'link') {
-                        var itemModel = node.hostTree.data.getItemModel(node.dataIndex);
-                        var link = itemModel.get('link', true);
-                        var linkTarget = itemModel.get('target', true) || 'blank';
+                        var itemDto = node.hostTree.data.getItemDto(node.dataIndex);
+                        var link = itemDto.get('link', true);
+                        var linkTarget = itemDto.get('target', true) || 'blank';
                         link && window.open(link, linkTarget);
                     }
                 }
@@ -530,22 +530,22 @@
         /**
          * @private
          */
-        _renderBreadcrumb: function (seriesModel, api, targetInfo) {
+        _renderBreadcrumb: function (seriesDto, api, targetInfo) {
             if (!targetInfo) {
                 // Find breadcrumb tail on center of containerGroup.
                 targetInfo = this.findTarget(api.getWidth() / 2, api.getHeight() / 2);
 
                 if (!targetInfo) {
-                    targetInfo = {node: seriesModel.getData().tree.root};
+                    targetInfo = {node: seriesDto.getData().tree.root};
                 }
             }
 
             (this._breadcrumb || (this._breadcrumb = new Breadcrumb(this.group, bind(onSelect, this))))
-                .render(seriesModel, api, targetInfo.node);
+                .render(seriesDto, api, targetInfo.node);
 
             function onSelect(node) {
                 if (this._state !== 'animating') {
-                    helper.aboveViewRoot(seriesModel.getViewRoot(), node)
+                    helper.aboveViewRoot(seriesDto.getViewRoot(), node)
                         ? this._rootToNode({node: node})
                         : this._zoomToNode({node: node});
                 }
@@ -574,7 +574,7 @@
             this.api.dispatchAction({
                 type: 'treemapZoomToNode',
                 from: this.uid,
-                seriesId: this.seriesModel.id,
+                seriesId: this.seriesDto.id,
                 targetNode: targetInfo.node
             });
         },
@@ -586,7 +586,7 @@
             this.api.dispatchAction({
                 type: 'treemapRootToNode',
                 from: this.uid,
-                seriesId: this.seriesModel.id,
+                seriesId: this.seriesDto.id,
                 targetNode: targetInfo.node
             });
         },
@@ -602,7 +602,7 @@
          */
         findTarget: function (x, y) {
             var targetInfo;
-            var viewRoot = this.seriesModel.getViewRoot();
+            var viewRoot = this.seriesDto.getViewRoot();
 
             viewRoot.eachNode({attr: 'viewChildren', order: 'preorder'}, function (node) {
                 var bgEl = this._storage.background[node.getRawIndex()];
@@ -642,7 +642,7 @@
      * @return Return undefined means do not travel further.
      */
     function renderNode(
-        seriesModel, thisStorage, oldStorage, reRoot,
+        seriesDto, thisStorage, oldStorage, reRoot,
         lastsForAnimation, willInvisibleEls,
         thisNode, oldNode, parentGroup, depth
     ) {
@@ -711,7 +711,7 @@
         function renderContent(group) {
             // For tooltip.
             content.dataIndex = thisNode.dataIndex;
-            content.seriesIndex = seriesModel.seriesIndex;
+            content.seriesIndex = seriesDto.seriesIndex;
 
             var borderWidth = thisLayout.borderWidth;
             var contentWidth = Math.max(thisWidth - 2 * borderWidth, 0);
@@ -728,7 +728,7 @@
             var visualColor = thisNode.getVisual('color', true);
             updateStyle(content, function () {
                 var normalStyle = {fill: visualColor};
-                var emphasisStyle = thisNode.getModel('itemStyle.emphasis').getItemStyle();
+                var emphasisStyle = thisNode.getDto('itemStyle.emphasis').getItemStyle();
 
                 prepareText(normalStyle, emphasisStyle, visualColor, contentWidth, contentHeight);
 
@@ -758,42 +758,42 @@
         }
 
         function prepareText(normalStyle, emphasisStyle, visualColor, contentWidth, contentHeight) {
-            var nodeModel = thisNode.getModel();
-            var text = nodeModel.get('name');
+            var nodeDto = thisNode.getDto();
+            var text = nodeDto.get('name');
             if (thisLayout.isLeafRoot) {
-                var iconChar = seriesModel.get('drillDownIcon', true);
+                var iconChar = seriesDto.get('drillDownIcon', true);
                 text += iconChar ? '  ' + iconChar : '';
             }
 
             setText(
-                text, normalStyle, nodeModel, PATH_LABEL_NORMAL,
+                text, normalStyle, nodeDto, PATH_LABEL_NORMAL,
                 visualColor, contentWidth, contentHeight
             );
             setText(
-                text, emphasisStyle, nodeModel, PATH_LABEL_EMPHASIS,
+                text, emphasisStyle, nodeDto, PATH_LABEL_EMPHASIS,
                 visualColor, contentWidth, contentHeight
             );
         }
 
-        function setText(text, style, nodeModel, labelPath, visualColor, contentWidth, contentHeight) {
-            var labelModel = nodeModel.getModel(labelPath);
-            var labelTextStyleModel = labelModel.getModel('textStyle');
+        function setText(text, style, nodeDto, labelPath, visualColor, contentWidth, contentHeight) {
+            var labelDto = nodeDto.getDto(labelPath);
+            var labelTextStyleDto = labelDto.getDto('textStyle');
 
-            graphic.setText(style, labelModel, visualColor);
+            graphic.setText(style, labelDto, visualColor);
 
             // text.align and text.baseline is not included by graphic.setText,
             // because in most cases the two attributes are not exposed to user,
             // except in treemap.
-            style.textAlign = labelTextStyleModel.get('align');
-            style.textVerticalAlign = labelTextStyleModel.get('baseline');
+            style.textAlign = labelTextStyleDto.get('align');
+            style.textVerticalAlign = labelTextStyleDto.get('baseline');
 
-            var textRect = labelTextStyleModel.getTextRect(text);
-            if (!labelModel.getShallow('show') || textRect.height > contentHeight) {
+            var textRect = labelTextStyleDto.getTextRect(text);
+            if (!labelDto.getShallow('show') || textRect.height > contentHeight) {
                 style.text = '';
             }
             else if (textRect.width > contentWidth) {
-                style.text = labelTextStyleModel.get('ellipsis')
-                    ? labelTextStyleModel.ellipsis(text, contentWidth) : '';
+                style.text = labelTextStyleDto.get('ellipsis')
+                    ? labelTextStyleDto.ellipsis(text, contentWidth) : '';
             }
             else {
                 style.text = text;

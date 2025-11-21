@@ -6,16 +6,16 @@ define(function(require) {
     var numberUtil = require('../util/number');
     var parsePercent = numberUtil.parsePercent;
 
-    function getSeriesStackId(seriesModel) {
-        return seriesModel.get('stack') || '__ec_stack_' + seriesModel.seriesIndex;
+    function getSeriesStackId(seriesDto) {
+        return seriesDto.get('stack') || '__ec_stack_' + seriesDto.seriesIndex;
     }
 
     function calBarWidthAndOffset(barSeries, api) {
         // Columns info on each category axis. Key is cartesian name
         var columnsMap = {};
 
-        zrUtil.each(barSeries, function (seriesModel, idx) {
-            var cartesian = seriesModel.coordinateSystem;
+        zrUtil.each(barSeries, function (seriesDto, idx) {
+            var cartesian = seriesDto.coordinateSystem;
 
             var baseAxis = cartesian.getBaseAxis();
 
@@ -30,7 +30,7 @@ define(function(require) {
             var stacks = columnsOnAxis.stacks;
             columnsMap[baseAxis.index] = columnsOnAxis;
 
-            var stackId = getSeriesStackId(seriesModel);
+            var stackId = getSeriesStackId(seriesDto);
 
             if (!stacks[stackId]) {
                 columnsOnAxis.autoWidthCount++;
@@ -40,10 +40,10 @@ define(function(require) {
                 maxWidth: 0
             };
 
-            var barWidth = seriesModel.get('barWidth');
-            var barMaxWidth = seriesModel.get('barMaxWidth');
-            var barGap = seriesModel.get('barGap');
-            var barCategoryGap = seriesModel.get('barCategoryGap');
+            var barWidth = seriesDto.get('barWidth');
+            var barMaxWidth = seriesDto.get('barMaxWidth');
+            var barGap = seriesDto.get('barGap');
+            var barCategoryGap = seriesDto.get('barCategoryGap');
             // TODO
             if (barWidth && ! stacks[stackId].width) {
                 barWidth = Math.min(columnsOnAxis.remainedWidth, barWidth);
@@ -119,37 +119,37 @@ define(function(require) {
 
     /**
      * @param {string} seriesType
-     * @param {module:echarts/model/Global} ecModel
+     * @param {module:echarts/Dto/Global} ecDto
      * @param {module:echarts/ExtensionAPI} api
      */
-    function barLayoutGrid(seriesType, ecModel, api) {
+    function barLayoutGrid(seriesType, ecDto, api) {
 
         var barWidthAndOffset = calBarWidthAndOffset(
             zrUtil.filter(
-                ecModel.getSeriesByType(seriesType),
-                function (seriesModel) {
-                    return !ecModel.isSeriesFiltered(seriesModel)
-                        && seriesModel.coordinateSystem
-                        && seriesModel.coordinateSystem.type === 'cartesian2d';
+                ecDto.getSeriesByType(seriesType),
+                function (seriesDto) {
+                    return !ecDto.isSeriesFiltered(seriesDto)
+                        && seriesDto.coordinateSystem
+                        && seriesDto.coordinateSystem.type === 'cartesian2d';
                 }
             )
         );
 
         var lastStackCoords = {};
 
-        ecModel.eachSeriesByType(seriesType, function (seriesModel) {
+        ecDto.eachSeriesByType(seriesType, function (seriesDto) {
 
-            var data = seriesModel.getData();
-            var cartesian = seriesModel.coordinateSystem;
+            var data = seriesDto.getData();
+            var cartesian = seriesDto.coordinateSystem;
             var baseAxis = cartesian.getBaseAxis();
 
-            var stackId = getSeriesStackId(seriesModel);
+            var stackId = getSeriesStackId(seriesDto);
             var columnLayoutInfo = barWidthAndOffset[baseAxis.index][stackId];
             var columnOffset = columnLayoutInfo.offset;
             var columnWidth = columnLayoutInfo.width;
             var valueAxis = cartesian.getOtherAxis(baseAxis);
 
-            var barMinHeight = seriesModel.get('barMinHeight') || 0;
+            var barMinHeight = seriesDto.get('barMinHeight') || 0;
 
             var valueAxisStart = baseAxis.onZero
                 ? valueAxis.toGlobalCoord(valueAxis.dataToCoord(0))

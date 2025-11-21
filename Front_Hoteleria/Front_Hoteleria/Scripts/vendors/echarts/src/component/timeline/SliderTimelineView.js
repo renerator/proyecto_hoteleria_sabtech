@@ -25,7 +25,7 @@ define(function (require) {
 
         type: 'timeline.slider',
 
-        init: function (ecModel, api) {
+        init: function (ecDto, api) {
 
             this.api = api;
 
@@ -65,16 +65,16 @@ define(function (require) {
         /**
          * @override
          */
-        render: function (timelineModel, ecModel, api, payload) {
-            this.model = timelineModel;
+        render: function (timelineDto, ecDto, api, payload) {
+            this.Dto = timelineDto;
             this.api = api;
-            this.ecModel = ecModel;
+            this.ecDto = ecDto;
 
             this.group.removeAll();
 
-            if (timelineModel.get('show', true)) {
+            if (timelineDto.get('show', true)) {
 
-                var layoutInfo = this._layout(timelineModel, api);
+                var layoutInfo = this._layout(timelineDto, api);
                 var mainGroup = this._createGroup('mainGroup');
                 var labelGroup = this._createGroup('labelGroup');
 
@@ -82,23 +82,23 @@ define(function (require) {
                  * @private
                  * @type {module:echarts/component/timeline/TimelineAxis}
                  */
-                var axis = this._axis = this._createAxis(layoutInfo, timelineModel);
+                var axis = this._axis = this._createAxis(layoutInfo, timelineDto);
 
-                timelineModel.formatTooltip = function (dataIndex) {
+                timelineDto.formatTooltip = function (dataIndex) {
                     return encodeHTML(axis.scale.getLabel(dataIndex));
                 };
 
                 each(
                     ['AxisLine', 'AxisTick', 'Control', 'CurrentPointer'],
                     function (name) {
-                        this['_render' + name](layoutInfo, mainGroup, axis, timelineModel);
+                        this['_render' + name](layoutInfo, mainGroup, axis, timelineDto);
                     },
                     this
                 );
 
-                this._renderAxisLabel(layoutInfo, labelGroup, axis, timelineModel);
+                this._renderAxisLabel(layoutInfo, labelGroup, axis, timelineDto);
 
-                this._position(layoutInfo, timelineModel);
+                this._position(layoutInfo, timelineDto);
             }
 
             this._doPlayStop();
@@ -119,10 +119,10 @@ define(function (require) {
             this._clearTimer();
         },
 
-        _layout: function (timelineModel, api) {
-            var labelPosOpt = timelineModel.get('label.normal.position');
-            var orient = timelineModel.get('orient');
-            var viewRect = getViewRect(timelineModel, api);
+        _layout: function (timelineDto, api) {
+            var labelPosOpt = timelineDto.get('label.normal.position');
+            var orient = timelineDto.get('orient');
+            var viewRect = getViewRect(timelineDto, api);
             // Auto label offset.
             if (labelPosOpt == null || labelPosOpt === 'auto') {
                 labelPosOpt = orient === 'horizontal'
@@ -138,8 +138,8 @@ define(function (require) {
 
             // FIXME
             // 暂没有实现用户传入
-            // var labelAlign = timelineModel.get('label.normal.textStyle.align');
-            // var labelBaseline = timelineModel.get('label.normal.textStyle.baseline');
+            // var labelAlign = timelineDto.get('label.normal.textStyle.align');
+            // var labelBaseline = timelineDto.get('label.normal.textStyle.baseline');
             var labelAlignMap = {
                 horizontal: 'center',
                 vertical: (labelPosOpt >= 0 || labelPosOpt === '+') ? 'left' : 'right'
@@ -157,25 +157,25 @@ define(function (require) {
             // Position
             var mainLength = orient === 'vertical' ? viewRect.height : viewRect.width;
 
-            var controlModel = timelineModel.getModel('controlStyle');
-            var showControl = controlModel.get('show');
-            var controlSize = showControl ? controlModel.get('itemSize') : 0;
-            var controlGap = showControl ? controlModel.get('itemGap') : 0;
+            var controlDto = timelineDto.getDto('controlStyle');
+            var showControl = controlDto.get('show');
+            var controlSize = showControl ? controlDto.get('itemSize') : 0;
+            var controlGap = showControl ? controlDto.get('itemGap') : 0;
             var sizePlusGap = controlSize + controlGap;
 
             // Special label rotate.
-            var labelRotation = timelineModel.get('label.normal.rotate') || 0;
+            var labelRotation = timelineDto.get('label.normal.rotate') || 0;
             labelRotation = labelRotation * PI / 180; // To radian.
 
             var playPosition;
             var prevBtnPosition;
             var nextBtnPosition;
             var axisExtent;
-            var controlPosition = controlModel.get('position', true);
-            var showControl = controlModel.get('show', true);
-            var showPlayBtn = showControl && controlModel.get('showPlayBtn', true);
-            var showPrevBtn = showControl && controlModel.get('showPrevBtn', true);
-            var showNextBtn = showControl && controlModel.get('showNextBtn', true);
+            var controlPosition = controlDto.get('position', true);
+            var showControl = controlDto.get('show', true);
+            var showPlayBtn = showControl && controlDto.get('showPlayBtn', true);
+            var showPrevBtn = showControl && controlDto.get('showPrevBtn', true);
+            var showNextBtn = showControl && controlDto.get('showNextBtn', true);
             var xLeft = 0;
             var xRight = mainLength;
 
@@ -192,7 +192,7 @@ define(function (require) {
             }
             axisExtent = [xLeft, xRight];
 
-            if (timelineModel.get('inverse')) {
+            if (timelineDto.get('inverse')) {
                 axisExtent.reverse();
             }
 
@@ -218,7 +218,7 @@ define(function (require) {
             };
         },
 
-        _position: function (layoutInfo, timelineModel) {
+        _position: function (layoutInfo, timelineDto) {
             // Position is be called finally, because bounding rect is needed for
             // adapt content to fill viewRect (auto adapt offset).
 
@@ -292,18 +292,18 @@ define(function (require) {
             }
         },
 
-        _createAxis: function (layoutInfo, timelineModel) {
-            var data = timelineModel.getData();
-            var axisType = timelineModel.get('axisType');
+        _createAxis: function (layoutInfo, timelineDto) {
+            var data = timelineDto.getData();
+            var axisType = timelineDto.get('axisType');
 
-            var scale = axisHelper.createScaleByModel(timelineModel, axisType);
+            var scale = axisHelper.createScaleByDto(timelineDto, axisType);
             var dataExtent = data.getDataExtent('value');
             scale.setExtent(dataExtent[0], dataExtent[1]);
             this._customizeScale(scale, data);
             scale.niceTicks();
 
             var axis = new TimelineAxis('value', scale, layoutInfo.axisExtent, axisType);
-            axis.model = timelineModel;
+            axis.Dto = timelineDto;
 
             return axis;
         },
@@ -327,10 +327,10 @@ define(function (require) {
             return newGroup;
         },
 
-        _renderAxisLine: function (layoutInfo, group, axis, timelineModel) {
+        _renderAxisLine: function (layoutInfo, group, axis, timelineDto) {
             var axisExtent = axis.getExtent();
 
-            if (!timelineModel.get('lineStyle.show')) {
+            if (!timelineDto.get('lineStyle.show')) {
                 return;
             }
 
@@ -341,7 +341,7 @@ define(function (require) {
                 },
                 style: zrUtil.extend(
                     {lineCap: 'round'},
-                    timelineModel.getModel('lineStyle').getLineStyle()
+                    timelineDto.getDto('lineStyle').getLineStyle()
                 ),
                 silent: true,
                 z2: 1
@@ -351,29 +351,29 @@ define(function (require) {
         /**
          * @private
          */
-        _renderAxisTick: function (layoutInfo, group, axis, timelineModel) {
-            var data = timelineModel.getData();
+        _renderAxisTick: function (layoutInfo, group, axis, timelineDto) {
+            var data = timelineDto.getData();
             var ticks = axis.scale.getTicks();
 
             each(ticks, function (value, dataIndex) {
 
                 var tickCoord = axis.dataToCoord(value);
-                var itemModel = data.getItemModel(dataIndex);
-                var itemStyleModel = itemModel.getModel('itemStyle.normal');
-                var hoverStyleModel = itemModel.getModel('itemStyle.emphasis');
+                var itemDto = data.getItemDto(dataIndex);
+                var itemStyleDto = itemDto.getDto('itemStyle.normal');
+                var hoverStyleDto = itemDto.getDto('itemStyle.emphasis');
                 var symbolOpt = {
                     position: [tickCoord, 0],
                     onclick: bind(this._changeTimeline, this, dataIndex)
                 };
-                var el = giveSymbol(itemModel, itemStyleModel, group, symbolOpt);
-                graphic.setHoverStyle(el, hoverStyleModel.getItemStyle());
+                var el = giveSymbol(itemDto, itemStyleDto, group, symbolOpt);
+                graphic.setHoverStyle(el, hoverStyleDto.getItemStyle());
 
-                if (itemModel.get('tooltip')) {
+                if (itemDto.get('tooltip')) {
                     el.dataIndex = dataIndex;
-                    el.dataModel = timelineModel;
+                    el.dataDto = timelineDto;
                 }
                 else {
-                    el.dataIndex = el.dataModel = null;
+                    el.dataIndex = el.dataDto = null;
                 }
 
             }, this);
@@ -382,17 +382,17 @@ define(function (require) {
         /**
          * @private
          */
-        _renderAxisLabel: function (layoutInfo, group, axis, timelineModel) {
-            var labelModel = timelineModel.getModel('label.normal');
+        _renderAxisLabel: function (layoutInfo, group, axis, timelineDto) {
+            var labelDto = timelineDto.getDto('label.normal');
 
-            if (!labelModel.get('show')) {
+            if (!labelDto.get('show')) {
                 return;
             }
 
-            var data = timelineModel.getData();
+            var data = timelineDto.getData();
             var ticks = axis.scale.getTicks();
             var labels = axisHelper.getFormattedLabels(
-                axis, labelModel.get('formatter')
+                axis, labelDto.get('formatter')
             );
             var labelInterval = axis.getLabelInterval();
 
@@ -401,17 +401,17 @@ define(function (require) {
                     return;
                 }
 
-                var itemModel = data.getItemModel(dataIndex);
-                var itemTextStyleModel = itemModel.getModel('label.normal.textStyle');
-                var hoverTextStyleModel = itemModel.getModel('label.emphasis.textStyle');
+                var itemDto = data.getItemDto(dataIndex);
+                var itemTextStyleDto = itemDto.getDto('label.normal.textStyle');
+                var hoverTextStyleDto = itemDto.getDto('label.emphasis.textStyle');
                 var tickCoord = axis.dataToCoord(tick);
                 var textEl = new graphic.Text({
                     style: {
                         text: labels[dataIndex],
                         textAlign: layoutInfo.labelAlign,
                         textVerticalAlign: layoutInfo.labelBaseline,
-                        textFont: itemTextStyleModel.getFont(),
-                        fill: itemTextStyleModel.getTextColor()
+                        textFont: itemTextStyleDto.getFont(),
+                        fill: itemTextStyleDto.getTextColor()
                     },
                     position: [tickCoord, 0],
                     rotation: layoutInfo.labelRotation - layoutInfo.rotation,
@@ -420,7 +420,7 @@ define(function (require) {
                 });
 
                 group.add(textEl);
-                graphic.setHoverStyle(textEl, hoverTextStyleModel.getItemStyle());
+                graphic.setHoverStyle(textEl, hoverTextStyleDto.getItemStyle());
 
             }, this);
         },
@@ -428,15 +428,15 @@ define(function (require) {
         /**
          * @private
          */
-        _renderControl: function (layoutInfo, group, axis, timelineModel) {
+        _renderControl: function (layoutInfo, group, axis, timelineDto) {
             var controlSize = layoutInfo.controlSize;
             var rotation = layoutInfo.rotation;
 
-            var itemStyle = timelineModel.getModel('controlStyle.normal').getItemStyle();
-            var hoverStyle = timelineModel.getModel('controlStyle.emphasis').getItemStyle();
+            var itemStyle = timelineDto.getDto('controlStyle.normal').getItemStyle();
+            var hoverStyle = timelineDto.getDto('controlStyle.emphasis').getItemStyle();
             var rect = [0, -controlSize / 2, controlSize, controlSize];
-            var playState = timelineModel.getPlayState();
-            var inverse = timelineModel.get('inverse', true);
+            var playState = timelineDto.getPlayState();
+            var inverse = timelineDto.get('inverse', true);
 
             makeBtn(
                 layoutInfo.nextBtnPosition,
@@ -467,16 +467,16 @@ define(function (require) {
                     style: itemStyle,
                     onclick: onclick
                 };
-                var btn = makeIcon(timelineModel, iconPath, rect, opt);
+                var btn = makeIcon(timelineDto, iconPath, rect, opt);
                 group.add(btn);
                 graphic.setHoverStyle(btn, hoverStyle);
             }
         },
 
-        _renderCurrentPointer: function (layoutInfo, group, axis, timelineModel) {
-            var data = timelineModel.getData();
-            var currentIndex = timelineModel.getCurrentIndex();
-            var pointerModel = data.getItemModel(currentIndex).getModel('checkpointStyle');
+        _renderCurrentPointer: function (layoutInfo, group, axis, timelineDto) {
+            var data = timelineDto.getData();
+            var currentIndex = timelineDto.getCurrentIndex();
+            var pointerDto = data.getItemDto(currentIndex).getDto('checkpointStyle');
             var me = this;
 
             var callback = {
@@ -484,16 +484,16 @@ define(function (require) {
                     pointer.draggable = true;
                     pointer.drift = bind(me._handlePointerDrag, me);
                     pointer.ondragend = bind(me._handlePointerDragend, me);
-                    pointerMoveTo(pointer, currentIndex, axis, timelineModel, true);
+                    pointerMoveTo(pointer, currentIndex, axis, timelineDto, true);
                 },
                 onUpdate: function (pointer) {
-                    pointerMoveTo(pointer, currentIndex, axis, timelineModel);
+                    pointerMoveTo(pointer, currentIndex, axis, timelineDto);
                 }
             };
 
             // Reuse when exists, for animation and drag.
             this._currentPointer = giveSymbol(
-                pointerModel, pointerModel, this._mainGroup, {}, this._currentPointer, callback
+                pointerDto, pointerDto, this._mainGroup, {}, this._currentPointer, callback
             );
         },
 
@@ -528,11 +528,11 @@ define(function (require) {
             this._currentPointer.dirty();
 
             var targetDataIndex = this._findNearestTick(toCoord);
-            var timelineModel = this.model;
+            var timelineDto = this.Dto;
 
             if (trigger || (
-                targetDataIndex !== timelineModel.getCurrentIndex()
-                && timelineModel.get('realtime')
+                targetDataIndex !== timelineDto.getCurrentIndex()
+                && timelineDto.get('realtime')
             )) {
                 this._changeTimeline(targetDataIndex);
             }
@@ -541,19 +541,19 @@ define(function (require) {
         _doPlayStop: function () {
             this._clearTimer();
 
-            if (this.model.getPlayState()) {
+            if (this.Dto.getPlayState()) {
                 this._timer = setTimeout(
                     bind(handleFrame, this),
-                    this.model.get('playInterval')
+                    this.Dto.get('playInterval')
                 );
             }
 
             function handleFrame() {
                 // Do not cache
-                var timelineModel = this.model;
+                var timelineDto = this.Dto;
                 this._changeTimeline(
-                    timelineModel.getCurrentIndex()
-                    + (timelineModel.get('rewind', true) ? -1 : 1)
+                    timelineDto.getCurrentIndex()
+                    + (timelineDto.get('rewind', true) ? -1 : 1)
                 );
             }
         },
@@ -564,7 +564,7 @@ define(function (require) {
         },
 
         _findNearestTick: function (axisCoord) {
-            var data = this.model.getData();
+            var data = this.Dto.getData();
             var dist = Infinity;
             var targetDataIndex;
             var axis = this._axis;
@@ -589,7 +589,7 @@ define(function (require) {
         },
 
         _changeTimeline: function (nextIndex) {
-            var currentIndex = this.model.getCurrentIndex();
+            var currentIndex = this.Dto.getCurrentIndex();
 
             if (nextIndex === '+') {
                 nextIndex = currentIndex + 1;
@@ -607,20 +607,20 @@ define(function (require) {
 
     });
 
-    function getViewRect(model, api) {
+    function getViewRect(Dto, api) {
         return layout.getLayoutRect(
-            model.getBoxLayoutParams(),
+            Dto.getBoxLayoutParams(),
             {
                 width: api.getWidth(),
                 height: api.getHeight()
             },
-            model.get('padding')
+            Dto.get('padding')
         );
     }
 
-    function makeIcon(timelineModel, objPath, rect, opts) {
+    function makeIcon(timelineDto, objPath, rect, opts) {
         var icon = graphic.makePath(
-            timelineModel.get(objPath).replace(/^path:\/\//, ''),
+            timelineDto.get(objPath).replace(/^path:\/\//, ''),
             zrUtil.clone(opts || {}),
             new BoundingRect(rect[0], rect[1], rect[2], rect[3]),
             'center'
@@ -632,12 +632,12 @@ define(function (require) {
     /**
      * Create symbol or update symbol
      */
-    function giveSymbol(hostModel, itemStyleModel, group, opt, symbol, callback) {
-        var symbolType = hostModel.get('symbol');
-        var color = itemStyleModel.get('color');
-        var symbolSize = hostModel.get('symbolSize');
+    function giveSymbol(hostDto, itemStyleDto, group, opt, symbol, callback) {
+        var symbolType = hostDto.get('symbol');
+        var color = itemStyleDto.get('color');
+        var symbolSize = hostDto.get('symbolSize');
         var halfSymbolSize = symbolSize / 2;
-        var itemStyle = itemStyleModel.getItemStyle(['color', 'symbol', 'symbolSize']);
+        var itemStyle = itemStyleDto.getItemStyle(['color', 'symbol', 'symbolSize']);
 
         if (!symbol) {
             symbol = symbolUtil.createSymbol(
@@ -664,23 +664,23 @@ define(function (require) {
         return symbol;
     }
 
-    function pointerMoveTo(pointer, dataIndex, axis, timelineModel, noAnimation) {
+    function pointerMoveTo(pointer, dataIndex, axis, timelineDto, noAnimation) {
         if (pointer.dragging) {
             return;
         }
 
-        var pointerModel = timelineModel.getModel('checkpointStyle');
-        var toCoord = axis.dataToCoord(timelineModel.getData().get(['value'], dataIndex));
+        var pointerDto = timelineDto.getDto('checkpointStyle');
+        var toCoord = axis.dataToCoord(timelineDto.getData().get(['value'], dataIndex));
 
-        if (noAnimation || !pointerModel.get('animation', true)) {
+        if (noAnimation || !pointerDto.get('animation', true)) {
             pointer.attr({position: [toCoord, 0]});
         }
         else {
             pointer.stopAnimation(true);
             pointer.animateTo(
                 {position: [toCoord, 0]},
-                pointerModel.get('animationDuration', true),
-                pointerModel.get('animationEasing', true)
+                pointerDto.get('animationDuration', true),
+                pointerDto.get('animationEasing', true)
             );
         }
     }

@@ -7,13 +7,13 @@ define(function (require) {
     var numberUtil =  require('../../util/number');
 
 
-    return function (ecModel, api) {
+    return function (ecDto, api) {
 
-        ecModel.eachSeriesByType('themeRiver', function (seriesModel) {
+        ecDto.eachSeriesByType('themeRiver', function (seriesDto) {
 
-            var data = seriesModel.getData();
+            var data = seriesDto.getData();
 
-            var single = seriesModel.coordinateSystem;
+            var single = seriesDto.coordinateSystem;
 
             var layoutInfo = {};
 
@@ -22,7 +22,7 @@ define(function (require) {
 
             layoutInfo.rect = rect;
 
-            var boundaryGap = seriesModel.get('boundaryGap');
+            var boundaryGap = seriesDto.get('boundaryGap');
 
             var axis = single.getAxis();
 
@@ -32,13 +32,13 @@ define(function (require) {
                 boundaryGap[0] = numberUtil.parsePercent(boundaryGap[0], rect.height);
                 boundaryGap[1] = numberUtil.parsePercent(boundaryGap[1], rect.height);
                 var height = rect.height - boundaryGap[0] - boundaryGap[1];
-                themeRiverLayout(data, seriesModel, height);
+                themeRiverLayout(data, seriesDto, height);
             }
             else {
                 boundaryGap[0] = numberUtil.parsePercent(boundaryGap[0], rect.width);
                 boundaryGap[1] = numberUtil.parsePercent(boundaryGap[1], rect.width);
                 var width = rect.width - boundaryGap[0] - boundaryGap[1];
-                themeRiverLayout(data, seriesModel, width);
+                themeRiverLayout(data, seriesDto, width);
             }
 
             data.setLayout('layoutInfo', layoutInfo);
@@ -50,17 +50,17 @@ define(function (require) {
      * @param  {module:echarts/data/List} data
      * @return
      */
-    function themeRiverLayout(data, seriesModel, height) {
+    function themeRiverLayout(data, seriesDto, height) {
         if (!data.count()) {
             return;
         }
         // the data in each layer are organized into a series.
-        var layerSeries = seriesModel.getLayerSeries();
+        var layerSeries = seriesDto.getLayerSeries();
 
         //the points in each layer.
         var layerPoints = zrUtil.map(layerSeries, function (singleLayer) {
             return zrUtil.map(singleLayer.indices, function (idx) {
-                return seriesModel.coordinateSystem.dataToPoint([
+                return seriesDto.coordinateSystem.dataToPoint([
                     data.get('time', idx), data.get('value', idx)
                 ]);
             });

@@ -17,12 +17,12 @@ define(function (require) {
          */
         autoPositionValues: {left: 1, right: 1, top: 1, bottom: 1},
 
-        init: function (ecModel, api) {
+        init: function (ecDto, api) {
             /**
              * @readOnly
-             * @type {module:echarts/model/Global}
+             * @type {module:echarts/Dto/Global}
              */
-            this.ecModel = ecModel;
+            this.ecDto = ecDto;
 
             /**
              * @readOnly
@@ -32,9 +32,9 @@ define(function (require) {
 
             /**
              * @readOnly
-             * @type {module:echarts/component/visualMap/visualMapModel}
+             * @type {module:echarts/component/visualMap/visualMapDto}
              */
-            this.visualMapModel;
+            this.visualMapDto;
 
             /**
              * @private
@@ -46,10 +46,10 @@ define(function (require) {
         /**
          * @protected
          */
-        render: function (visualMapModel, ecModel, api, payload) {
-            this.visualMapModel = visualMapModel;
+        render: function (visualMapDto, ecDto, api, payload) {
+            this.visualMapDto = visualMapDto;
 
-            if (visualMapModel.get('show') === false) {
+            if (visualMapDto.get('show') === false) {
                 this.group.removeAll();
                 return;
             }
@@ -61,8 +61,8 @@ define(function (require) {
          * @protected
          */
         renderBackground: function (group) {
-            var visualMapModel = this.visualMapModel;
-            var padding = formatUtil.normalizeCssArray(visualMapModel.get('padding') || 0);
+            var visualMapDto = this.visualMapDto;
+            var padding = formatUtil.normalizeCssArray(visualMapDto.get('padding') || 0);
             var rect = group.getBoundingRect();
 
             group.add(new graphic.Rect({
@@ -75,9 +75,9 @@ define(function (require) {
                     height: rect.height + padding[0] + padding[2]
                 },
                 style: {
-                    fill: visualMapModel.get('backgroundColor'),
-                    stroke: visualMapModel.get('borderColor'),
-                    lineWidth: visualMapModel.get('borderWidth')
+                    fill: visualMapDto.get('backgroundColor'),
+                    stroke: visualMapDto.get('borderColor'),
+                    lineWidth: visualMapDto.get('borderWidth')
                 }
             }));
         },
@@ -95,15 +95,15 @@ define(function (require) {
             opts = opts || {};
 
             var forceState = opts.forceState;
-            var visualMapModel = this.visualMapModel;
+            var visualMapDto = this.visualMapDto;
             var visualObj = {};
 
             // Default values.
             if (visualCluster === 'symbol') {
-                visualObj.symbol = visualMapModel.get('itemSymbol');
+                visualObj.symbol = visualMapDto.get('itemSymbol');
             }
             if (visualCluster === 'color') {
-                var defaultColor = visualMapModel.get('contentColor');
+                var defaultColor = visualMapDto.get('contentColor');
                 visualObj.color = defaultColor;
             }
 
@@ -115,8 +115,8 @@ define(function (require) {
                 visualObj[key] = value;
             }
 
-            var mappings = visualMapModel.controllerVisuals[
-                forceState || visualMapModel.getValueState(targetValue)
+            var mappings = visualMapDto.controllerVisuals[
+                forceState || visualMapDto.getValueState(targetValue)
             ];
             var visualTypes = VisualMapping.prepareVisualTypes(mappings);
 
@@ -140,12 +140,12 @@ define(function (require) {
          * @protected
          */
         positionGroup: function (group) {
-            var model = this.visualMapModel;
+            var Dto = this.visualMapDto;
             var api = this.api;
 
             layout.positionGroup(
                 group,
-                model.getBoxLayoutParams(),
+                Dto.getBoxLayoutParams(),
                 {width: api.getWidth(), height: api.getHeight()}
             );
         },

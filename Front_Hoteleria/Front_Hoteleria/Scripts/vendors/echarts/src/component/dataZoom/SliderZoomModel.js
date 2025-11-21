@@ -1,11 +1,11 @@
 /**
- * @file Data zoom model
+ * @file Data zoom Dto
  */
 define(function(require) {
 
-    var DataZoomModel = require('./DataZoomModel');
+    var DataZoomDto = require('./DataZoomDto');
 
-    var SliderZoomModel = DataZoomModel.extend({
+    var SliderZoomDto = DataZoomDto.extend({
 
         type: 'dataZoom.slider',
 
@@ -47,11 +47,11 @@ define(function(require) {
          * @override
          */
         mergeOption: function (option) {
-            SliderZoomModel.superApply(this, 'mergeOption', arguments);
+            SliderZoomDto.superApply(this, 'mergeOption', arguments);
         }
 
     });
 
-    return SliderZoomModel;
+    return SliderZoomDto;
 
 });

@@ -10,10 +10,10 @@ define(function (require) {
     var PI2 = Math.PI * 2;
     var RADIAN = Math.PI / 180;
 
-    return function (seriesType, ecModel, api) {
-        ecModel.eachSeriesByType(seriesType, function (seriesModel) {
-            var center = seriesModel.get('center');
-            var radius = seriesModel.get('radius');
+    return function (seriesType, ecDto, api) {
+        ecDto.eachSeriesByType(seriesType, function (seriesDto) {
+            var center = seriesDto.get('center');
+            var radius = seriesDto.get('radius');
 
             if (!zrUtil.isArray(radius)) {
                 radius = [0, radius];
@@ -30,19 +30,19 @@ define(function (require) {
             var r0 = parsePercent(radius[0], size / 2);
             var r = parsePercent(radius[1], size / 2);
 
-            var data = seriesModel.getData();
+            var data = seriesDto.getData();
 
-            var startAngle = -seriesModel.get('startAngle') * RADIAN;
+            var startAngle = -seriesDto.get('startAngle') * RADIAN;
 
-            var minAngle = seriesModel.get('minAngle') * RADIAN;
+            var minAngle = seriesDto.get('minAngle') * RADIAN;
 
             var sum = data.getSum('value');
             // Sum may be 0
             var unitRadian = Math.PI / (sum || data.count()) * 2;
 
-            var clockwise = seriesModel.get('clockwise');
+            var clockwise = seriesDto.get('clockwise');
 
-            var roseType = seriesModel.get('roseType');
+            var roseType = seriesDto.get('roseType');
 
             // [0...max]
             var extent = data.getDataExtent('value');
@@ -117,7 +117,7 @@ define(function (require) {
                 }
             }
 
-            labelLayout(seriesModel, r, width, height);
+            labelLayout(seriesDto, r, width, height);
         });
     };
 });

@@ -1,9 +1,9 @@
 define(function(require) {
 
     var zrUtil = require('zrender/core/util');
-    var Component = require('../../model/Component');
+    var Component = require('../../Dto/Component');
 
-    require('./AxisModel');
+    require('./AxisDto');
 
     Component.extend({
 
@@ -67,13 +67,13 @@ define(function(require) {
 
         /**
          * Whether series or axis is in this coordinate system.
-         * @param {module:echarts/model/Series|module:echarts/coord/parallel/AxisModel} model
-         * @param {module:echarts/model/Global} ecModel
+         * @param {module:echarts/Dto/Series|module:echarts/coord/parallel/AxisDto} Dto
+         * @param {module:echarts/Dto/Global} ecDto
          */
-        contains: function (model, ecModel) {
-            var parallelIndex = model.get('parallelIndex');
+        contains: function (Dto, ecDto) {
+            var parallelIndex = Dto.get('parallelIndex');
             return parallelIndex != null
-                && ecModel.getComponent('parallel', parallelIndex) === this;
+                && ecDto.getComponent('parallel', parallelIndex) === this;
         },
 
         /**
@@ -83,15 +83,15 @@ define(function(require) {
             var dimensions = this.dimensions = [];
             var parallelAxisIndex = this.parallelAxisIndex = [];
 
-            var axisModels = zrUtil.filter(this.dependentModels.parallelAxis, function (axisModel) {
+            var axisDtos = zrUtil.filter(this.dependentDtos.parallelAxis, function (axisDto) {
                 // Can not use this.contains here, because
                 // initialization has not been completed yet.
-                return axisModel.get('parallelIndex') === this.componentIndex;
+                return axisDto.get('parallelIndex') === this.componentIndex;
             });
 
-            zrUtil.each(axisModels, function (axisModel) {
-                dimensions.push('dim' + axisModel.get('dim'));
-                parallelAxisIndex.push(axisModel.componentIndex);
+            zrUtil.each(axisDtos, function (axisDto) {
+                dimensions.push('dim' + axisDto.get('dim'));
+                parallelAxisIndex.push(axisDto.componentIndex);
             });
         }
 

@@ -2,17 +2,17 @@ define(function(require) {
 
     'use strict';
 
-    var SeriesModel = require('../../model/Series');
+    var SeriesDto = require('../../Dto/Series');
     var createListFromArray = require('../helper/createListFromArray');
 
-    return SeriesModel.extend({
+    return SeriesDto.extend({
 
         type: 'series.bar',
 
         dependencies: ['grid', 'polar'],
 
-        getInitialData: function (option, ecModel) {
-            return createListFromArray(option.data, this, ecModel);
+        getInitialData: function (option, ecDto) {
+            return createListFromArray(option.data, this, ecDto);
         },
 
         getMarkerPosition: function (value) {

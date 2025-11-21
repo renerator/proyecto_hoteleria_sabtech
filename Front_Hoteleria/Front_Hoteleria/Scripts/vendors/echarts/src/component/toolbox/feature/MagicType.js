@@ -3,8 +3,8 @@ define(function(require) {
 
     var zrUtil = require('zrender/core/util');
 
-    function MagicType(model) {
-        this.model = model;
+    function MagicType(Dto) {
+        this.Dto = Dto;
     }
 
     MagicType.defaultOption = {
@@ -30,10 +30,10 @@ define(function(require) {
     var proto = MagicType.prototype;
 
     proto.getIcons = function () {
-        var model = this.model;
-        var availableIcons = model.get('icon');
+        var Dto = this.Dto;
+        var availableIcons = Dto.get('icon');
         var icons = {};
-        zrUtil.each(model.get('type'), function (type) {
+        zrUtil.each(Dto.get('type'), function (type) {
             if (availableIcons[type]) {
                 icons[type] = availableIcons[type];
             }
@@ -42,46 +42,46 @@ define(function(require) {
     };
 
     var seriesOptGenreator = {
-        'line': function (seriesType, seriesId, seriesModel, model) {
+        'line': function (seriesType, seriesId, seriesDto, Dto) {
             if (seriesType === 'bar') {
                 return zrUtil.merge({
                     id: seriesId,
                     type: 'line',
                     // Preserve data related option
-                    data: seriesModel.get('data'),
-                    stack: seriesModel.get('stack'),
-                    markPoint: seriesModel.get('markPoint'),
-                    markLine: seriesModel.get('markLine')
-                }, model.get('option.line') || {}, true);
+                    data: seriesDto.get('data'),
+                    stack: seriesDto.get('stack'),
+                    markPoint: seriesDto.get('markPoint'),
+                    markLine: seriesDto.get('markLine')
+                }, Dto.get('option.line') || {}, true);
             }
         },
-        'bar': function (seriesType, seriesId, seriesModel, model) {
+        'bar': function (seriesType, seriesId, seriesDto, Dto) {
             if (seriesType === 'line') {
                 return zrUtil.merge({
                     id: seriesId,
                     type: 'bar',
                     // Preserve data related option
-                    data: seriesModel.get('data'),
-                    stack: seriesModel.get('stack'),
-                    markPoint: seriesModel.get('markPoint'),
-                    markLine: seriesModel.get('markLine')
-                }, model.get('option.bar') || {}, true);
+                    data: seriesDto.get('data'),
+                    stack: seriesDto.get('stack'),
+                    markPoint: seriesDto.get('markPoint'),
+                    markLine: seriesDto.get('markLine')
+                }, Dto.get('option.bar') || {}, true);
             }
         },
-        'stack': function (seriesType, seriesId, seriesModel, model) {
+        'stack': function (seriesType, seriesId, seriesDto, Dto) {
             if (seriesType === 'line' || seriesType === 'bar') {
                 return zrUtil.merge({
                     id: seriesId,
                     stack: '__ec_magicType_stack__'
-                }, model.get('option.stack') || {}, true);
+                }, Dto.get('option.stack') || {}, true);
             }
         },
-        'tiled': function (seriesType, seriesId, seriesModel, model) {
+        'tiled': function (seriesType, seriesId, seriesDto, Dto) {
             if (seriesType === 'line' || seriesType === 'bar') {
                 return zrUtil.merge({
                     id: seriesId,
                     stack: ''
-                }, model.get('option.tiled') || {}, true);
+                }, Dto.get('option.tiled') || {}, true);
             }
         }
     };
@@ -91,9 +91,9 @@ define(function(require) {
         ['stack', 'tiled']
     ];
 
-    proto.onclick = function (ecModel, api, type) {
-        var model = this.model;
-        var seriesIndex = model.get('seriesIndex.' + type);
+    proto.onclick = function (ecDto, api, type) {
+        var Dto = this.Dto;
+        var seriesIndex = Dto.get('seriesIndex.' + type);
         // Not supported magicType
         if (!seriesOptGenreator[type]) {
             return;
@@ -101,24 +101,24 @@ define(function(require) {
         var newOption = {
             series: []
         };
-        var generateNewSeriesTypes = function (seriesModel) {
-            var seriesType = seriesModel.subType;
-            var seriesId = seriesModel.id;
+        var generateNewSeriesTypes = function (seriesDto) {
+            var seriesType = seriesDto.subType;
+            var seriesId = seriesDto.id;
             var newSeriesOpt = seriesOptGenreator[type](
-                seriesType, seriesId, seriesModel, model
+                seriesType, seriesId, seriesDto, Dto
             );
             if (newSeriesOpt) {
                 // PENDING If merge original option?
-                zrUtil.defaults(newSeriesOpt, seriesModel.option);
+                zrUtil.defaults(newSeriesOpt, seriesDto.option);
                 newOption.series.push(newSeriesOpt);
             }
             // Modify boundaryGap
-            var coordSys = seriesModel.coordinateSystem;
+            var coordSys = seriesDto.coordinateSystem;
             if (coordSys && coordSys.type === 'cartesian2d' && (type === 'line' || type === 'bar')) {
                 var categoryAxis = coordSys.getAxesByScale('ordinal')[0];
                 if (categoryAxis) {
                     var axisDim = categoryAxis.dim;
-                    var axisIndex = seriesModel.get(axisDim + 'AxisIndex');
+                    var axisIndex = seriesDto.get(axisDim + 'AxisIndex');
                     var axisKey = axisDim + 'Axis';
                     newOption[axisKey] = newOption[axisKey] || [];
                     for (var i = 0; i <= axisIndex; i++) {
@@ -132,14 +132,14 @@ define(function(require) {
         zrUtil.each(radioTypes, function (radio) {
             if (zrUtil.indexOf(radio, type) >= 0) {
                 zrUtil.each(radio, function (item) {
-                    model.setIconStatus(item, 'normal');
+                    Dto.setIconStatus(item, 'normal');
                 });
             }
         });
 
-        model.setIconStatus(type, 'emphasis');
+        Dto.setIconStatus(type, 'emphasis');
 
-        ecModel.eachComponent(
+        ecDto.eachComponent(
             {
                 mainType: 'series',
                 query: seriesIndex == null ? null : {
@@ -159,8 +159,8 @@ define(function(require) {
         type: 'changeMagicType',
         event: 'magicTypeChanged',
         update: 'prepareAndUpdate'
-    }, function (payload, ecModel) {
-        ecModel.mergeOption(payload.newOption);
+    }, function (payload, ecDto) {
+        ecDto.mergeOption(payload.newOption);
     });
 
     require('../featureManager').register('magicType', MagicType);

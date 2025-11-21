@@ -25,54 +25,54 @@ define(function (require) {
 
         /**
          * Init the chart
-         * @param  {module:echarts/model/Global} ecModel
+         * @param  {module:echarts/Dto/Global} ecDto
          * @param  {module:echarts/ExtensionAPI} api
          */
-        init: function (ecModel, api) {},
+        init: function (ecDto, api) {},
 
         /**
          * Render the chart
-         * @param  {module:echarts/model/Series} seriesModel
-         * @param  {module:echarts/model/Global} ecModel
+         * @param  {module:echarts/Dto/Series} seriesDto
+         * @param  {module:echarts/Dto/Global} ecDto
          * @param  {module:echarts/ExtensionAPI} api
          * @param  {Object} payload
          */
-        render: function (seriesModel, ecModel, api, payload) {},
+        render: function (seriesDto, ecDto, api, payload) {},
 
         /**
          * Highlight series or specified data item
-         * @param  {module:echarts/model/Series} seriesModel
-         * @param  {module:echarts/model/Global} ecModel
+         * @param  {module:echarts/Dto/Series} seriesDto
+         * @param  {module:echarts/Dto/Global} ecDto
          * @param  {module:echarts/ExtensionAPI} api
          * @param  {Object} payload
          */
-        highlight: function (seriesModel, ecModel, api, payload) {
-            toggleHighlight(seriesModel.getData(), payload, 'emphasis');
+        highlight: function (seriesDto, ecDto, api, payload) {
+            toggleHighlight(seriesDto.getData(), payload, 'emphasis');
         },
 
         /**
          * Downplay series or specified data item
-         * @param  {module:echarts/model/Series} seriesModel
-         * @param  {module:echarts/model/Global} ecModel
+         * @param  {module:echarts/Dto/Series} seriesDto
+         * @param  {module:echarts/Dto/Global} ecDto
          * @param  {module:echarts/ExtensionAPI} api
          * @param  {Object} payload
          */
-        downplay: function (seriesModel, ecModel, api, payload) {
-            toggleHighlight(seriesModel.getData(), payload, 'normal');
+        downplay: function (seriesDto, ecDto, api, payload) {
+            toggleHighlight(seriesDto.getData(), payload, 'normal');
         },
 
         /**
          * Remove self
-         * @param  {module:echarts/model/Global} ecModel
+         * @param  {module:echarts/Dto/Global} ecDto
          * @param  {module:echarts/ExtensionAPI} api
          */
-        remove: function (ecModel, api) {
+        remove: function (ecDto, api) {
             this.group.removeAll();
         },
 
         /**
          * Dispose self
-         * @param  {module:echarts/model/Global} ecModel
+         * @param  {module:echarts/Dto/Global} ecDto
          * @param  {module:echarts/ExtensionAPI} api
          */
         dispose: function () {}
@@ -82,8 +82,8 @@ define(function (require) {
     chartProto.updateView
         = chartProto.updateLayout
         = chartProto.updateVisual
-        = function (seriesModel, ecModel, api, payload) {
-            this.render(seriesModel, ecModel, api, payload);
+        = function (seriesDto, ecDto, api, payload) {
+            this.render(seriesDto, ecDto, api, payload);
         };
 
     /**

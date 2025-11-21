@@ -5,21 +5,21 @@ define(function (require) {
      * @property {string} parallelAxisId
      * @property {Array.<number>} extent
      */
-    return function (ecModel, payload) {
+    return function (ecDto, payload) {
 
-        ecModel.eachSeriesByType('parallel', function (seriesModel) {
+        ecDto.eachSeriesByType('parallel', function (seriesDto) {
 
-            var itemStyleModel = seriesModel.getModel('itemStyle.normal');
-            var globalColors = ecModel.get('color');
+            var itemStyleDto = seriesDto.getDto('itemStyle.normal');
+            var globalColors = ecDto.get('color');
 
-            var color = itemStyleModel.get('color')
-                || globalColors[seriesModel.seriesIndex % globalColors.length];
-            var inactiveOpacity = seriesModel.get('inactiveOpacity');
-            var activeOpacity = seriesModel.get('activeOpacity');
-            var lineStyle = seriesModel.getModel('lineStyle.normal').getLineStyle();
+            var color = itemStyleDto.get('color')
+                || globalColors[seriesDto.seriesIndex % globalColors.length];
+            var inactiveOpacity = seriesDto.get('inactiveOpacity');
+            var activeOpacity = seriesDto.get('activeOpacity');
+            var lineStyle = seriesDto.getDto('lineStyle.normal').getLineStyle();
 
-            var coordSys = seriesModel.coordinateSystem;
-            var data = seriesModel.getData();
+            var coordSys = seriesDto.coordinateSystem;
+            var data = seriesDto.getData();
 
             var opacityMap = {
                 normal: lineStyle.opacity,

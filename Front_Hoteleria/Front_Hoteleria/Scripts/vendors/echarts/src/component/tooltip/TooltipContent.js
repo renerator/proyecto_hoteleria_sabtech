@@ -34,21 +34,21 @@ define(function (require) {
      * @return {string}
      * @inner
      */
-    function assembleFont(textStyleModel) {
+    function assembleFont(textStyleDto) {
         var cssText = [];
 
-        var fontSize = textStyleModel.get('fontSize');
-        var color = textStyleModel.getTextColor();
+        var fontSize = textStyleDto.get('fontSize');
+        var color = textStyleDto.getTextColor();
 
         color && cssText.push('color:' + color);
 
-        cssText.push('font:' + textStyleModel.getFont());
+        cssText.push('font:' + textStyleDto.getFont());
 
         fontSize &&
             cssText.push('line-height:' + Math.round(fontSize * 3 / 2) + 'px');
 
         each(['decoration', 'align'], function (name) {
-            var val = textStyleModel.get(name);
+            var val = textStyleDto.get(name);
             val && cssText.push('text-' + name + ':' + val);
         });
 
@@ -56,20 +56,20 @@ define(function (require) {
     }
 
     /**
-     * @param {Object} tooltipModel
+     * @param {Object} tooltipDto
      * @return {string}
      * @inner
      */
-    function assembleCssText(tooltipModel) {
+    function assembleCssText(tooltipDto) {
 
-        tooltipModel = tooltipModel;
+        tooltipDto = tooltipDto;
 
         var cssText = [];
 
-        var transitionDuration = tooltipModel.get('transitionDuration');
-        var backgroundColor = tooltipModel.get('backgroundColor');
-        var textStyleModel = tooltipModel.getModel('textStyle');
-        var padding = tooltipModel.get('padding');
+        var transitionDuration = tooltipDto.get('transitionDuration');
+        var backgroundColor = tooltipDto.get('backgroundColor');
+        var textStyleDto = tooltipDto.getDto('textStyle');
+        var padding = tooltipDto.get('padding');
 
         // Animation transition
         transitionDuration &&
@@ -92,13 +92,13 @@ define(function (require) {
         each(['width', 'color', 'radius'], function (name) {
             var borderName = 'border-' + name;
             var camelCase = toCamelCase(borderName);
-            var val = tooltipModel.get(camelCase);
+            var val = tooltipDto.get(camelCase);
             val != null &&
                 cssText.push(borderName + ':' + val + (name === 'color' ? '' : 'px'));
         });
 
         // Text style
-        cssText.push(assembleFont(textStyleModel));
+        cssText.push(assembleFont(textStyleDto));
 
         // Padding
         if (padding != null) {
@@ -209,13 +209,13 @@ define(function (require) {
             // this.hide();
         },
 
-        show: function (tooltipModel) {
+        show: function (tooltipDto) {
             clearTimeout(this._hideTimeout);
 
-            this.el.style.cssText = gCssText + assembleCssText(tooltipModel)
+            this.el.style.cssText = gCssText + assembleCssText(tooltipDto)
                 // http://stackoverflow.com/questions/21125587/css3-transition-not-working-in-chrome-anymore
                 + ';left:' + this._x + 'px;top:' + this._y + 'px;'
-                + (tooltipModel.get('extraCssText') || '');
+                + (tooltipDto.get('extraCssText') || '');
 
             this._show = true;
         },

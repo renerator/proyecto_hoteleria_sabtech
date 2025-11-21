@@ -181,7 +181,7 @@ define(function (require) {
     lineProto.beforeUpdate = updateSymbolAndLabelBeforeLineUpdate;
 
     lineProto._createLine = function (lineData, idx) {
-        var seriesModel = lineData.hostModel;
+        var seriesDto = lineData.hostDto;
         var linePoints = lineData.getItemLayout(idx);
 
         var line = createLine(linePoints);
@@ -190,7 +190,7 @@ define(function (require) {
             shape: {
                 percent: 1
             }
-        }, seriesModel, idx);
+        }, seriesDto, idx);
 
         this.add(line);
 
@@ -212,7 +212,7 @@ define(function (require) {
     };
 
     lineProto.updateData = function (lineData, idx) {
-        var seriesModel = lineData.hostModel;
+        var seriesDto = lineData.hostDto;
 
         var line = this.childOfName('line');
         var linePoints = lineData.getItemLayout(idx);
@@ -220,7 +220,7 @@ define(function (require) {
             shape: {}
         };
         setLinePoints(target.shape, linePoints);
-        graphic.updateProps(line, target, seriesModel, idx);
+        graphic.updateProps(line, target, seriesDto, idx);
 
         zrUtil.each(SYMBOL_CATEGORIES, function (symbolCategory) {
             var symbolType = lineData.getItemVisual(idx, symbolCategory);
@@ -238,17 +238,17 @@ define(function (require) {
     };
 
     lineProto._updateCommonStl = function (lineData, idx) {
-        var seriesModel = lineData.hostModel;
+        var seriesDto = lineData.hostDto;
 
         var line = this.childOfName('line');
-        var itemModel = lineData.getItemModel(idx);
+        var itemDto = lineData.getItemDto(idx);
 
-        var labelModel = itemModel.getModel('label.normal');
-        var textStyleModel = labelModel.getModel('textStyle');
-        var labelHoverModel = itemModel.getModel('label.emphasis');
-        var textStyleHoverModel = labelHoverModel.getModel('textStyle');
+        var labelDto = itemDto.getDto('label.normal');
+        var textStyleDto = labelDto.getDto('textStyle');
+        var labelHoverDto = itemDto.getDto('label.emphasis');
+        var textStyleHoverDto = labelHoverDto.getDto('textStyle');
 
-        var defaultText = numberUtil.round(seriesModel.getRawValue(idx));
+        var defaultText = numberUtil.round(seriesDto.getRawValue(idx));
         if (isNaN(defaultText)) {
             // Use name
             defaultText = lineData.getName(idx);
@@ -259,35 +259,35 @@ define(function (require) {
                 fill: 'none',
                 stroke: lineData.getItemVisual(idx, 'color')
             },
-            itemModel.getModel('lineStyle.normal').getLineStyle()
+            itemDto.getDto('lineStyle.normal').getLineStyle()
         ));
-        line.hoverStyle = itemModel.getModel('lineStyle.emphasis').getLineStyle();
+        line.hoverStyle = itemDto.getDto('lineStyle.emphasis').getLineStyle();
         var defaultColor = lineData.getItemVisual(idx, 'color') || '#000';
         var label = this.childOfName('label');
         // label.afterUpdate = lineAfterUpdate;
         label.setStyle({
-            text: labelModel.get('show')
+            text: labelDto.get('show')
                 ? zrUtil.retrieve(
-                    seriesModel.getFormattedLabel(idx, 'normal', lineData.dataType),
+                    seriesDto.getFormattedLabel(idx, 'normal', lineData.dataType),
                     defaultText
                 )
                 : '',
-            textFont: textStyleModel.getFont(),
-            fill: textStyleModel.getTextColor() || defaultColor
+            textFont: textStyleDto.getFont(),
+            fill: textStyleDto.getTextColor() || defaultColor
         });
         label.hoverStyle = {
-            text: labelHoverModel.get('show')
+            text: labelHoverDto.get('show')
                 ? zrUtil.retrieve(
-                    seriesModel.getFormattedLabel(idx, 'emphasis', lineData.dataType),
+                    seriesDto.getFormattedLabel(idx, 'emphasis', lineData.dataType),
                     defaultText
                 )
                 : '',
-            textFont: textStyleHoverModel.getFont(),
-            fill: textStyleHoverModel.getTextColor() || defaultColor
+            textFont: textStyleHoverDto.getFont(),
+            fill: textStyleHoverDto.getTextColor() || defaultColor
         };
-        label.__textAlign = textStyleModel.get('align');
-        label.__verticalAlign = textStyleModel.get('baseline');
-        label.__position = labelModel.get('position');
+        label.__textAlign = textStyleDto.get('align');
+        label.__verticalAlign = textStyleDto.get('baseline');
+        label.__position = labelDto.get('position');
 
         label.ignore = !label.style.text && !label.hoverStyle.text;
 

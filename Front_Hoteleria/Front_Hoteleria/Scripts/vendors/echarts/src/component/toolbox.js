@@ -1,6 +1,6 @@
 define(function (require) {
 
-    require('./toolbox/ToolboxModel');
+    require('./toolbox/ToolboxDto');
     require('./toolbox/ToolboxView');
 
     require('./toolbox/feature/SaveAsImage');

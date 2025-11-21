@@ -2,18 +2,18 @@ define(function (require) {
 
     var zrUtil = require('zrender/core/util');
     var graphic = require('../../util/graphic');
-    var Model = require('../../model/Model');
+    var Dto = require('../../Dto/Dto');
     var numberUtil = require('../../util/number');
     var remRadian = numberUtil.remRadian;
     var isRadianAroundZero = numberUtil.isRadianAroundZero;
 
     var PI = Math.PI;
 
-    function makeAxisEventDataBase(axisModel) {
+    function makeAxisEventDataBase(axisDto) {
         var eventData = {
-            componentType: axisModel.mainType
+            componentType: axisDto.mainType
         };
-        eventData[axisModel.mainType + 'Index'] = axisModel.componentIndex;
+        eventData[axisDto.mainType + 'Index'] = axisDto.componentIndex;
         return eventData;
     }
 
@@ -40,7 +40,7 @@ define(function (require) {
      * axis extent.
      *
      * @param {module:zrender/container/Group} group
-     * @param {Object} axisModel
+     * @param {Object} axisDto
      * @param {Object} opt Standard axis parameters.
      * @param {Array.<number>} opt.position [x, y]
      * @param {number} opt.rotation by radian
@@ -48,14 +48,14 @@ define(function (require) {
      * @param {number} [opt.tickDirection=1] 1 or -1
      * @param {number} [opt.labelDirection=1] 1 or -1
      * @param {number} [opt.labelOffset=0] Usefull when onZero.
-     * @param {string} [opt.axisName] default get from axisModel.
-     * @param {number} [opt.labelRotation] by degree, default get from axisModel.
+     * @param {string} [opt.axisName] default get from axisDto.
+     * @param {number} [opt.labelRotation] by degree, default get from axisDto.
      * @param {number} [opt.labelInterval] Default label interval when label
-     *                                     interval from model is null or 'auto'.
+     *                                     interval from Dto is null or 'auto'.
      * @param {number} [opt.strokeContainThreshold] Default label interval when label
      * @param {number} [opt.axisLineSilent=true] If axis line is silent
      */
-    var AxisBuilder = function (axisModel, opt) {
+    var AxisBuilder = function (axisDto, opt) {
 
         /**
          * @readOnly
@@ -65,7 +65,7 @@ define(function (require) {
         /**
          * @readOnly
          */
-        this.axisModel = axisModel;
+        this.axisDto = axisDto;
 
         // Default value
         zrUtil.defaults(
@@ -113,13 +113,13 @@ define(function (require) {
          */
         axisLine: function () {
             var opt = this.opt;
-            var axisModel = this.axisModel;
+            var axisDto = this.axisDto;
 
-            if (!axisModel.get('axisLine.show')) {
+            if (!axisDto.get('axisLine.show')) {
                 return;
             }
 
-            var extent = this.axisModel.axis.getExtent();
+            var extent = this.axisDto.axis.getExtent();
 
             this.group.add(new graphic.Line({
                 shape: {
@@ -130,7 +130,7 @@ define(function (require) {
                 },
                 style: zrUtil.extend(
                     {lineCap: 'round'},
-                    axisModel.getModel('axisLine.lineStyle').getLineStyle()
+                    axisDto.getDto('axisLine.lineStyle').getLineStyle()
                 ),
                 strokeContainThreshold: opt.strokeContainThreshold,
                 silent: !!opt.axisLineSilent,
@@ -142,19 +142,19 @@ define(function (require) {
          * @private
          */
         axisTick: function () {
-            var axisModel = this.axisModel;
+            var axisDto = this.axisDto;
 
-            if (!axisModel.get('axisTick.show')) {
+            if (!axisDto.get('axisTick.show')) {
                 return;
             }
 
-            var axis = axisModel.axis;
-            var tickModel = axisModel.getModel('axisTick');
+            var axis = axisDto.axis;
+            var tickDto = axisDto.getDto('axisTick');
             var opt = this.opt;
 
-            var lineStyleModel = tickModel.getModel('lineStyle');
-            var tickLen = tickModel.get('length');
-            var tickInterval = getInterval(tickModel, opt.labelInterval);
+            var lineStyleDto = tickDto.getDto('lineStyle');
+            var tickLen = tickDto.get('length');
+            var tickInterval = getInterval(tickDto, opt.labelInterval);
             var ticksCoords = axis.getTicksCoords();
             var tickLines = [];
 
@@ -175,64 +175,64 @@ define(function (require) {
                         y2: opt.tickDirection * tickLen
                     },
                     style: {
-                        lineWidth: lineStyleModel.get('width')
+                        lineWidth: lineStyleDto.get('width')
                     },
                     silent: true
                 })));
             }
 
             this.group.add(graphic.mergePath(tickLines, {
-                style: lineStyleModel.getLineStyle(),
+                style: lineStyleDto.getLineStyle(),
                 z2: 2,
                 silent: true
             }));
         },
 
         /**
-         * @param {module:echarts/coord/cartesian/AxisModel} axisModel
-         * @param {module:echarts/coord/cartesian/GridModel} gridModel
+         * @param {module:echarts/coord/cartesian/AxisDto} axisDto
+         * @param {module:echarts/coord/cartesian/GridDto} gridDto
          * @private
          */
         axisLabel: function () {
-            var axisModel = this.axisModel;
+            var axisDto = this.axisDto;
 
-            if (!axisModel.get('axisLabel.show')) {
+            if (!axisDto.get('axisLabel.show')) {
                 return;
             }
 
             var opt = this.opt;
-            var axis = axisModel.axis;
-            var labelModel = axisModel.getModel('axisLabel');
-            var textStyleModel = labelModel.getModel('textStyle');
-            var labelMargin = labelModel.get('margin');
+            var axis = axisDto.axis;
+            var labelDto = axisDto.getDto('axisLabel');
+            var textStyleDto = labelDto.getDto('textStyle');
+            var labelMargin = labelDto.get('margin');
             var ticks = axis.scale.getTicks();
-            var labels = axisModel.getFormattedLabels();
+            var labels = axisDto.getFormattedLabels();
 
             // Special label rotate.
             var labelRotation = opt.labelRotation;
             if (labelRotation == null) {
-                labelRotation = labelModel.get('rotate') || 0;
+                labelRotation = labelDto.get('rotate') || 0;
             }
             // To radian.
             labelRotation = labelRotation * PI / 180;
 
             var labelLayout = innerTextLayout(opt, labelRotation, opt.labelDirection);
-            var categoryData = axisModel.get('data');
+            var categoryData = axisDto.get('data');
 
             var textEls = [];
-            var isSilent = axisModel.get('silent');
+            var isSilent = axisDto.get('silent');
             for (var i = 0; i < ticks.length; i++) {
                 if (ifIgnoreOnTick(axis, i, opt.labelInterval)) {
                      continue;
                 }
 
-                var itemTextStyleModel = textStyleModel;
+                var itemTextStyleDto = textStyleDto;
                 if (categoryData && categoryData[i] && categoryData[i].textStyle) {
-                    itemTextStyleModel = new Model(
-                        categoryData[i].textStyle, textStyleModel, axisModel.ecModel
+                    itemTextStyleDto = new Dto(
+                        categoryData[i].textStyle, textStyleDto, axisDto.ecDto
                     );
                 }
-                var textColor = itemTextStyleModel.getTextColor();
+                var textColor = itemTextStyleDto.getTextColor();
 
                 var tickCoord = axis.dataToCoord(ticks[i]);
                 var pos = [
@@ -244,9 +244,9 @@ define(function (require) {
                 var textEl = new graphic.Text({
                     style: {
                         text: labels[i],
-                        textAlign: itemTextStyleModel.get('align', true) || labelLayout.textAlign,
-                        textVerticalAlign: itemTextStyleModel.get('baseline', true) || labelLayout.verticalAlign,
-                        textFont: itemTextStyleModel.getFont(),
+                        textAlign: itemTextStyleDto.get('align', true) || labelLayout.textAlign,
+                        textVerticalAlign: itemTextStyleDto.get('baseline', true) || labelLayout.verticalAlign,
+                        textFont: itemTextStyleDto.getFont(),
                         fill: typeof textColor === 'function' ? textColor(labelBeforeFormat) : textColor
                     },
                     position: pos,
@@ -255,7 +255,7 @@ define(function (require) {
                     z2: 10
                 });
                 // Pack data for mouse event
-                textEl.eventData = makeAxisEventDataBase(axisModel);
+                textEl.eventData = makeAxisEventDataBase(axisDto);
                 textEl.eventData.targetType = 'axisLabel';
                 textEl.eventData.value = labelBeforeFormat;
 
@@ -276,14 +276,14 @@ define(function (require) {
                 // If min or max are user set, we need to check
                 // If the tick on min(max) are overlap on their neighbour tick
                 // If they are overlapped, we need to hide the min(max) tick label
-                if (axisModel.getMin ? axisModel.getMin() : axisModel.get('min')) {
+                if (axisDto.getMin ? axisDto.getMin() : axisDto.get('min')) {
                     var firstLabel = textEls[0];
                     var nextLabel = textEls[1];
                     if (isTwoLabelOverlapped(firstLabel, nextLabel)) {
                         firstLabel.ignore = true;
                     }
                 }
-                if (axisModel.getMax ? axisModel.getMax() : axisModel.get('max')) {
+                if (axisDto.getMax ? axisDto.getMax() : axisDto.get('max')) {
                     var lastLabel = textEls[textEls.length - 1];
                     var prevLabel = textEls[textEls.length - 2];
                     if (isTwoLabelOverlapped(prevLabel, lastLabel)) {
@@ -298,24 +298,24 @@ define(function (require) {
          */
         axisName: function () {
             var opt = this.opt;
-            var axisModel = this.axisModel;
+            var axisDto = this.axisDto;
 
             var name = this.opt.axisName;
             // If name is '', do not get name from axisMode.
             if (name == null) {
-                name = axisModel.get('name');
+                name = axisDto.get('name');
             }
 
             if (!name) {
                 return;
             }
 
-            var nameLocation = axisModel.get('nameLocation');
+            var nameLocation = axisDto.get('nameLocation');
             var nameDirection = opt.nameDirection;
-            var textStyleModel = axisModel.getModel('nameTextStyle');
-            var gap = axisModel.get('nameGap') || 0;
+            var textStyleDto = axisDto.getDto('nameTextStyle');
+            var gap = axisDto.get('nameGap') || 0;
 
-            var extent = this.axisModel.axis.getExtent();
+            var extent = this.axisDto.axis.getExtent();
             var gapSignal = extent[0] > extent[1] ? -1 : 1;
             var pos = [
                 nameLocation === 'start'
@@ -339,19 +339,19 @@ define(function (require) {
             var textEl = new graphic.Text({
                 style: {
                     text: name,
-                    textFont: textStyleModel.getFont(),
-                    fill: textStyleModel.getTextColor()
-                        || axisModel.get('axisLine.lineStyle.color'),
+                    textFont: textStyleDto.getFont(),
+                    fill: textStyleDto.getTextColor()
+                        || axisDto.get('axisLine.lineStyle.color'),
                     textAlign: labelLayout.textAlign,
                     textVerticalAlign: labelLayout.verticalAlign
                 },
                 position: pos,
                 rotation: labelLayout.rotation,
-                silent: axisModel.get('silent'),
+                silent: axisDto.get('silent'),
                 z2: 1
             });
 
-            textEl.eventData = makeAxisEventDataBase(axisModel);
+            textEl.eventData = makeAxisEventDataBase(axisDto);
             textEl.eventData.targetType = 'axisName';
             textEl.eventData.name = name;
 
@@ -450,8 +450,8 @@ define(function (require) {
     /**
      * @static
      */
-    var getInterval = AxisBuilder.getInterval = function (model, labelInterval) {
-        var interval = model.get('interval');
+    var getInterval = AxisBuilder.getInterval = function (Dto, labelInterval) {
+        var interval = Dto.get('interval');
         if (interval == null || interval == 'auto') {
             interval = labelInterval;
         }

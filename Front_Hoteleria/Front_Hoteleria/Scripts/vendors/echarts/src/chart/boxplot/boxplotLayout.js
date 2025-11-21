@@ -5,22 +5,22 @@ define(function (require) {
     var parsePercent = numberUtil.parsePercent;
     var each = zrUtil.each;
 
-    return function (ecModel, api) {
+    return function (ecDto, api) {
 
-        var groupResult = groupSeriesByAxis(ecModel);
+        var groupResult = groupSeriesByAxis(ecDto);
 
         each(groupResult, function (groupItem) {
-            var seriesModels = groupItem.seriesModels;
+            var seriesDtos = groupItem.seriesDtos;
 
-            if (!seriesModels.length) {
+            if (!seriesDtos.length) {
                 return;
             }
 
             calculateBase(groupItem);
 
-            each(seriesModels, function (seriesModel, idx) {
+            each(seriesDtos, function (seriesDto, idx) {
                 layoutSingleSeries(
-                    seriesModel,
+                    seriesDto,
                     groupItem.boxOffsetList[idx],
                     groupItem.boxWidthList[idx]
                 );
@@ -31,21 +31,21 @@ define(function (require) {
     /**
      * Group series by axis.
      */
-    function groupSeriesByAxis(ecModel) {
+    function groupSeriesByAxis(ecDto) {
         var result = [];
         var axisList = [];
 
-        ecModel.eachSeriesByType('boxplot', function (seriesModel) {
-            var baseAxis = seriesModel.getBaseAxis();
+        ecDto.eachSeriesByType('boxplot', function (seriesDto) {
+            var baseAxis = seriesDto.getBaseAxis();
             var idx = zrUtil.indexOf(axisList, baseAxis);
 
             if (idx < 0) {
                 idx = axisList.length;
                 axisList[idx] = baseAxis;
-                result[idx] = {axis: baseAxis, seriesModels: []};
+                result[idx] = {axis: baseAxis, seriesDtos: []};
             }
 
-            result[idx].seriesModels.push(seriesModel);
+            result[idx].seriesDtos.push(seriesDto);
         });
 
         return result;
@@ -57,8 +57,8 @@ define(function (require) {
     function calculateBase(groupItem) {
         var extent;
         var baseAxis = groupItem.axis;
-        var seriesModels = groupItem.seriesModels;
-        var seriesCount = seriesModels.length;
+        var seriesDtos = groupItem.seriesDtos;
+        var seriesCount = seriesDtos.length;
 
         var boxWidthList = groupItem.boxWidthList = [];
         var boxOffsetList = groupItem.boxOffsetList = [];
@@ -70,15 +70,15 @@ define(function (require) {
         }
         else {
             var maxDataCount = 0;
-            each(seriesModels, function (seriesModel) {
-                maxDataCount = Math.max(maxDataCount, seriesModel.getData().count());
+            each(seriesDtos, function (seriesDto) {
+                maxDataCount = Math.max(maxDataCount, seriesDto.getData().count());
             });
             extent = baseAxis.getExtent(),
             Math.abs(extent[1] - extent[0]) / maxDataCount;
         }
 
-        each(seriesModels, function (seriesModel) {
-            var boxWidthBound = seriesModel.get('boxWidth');
+        each(seriesDtos, function (seriesDto) {
+            var boxWidthBound = seriesDto.get('boxWidth');
             if (!zrUtil.isArray(boxWidthBound)) {
                 boxWidthBound = [boxWidthBound, boxWidthBound];
             }
@@ -93,7 +93,7 @@ define(function (require) {
         var boxWidth = (availableWidth - boxGap * (seriesCount - 1)) / seriesCount;
         var base = boxWidth / 2 - availableWidth / 2;
 
-        each(seriesModels, function (seriesModel, idx) {
+        each(seriesDtos, function (seriesDto, idx) {
             boxOffsetList.push(base);
             base += boxGap + boxWidth;
 
@@ -106,11 +106,11 @@ define(function (require) {
     /**
      * Calculate points location for each series.
      */
-    function layoutSingleSeries(seriesModel, offset, boxWidth) {
-        var coordSys = seriesModel.coordinateSystem;
-        var data = seriesModel.getData();
-        var dimensions = seriesModel.dimensions;
-        var chartLayout = seriesModel.get('layout');
+    function layoutSingleSeries(seriesDto, offset, boxWidth) {
+        var coordSys = seriesDto.coordinateSystem;
+        var data = seriesDto.getData();
+        var dimensions = seriesDto.dimensions;
+        var chartLayout = seriesDto.get('layout');
         var halfWidth = boxWidth / 2;
 
         data.each(dimensions, function () {

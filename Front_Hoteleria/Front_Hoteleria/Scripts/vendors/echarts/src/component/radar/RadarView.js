@@ -12,19 +12,19 @@ define(function (require) {
 
         type: 'radar',
 
-        render: function (radarModel, ecModel, api) {
+        render: function (radarDto, ecDto, api) {
             var group = this.group;
             group.removeAll();
 
-            this._buildAxes(radarModel);
-            this._buildSplitLineAndArea(radarModel);
+            this._buildAxes(radarDto);
+            this._buildSplitLineAndArea(radarDto);
         },
 
-        _buildAxes: function (radarModel) {
-            var radar = radarModel.coordinateSystem;
+        _buildAxes: function (radarDto) {
+            var radar = radarDto.coordinateSystem;
             var indicatorAxes = radar.getIndicatorAxes();
             var axisBuilders = zrUtil.map(indicatorAxes, function (indicatorAxis) {
-                var axisBuilder = new AxisBuilder(indicatorAxis.model, {
+                var axisBuilder = new AxisBuilder(indicatorAxis.Dto, {
                     position: [radar.cx, radar.cy],
                     rotation: indicatorAxis.angle,
                     labelDirection: -1,
@@ -40,23 +40,23 @@ define(function (require) {
             }, this);
         },
 
-        _buildSplitLineAndArea: function (radarModel) {
-            var radar = radarModel.coordinateSystem;
-            var splitNumber = radarModel.get('splitNumber');
+        _buildSplitLineAndArea: function (radarDto) {
+            var radar = radarDto.coordinateSystem;
+            var splitNumber = radarDto.get('splitNumber');
             var indicatorAxes = radar.getIndicatorAxes();
             if (!indicatorAxes.length) {
                 return;
             }
-            var shape = radarModel.get('shape');
-            var splitLineModel = radarModel.getModel('splitLine');
-            var splitAreaModel = radarModel.getModel('splitArea');
-            var lineStyleModel = splitLineModel.getModel('lineStyle');
-            var areaStyleModel = splitAreaModel.getModel('areaStyle');
+            var shape = radarDto.get('shape');
+            var splitLineDto = radarDto.getDto('splitLine');
+            var splitAreaDto = radarDto.getDto('splitArea');
+            var lineStyleDto = splitLineDto.getDto('lineStyle');
+            var areaStyleDto = splitAreaDto.getDto('areaStyle');
 
-            var showSplitLine = splitLineModel.get('show');
-            var showSplitArea = splitAreaModel.get('show');
-            var splitLineColors = lineStyleModel.get('color');
-            var splitAreaColors = areaStyleModel.get('color');
+            var showSplitLine = splitLineDto.get('show');
+            var showSplitArea = splitAreaDto.get('show');
+            var splitLineColors = lineStyleDto.get('color');
+            var splitAreaColors = areaStyleDto.get('color');
 
             splitLineColors = zrUtil.isArray(splitLineColors) ? splitLineColors : [splitLineColors];
             splitAreaColors = zrUtil.isArray(splitAreaColors) ? splitAreaColors : [splitAreaColors];
@@ -135,8 +135,8 @@ define(function (require) {
                 }
             }
 
-            var lineStyle = lineStyleModel.getLineStyle();
-            var areaStyle = areaStyleModel.getAreaStyle();
+            var lineStyle = lineStyleDto.getLineStyle();
+            var areaStyle = areaStyleDto.getAreaStyle();
             // Add splitArea before splitLine
             zrUtil.each(splitAreas, function (splitAreas, idx) {
                 this.group.add(graphic.mergePath(

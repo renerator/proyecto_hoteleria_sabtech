@@ -207,7 +207,7 @@ module.exports = function(Chart) {
 				_index: index,
 
 				// Desired view properties
-				_model: {
+				_Dto: {
 					x: centerX + chart.offsetX,
 					y: centerY + chart.offsetY,
 					startAngle: startAngle,
@@ -219,21 +219,21 @@ module.exports = function(Chart) {
 				}
 			});
 
-			var model = arc._model;
-			model.backgroundColor = custom.backgroundColor ? custom.backgroundColor : valueAtIndexOrDefault(dataset.backgroundColor, index, arcOpts.backgroundColor);
-			model.hoverBackgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : valueAtIndexOrDefault(dataset.hoverBackgroundColor, index, arcOpts.hoverBackgroundColor);
-			model.borderWidth = custom.borderWidth ? custom.borderWidth : valueAtIndexOrDefault(dataset.borderWidth, index, arcOpts.borderWidth);
-			model.borderColor = custom.borderColor ? custom.borderColor : valueAtIndexOrDefault(dataset.borderColor, index, arcOpts.borderColor);
+			var Dto = arc._Dto;
+			Dto.backgroundColor = custom.backgroundColor ? custom.backgroundColor : valueAtIndexOrDefault(dataset.backgroundColor, index, arcOpts.backgroundColor);
+			Dto.hoverBackgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : valueAtIndexOrDefault(dataset.hoverBackgroundColor, index, arcOpts.hoverBackgroundColor);
+			Dto.borderWidth = custom.borderWidth ? custom.borderWidth : valueAtIndexOrDefault(dataset.borderWidth, index, arcOpts.borderWidth);
+			Dto.borderColor = custom.borderColor ? custom.borderColor : valueAtIndexOrDefault(dataset.borderColor, index, arcOpts.borderColor);
 
 			// Set correct angles if not resetting
 			if (!reset || !animationOpts.animateRotate) {
 				if (index === 0) {
-					model.startAngle = opts.rotation;
+					Dto.startAngle = opts.rotation;
 				} else {
-					model.startAngle = _this.getMeta().data[index - 1]._model.endAngle;
+					Dto.startAngle = _this.getMeta().data[index - 1]._Dto.endAngle;
 				}
 
-				model.endAngle = model.startAngle + model.circumference;
+				Dto.endAngle = Dto.startAngle + Dto.circumference;
 			}
 
 			arc.pivot();

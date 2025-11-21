@@ -4,10 +4,10 @@ define(function(require) {
     var List = require('../../data/List');
     var completeDimensions = require('../../data/helper/completeDimensions');
     var zrUtil = require('zrender/core/util');
-    var modelUtil = require('../../util/model');
+    var DtoUtil = require('../../util/Dto');
     var CoordinateSystem = require('../../CoordinateSystem');
-    var getDataItemValue = modelUtil.getDataItemValue;
-    var converDataValue = modelUtil.converDataValue;
+    var getDataItemValue = DtoUtil.getDataItemValue;
+    var converDataValue = DtoUtil.converDataValue;
 
     function firstDataNotNull(data) {
         var i = 0;
@@ -25,7 +25,7 @@ define(function(require) {
     /**
      * Helper function to create a list from option data
      */
-    function createListFromArray(data, seriesModel, ecModel) {
+    function createListFromArray(data, seriesDto, ecDto) {
         // If data is undefined
         data = data || [];
 
@@ -33,28 +33,28 @@ define(function(require) {
             throw new Error('Invalid data.');
         }
 
-        var coordSysName = seriesModel.get('coordinateSystem');
+        var coordSysName = seriesDto.get('coordinateSystem');
         var creator = creators[coordSysName];
         var registeredCoordSys = CoordinateSystem.get(coordSysName);
         // FIXME
-        var result = creator && creator(data, seriesModel, ecModel);
+        var result = creator && creator(data, seriesDto, ecDto);
         var dimensions = result && result.dimensions;
         if (!dimensions) {
             // Get dimensions from registered coordinate system
             dimensions = (registeredCoordSys && registeredCoordSys.dimensions) || ['x', 'y'];
             dimensions = completeDimensions(dimensions, data, dimensions.concat(['value']));
         }
-        var categoryAxisModel = result && result.categoryAxisModel;
+        var categoryAxisDto = result && result.categoryAxisDto;
         var categories;
 
         var categoryDimIndex = dimensions[0].type === 'ordinal'
             ? 0 : (dimensions[1].type === 'ordinal' ? 1 : -1);
 
-        var list = new List(dimensions, seriesModel);
+        var list = new List(dimensions, seriesDto);
 
         var nameList = createNameList(result, data);
 
-        var dimValueGetter = (categoryAxisModel && ifNeedCompleteOrdinalData(data))
+        var dimValueGetter = (categoryAxisDto && ifNeedCompleteOrdinalData(data))
             ? function (itemOpt, dimName, dataIndex, dimIndex) {
                 // Use dataIndex as ordinal value in categoryAxis
                 return dimIndex === categoryDimIndex
@@ -68,7 +68,7 @@ define(function(require) {
                     // If given value is a category string
                     if (typeof val === 'string') {
                         // Lazy get categories
-                        categories = categories || categoryAxisModel.getCategories();
+                        categories = categories || categoryAxisDto.getCategories();
                         val = zrUtil.indexOf(categories, val);
                         if (val < 0 && !isNaN(val)) {
                             // In case some one write '1', '2' istead of 1, 2
@@ -98,19 +98,19 @@ define(function(require) {
 
     /**
      * Creaters for each coord system.
-     * @return {Object} {dimensions, categoryAxisModel};
+     * @return {Object} {dimensions, categoryAxisDto};
      */
     var creators = {
 
-        cartesian2d: function (data, seriesModel, ecModel) {
-            var xAxisModel = ecModel.getComponent('xAxis', seriesModel.get('xAxisIndex'));
-            var yAxisModel = ecModel.getComponent('yAxis', seriesModel.get('yAxisIndex'));
-            if (!xAxisModel || !yAxisModel) {
+        cartesian2d: function (data, seriesDto, ecDto) {
+            var xAxisDto = ecDto.getComponent('xAxis', seriesDto.get('xAxisIndex'));
+            var yAxisDto = ecDto.getComponent('yAxis', seriesDto.get('yAxisIndex'));
+            if (!xAxisDto || !yAxisDto) {
                 throw new Error('Axis option not found');
             }
 
-            var xAxisType = xAxisModel.get('type');
-            var yAxisType = yAxisModel.get('type');
+            var xAxisType = xAxisDto.get('type');
+            var yAxisType = yAxisDto.get('type');
 
             var dimensions = [
                 {
@@ -133,32 +133,32 @@ define(function(require) {
             return {
                 dimensions: dimensions,
                 categoryIndex: isXAxisCateogry ? 0 : 1,
-                categoryAxisModel: isXAxisCateogry
-                    ? xAxisModel
-                    : (yAxisType === 'category' ? yAxisModel : null)
+                categoryAxisDto: isXAxisCateogry
+                    ? xAxisDto
+                    : (yAxisType === 'category' ? yAxisDto : null)
             };
         },
 
-        polar: function (data, seriesModel, ecModel) {
-            var polarIndex = seriesModel.get('polarIndex') || 0;
+        polar: function (data, seriesDto, ecDto) {
+            var polarIndex = seriesDto.get('polarIndex') || 0;
 
-            var axisFinder = function (axisModel) {
-                return axisModel.get('polarIndex') === polarIndex;
+            var axisFinder = function (axisDto) {
+                return axisDto.get('polarIndex') === polarIndex;
             };
 
-            var angleAxisModel = ecModel.findComponents({
+            var angleAxisDto = ecDto.findComponents({
                 mainType: 'angleAxis', filter: axisFinder
             })[0];
-            var radiusAxisModel = ecModel.findComponents({
+            var radiusAxisDto = ecDto.findComponents({
                 mainType: 'radiusAxis', filter: axisFinder
             })[0];
 
-            if (!angleAxisModel || !radiusAxisModel) {
+            if (!angleAxisDto || !radiusAxisDto) {
                 throw new Error('Axis option not found');
             }
 
-            var radiusAxisType = radiusAxisModel.get('type');
-            var angleAxisType = angleAxisModel.get('type');
+            var radiusAxisType = radiusAxisDto.get('type');
+            var angleAxisType = angleAxisDto.get('type');
 
             var dimensions = [
                 {
@@ -179,13 +179,13 @@ define(function(require) {
             return {
                 dimensions: dimensions,
                 categoryIndex: isAngleAxisCateogry ? 1 : 0,
-                categoryAxisModel: isAngleAxisCateogry
-                    ? angleAxisModel
-                    : (radiusAxisType === 'category' ? radiusAxisModel : null)
+                categoryAxisDto: isAngleAxisCateogry
+                    ? angleAxisDto
+                    : (radiusAxisType === 'category' ? radiusAxisDto : null)
             };
         },
 
-        geo: function (data, seriesModel, ecModel) {
+        geo: function (data, seriesDto, ecDto) {
             // TODO Region
             // 多个散点图系列在同一个地区的时候
             return {
@@ -200,9 +200,9 @@ define(function(require) {
     function createNameList(result, data) {
         var nameList = [];
 
-        if (result && result.categoryAxisModel) {
+        if (result && result.categoryAxisDto) {
             // FIXME Two category axis
-            var categories = result.categoryAxisModel.getCategories();
+            var categories = result.categoryAxisDto.getCategories();
             if (categories) {
                 var dataLen = data.length;
                 // Ordered data is given explicitly like

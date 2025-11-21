@@ -3,7 +3,7 @@ define(function (require) {
     var featureManager = require('./featureManager');
     var zrUtil = require('zrender/core/util');
     var graphic = require('../../util/graphic');
-    var Model = require('../../model/Model');
+    var Dto = require('../../Dto/Dto');
     var DataDiffer = require('../../data/DataDiffer');
     var listComponentHelper = require('../helper/listComponent');
     var textContain = require('zrender/contain/text');
@@ -12,16 +12,16 @@ define(function (require) {
 
         type: 'toolbox',
 
-        render: function (toolboxModel, ecModel, api) {
+        render: function (toolboxDto, ecDto, api) {
             var group = this.group;
             group.removeAll();
 
-            if (!toolboxModel.get('show')) {
+            if (!toolboxDto.get('show')) {
                 return;
             }
 
-            var itemSize = +toolboxModel.get('itemSize');
-            var featureOpts = toolboxModel.get('feature') || {};
+            var itemSize = +toolboxDto.get('itemSize');
+            var featureOpts = toolboxDto.get('feature') || {};
             var features = this._features || (this._features = {});
 
             var featureNames = [];
@@ -42,14 +42,14 @@ define(function (require) {
                 var featureName = featureNames[newIndex];
                 var oldName = featureNames[oldIndex];
                 var featureOpt = featureOpts[featureName];
-                var featureModel = new Model(featureOpt, toolboxModel, toolboxModel.ecModel);
+                var featureDto = new Dto(featureOpt, toolboxDto, toolboxDto.ecDto);
                 var feature;
 
                 if (featureName && !oldName) { // Create
                     if (isUserFeatureName(featureName)) {
                         feature = {
-                            model: featureModel,
-                            onclick: featureModel.option.onclick,
+                            Dto: featureDto,
+                            onclick: featureDto.option.onclick,
                             featureName: featureName
                         };
                     }
@@ -58,7 +58,7 @@ define(function (require) {
                         if (!Feature) {
                             return;
                         }
-                        feature = new Feature(featureModel);
+                        feature = new Feature(featureDto);
                     }
                     features[featureName] = feature;
                 }
@@ -68,22 +68,22 @@ define(function (require) {
                     if (!feature) {
                         return;
                     }
-                    feature.model = featureModel;
+                    feature.Dto = featureDto;
                 }
 
                 if (!featureName && oldName) {
-                    feature.dispose && feature.dispose(ecModel, api);
+                    feature.dispose && feature.dispose(ecDto, api);
                     return;
                 }
 
-                if (!featureModel.get('show') || feature.unusable) {
-                    feature.remove && feature.remove(ecModel, api);
+                if (!featureDto.get('show') || feature.unusable) {
+                    feature.remove && feature.remove(ecDto, api);
                     return;
                 }
 
-                createIconPaths(featureModel, feature, featureName);
+                createIconPaths(featureDto, feature, featureName);
 
-                featureModel.setIconStatus = function (iconName, status) {
+                featureDto.setIconStatus = function (iconName, status) {
                     var option = this.option;
                     var iconPaths = this.iconPaths;
                     option.iconStatus = option.iconStatus || {};
@@ -93,12 +93,12 @@ define(function (require) {
                 };
 
                 if (feature.render) {
-                    feature.render(featureModel, ecModel, api);
+                    feature.render(featureDto, ecDto, api);
                 }
             }
 
-            function createIconPaths(featureModel, feature, featureName) {
-                var iconStyleModel = featureModel.getModel('iconStyle');
+            function createIconPaths(featureDto, feature, featureName) {
+                var iconStyleDto = featureDto.getDto('iconStyle');
 
                 // If one feature has mutiple icon. they are orginaized as
                 // {
@@ -111,8 +111,8 @@ define(function (require) {
                 //         bar: ''
                 //     }
                 // }
-                var icons = feature.getIcons ? feature.getIcons() : featureModel.get('icon');
-                var titles = featureModel.get('title') || {};
+                var icons = feature.getIcons ? feature.getIcons() : featureDto.get('icon');
+                var titles = featureDto.get('title') || {};
                 if (typeof icons === 'string') {
                     var icon = icons;
                     var title = titles;
@@ -121,10 +121,10 @@ define(function (require) {
                     icons[featureName] = icon;
                     titles[featureName] = title;
                 }
-                var iconPaths = featureModel.iconPaths = {};
+                var iconPaths = featureDto.iconPaths = {};
                 zrUtil.each(icons, function (icon, iconName) {
-                    var normalStyle = iconStyleModel.getModel('normal').getItemStyle();
-                    var hoverStyle = iconStyleModel.getModel('emphasis').getItemStyle();
+                    var normalStyle = iconStyleDto.getDto('normal').getItemStyle();
+                    var hoverStyle = iconStyleDto.getDto('emphasis').getItemStyle();
 
                     var style = {
                         x: -itemSize / 2,
@@ -150,7 +150,7 @@ define(function (require) {
 
                     graphic.setHoverStyle(path);
 
-                    if (toolboxModel.get('showTitle')) {
+                    if (toolboxDto.get('showTitle')) {
                         path.__title = titles[iconName];
                         path.on('mouseover', function () {
                                 path.setStyle({
@@ -166,21 +166,21 @@ define(function (require) {
                                 });
                             });
                     }
-                    path.trigger(featureModel.get('iconStatus.' + iconName) || 'normal');
+                    path.trigger(featureDto.get('iconStatus.' + iconName) || 'normal');
 
                     group.add(path);
                     path.on('click', zrUtil.bind(
-                        feature.onclick, feature, ecModel, api, iconName
+                        feature.onclick, feature, ecDto, api, iconName
                     ));
 
                     iconPaths[iconName] = path;
                 });
             }
 
-            listComponentHelper.layout(group, toolboxModel, api);
+            listComponentHelper.layout(group, toolboxDto, api);
             // Render background after group is layout
             // FIXME
-            listComponentHelper.addBackground(group, toolboxModel);
+            listComponentHelper.addBackground(group, toolboxDto);
 
             // Adjust icon title positions to avoid them out of screen
             group.eachChild(function (icon) {
@@ -212,16 +212,16 @@ define(function (require) {
             });
         },
 
-        remove: function (ecModel, api) {
+        remove: function (ecDto, api) {
             zrUtil.each(this._features, function (feature) {
-                feature.remove && feature.remove(ecModel, api);
+                feature.remove && feature.remove(ecDto, api);
             });
             this.group.removeAll();
         },
 
-        dispose: function (ecModel, api) {
+        dispose: function (ecDto, api) {
             zrUtil.each(this._features, function (feature) {
-                feature.dispose && feature.dispose(ecModel, api);
+                feature.dispose && feature.dispose(ecDto, api);
             });
         }
     });

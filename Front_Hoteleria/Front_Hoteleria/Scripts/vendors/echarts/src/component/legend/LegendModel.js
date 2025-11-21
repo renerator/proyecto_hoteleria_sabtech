@@ -3,9 +3,9 @@ define(function(require) {
     'use strict';
 
     var zrUtil = require('zrender/core/util');
-    var Model = require('../../model/Model');
+    var Dto = require('../../Dto/Dto');
 
-    var LegendModel = require('../../echarts').extendComponentModel({
+    var LegendDto = require('../../echarts').extendComponentDto({
 
         type: 'legend',
 
@@ -16,12 +16,12 @@ define(function(require) {
             ignoreSize: true
         },
 
-        init: function (option, parentModel, ecModel) {
-            this.mergeDefaultAndTheme(option, ecModel);
+        init: function (option, parentDto, ecDto) {
+            this.mergeDefaultAndTheme(option, ecDto);
 
             option.selected = option.selected || {};
 
-            this._updateData(ecModel);
+            this._updateData(ecDto);
 
             var legendData = this._data;
             // If has any selected in option.selected
@@ -41,28 +41,28 @@ define(function(require) {
         },
 
         mergeOption: function (option) {
-            LegendModel.superCall(this, 'mergeOption', option);
+            LegendDto.superCall(this, 'mergeOption', option);
 
-            this._updateData(this.ecModel);
+            this._updateData(this.ecDto);
         },
 
-        _updateData: function (ecModel) {
+        _updateData: function (ecDto) {
             var legendData = zrUtil.map(this.get('data') || [], function (dataItem) {
                 if (typeof dataItem === 'string') {
                     dataItem = {
                         name: dataItem
                     };
                 }
-                return new Model(dataItem, this, this.ecModel);
+                return new Dto(dataItem, this, this.ecDto);
             }, this);
             this._data = legendData;
 
-            var availableNames = zrUtil.map(ecModel.getSeries(), function (series) {
+            var availableNames = zrUtil.map(ecDto.getSeries(), function (series) {
                 return series.name;
             });
-            ecModel.eachSeries(function (seriesModel) {
-                if (seriesModel.legendDataProvider) {
-                    var data = seriesModel.legendDataProvider();
+            ecDto.eachSeries(function (seriesDto) {
+                if (seriesDto.legendDataProvider) {
+                    var data = seriesDto.legendDataProvider();
                     availableNames = availableNames.concat(data.mapArray(data.getName));
                 }
             });
@@ -74,7 +74,7 @@ define(function(require) {
         },
 
         /**
-         * @return {Array.<module:echarts/model/Model>}
+         * @return {Array.<module:echarts/Dto/Dto>}
          */
         getData: function () {
             return this._data;
@@ -176,5 +176,5 @@ define(function(require) {
         }
     });
 
-    return LegendModel;
+    return LegendDto;
 });

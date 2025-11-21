@@ -18,7 +18,7 @@ describe('Rectangle element tests', function() {
 			_index: 1
 		});
 
-		// Safely handles if these are called before the viewmodel is instantiated
+		// Safely handles if these are called before the viewDto is instantiated
 		expect(rectangle.inRange(5)).toBe(false);
 		expect(rectangle.inLabelRange(5)).toBe(false);
 

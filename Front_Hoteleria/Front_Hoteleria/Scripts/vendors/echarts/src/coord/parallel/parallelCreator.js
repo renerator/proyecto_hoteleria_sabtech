@@ -5,26 +5,26 @@ define(function(require) {
 
     var Parallel = require('./Parallel');
 
-    function create(ecModel, api) {
+    function create(ecDto, api) {
         var coordSysList = [];
 
-        ecModel.eachComponent('parallel', function (parallelModel, idx) {
-            var coordSys = new Parallel(parallelModel, ecModel, api);
+        ecDto.eachComponent('parallel', function (parallelDto, idx) {
+            var coordSys = new Parallel(parallelDto, ecDto, api);
 
             coordSys.name = 'parallel_' + idx;
-            coordSys.resize(parallelModel, api);
+            coordSys.resize(parallelDto, api);
 
-            parallelModel.coordinateSystem = coordSys;
-            coordSys.model = parallelModel;
+            parallelDto.coordinateSystem = coordSys;
+            coordSys.Dto = parallelDto;
 
             coordSysList.push(coordSys);
         });
 
-        // Inject the coordinateSystems into seriesModel
-        ecModel.eachSeries(function (seriesModel) {
-            if (seriesModel.get('coordinateSystem') === 'parallel') {
-                var parallelIndex = seriesModel.get('parallelIndex');
-                seriesModel.coordinateSystem = coordSysList[parallelIndex];
+        // Inject the coordinateSystems into seriesDto
+        ecDto.eachSeries(function (seriesDto) {
+            if (seriesDto.get('coordinateSystem') === 'parallel') {
+                var parallelIndex = seriesDto.get('parallelIndex');
+                seriesDto.coordinateSystem = coordSysList[parallelIndex];
             }
         });
 

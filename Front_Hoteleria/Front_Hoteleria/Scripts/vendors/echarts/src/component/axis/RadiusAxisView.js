@@ -17,27 +17,27 @@ define(function (require) {
 
         type: 'radiusAxis',
 
-        render: function (radiusAxisModel, ecModel) {
+        render: function (radiusAxisDto, ecDto) {
             this.group.removeAll();
-            if (!radiusAxisModel.get('show')) {
+            if (!radiusAxisDto.get('show')) {
                 return;
             }
-            var polarModel = ecModel.getComponent('polar', radiusAxisModel.get('polarIndex'));
-            var angleAxis = polarModel.coordinateSystem.getAngleAxis();
-            var radiusAxis = radiusAxisModel.axis;
-            var polar = polarModel.coordinateSystem;
+            var polarDto = ecDto.getComponent('polar', radiusAxisDto.get('polarIndex'));
+            var angleAxis = polarDto.coordinateSystem.getAngleAxis();
+            var radiusAxis = radiusAxisDto.axis;
+            var polar = polarDto.coordinateSystem;
             var ticksCoords = radiusAxis.getTicksCoords();
             var axisAngle = angleAxis.getExtent()[0];
             var radiusExtent = radiusAxis.getExtent();
 
-            var layout = layoutAxis(polar, radiusAxisModel, axisAngle);
-            var axisBuilder = new AxisBuilder(radiusAxisModel, layout);
+            var layout = layoutAxis(polar, radiusAxisDto, axisAngle);
+            var axisBuilder = new AxisBuilder(radiusAxisDto, layout);
             zrUtil.each(axisBuilderAttrs, axisBuilder.add, axisBuilder);
             this.group.add(axisBuilder.getGroup());
 
             zrUtil.each(selfBuilderAttrs, function (name) {
-                if (radiusAxisModel.get(name +'.show')) {
-                    this['_' + name](radiusAxisModel, polar, axisAngle, radiusExtent, ticksCoords);
+                if (radiusAxisDto.get(name +'.show')) {
+                    this['_' + name](radiusAxisDto, polar, axisAngle, radiusExtent, ticksCoords);
                 }
             }, this);
         },
@@ -45,10 +45,10 @@ define(function (require) {
         /**
          * @private
          */
-        _splitLine: function (radiusAxisModel, polar, axisAngle, radiusExtent, ticksCoords) {
-            var splitLineModel = radiusAxisModel.getModel('splitLine');
-            var lineStyleModel = splitLineModel.getModel('lineStyle');
-            var lineColors = lineStyleModel.get('color');
+        _splitLine: function (radiusAxisDto, polar, axisAngle, radiusExtent, ticksCoords) {
+            var splitLineDto = radiusAxisDto.getDto('splitLine');
+            var lineStyleDto = splitLineDto.getDto('lineStyle');
+            var lineColors = lineStyleDto.get('color');
             var lineCount = 0;
 
             lineColors = lineColors instanceof Array ? lineColors : [lineColors];
@@ -75,7 +75,7 @@ define(function (require) {
                     style: zrUtil.defaults({
                         stroke: lineColors[i % lineColors.length],
                         fill: null
-                    }, lineStyleModel.getLineStyle()),
+                    }, lineStyleDto.getLineStyle()),
                     silent: true
                 }));
             }
@@ -84,11 +84,11 @@ define(function (require) {
         /**
          * @private
          */
-        _splitArea: function (radiusAxisModel, polar, axisAngle, radiusExtent, ticksCoords) {
+        _splitArea: function (radiusAxisDto, polar, axisAngle, radiusExtent, ticksCoords) {
 
-            var splitAreaModel = radiusAxisModel.getModel('splitArea');
-            var areaStyleModel = splitAreaModel.getModel('areaStyle');
-            var areaColors = areaStyleModel.get('color');
+            var splitAreaDto = radiusAxisDto.getDto('splitArea');
+            var areaStyleDto = splitAreaDto.getDto('areaStyle');
+            var areaColors = areaStyleDto.get('color');
             var lineCount = 0;
 
             areaColors = areaColors instanceof Array ? areaColors : [areaColors];
@@ -119,7 +119,7 @@ define(function (require) {
                 this.group.add(graphic.mergePath(splitAreas[i], {
                     style: zrUtil.defaults({
                         fill: areaColors[i % areaColors.length]
-                    }, areaStyleModel.getAreaStyle()),
+                    }, areaStyleDto.getAreaStyle()),
                     silent: true
                 }));
             }
@@ -129,14 +129,14 @@ define(function (require) {
     /**
      * @inner
      */
-    function layoutAxis(polar, radiusAxisModel, axisAngle) {
+    function layoutAxis(polar, radiusAxisDto, axisAngle) {
         return {
             position: [polar.cx, polar.cy],
             rotation: axisAngle / 180 * Math.PI,
             labelDirection: -1,
             tickDirection: -1,
             nameDirection: 1,
-            labelRotation: radiusAxisModel.getModel('axisLabel').get('rotate'),
+            labelRotation: radiusAxisDto.getDto('axisLabel').get('rotate'),
             // Over splitLine and splitArea
             z2: 1
         };

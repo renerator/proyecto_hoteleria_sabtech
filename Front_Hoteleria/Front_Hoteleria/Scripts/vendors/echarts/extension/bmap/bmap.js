@@ -6,7 +6,7 @@ define(function (require) {
     require('echarts').registerCoordinateSystem(
         'bmap', require('./BMapCoordSys')
     );
-    require('./BMapModel');
+    require('./BMapDto');
     require('./BMapView');
 
     // Action
@@ -14,11 +14,11 @@ define(function (require) {
         type: 'bmapRoam',
         event: 'bmapRoam',
         update: 'updateLayout'
-    }, function (payload, ecModel) {
-        ecModel.eachComponent('bmap', function (bMapModel) {
-            var bmap = bMapModel.getBMap();
+    }, function (payload, ecDto) {
+        ecDto.eachComponent('bmap', function (bMapDto) {
+            var bmap = bMapDto.getBMap();
             var center = bmap.getCenter();
-            bMapModel.setCenterAndZoom([center.lng, center.lat], bmap.getZoom());
+            bMapDto.setCenterAndZoom([center.lng, center.lat], bmap.getZoom());
         });
     });
 

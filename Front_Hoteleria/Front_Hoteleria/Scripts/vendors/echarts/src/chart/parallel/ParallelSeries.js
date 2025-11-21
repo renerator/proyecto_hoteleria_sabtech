@@ -2,29 +2,29 @@ define(function(require) {
 
     var List = require('../../data/List');
     var zrUtil = require('zrender/core/util');
-    var SeriesModel = require('../../model/Series');
+    var SeriesDto = require('../../Dto/Series');
 
-    return SeriesModel.extend({
+    return SeriesDto.extend({
 
         type: 'series.parallel',
 
         dependencies: ['parallel'],
 
-        getInitialData: function (option, ecModel) {
-            var parallelModel = ecModel.getComponent(
+        getInitialData: function (option, ecDto) {
+            var parallelDto = ecDto.getComponent(
                 'parallel', this.get('parallelIndex')
             );
-            var dimensions = parallelModel.dimensions;
-            var parallelAxisIndices = parallelModel.parallelAxisIndex;
+            var dimensions = parallelDto.dimensions;
+            var parallelAxisIndices = parallelDto.parallelAxisIndex;
 
             var rawData = option.data;
 
             var dimensionsInfo = zrUtil.map(dimensions, function (dim, index) {
-                var axisModel = ecModel.getComponent(
+                var axisDto = ecDto.getComponent(
                     'parallelAxis', parallelAxisIndices[index]
                 );
-                if (axisModel.get('type') === 'category') {
-                    translateCategoryValue(axisModel, dim, rawData);
+                if (axisDto.get('type') === 'category') {
+                    translateCategoryValue(axisDto, dim, rawData);
                     return {name: dim, type: 'ordinal'};
                 }
                 else {
@@ -100,8 +100,8 @@ define(function(require) {
         }
     });
 
-    function translateCategoryValue(axisModel, dim, rawData) {
-        var axisData = axisModel.get('data');
+    function translateCategoryValue(axisDto, dim, rawData) {
+        var axisData = axisDto.get('data');
         var numberDim = +dim.replace('dim', '');
 
         if (axisData && axisData.length) {

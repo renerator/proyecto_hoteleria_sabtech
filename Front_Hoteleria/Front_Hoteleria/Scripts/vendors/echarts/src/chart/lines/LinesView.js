@@ -10,11 +10,11 @@ define(function (require) {
 
         init: function () {},
 
-        render: function (seriesModel, ecModel, api) {
-            var data = seriesModel.getData();
+        render: function (seriesDto, ecDto, api) {
+            var data = seriesDto.getData();
             var lineDraw = this._lineDraw;
 
-            var hasEffect = seriesModel.get('effect.show');
+            var hasEffect = seriesDto.get('effect.show');
             if (hasEffect !== this._hasEffet) {
                 if (lineDraw) {
                     lineDraw.remove();
@@ -25,8 +25,8 @@ define(function (require) {
                 this._hasEffet = hasEffect;
             }
 
-            var zlevel = seriesModel.get('zlevel');
-            var trailLength = seriesModel.get('effect.trailLength');
+            var zlevel = seriesDto.get('zlevel');
+            var trailLength = seriesDto.get('effect.trailLength');
 
             var zr = api.getZr();
             // Avoid the drag cause ghost shadow
@@ -52,14 +52,14 @@ define(function (require) {
             this._lastZlevel = zlevel;
         },
 
-        updateLayout: function (seriesModel, ecModel, api) {
+        updateLayout: function (seriesDto, ecDto, api) {
             this._lineDraw.updateLayout();
             // Not use motion when dragging or zooming
             var zr = api.getZr();
             zr.painter.getLayer(this._lastZlevel).clear(true);
         },
 
-        remove: function (ecModel, api) {
+        remove: function (ecDto, api) {
             this._lineDraw && this._lineDraw.remove(api, true);
         }
     });

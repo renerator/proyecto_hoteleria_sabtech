@@ -2,9 +2,9 @@ define(function (require) {
 
     'use strict';
 
-    require('./AxisModel');
+    require('./AxisDto');
 
-    require('../../echarts').extendComponentModel({
+    require('../../echarts').extendComponentDto({
 
         type: 'polar',
 
@@ -17,19 +17,19 @@ define(function (require) {
 
         /**
          * @param {string} axisType
-         * @return {module:echarts/coord/polar/AxisModel}
+         * @return {module:echarts/coord/polar/AxisDto}
          */
-        findAxisModel: function (axisType) {
-            var angleAxisModel;
-            var ecModel = this.ecModel;
-            ecModel.eachComponent(axisType, function (axisModel) {
-                if (ecModel.getComponent(
-                        'polar', axisModel.getShallow('polarIndex')
+        findAxisDto: function (axisType) {
+            var angleAxisDto;
+            var ecDto = this.ecDto;
+            ecDto.eachComponent(axisType, function (axisDto) {
+                if (ecDto.getComponent(
+                        'polar', axisDto.getShallow('polarIndex')
                     ) === this) {
-                    angleAxisModel = axisModel;
+                    angleAxisDto = axisDto;
                 }
             }, this);
-            return angleAxisModel;
+            return angleAxisDto;
         },
 
         defaultOption: {

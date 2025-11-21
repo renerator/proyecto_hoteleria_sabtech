@@ -16,19 +16,19 @@ module.exports = function(Chart) {
     },
     pivot: function() {
       if (!this._view) {
-        this._view = helpers.clone(this._model);
+        this._view = helpers.clone(this._Dto);
       }
       this._start = helpers.clone(this._view);
       return this;
     },
     transition: function(ease) {
       if (!this._view) {
-        this._view = helpers.clone(this._model);
+        this._view = helpers.clone(this._Dto);
       }
 
       // No animation -> No Transition
       if (ease === 1) {
-        this._view = this._model;
+        this._view = this._Dto;
         this._start = null;
         return this;
       }
@@ -37,7 +37,7 @@ module.exports = function(Chart) {
         this.pivot();
       }
 
-      helpers.each(this._model, function(value, key) {
+      helpers.each(this._Dto, function(value, key) {
 
         if (key[0] === '_') {
           // Only non-underscored properties
@@ -60,7 +60,7 @@ module.exports = function(Chart) {
         // Color transitions if possible
         else if (typeof value === 'string') {
           try {
-            var color = helpers.color(this._model[key]).mix(helpers.color(this._start[key]), ease);
+            var color = helpers.color(this._Dto[key]).mix(helpers.color(this._start[key]), ease);
             this._view[key] = color.rgbString();
           } catch (err) {
             this._view[key] = value;
@@ -69,7 +69,7 @@ module.exports = function(Chart) {
         // Number transitions
         else if (typeof value === 'number') {
           var startVal = this._start[key] !== undefined && isNaN(this._start[key]) === false ? this._start[key] : 0;
-          this._view[key] = ((this._model[key] - startVal) * ease) + startVal;
+          this._view[key] = ((this._Dto[key] - startVal) * ease) + startVal;
         }
         // Everything else
         else {
@@ -81,12 +81,12 @@ module.exports = function(Chart) {
     },
     tooltipPosition: function() {
       return {
-        x: this._model.x,
-        y: this._model.y
+        x: this._Dto.x,
+        y: this._Dto.y
       };
     },
     hasValue: function() {
-      return helpers.isNumber(this._model.x) && helpers.isNumber(this._model.y);
+      return helpers.isNumber(this._Dto.x) && helpers.isNumber(this._Dto.y);
     }
   });
 

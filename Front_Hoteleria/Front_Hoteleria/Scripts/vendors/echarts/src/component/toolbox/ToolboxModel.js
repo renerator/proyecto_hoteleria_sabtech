@@ -3,7 +3,7 @@ define(function (require) {
     var featureManager = require('./featureManager');
     var zrUtil = require('zrender/core/util');
 
-    var ToolboxModel = require('../../echarts').extendComponentModel({
+    var ToolboxDto = require('../../echarts').extendComponentDto({
 
         type: 'toolbox',
 
@@ -13,7 +13,7 @@ define(function (require) {
         },
 
         mergeDefaultAndTheme: function (option) {
-            ToolboxModel.superApply(this, 'mergeDefaultAndTheme', arguments);
+            ToolboxDto.superApply(this, 'mergeDefaultAndTheme', arguments);
 
             zrUtil.each(this.option.feature, function (featureOpt, featureName) {
                 var Feature = featureManager.get(featureName);
@@ -67,5 +67,5 @@ define(function (require) {
         }
     });
 
-    return ToolboxModel;
+    return ToolboxDto;
 });

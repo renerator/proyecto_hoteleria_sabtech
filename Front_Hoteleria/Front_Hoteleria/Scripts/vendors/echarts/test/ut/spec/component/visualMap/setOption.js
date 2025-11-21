@@ -209,10 +209,10 @@ describe('vsiaulMap_setOption', function() {
             ]
         });
 
-        var ecModel = this.charts[0].getModel();
+        var ecDto = this.charts[0].getDto();
 
         function getVisual(idx, visualType) {
-            return ecModel.getComponent('visualMap', idx)
+            return ecDto.getComponent('visualMap', idx)
                 .targetVisuals.inRange[visualType].option.visual;
         }
 

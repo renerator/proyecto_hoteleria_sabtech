@@ -13,14 +13,14 @@ define(function(require) {
 
         type: 'grid',
 
-        render: function (gridModel, ecModel) {
+        render: function (gridDto, ecDto) {
             this.group.removeAll();
-            if (gridModel.get('show')) {
+            if (gridDto.get('show')) {
                 this.group.add(new graphic.Rect({
-                    shape:gridModel.coordinateSystem.getRect(),
+                    shape:gridDto.coordinateSystem.getRect(),
                     style: zrUtil.defaults({
-                        fill: gridModel.get('backgroundColor')
-                    }, gridModel.getItemStyle()),
+                        fill: gridDto.get('backgroundColor')
+                    }, gridDto.getItemStyle()),
                     silent: true
                 }));
             }

@@ -1,14 +1,14 @@
 /**
- * @file Timeline model
+ * @file Timeline Dto
  */
 define(function(require) {
 
-    var ComponentModel = require('../../model/Component');
+    var ComponentDto = require('../../Dto/Component');
     var List = require('../../data/List');
     var zrUtil = require('zrender/core/util');
-    var modelUtil = require('../../util/model');
+    var DtoUtil = require('../../util/Dto');
 
-    var TimelineModel = ComponentModel.extend({
+    var TimelineDto = ComponentDto.extend({
 
         type: 'timeline',
 
@@ -62,7 +62,7 @@ define(function(require) {
         /**
          * @override
          */
-        init: function (option, parentModel, ecModel) {
+        init: function (option, parentDto, ecDto) {
 
             /**
              * @private
@@ -76,7 +76,7 @@ define(function(require) {
              */
             this._names;
 
-            this.mergeDefaultAndTheme(option, ecModel);
+            this.mergeDefaultAndTheme(option, ecDto);
             this._initData();
         },
 
@@ -84,7 +84,7 @@ define(function(require) {
          * @override
          */
         mergeOption: function (option) {
-            TimelineModel.superApply(this, 'mergeOption', arguments);
+            TimelineDto.superApply(this, 'mergeOption', arguments);
             this._initData();
         },
 
@@ -148,7 +148,7 @@ define(function(require) {
             if (axisType === 'category') {
                 var idxArr = [];
                 zrUtil.each(dataArr, function (item, index) {
-                    var value = modelUtil.getDataItemValue(item);
+                    var value = DtoUtil.getDataItemValue(item);
                     var newItem;
 
                     if (zrUtil.isObject(item)) {
@@ -193,5 +193,5 @@ define(function(require) {
 
     });
 
-    return TimelineModel;
+    return TimelineDto;
 });

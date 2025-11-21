@@ -6,31 +6,31 @@ define(function(require) {
     var echarts = require('../../echarts');
     var zrUtil = require('zrender/core/util');
 
-    function legendSelectActionHandler(methodName, payload, ecModel) {
+    function legendSelectActionHandler(methodName, payload, ecDto) {
         var selectedMap = {};
         var isToggleSelect = methodName === 'toggleSelected';
         var isSelected;
         // Update all legend components
-        ecModel.eachComponent('legend', function (legendModel) {
+        ecDto.eachComponent('legend', function (legendDto) {
             if (isToggleSelect && isSelected != null) {
                 // Force other legend has same selected status
                 // Or the first is toggled to true and other are toggled to false
                 // In the case one legend has some item unSelected in option. And if other legend
                 // doesn't has the item, they will assume it is selected.
-                legendModel[isSelected ? 'select' : 'unSelect'](payload.name);
+                legendDto[isSelected ? 'select' : 'unSelect'](payload.name);
             }
             else {
-                legendModel[methodName](payload.name);
-                isSelected = legendModel.isSelected(payload.name);
+                legendDto[methodName](payload.name);
+                isSelected = legendDto.isSelected(payload.name);
             }
-            var legendData = legendModel.getData();
-            zrUtil.each(legendData, function (model) {
-                var name = model.get('name');
+            var legendData = legendDto.getData();
+            zrUtil.each(legendData, function (Dto) {
+                var name = Dto.get('name');
                 // Wrap element
                 if (name === '\n' || name === '') {
                     return;
                 }
-                var isItemSelected = legendModel.isSelected(name);
+                var isItemSelected = legendDto.isSelected(name);
                 if (name in selectedMap) {
                     // Unselected if any legend is unselected
                     selectedMap[name] = selectedMap[name] && isItemSelected;

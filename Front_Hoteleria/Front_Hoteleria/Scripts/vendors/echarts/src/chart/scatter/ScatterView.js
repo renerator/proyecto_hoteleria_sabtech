@@ -12,13 +12,13 @@ define(function (require) {
             this._largeSymbolDraw = new LargeSymbolDraw();
         },
 
-        render: function (seriesModel, ecModel, api) {
-            var data = seriesModel.getData();
+        render: function (seriesDto, ecDto, api) {
+            var data = seriesDto.getData();
             var largeSymbolDraw = this._largeSymbolDraw;
             var normalSymbolDraw = this._normalSymbolDraw;
             var group = this.group;
 
-            var symbolDraw = seriesModel.get('large') && data.count() > seriesModel.get('largeThreshold')
+            var symbolDraw = seriesDto.get('large') && data.count() > seriesDto.get('largeThreshold')
                 ? largeSymbolDraw : normalSymbolDraw;
 
             this._symbolDraw = symbolDraw;
@@ -31,11 +31,11 @@ define(function (require) {
             );
         },
 
-        updateLayout: function (seriesModel) {
-            this._symbolDraw.updateLayout(seriesModel);
+        updateLayout: function (seriesDto) {
+            this._symbolDraw.updateLayout(seriesDto);
         },
 
-        remove: function (ecModel, api) {
+        remove: function (ecDto, api) {
             this._symbolDraw && this._symbolDraw.remove(api, true);
         }
     });

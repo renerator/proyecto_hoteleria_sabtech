@@ -56,16 +56,16 @@ define(function (require) {
     }
 
     effectLineProto._updateEffectSymbol = function (lineData, idx) {
-        var itemModel = lineData.getItemModel(idx);
-        var effectModel = itemModel.getModel('effect');
-        var size = effectModel.get('symbolSize');
-        var symbolType = effectModel.get('symbol');
+        var itemDto = lineData.getItemDto(idx);
+        var effectDto = itemDto.getDto('effect');
+        var size = effectDto.get('symbolSize');
+        var symbolType = effectDto.get('symbol');
         if (!zrUtil.isArray(size)) {
             size = [size, size];
         }
-        var color = effectModel.get('color') || lineData.getItemVisual(idx, 'color');
+        var color = effectDto.get('color') || lineData.getItemVisual(idx, 'color');
         var symbol = this.childAt(1);
-        var period = effectModel.get('period') * 1000;
+        var period = effectDto.get('period') * 1000;
         if (this._symbolType !== symbolType || period !== this._period) {
             symbol = symbolUtil.createSymbol(
                 symbolType, -0.5, -0.5, 1, 1, color
@@ -88,7 +88,7 @@ define(function (require) {
         }
         // Shadow color is same with color in default
         symbol.setStyle('shadowColor', color);
-        symbol.setStyle(effectModel.getItemStyle(['color']));
+        symbol.setStyle(effectDto.getItemStyle(['color']));
 
         symbol.attr('scale', size);
         var points = lineData.getItemLayout(idx);

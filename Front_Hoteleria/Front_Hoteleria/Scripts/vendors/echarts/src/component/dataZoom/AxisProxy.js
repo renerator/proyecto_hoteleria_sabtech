@@ -11,13 +11,13 @@ define(function(require) {
     /**
      * Operate single axis.
      * One axis can only operated by one axis operator.
-     * Different dataZoomModels may be defined to operate the same axis.
+     * Different dataZoomDtos may be defined to operate the same axis.
      * (i.e. 'inside' data zoom and 'slider' data zoom components)
-     * So dataZoomModels share one axisProxy in that case.
+     * So dataZoomDtos share one axisProxy in that case.
      *
      * @class
      */
-    var AxisProxy = function (dimName, axisIndex, dataZoomModel, ecModel) {
+    var AxisProxy = function (dimName, axisIndex, dataZoomDto, ecDto) {
 
         /**
          * @private
@@ -50,15 +50,15 @@ define(function(require) {
 
         /**
          * @readOnly
-         * @type {module: echarts/model/Global}
+         * @type {module: echarts/Dto/Global}
          */
-        this.ecModel = ecModel;
+        this.ecDto = ecDto;
 
         /**
          * @private
-         * @type {module: echarts/component/dataZoom/DataZoomModel}
+         * @type {module: echarts/component/dataZoom/DataZoomDto}
          */
-        this._dataZoomModel = dataZoomModel;
+        this._dataZoomDto = dataZoomDto;
     };
 
     AxisProxy.prototype = {
@@ -66,14 +66,14 @@ define(function(require) {
         constructor: AxisProxy,
 
         /**
-         * Whether the axisProxy is hosted by dataZoomModel.
+         * Whether the axisProxy is hosted by dataZoomDto.
          *
          * @public
-         * @param {module: echarts/component/dataZoom/DataZoomModel} dataZoomModel
+         * @param {module: echarts/component/dataZoom/DataZoomDto} dataZoomDto
          * @return {boolean}
          */
-        hostedBy: function (dataZoomModel) {
-            return this._dataZoomModel === dataZoomModel;
+        hostedBy: function (dataZoomDto) {
+            return this._dataZoomDto === dataZoomDto;
         },
 
         /**
@@ -100,28 +100,28 @@ define(function(require) {
         /**
          * @public
          * @param {number} axisIndex
-         * @return {Array} seriesModels
+         * @return {Array} seriesDtos
          */
-        getTargetSeriesModels: function () {
-            var seriesModels = [];
+        getTargetSeriesDtos: function () {
+            var seriesDtos = [];
 
-            this.ecModel.eachSeries(function (seriesModel) {
-                if (this._axisIndex === seriesModel.get(this._dimName + 'AxisIndex')) {
-                    seriesModels.push(seriesModel);
+            this.ecDto.eachSeries(function (seriesDto) {
+                if (this._axisIndex === seriesDto.get(this._dimName + 'AxisIndex')) {
+                    seriesDtos.push(seriesDto);
                 }
             }, this);
 
-            return seriesModels;
+            return seriesDtos;
         },
 
-        getAxisModel: function () {
-            return this.ecModel.getComponent(this._dimName + 'Axis', this._axisIndex);
+        getAxisDto: function () {
+            return this.ecDto.getComponent(this._dimName + 'Axis', this._axisIndex);
         },
 
-        getOtherAxisModel: function () {
+        getOtherAxisDto: function () {
             var axisDim = this._dimName;
-            var ecModel = this.ecModel;
-            var axisModel = this.getAxisModel();
+            var ecDto = this.ecDto;
+            var axisDto = this.getAxisDto();
             var isCartesian = axisDim === 'x' || axisDim === 'y';
             var otherAxisDim;
             var coordSysIndexName;
@@ -133,66 +133,66 @@ define(function(require) {
                 coordSysIndexName = 'polarIndex';
                 otherAxisDim = axisDim === 'angle' ? 'radius' : 'angle';
             }
-            var foundOtherAxisModel;
-            ecModel.eachComponent(otherAxisDim + 'Axis', function (otherAxisModel) {
-                if ((otherAxisModel.get(coordSysIndexName) || 0)
-                    === (axisModel.get(coordSysIndexName) || 0)
+            var foundOtherAxisDto;
+            ecDto.eachComponent(otherAxisDim + 'Axis', function (otherAxisDto) {
+                if ((otherAxisDto.get(coordSysIndexName) || 0)
+                    === (axisDto.get(coordSysIndexName) || 0)
                 ) {
-                    foundOtherAxisModel = otherAxisModel;
+                    foundOtherAxisDto = otherAxisDto;
                 }
             });
-            return foundOtherAxisModel;
+            return foundOtherAxisDto;
         },
 
         /**
          * Notice: reset should not be called before series.restoreData() called,
-         * so it is recommanded to be called in "process stage" but not "model init
+         * so it is recommanded to be called in "process stage" but not "Dto init
          * stage".
          *
-         * @param {module: echarts/component/dataZoom/DataZoomModel} dataZoomModel
+         * @param {module: echarts/component/dataZoom/DataZoomDto} dataZoomDto
          */
-        reset: function (dataZoomModel) {
-            if (dataZoomModel !== this._dataZoomModel) {
+        reset: function (dataZoomDto) {
+            if (dataZoomDto !== this._dataZoomDto) {
                 return;
             }
 
             // Culculate data window and data extent, and record them.
             var dataExtent = this._dataExtent = calculateDataExtent(
-                this._dimName, this.getTargetSeriesModels()
+                this._dimName, this.getTargetSeriesDtos()
             );
             var dataWindow = calculateDataWindow(
-                dataZoomModel.option, dataExtent, this
+                dataZoomDto.option, dataExtent, this
             );
             this._valueWindow = dataWindow.valueWindow;
             this._percentWindow = dataWindow.percentWindow;
 
             // Update axis setting then.
-            setAxisModel(this);
+            setAxisDto(this);
         },
 
         /**
-         * @param {module: echarts/component/dataZoom/DataZoomModel} dataZoomModel
+         * @param {module: echarts/component/dataZoom/DataZoomDto} dataZoomDto
          */
-        restore: function (dataZoomModel) {
-            if (dataZoomModel !== this._dataZoomModel) {
+        restore: function (dataZoomDto) {
+            if (dataZoomDto !== this._dataZoomDto) {
                 return;
             }
 
             this._valueWindow = this._percentWindow = null;
-            setAxisModel(this, true);
+            setAxisDto(this, true);
         },
 
         /**
-         * @param {module: echarts/component/dataZoom/DataZoomModel} dataZoomModel
+         * @param {module: echarts/component/dataZoom/DataZoomDto} dataZoomDto
          */
-        filterData: function (dataZoomModel) {
-            if (dataZoomModel !== this._dataZoomModel) {
+        filterData: function (dataZoomDto) {
+            if (dataZoomDto !== this._dataZoomDto) {
                 return;
             }
 
             var axisDim = this._dimName;
-            var seriesModels = this.getTargetSeriesModels();
-            var filterMode = dataZoomModel.get('filterMode');
+            var seriesDtos = this.getTargetSeriesDtos();
+            var filterMode = dataZoomDto.get('filterMode');
             var valueWindow = this._valueWindow;
 
             // FIXME
@@ -203,21 +203,21 @@ define(function(require) {
             // when using toolbox#dataZoom, utill tooltip#dataZoom support "single axis
             // selection" some day, which might need "adapt to data extent on the
             // otherAxis", which is disabled by filterMode-'empty'.
-            var otherAxisModel = this.getOtherAxisModel();
-            if (dataZoomModel.get('$fromToolbox')
-                && otherAxisModel
-                && otherAxisModel.get('type') === 'category'
+            var otherAxisDto = this.getOtherAxisDto();
+            if (dataZoomDto.get('$fromToolbox')
+                && otherAxisDto
+                && otherAxisDto.get('type') === 'category'
             ) {
                 filterMode = 'empty';
             }
 
             // Process series data
-            each(seriesModels, function (seriesModel) {
-                var seriesData = seriesModel.getData();
+            each(seriesDtos, function (seriesDto) {
+                var seriesData = seriesDto.getData();
 
-                seriesData && each(seriesModel.coordDimToDataDim(axisDim), function (dim) {
+                seriesData && each(seriesDto.coordDimToDataDim(axisDim), function (dim) {
                     if (filterMode === 'empty') {
-                        seriesModel.setData(
+                        seriesDto.setData(
                             seriesData.map(dim, function (value) {
                                 return !isInWindow(value) ? NaN : value;
                             })
@@ -235,13 +235,13 @@ define(function(require) {
         }
     };
 
-    function calculateDataExtent(axisDim, seriesModels) {
+    function calculateDataExtent(axisDim, seriesDtos) {
         var dataExtent = [Infinity, -Infinity];
 
-        each(seriesModels, function (seriesModel) {
-            var seriesData = seriesModel.getData();
+        each(seriesDtos, function (seriesDto) {
+            var seriesData = seriesDto.getData();
             if (seriesData) {
-                each(seriesModel.coordDimToDataDim(axisDim), function (dim) {
+                each(seriesDto.coordDimToDataDim(axisDim), function (dim) {
                     var seriesExtent = seriesData.getDataExtent(dim);
                     seriesExtent[0] < dataExtent[0] && (dataExtent[0] = seriesExtent[0]);
                     seriesExtent[1] > dataExtent[1] && (dataExtent[1] = seriesExtent[1]);
@@ -253,8 +253,8 @@ define(function(require) {
     }
 
     function calculateDataWindow(opt, dataExtent, axisProxy) {
-        var axisModel = axisProxy.getAxisModel();
-        var scale = axisModel.axis.scale;
+        var axisDto = axisProxy.getAxisDto();
+        var scale = axisDto.axis.scale;
         var percentExtent = [0, 100];
         var percentWindow = [
             opt.start,
@@ -266,7 +266,7 @@ define(function(require) {
         // window should be based on min/max/0, but should not be
         // based on the extent of filtered data.
         dataExtent = dataExtent.slice();
-        fixExtendByAxis(dataExtent, axisModel, scale);
+        fixExtendByAxis(dataExtent, axisDto, scale);
 
         each(['startValue', 'endValue'], function (prop) {
             valueWindow.push(
@@ -311,16 +311,16 @@ define(function(require) {
         };
     }
 
-    function fixExtendByAxis(dataExtent, axisModel, scale) {
+    function fixExtendByAxis(dataExtent, axisDto, scale) {
         each(['min', 'max'], function (minMax, index) {
-            var axisMax = axisModel.get(minMax, true);
+            var axisMax = axisDto.get(minMax, true);
             // Consider 'dataMin', 'dataMax'
             if (axisMax != null && (axisMax + '').toLowerCase() !== 'data' + minMax) {
                 dataExtent[index] = scale.parse(axisMax);
             }
         });
 
-        if (!axisModel.get('scale', true)) {
+        if (!axisDto.get('scale', true)) {
             dataExtent[0] > 0 && (dataExtent[0] = 0);
             dataExtent[1] < 0 && (dataExtent[1] = 0);
         }
@@ -328,8 +328,8 @@ define(function(require) {
         return dataExtent;
     }
 
-    function setAxisModel(axisProxy, isRestore) {
-        var axisModel = axisProxy.getAxisModel();
+    function setAxisDto(axisProxy, isRestore) {
+        var axisDto = axisProxy.getAxisDto();
 
         var percentWindow = axisProxy._percentWindow;
         var valueWindow = axisProxy._valueWindow;
@@ -346,7 +346,7 @@ define(function(require) {
 
         var useOrigin = isRestore || isFull || invalidPrecision;
 
-        axisModel.setRange && axisModel.setRange(
+        axisDto.setRange && axisDto.setRange(
             useOrigin ? null : +valueWindow[0].toFixed(precision),
             useOrigin ? null : +valueWindow[1].toFixed(precision)
         );

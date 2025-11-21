@@ -9,7 +9,7 @@ define(function (require) {
 
     require('./timeline/typeDefaulter');
     require('./timeline/timelineAction');
-    require('./timeline/SliderTimelineModel');
+    require('./timeline/SliderTimelineDto');
     require('./timeline/SliderTimelineView');
 
 });

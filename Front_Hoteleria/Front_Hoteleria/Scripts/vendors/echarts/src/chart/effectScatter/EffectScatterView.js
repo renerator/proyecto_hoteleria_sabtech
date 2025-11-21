@@ -11,8 +11,8 @@ define(function (require) {
             this._symbolDraw = new SymbolDraw(EffectSymbol);
         },
 
-        render: function (seriesModel, ecModel, api) {
-            var data = seriesModel.getData();
+        render: function (seriesDto, ecDto, api) {
+            var data = seriesDto.getData();
             var effectSymbolDraw = this._symbolDraw;
             effectSymbolDraw.updateData(data);
             this.group.add(effectSymbolDraw.group);
@@ -22,7 +22,7 @@ define(function (require) {
             this._symbolDraw.updateLayout();
         },
 
-        remove: function (ecModel, api) {
+        remove: function (ecDto, api) {
             this._symbolDraw && this._symbolDraw.remove(api);
         }
     });

@@ -24,14 +24,14 @@ define(function(require) {
     var emphasisStyleAccessPath = ['itemStyle', 'emphasis'];
 
     function updateStyle(itemGroup, data, idx) {
-        var itemModel = data.getItemModel(idx);
-        var normalItemStyleModel = itemModel.getModel(normalStyleAccessPath);
+        var itemDto = data.getItemDto(idx);
+        var normalItemStyleDto = itemDto.getDto(normalStyleAccessPath);
         var color = data.getItemVisual(idx, 'color');
         var borderColor = data.getItemVisual(idx, 'borderColor');
 
         // Color must be excluded.
         // Because symbol provide setColor individually to set fill and stroke
-        var itemStyle = normalItemStyleModel.getItemStyle(
+        var itemStyle = normalItemStyleDto.getItemStyle(
             ['color', 'color0', 'borderColor', 'borderColor0']
         );
 
@@ -44,7 +44,7 @@ define(function(require) {
         bodyEl.style.fill = color;
         bodyEl.style.stroke = borderColor;
 
-        var hoverStyle = itemModel.getModel(emphasisStyleAccessPath).getItemStyle();
+        var hoverStyle = itemDto.getDto(emphasisStyleAccessPath).getItemStyle();
         graphic.setHoverStyle(itemGroup, hoverStyle);
     }
 

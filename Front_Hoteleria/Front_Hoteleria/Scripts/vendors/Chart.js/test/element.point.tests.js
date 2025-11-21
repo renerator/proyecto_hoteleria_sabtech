@@ -18,7 +18,7 @@ describe('Point element tests', function() {
 			_index: 1
 		});
 
-		// Safely handles if these are called before the viewmodel is instantiated
+		// Safely handles if these are called before the viewDto is instantiated
 		expect(point.inRange(5)).toBe(false);
 		expect(point.inLabelRange(5)).toBe(false);
 

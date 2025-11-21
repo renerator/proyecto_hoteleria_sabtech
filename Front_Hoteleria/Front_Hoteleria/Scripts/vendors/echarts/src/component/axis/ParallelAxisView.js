@@ -18,28 +18,28 @@ define(function (require) {
         /**
          * @override
          */
-        render: function (axisModel, ecModel, api, payload) {
-            if (fromAxisAreaSelect(axisModel, ecModel, payload)) {
+        render: function (axisDto, ecDto, api, payload) {
+            if (fromAxisAreaSelect(axisDto, ecDto, payload)) {
                 return;
             }
 
-            this.axisModel = axisModel;
+            this.axisDto = axisDto;
             this.api = api;
 
             this.group.removeAll();
 
-            if (!axisModel.get('show')) {
+            if (!axisDto.get('show')) {
                 return;
             }
 
-            var coordSys = ecModel.getComponent(
-                'parallel', axisModel.get('parallelIndex')
+            var coordSys = ecDto.getComponent(
+                'parallel', axisDto.get('parallelIndex')
             ).coordinateSystem;
 
-            var areaSelectStyle = axisModel.getAreaSelectStyle();
+            var areaSelectStyle = axisDto.getAreaSelectStyle();
             var areaWidth = areaSelectStyle.width;
 
-            var axisLayout = coordSys.getAxisLayout(axisModel.axis.dim);
+            var axisLayout = coordSys.getAxisLayout(axisDto.axis.dim);
             var builderOpt = zrUtil.extend(
                 {
                     strokeContainThreshold: areaWidth,
@@ -49,7 +49,7 @@ define(function (require) {
                 axisLayout
             );
 
-            var axisBuilder = new AxisBuilder(axisModel, builderOpt);
+            var axisBuilder = new AxisBuilder(axisDto, builderOpt);
 
             zrUtil.each(elementList, axisBuilder.add, axisBuilder);
 
@@ -58,13 +58,13 @@ define(function (require) {
             this.group.add(axisGroup);
 
             this._buildSelectController(
-                axisGroup, areaSelectStyle, axisModel, api
+                axisGroup, areaSelectStyle, axisDto, api
             );
         },
 
-        _buildSelectController: function (axisGroup, areaSelectStyle, axisModel, api) {
+        _buildSelectController: function (axisGroup, areaSelectStyle, axisDto, api) {
 
-            var axis = axisModel.axis;
+            var axis = axisDto.axis;
             var selectController = this._selectController;
 
             if (!selectController) {
@@ -80,7 +80,7 @@ define(function (require) {
             selectController.enable(axisGroup);
 
             // After filtering, axis may change, select area needs to be update.
-            var ranges = zrUtil.map(axisModel.activeIntervals, function (interval) {
+            var ranges = zrUtil.map(axisDto.activeIntervals, function (interval) {
                 return [
                     axis.dataToCoord(interval[0], true),
                     axis.dataToCoord(interval[1], true)
@@ -91,8 +91,8 @@ define(function (require) {
 
         _onSelected: function (ranges) {
             // Do not cache these object, because the mey be changed.
-            var axisModel = this.axisModel;
-            var axis = axisModel.axis;
+            var axisDto = this.axisDto;
+            var axis = axisDto.axis;
 
             var intervals = zrUtil.map(ranges, function (range) {
                 return [
@@ -102,7 +102,7 @@ define(function (require) {
             });
             this.api.dispatchAction({
                 type: 'axisAreaSelect',
-                parallelAxisId: axisModel.id,
+                parallelAxisId: axisDto.id,
                 intervals: intervals
             });
         },
@@ -125,12 +125,12 @@ define(function (require) {
         }
     });
 
-    function fromAxisAreaSelect(axisModel, ecModel, payload) {
+    function fromAxisAreaSelect(axisDto, ecDto, payload) {
         return payload
             && payload.type === 'axisAreaSelect'
-            && ecModel.findComponents(
+            && ecDto.findComponents(
                 {mainType: 'parallelAxis', query: payload}
-            )[0] === axisModel;
+            )[0] === axisDto;
     }
 
     return AxisView;

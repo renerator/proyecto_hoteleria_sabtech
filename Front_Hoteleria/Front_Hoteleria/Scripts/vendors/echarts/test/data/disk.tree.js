@@ -8873,13 +8873,13 @@ window.disk_usage_tree =
             },
             {
                 "value": 13020,
-                "name": "IOSCSIArchitectureModelFamily.kext",
-                "path": "Extensions/IOSCSIArchitectureModelFamily.kext",
+                "name": "IOSCSIArchitectureDtoFamily.kext",
+                "path": "Extensions/IOSCSIArchitectureDtoFamily.kext",
                 "children": [
                     {
                         "value": 13020,
                         "name": "Contents",
-                        "path": "Extensions/IOSCSIArchitectureModelFamily.kext/Contents"
+                        "path": "Extensions/IOSCSIArchitectureDtoFamily.kext/Contents"
                     }
                 ]
             },

@@ -12,7 +12,7 @@ define(function (require) {
 
         type: 'graph',
 
-        init: function (ecModel, api) {
+        init: function (ecDto, api) {
             var symbolDraw = new SymbolDraw();
             var lineDraw = new LineDraw();
             var group = this.group;
@@ -29,15 +29,15 @@ define(function (require) {
             this._firstRender = true;
         },
 
-        render: function (seriesModel, ecModel, api) {
-            var coordSys = seriesModel.coordinateSystem;
+        render: function (seriesDto, ecDto, api) {
+            var coordSys = seriesDto.coordinateSystem;
             // Only support view and geo coordinate system
             // if (coordSys.type !== 'geo' && coordSys.type !== 'view') {
             //     return;
             // }
 
-            this._model = seriesModel;
-            this._nodeScaleRatio = seriesModel.get('nodeScaleRatio');
+            this._Dto = seriesDto;
+            this._nodeScaleRatio = seriesDto.get('nodeScaleRatio');
 
             var symbolDraw = this._symbolDraw;
             var lineDraw = this._lineDraw;
@@ -53,32 +53,32 @@ define(function (require) {
                     group.attr(groupNewProp);
                 }
                 else {
-                    graphic.updateProps(group, groupNewProp, seriesModel);
+                    graphic.updateProps(group, groupNewProp, seriesDto);
                 }
             }
             // Fix edge contact point with node
-            adjustEdge(seriesModel.getGraph(), this._getNodeGlobalScale(seriesModel));
+            adjustEdge(seriesDto.getGraph(), this._getNodeGlobalScale(seriesDto));
 
 
-            var data = seriesModel.getData();
+            var data = seriesDto.getData();
             symbolDraw.updateData(data);
 
-            var edgeData = seriesModel.getEdgeData();
+            var edgeData = seriesDto.getEdgeData();
             lineDraw.updateData(edgeData);
 
             this._updateNodeAndLinkScale();
 
-            this._updateController(seriesModel, api);
+            this._updateController(seriesDto, api);
 
             clearTimeout(this._layoutTimeout);
-            var forceLayout = seriesModel.forceLayout;
-            var layoutAnimation = seriesModel.get('force.layoutAnimation');
+            var forceLayout = seriesDto.forceLayout;
+            var layoutAnimation = seriesDto.get('force.layoutAnimation');
             if (forceLayout) {
                 this._startForceLayoutIteration(forceLayout, layoutAnimation);
             }
             // Update draggable
             data.eachItemGraphicEl(function (el, idx) {
-                var draggable = data.getItemModel(idx).get('draggable');
+                var draggable = data.getItemDto(idx).get('draggable');
                 if (draggable) {
                     el.on('drag', function () {
                         if (forceLayout) {
@@ -108,7 +108,7 @@ define(function (require) {
             var self = this;
             (function step() {
                 forceLayout.step(function (stopped) {
-                    self.updateLayout(self._model);
+                    self.updateLayout(self._Dto);
                     (self._layouting = !stopped) && (
                         layoutAnimation
                             ? (self._layoutTimeout = setTimeout(step, 16))
@@ -118,7 +118,7 @@ define(function (require) {
             })();
         },
 
-        _updateController: function (seriesModel, api) {
+        _updateController: function (seriesDto, api) {
             var controller = this._controller;
             var group = this.group;
             controller.rectProvider = function () {
@@ -126,21 +126,21 @@ define(function (require) {
                 rect.applyTransform(group.transform);
                 return rect;
             };
-            if (seriesModel.coordinateSystem.type !== 'view') {
+            if (seriesDto.coordinateSystem.type !== 'view') {
                 controller.disable();
                 return;
             }
-            controller.enable(seriesModel.get('roam'));
-            controller.zoomLimit = seriesModel.get('scaleLimit');
-            // Update zoom from model
-            controller.zoom = seriesModel.coordinateSystem.getZoom();
+            controller.enable(seriesDto.get('roam'));
+            controller.zoomLimit = seriesDto.get('scaleLimit');
+            // Update zoom from Dto
+            controller.zoom = seriesDto.coordinateSystem.getZoom();
 
             controller
                 .off('pan')
                 .off('zoom')
                 .on('pan', function (dx, dy) {
                     api.dispatchAction({
-                        seriesId: seriesModel.id,
+                        seriesId: seriesDto.id,
                         type: 'graphRoam',
                         dx: dx,
                         dy: dy
@@ -148,23 +148,23 @@ define(function (require) {
                 })
                 .on('zoom', function (zoom, mouseX, mouseY) {
                     api.dispatchAction({
-                        seriesId: seriesModel.id,
+                        seriesId: seriesDto.id,
                         type: 'graphRoam',
                         zoom:  zoom,
                         originX: mouseX,
                         originY: mouseY
                     });
                     this._updateNodeAndLinkScale();
-                    adjustEdge(seriesModel.getGraph(), this._getNodeGlobalScale(seriesModel));
+                    adjustEdge(seriesDto.getGraph(), this._getNodeGlobalScale(seriesDto));
                     this._lineDraw.updateLayout();
                 }, this);
         },
 
         _updateNodeAndLinkScale: function () {
-            var seriesModel = this._model;
-            var data = seriesModel.getData();
+            var seriesDto = this._Dto;
+            var data = seriesDto.getData();
 
-            var nodeScale = this._getNodeGlobalScale(seriesModel);
+            var nodeScale = this._getNodeGlobalScale(seriesDto);
             var invScale = [nodeScale, nodeScale];
 
             data.eachItemGraphicEl(function (el, idx) {
@@ -172,8 +172,8 @@ define(function (require) {
             });
         },
 
-        _getNodeGlobalScale: function (seriesModel) {
-            var coordSys = seriesModel.coordinateSystem;
+        _getNodeGlobalScale: function (seriesDto) {
+            var coordSys = seriesDto.coordinateSystem;
             if (coordSys.type !== 'view') {
                 return 1;
             }
@@ -189,14 +189,14 @@ define(function (require) {
             return nodeScale / groupZoom;
         },
 
-        updateLayout: function (seriesModel) {
+        updateLayout: function (seriesDto) {
             this._symbolDraw.updateLayout();
             this._lineDraw.updateLayout();
 
-            adjustEdge(seriesModel.getGraph(), this._getNodeGlobalScale(seriesModel));
+            adjustEdge(seriesDto.getGraph(), this._getNodeGlobalScale(seriesDto));
         },
 
-        remove: function (ecModel, api) {
+        remove: function (ecDto, api) {
             this._symbolDraw && this._symbolDraw.remove();
             this._lineDraw && this._lineDraw.remove();
         }

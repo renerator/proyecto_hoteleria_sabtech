@@ -4,13 +4,13 @@ define(function(require) {
 
     var zrUtil = require('zrender/core/util');
     var formatUtil = require('../util/format');
-    var modelUtil = require('../util/model');
-    var ComponentModel = require('./Component');
+    var DtoUtil = require('../util/Dto');
+    var ComponentDto = require('./Component');
 
     var encodeHTML = formatUtil.encodeHTML;
     var addCommas = formatUtil.addCommas;
 
-    var SeriesModel = ComponentModel.extend({
+    var SeriesDto = ComponentDto.extend({
 
         type: 'series.__base__',
 
@@ -35,7 +35,7 @@ define(function(require) {
         // PENDING
         legendDataProvider: null,
 
-        init: function (option, parentModel, ecModel, extraOpt) {
+        init: function (option, parentDto, ecDto, extraOpt) {
 
             /**
              * @type {number}
@@ -43,13 +43,13 @@ define(function(require) {
              */
             this.seriesIndex = this.componentIndex;
 
-            this.mergeDefaultAndTheme(option, ecModel);
+            this.mergeDefaultAndTheme(option, ecDto);
 
             /**
              * @type {module:echarts/data/List|module:echarts/data/Tree|module:echarts/data/Graph}
              * @private
              */
-            this._dataBeforeProcessed = this.getInitialData(option, ecModel);
+            this._dataBeforeProcessed = this.getInitialData(option, ecDto);
 
             // If we reverse the order (make this._data firstly, and then make
             // this._dataBeforeProcessed by cloneShallow), cloneShallow will
@@ -62,27 +62,27 @@ define(function(require) {
         /**
          * Util for merge default and theme to option
          * @param  {Object} option
-         * @param  {module:echarts/model/Global} ecModel
+         * @param  {module:echarts/Dto/Global} ecDto
          */
-        mergeDefaultAndTheme: function (option, ecModel) {
+        mergeDefaultAndTheme: function (option, ecDto) {
             zrUtil.merge(
                 option,
-                ecModel.getTheme().get(this.subType)
+                ecDto.getTheme().get(this.subType)
             );
             zrUtil.merge(option, this.getDefaultOption());
 
             // Default label emphasis `position` and `show`
             // FIXME Set label in mergeOption
-            modelUtil.defaultEmphasis(option.label, modelUtil.LABEL_OPTIONS);
+            DtoUtil.defaultEmphasis(option.label, DtoUtil.LABEL_OPTIONS);
 
             this.fillDataTextStyle(option.data);
         },
 
-        mergeOption: function (newSeriesOption, ecModel) {
+        mergeOption: function (newSeriesOption, ecDto) {
             newSeriesOption = zrUtil.merge(this.option, newSeriesOption, true);
             this.fillDataTextStyle(newSeriesOption.data);
 
-            var data = this.getInitialData(newSeriesOption, ecModel);
+            var data = this.getInitialData(newSeriesOption, ecDto);
             // TODO Merge data?
             if (data) {
                 this._data = data;
@@ -97,7 +97,7 @@ define(function(require) {
             if (data) {
                 for (var i = 0; i < data.length; i++) {
                     if (data[i] && data[i].label) {
-                        modelUtil.defaultEmphasis(data[i].label, modelUtil.LABEL_OPTIONS);
+                        DtoUtil.defaultEmphasis(data[i].label, DtoUtil.LABEL_OPTIONS);
                     }
                 }
             }
@@ -209,7 +209,7 @@ define(function(require) {
         getAxisTooltipDataIndex: null
     });
 
-    zrUtil.mixin(SeriesModel, modelUtil.dataFormatMixin);
+    zrUtil.mixin(SeriesDto, DtoUtil.dataFormatMixin);
 
-    return SeriesModel;
+    return SeriesDto;
 });

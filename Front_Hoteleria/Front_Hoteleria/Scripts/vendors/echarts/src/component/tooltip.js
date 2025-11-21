@@ -1,7 +1,7 @@
 // FIXME Better way to pack data in graphic element
 define(function (require) {
 
-    require('./tooltip/TooltipModel');
+    require('./tooltip/TooltipDto');
 
     require('./tooltip/TooltipView');
 

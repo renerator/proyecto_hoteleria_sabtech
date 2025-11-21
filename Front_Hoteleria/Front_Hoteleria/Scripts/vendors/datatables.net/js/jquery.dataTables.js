@@ -107,7 +107,7 @@
 		 *    ("current") or not ("all"). If 'current' is given, then order is assumed to be
 		 *    'current' and filter is 'applied', regardless of what they might be given as.
 		 *  @returns {object} jQuery object, filtered by the given selector.
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -157,7 +157,7 @@
 		 *  @returns {array} Data for the matched elements. If any elements, as a result of the
 		 *    selector, were not TR, TD or TH elements in the DataTable, they will have a null
 		 *    entry in the array.
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -222,9 +222,9 @@
 		 *    </ul>
 		 *  @param {bool} [redraw=true] redraw the table or not
 		 *  @returns {array} An array of integers, representing the list of indexes in
-		 *    <i>aoData</i> ({@link DataTable.models.oSettings}) that have been added to
+		 *    <i>aoData</i> ({@link DataTable.Dtos.oSettings}) that have been added to
 		 *    the table.
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -269,7 +269,7 @@
 		 * through the sWidth parameter). This can be useful when the width of the table's
 		 * parent element changes (for example a window resize).
 		 *  @param {boolean} [bRedraw=true] Redraw the table or not, you will typically want to
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -303,7 +303,7 @@
 		/**
 		 * Quickly and simply clear a table
 		 *  @param {bool} [bRedraw=true] redraw the table or not
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -329,7 +329,7 @@
 		 * are currently 'open'.
 		 *  @param {node} nTr the table row to 'close'
 		 *  @returns {int} 0 on success, or 1 if failed (can't find the row)
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -361,7 +361,7 @@
 		 *  @param {function|null} [callBack] Callback function
 		 *  @param {bool} [redraw=true] Redraw the table or not
 		 *  @returns {array} The row that was deleted
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -397,7 +397,7 @@
 		 * Restore the table to it's original state in the DOM by removing all of DataTables
 		 * enhancements, alterations to the DOM structure of the table and event listeners.
 		 *  @param {boolean} [remove=false] Completely remove the table from the DOM
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -416,7 +416,7 @@
 		/**
 		 * Redraw the table
 		 *  @param {bool} [complete=true] Re-filter and resort (if enabled) the table before the draw.
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -443,7 +443,7 @@
 		 *  @param {bool} [bSmart=true] Perform smart filtering or not
 		 *  @param {bool} [bShowGlobal=true] Show the input global filter in it's input box(es)
 		 *  @param {bool} [bCaseInsensitive=true] Do case-insensitive matching (true) or not (false)
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -481,7 +481,7 @@
 		 *  @returns {array|object|string} If mRow is undefined, then the data for all rows is
 		 *    returned. If mRow is defined, just data for that row, and is iCol is
 		 *    defined, only data for the designated cell is returned.
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -529,7 +529,7 @@
 		 *  @param {int} [iRow] Optional row index for the TR element you want
 		 *  @returns {array|node} If iRow is undefined, returns an array of all TR elements
 		 *    in the table's body, or iRow is defined, just the TR element requested.
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -557,7 +557,7 @@
 		 *  @returns {int} If nNode is given as a TR, then a single index is returned, or
 		 *    if given as a cell, an array of [row index, column index (visible),
 		 *    column index (all)] is given.
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -603,7 +603,7 @@
 		 * Check to see if a row is 'open' or not.
 		 *  @param {node} nTr the table row to check
 		 *  @returns {boolean} true if the row is currently open, false otherwise
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -639,7 +639,7 @@
 		 *  @returns {node} The row opened. Note that if the table row passed in as the
 		 *    first parameter, is not found in the table, this method will silently
 		 *    return.
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -675,7 +675,7 @@
 		 *  @param {string|int} mAction Paging action to take: "first", "previous", "next" or "last"
 		 *    or page number to jump to (integer), note that page 0 is the first page.
 		 *  @param {bool} [bRedraw=true] Redraw the table or not
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -699,7 +699,7 @@
 		 *  @param {int} iCol The column whose display should be changed
 		 *  @param {bool} bShow Show (true) or hide (false) the column
 		 *  @param {bool} [bRedraw=true] Redraw the table or not
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -723,8 +723,8 @@
 		/**
 		 * Get the settings for a particular table for external manipulation
 		 *  @returns {object} DataTables settings object. See
-		 *    {@link DataTable.models.oSettings}
-		 *  @dtopt API
+		 *    {@link DataTable.Dtos.oSettings}
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -746,7 +746,7 @@
 		 * Sort the table by a particular column
 		 *  @param {int} iCol the data index to sort on. Note that this will not match the
 		 *    'display index' if you have hidden data entries
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -768,7 +768,7 @@
 		 *  @param {node} nNode the element to attach the sort listener to
 		 *  @param {int} iColumn the column that a click on this node will sort on
 		 *  @param {function} [fnCallback] callback function when sort is run
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -797,7 +797,7 @@
 		 *  @param {bool} [bRedraw=true] Redraw the table or not
 		 *  @param {bool} [bAction=true] Perform pre-draw actions or not
 		 *  @returns {int} 0 on success, 1 on error
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -837,7 +837,7 @@
 		 *  @returns {boolean} true if this version of DataTables is greater or equal to the required
 		 *    version, or false if this version of DataTales is not suitable
 		 *  @method
-		 *  @dtopt API
+		 *  @Modelpt API
 		 *  @deprecated Since v1.10
 		 *
 		 *  @example
@@ -950,7 +950,7 @@
 			}
 			
 			/* Create the settings object for this table and set some of the default parameters */
-			var oSettings = $.extend( true, {}, DataTable.models.oSettings, {
+			var oSettings = $.extend( true, {}, DataTable.Dtos.oSettings, {
 				"sDestroyWidth": $this[0].style.width,
 				"sInstance":     sId,
 				"sTableId":      sId
@@ -1677,7 +1677,7 @@
 	/**
 	 * Convert from camel case parameters to Hungarian, based on a Hungarian map
 	 * created by _fnHungarianMap.
-	 *  @param {object} src The model object which holds all parameters that can be
+	 *  @param {object} src The Dto object which holds all parameters that can be
 	 *    mapped.
 	 *  @param {object} user The object to convert from camel case to Hungarian.
 	 *  @param {boolean} force When set to `true`, properties which already have a
@@ -1804,7 +1804,7 @@
 		if ( searchCols ) {
 			for ( var i=0, ien=searchCols.length ; i<ien ; i++ ) {
 				if ( searchCols[i] ) {
-					_fnCamelToHungarian( DataTable.models.oSearch, searchCols[i] );
+					_fnCamelToHungarian( DataTable.Dtos.oSearch, searchCols[i] );
 				}
 			}
 		}
@@ -1956,7 +1956,7 @@
 		// Add column to aoColumns array
 		var oDefaults = DataTable.defaults.column;
 		var iCol = oSettings.aoColumns.length;
-		var oCol = $.extend( {}, DataTable.models.oColumn, oDefaults, {
+		var oCol = $.extend( {}, DataTable.Dtos.oColumn, oDefaults, {
 			"nTh": nTh ? nTh : document.createElement('th'),
 			"sTitle":    oDefaults.sTitle    ? oDefaults.sTitle    : nTh ? nTh.innerHTML : '',
 			"aDataSort": oDefaults.aDataSort ? oDefaults.aDataSort : [iCol],
@@ -1969,7 +1969,7 @@
 		// passed into extend can be undefined. This allows the user to give a default
 		// with only some of the parameters defined, and also not give a default
 		var searchCols = oSettings.aoPreSearchCols;
-		searchCols[ iCol ] = $.extend( {}, DataTable.models.oSearch, searchCols[ iCol ] );
+		searchCols[ iCol ] = $.extend( {}, DataTable.Dtos.oSearch, searchCols[ iCol ] );
 	
 		// Use the default column options function to initialise classes etc
 		_fnColumnOptions( oSettings, iCol, $(nTh).data() );
@@ -2373,7 +2373,7 @@
 	{
 		/* Create the object for storing information about this new row */
 		var iRow = oSettings.aoData.length;
-		var oData = $.extend( true, {}, DataTable.models.oRow, {
+		var oData = $.extend( true, {}, DataTable.Dtos.oRow, {
 			src: nTr ? 'dom' : 'data',
 			idx: iRow
 		} );
@@ -9034,7 +9034,7 @@
 	 *    the required version, or false if this version of DataTales is not
 	 *    suitable
 	 *  @static
-	 *  @dtopt API-Static
+	 *  @Modelpt API-Static
 	 *
 	 *  @example
 	 *    alert( $.fn.dataTable.versionCheck( '1.9.0' ) );
@@ -9070,7 +9070,7 @@
 	 *      table is passed on, only the first will be checked
 	 *  @returns {boolean} true the table given is a DataTable, or false otherwise
 	 *  @static
-	 *  @dtopt API-Static
+	 *  @Modelpt API-Static
 	 *
 	 *  @example
 	 *    if ( ! $.fn.DataTable.isDataTable( '#example' ) ) {
@@ -9104,7 +9104,7 @@
 	 *  @returns {array} Array of `table` nodes (not DataTable instances) which are
 	 *    DataTables
 	 *  @static
-	 *  @dtopt API-Static
+	 *  @Modelpt API-Static
 	 *
 	 *  @example
 	 *    $.each( $.fn.dataTable.tables(true), function () {
@@ -9138,7 +9138,7 @@
 	 * either the 1.9 style Hungarian notation, or the 1.10+ style camelCase
 	 * parameters.
 	 *
-	 *  @param {object} src The model object which holds all parameters that can be
+	 *  @param {object} src The Dto object which holds all parameters that can be
 	 *    mapped.
 	 *  @param {object} user The object to convert from camel case to Hungarian.
 	 *  @param {boolean} force When set to `true`, properties which already have a
@@ -9384,12 +9384,12 @@
 	DataTable.settings = [];
 
 	/**
-	 * Object models container, for the various models that DataTables has
-	 * available to it. These models define the objects that are used to hold
+	 * Object Dtos container, for the various Dtos that DataTables has
+	 * available to it. These Dtos define the objects that are used to hold
 	 * the active state and configuration of the table.
 	 *  @namespace
 	 */
-	DataTable.models = {};
+	DataTable.Dtos = {};
 	
 	
 	
@@ -9398,7 +9398,7 @@
 	 * search information for the global filter and individual column filters.
 	 *  @namespace
 	 */
-	DataTable.models.oSearch = {
+	DataTable.Dtos.oSearch = {
 		/**
 		 * Flag to indicate if the filtering should be case insensitive or not
 		 *  @type boolean
@@ -9439,7 +9439,7 @@
 	 * aoData array.
 	 *  @namespace
 	 */
-	DataTable.models.oRow = {
+	DataTable.Dtos.oRow = {
 		/**
 		 * TR element for the row
 		 *  @type node
@@ -9543,7 +9543,7 @@
 	 * be done through the initialisation options.
 	 *  @namespace
 	 */
-	DataTable.models.oColumn = {
+	DataTable.Dtos.oColumn = {
 		/**
 		 * Column index. This could be worked out on-the-fly with $.inArray, but it
 		 * is faster to just hold it as a variable
@@ -9807,7 +9807,7 @@
 		 *  @type array
 		 *  @default null
 		 *
-		 *  @dtopt Option
+		 *  @Modelpt Option
 		 *  @name DataTable.defaults.data
 		 *
 		 *  @example
@@ -9870,7 +9870,7 @@
 		 *  @type array
 		 *  @default [[0,'asc']]
 		 *
-		 *  @dtopt Option
+		 *  @Modelpt Option
 		 *  @name DataTable.defaults.order
 		 *
 		 *  @example
@@ -9901,7 +9901,7 @@
 		 *  @type array
 		 *  @default null
 		 *
-		 *  @dtopt Option
+		 *  @Modelpt Option
 		 *  @name DataTable.defaults.orderFixed
 		 *
 		 *  @example
@@ -9988,7 +9988,7 @@
 		 *  @type string|object|function
 		 *  @default null
 		 *
-		 *  @dtopt Option
+		 *  @Modelpt Option
 		 *  @name DataTable.defaults.ajax
 		 *  @since 1.10.0
 		 *
@@ -10084,7 +10084,7 @@
 		 *  @type array
 		 *  @default [ 10, 25, 50, 100 ]
 		 *
-		 *  @dtopt Option
+		 *  @Modelpt Option
 		 *  @name DataTable.defaults.lengthMenu
 		 *
 		 *  @example
@@ -10142,7 +10142,7 @@
 		 *  @type array
 		 *  @default []
 		 *
-		 *  @dtopt Option
+		 *  @Modelpt Option
 		 *  @name DataTable.defaults.searchCols
 		 *
 		 *  @example
@@ -10168,7 +10168,7 @@
 		 *  @default null <i>Will take the values determined by the `oClasses.stripe*`
 		 *    options</i>
 		 *
-		 *  @dtopt Option
+		 *  @Modelpt Option
 		 *  @name DataTable.defaults.stripeClasses
 		 *
 		 *  @example
@@ -10188,7 +10188,7 @@
 		 *  @type boolean
 		 *  @default true
 		 *
-		 *  @dtopt Features
+		 *  @Modelpt Features
 		 *  @name DataTable.defaults.autoWidth
 		 *
 		 *  @example
@@ -10210,7 +10210,7 @@
 		 *  @type boolean
 		 *  @default false
 		 *
-		 *  @dtopt Features
+		 *  @Modelpt Features
 		 *  @name DataTable.defaults.deferRender
 		 *
 		 *  @example
@@ -10232,7 +10232,7 @@
 		 *  @type boolean
 		 *  @default false
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.destroy
 		 *
 		 *  @example
@@ -10263,7 +10263,7 @@
 		 *  @type boolean
 		 *  @default true
 		 *
-		 *  @dtopt Features
+		 *  @Modelpt Features
 		 *  @name DataTable.defaults.searching
 		 *
 		 *  @example
@@ -10283,7 +10283,7 @@
 		 *  @type boolean
 		 *  @default true
 		 *
-		 *  @dtopt Features
+		 *  @Modelpt Features
 		 *  @name DataTable.defaults.info
 		 *
 		 *  @example
@@ -10303,7 +10303,7 @@
 		 *  @type boolean
 		 *  @default false
 		 *
-		 *  @dtopt Features
+		 *  @Modelpt Features
 		 *  @name DataTable.defaults.jQueryUI
 		 *
 		 *  @example
@@ -10322,7 +10322,7 @@
 		 *  @type boolean
 		 *  @default true
 		 *
-		 *  @dtopt Features
+		 *  @Modelpt Features
 		 *  @name DataTable.defaults.lengthChange
 		 *
 		 *  @example
@@ -10340,7 +10340,7 @@
 		 *  @type boolean
 		 *  @default true
 		 *
-		 *  @dtopt Features
+		 *  @Modelpt Features
 		 *  @name DataTable.defaults.paging
 		 *
 		 *  @example
@@ -10361,7 +10361,7 @@
 		 *  @type boolean
 		 *  @default false
 		 *
-		 *  @dtopt Features
+		 *  @Modelpt Features
 		 *  @name DataTable.defaults.processing
 		 *
 		 *  @example
@@ -10385,7 +10385,7 @@
 		 *  @type boolean
 		 *  @default false
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.retrieve
 		 *
 		 *  @example
@@ -10422,7 +10422,7 @@
 		 *  @type boolean
 		 *  @default false
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.scrollCollapse
 		 *
 		 *  @example
@@ -10443,8 +10443,8 @@
 		 *  @type boolean
 		 *  @default false
 		 *
-		 *  @dtopt Features
-		 *  @dtopt Server-side
+		 *  @Modelpt Features
+		 *  @Modelpt Server-side
 		 *  @name DataTable.defaults.serverSide
 		 *
 		 *  @example
@@ -10464,7 +10464,7 @@
 		 *  @type boolean
 		 *  @default true
 		 *
-		 *  @dtopt Features
+		 *  @Modelpt Features
 		 *  @name DataTable.defaults.ordering
 		 *
 		 *  @example
@@ -10483,7 +10483,7 @@
 		 *  @type boolean
 		 *  @default true
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.orderMulti
 		 *
 		 *  @example
@@ -10504,7 +10504,7 @@
 		 *  @type boolean
 		 *  @default false
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.orderCellsTop
 		 *
 		 *  @example
@@ -10526,7 +10526,7 @@
 		 *  @type boolean
 		 *  @default true
 		 *
-		 *  @dtopt Features
+		 *  @Modelpt Features
 		 *  @name DataTable.defaults.orderClasses
 		 *
 		 *  @example
@@ -10551,7 +10551,7 @@
 		 *  @type boolean
 		 *  @default false
 		 *
-		 *  @dtopt Features
+		 *  @Modelpt Features
 		 *  @name DataTable.defaults.stateSave
 		 *
 		 *  @example
@@ -10573,7 +10573,7 @@
 		 *  @param {array} data Raw data array for this row
 		 *  @param {int} dataIndex The index of this row in the internal aoData array
 		 *
-		 *  @dtopt Callbacks
+		 *  @Modelpt Callbacks
 		 *  @name DataTable.defaults.createdRow
 		 *
 		 *  @example
@@ -10598,7 +10598,7 @@
 		 *  @type function
 		 *  @param {object} settings DataTables settings object
 		 *
-		 *  @dtopt Callbacks
+		 *  @Modelpt Callbacks
 		 *  @name DataTable.defaults.drawCallback
 		 *
 		 *  @example
@@ -10626,7 +10626,7 @@
 		 *  @param {array int} display Index array to translate the visual position
 		 *    to the full data array
 		 *
-		 *  @dtopt Callbacks
+		 *  @Modelpt Callbacks
 		 *  @name DataTable.defaults.footerCallback
 		 *
 		 *  @example
@@ -10652,7 +10652,7 @@
 		 *  @param {int} toFormat number to be formatted
 		 *  @returns {string} formatted string for DataTables to show the number
 		 *
-		 *  @dtopt Callbacks
+		 *  @Modelpt Callbacks
 		 *  @name DataTable.defaults.formatNumber
 		 *
 		 *  @example
@@ -10690,7 +10690,7 @@
 		 *  @param {array int} display Index array to translate the visual position
 		 *    to the full data array
 		 *
-		 *  @dtopt Callbacks
+		 *  @Modelpt Callbacks
 		 *  @name DataTable.defaults.headerCallback
 		 *
 		 *  @example
@@ -10722,7 +10722,7 @@
 		 *    own rules
 		 *  @returns {string} The string to be displayed in the information element.
 		 *
-		 *  @dtopt Callbacks
+		 *  @Modelpt Callbacks
 		 *  @name DataTable.defaults.infoCallback
 		 *
 		 *  @example
@@ -10745,7 +10745,7 @@
 		 *  @param {object} json The JSON object request from the server - only
 		 *    present if client-side Ajax sourced data is used
 		 *
-		 *  @dtopt Callbacks
+		 *  @Modelpt Callbacks
 		 *  @name DataTable.defaults.initComplete
 		 *
 		 *  @example
@@ -10769,7 +10769,7 @@
 		 *  @returns {boolean} False will cancel the draw, anything else (including no
 		 *    return) will allow it to complete.
 		 *
-		 *  @dtopt Callbacks
+		 *  @Modelpt Callbacks
 		 *  @name DataTable.defaults.preDrawCallback
 		 *
 		 *  @example
@@ -10797,7 +10797,7 @@
 		 *  @param {int} displayIndexFull The index of the data in the full list of
 		 *    rows (after filtering)
 		 *
-		 *  @dtopt Callbacks
+		 *  @Modelpt Callbacks
 		 *  @name DataTable.defaults.rowCallback
 		 *
 		 *  @example
@@ -10832,8 +10832,8 @@
 		 *    process that will draw the data on the page.
 		 *  @param {object} settings DataTables settings object
 		 *
-		 *  @dtopt Callbacks
-		 *  @dtopt Server-side
+		 *  @Modelpt Callbacks
+		 *  @Modelpt Server-side
 		 *  @name DataTable.defaults.serverData
 		 *
 		 *  @deprecated 1.10. Please use `ajax` for this functionality now.
@@ -10859,8 +10859,8 @@
 		 *  @returns {undefined} Ensure that you modify the data array passed in,
 		 *    as this is passed by reference.
 		 *
-		 *  @dtopt Callbacks
-		 *  @dtopt Server-side
+		 *  @Modelpt Callbacks
+		 *  @Modelpt Server-side
 		 *  @name DataTable.defaults.serverParams
 		 *
 		 *  @deprecated 1.10. Please use `ajax` for this functionality now.
@@ -10877,7 +10877,7 @@
 		 *  @param {object} settings DataTables settings object
 		 *  @return {object} The DataTables state object to be loaded
 		 *
-		 *  @dtopt Callbacks
+		 *  @Modelpt Callbacks
 		 *  @name DataTable.defaults.stateLoadCallback
 		 *
 		 *  @example
@@ -10924,7 +10924,7 @@
 		 *  @param {object} settings DataTables settings object
 		 *  @param {object} data The state object that is to be loaded
 		 *
-		 *  @dtopt Callbacks
+		 *  @Modelpt Callbacks
 		 *  @name DataTable.defaults.stateLoadParams
 		 *
 		 *  @example
@@ -10959,7 +10959,7 @@
 		 *  @param {object} settings DataTables settings object
 		 *  @param {object} data The state object that was loaded
 		 *
-		 *  @dtopt Callbacks
+		 *  @Modelpt Callbacks
 		 *  @name DataTable.defaults.stateLoaded
 		 *
 		 *  @example
@@ -10985,7 +10985,7 @@
 		 *  @param {object} settings DataTables settings object
 		 *  @param {object} data The state object to be saved
 		 *
-		 *  @dtopt Callbacks
+		 *  @Modelpt Callbacks
 		 *  @name DataTable.defaults.stateSaveCallback
 		 *
 		 *  @example
@@ -11025,7 +11025,7 @@
 		 *  @param {object} settings DataTables settings object
 		 *  @param {object} data The state object to be saved
 		 *
-		 *  @dtopt Callbacks
+		 *  @Modelpt Callbacks
 		 *  @name DataTable.defaults.stateSaveParams
 		 *
 		 *  @example
@@ -11049,7 +11049,7 @@
 		 *  @type int
 		 *  @default 7200 <i>(2 hours)</i>
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.stateDuration
 		 *
 		 *  @example
@@ -11077,7 +11077,7 @@
 		 *  @type int | array
 		 *  @default null
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.deferLoading
 		 *
 		 *  @example
@@ -11113,7 +11113,7 @@
 		 *  @type int
 		 *  @default 10
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.pageLength
 		 *
 		 *  @example
@@ -11134,7 +11134,7 @@
 		 *  @type int
 		 *  @default 0
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.displayStart
 		 *
 		 *  @example
@@ -11157,7 +11157,7 @@
 		 *  @type int
 		 *  @default 0
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.tabIndex
 		 *
 		 *  @example
@@ -11204,7 +11204,7 @@
 				 *  @type string
 				 *  @default : activate to sort column ascending
 				 *
-				 *  @dtopt Language
+				 *  @Modelpt Language
 				 *  @name DataTable.defaults.language.aria.sortAscending
 				 *
 				 *  @example
@@ -11227,7 +11227,7 @@
 				 *  @type string
 				 *  @default : activate to sort column ascending
 				 *
-				 *  @dtopt Language
+				 *  @Modelpt Language
 				 *  @name DataTable.defaults.language.aria.sortDescending
 				 *
 				 *  @example
@@ -11257,7 +11257,7 @@
 				 *  @type string
 				 *  @default First
 				 *
-				 *  @dtopt Language
+				 *  @Modelpt Language
 				 *  @name DataTable.defaults.language.paginate.first
 				 *
 				 *  @example
@@ -11280,7 +11280,7 @@
 				 *  @type string
 				 *  @default Last
 				 *
-				 *  @dtopt Language
+				 *  @Modelpt Language
 				 *  @name DataTable.defaults.language.paginate.last
 				 *
 				 *  @example
@@ -11303,7 +11303,7 @@
 				 *  @type string
 				 *  @default Next
 				 *
-				 *  @dtopt Language
+				 *  @Modelpt Language
 				 *  @name DataTable.defaults.language.paginate.next
 				 *
 				 *  @example
@@ -11326,7 +11326,7 @@
 				 *  @type string
 				 *  @default Previous
 				 *
-				 *  @dtopt Language
+				 *  @Modelpt Language
 				 *  @name DataTable.defaults.language.paginate.previous
 				 *
 				 *  @example
@@ -11351,7 +11351,7 @@
 			 *  @type string
 			 *  @default No data available in table
 			 *
-			 *  @dtopt Language
+			 *  @Modelpt Language
 			 *  @name DataTable.defaults.language.emptyTable
 			 *
 			 *  @example
@@ -11383,7 +11383,7 @@
 			 *  @type string
 			 *  @default Showing _START_ to _END_ of _TOTAL_ entries
 			 *
-			 *  @dtopt Language
+			 *  @Modelpt Language
 			 *  @name DataTable.defaults.language.info
 			 *
 			 *  @example
@@ -11404,7 +11404,7 @@
 			 *  @type string
 			 *  @default Showing 0 to 0 of 0 entries
 			 *
-			 *  @dtopt Language
+			 *  @Modelpt Language
 			 *  @name DataTable.defaults.language.infoEmpty
 			 *
 			 *  @example
@@ -11426,7 +11426,7 @@
 			 *  @type string
 			 *  @default (filtered from _MAX_ total entries)
 			 *
-			 *  @dtopt Language
+			 *  @Modelpt Language
 			 *  @name DataTable.defaults.language.infoFiltered
 			 *
 			 *  @example
@@ -11449,7 +11449,7 @@
 			 *  @type string
 			 *  @default <i>Empty string</i>
 			 *
-			 *  @dtopt Language
+			 *  @Modelpt Language
 			 *  @name DataTable.defaults.language.infoPostFix
 			 *
 			 *  @example
@@ -11479,7 +11479,7 @@
 			 *  @type string
 			 *  @default 
 			 *
-			 *  @dtopt Language
+			 *  @Modelpt Language
 			 *  @name DataTable.defaults.language.decimal
 			 *
 			 *  @example
@@ -11503,7 +11503,7 @@
 			 *  @type string
 			 *  @default ,
 			 *
-			 *  @dtopt Language
+			 *  @Modelpt Language
 			 *  @name DataTable.defaults.language.thousands
 			 *
 			 *  @example
@@ -11526,7 +11526,7 @@
 			 *  @type string
 			 *  @default Show _MENU_ entries
 			 *
-			 *  @dtopt Language
+			 *  @Modelpt Language
 			 *  @name DataTable.defaults.language.lengthMenu
 			 *
 			 *  @example
@@ -11568,7 +11568,7 @@
 			 *  @type string
 			 *  @default Loading...
 			 *
-			 *  @dtopt Language
+			 *  @Modelpt Language
 			 *  @name DataTable.defaults.language.loadingRecords
 			 *
 			 *  @example
@@ -11589,7 +11589,7 @@
 			 *  @type string
 			 *  @default Processing...
 			 *
-			 *  @dtopt Language
+			 *  @Modelpt Language
 			 *  @name DataTable.defaults.language.processing
 			 *
 			 *  @example
@@ -11613,7 +11613,7 @@
 			 *  @type string
 			 *  @default Search:
 			 *
-			 *  @dtopt Language
+			 *  @Modelpt Language
 			 *  @name DataTable.defaults.language.search
 			 *
 			 *  @example
@@ -11644,7 +11644,7 @@
 			 *  @type string
 			 *  @default 
 			 *
-			 *  @dtopt Language
+			 *  @Modelpt Language
 			 *  @name DataTable.defaults.language.searchPlaceholder
 			 */
 			"sSearchPlaceholder": "",
@@ -11660,7 +11660,7 @@
 			 *  @type string
 			 *  @default <i>Empty string - i.e. disabled</i>
 			 *
-			 *  @dtopt Language
+			 *  @Modelpt Language
 			 *  @name DataTable.defaults.language.url
 			 *
 			 *  @example
@@ -11682,7 +11682,7 @@
 			 *  @type string
 			 *  @default No matching records found
 			 *
-			 *  @dtopt Language
+			 *  @Modelpt Language
 			 *  @name DataTable.defaults.language.zeroRecords
 			 *
 			 *  @example
@@ -11707,9 +11707,9 @@
 		 * DataTables will use it's smart filtering methods (to word match at
 		 * any point in the data), when false this will not be done.
 		 *  @namespace
-		 *  @extends DataTable.models.oSearch
+		 *  @extends DataTable.Dtos.oSearch
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.search
 		 *
 		 *  @example
@@ -11719,7 +11719,7 @@
 		 *      } );
 		 *    } )
 		 */
-		"oSearch": $.extend( {}, DataTable.models.oSearch ),
+		"oSearch": $.extend( {}, DataTable.Dtos.oSearch ),
 	
 	
 		/**
@@ -11734,8 +11734,8 @@
 		 *  @type string
 		 *  @default data
 		 *
-		 *  @dtopt Options
-		 *  @dtopt Server-side
+		 *  @Modelpt Options
+		 *  @Modelpt Server-side
 		 *  @name DataTable.defaults.ajaxDataProp
 		 *
 		 *  @deprecated 1.10. Please use `ajax` for this functionality now.
@@ -11753,8 +11753,8 @@
 		 *  @type string
 		 *  @default null
 		 *
-		 *  @dtopt Options
-		 *  @dtopt Server-side
+		 *  @Modelpt Options
+		 *  @Modelpt Server-side
 		 *  @name DataTable.defaults.ajaxSource
 		 *
 		 *  @deprecated 1.10. Please use `ajax` for this functionality now.
@@ -11803,7 +11803,7 @@
 		 *  @default lfrtip <i>(when `jQueryUI` is false)</i> <b>or</b>
 		 *    <"H"lfr>t<"F"ip> <i>(when `jQueryUI` is true)</i>
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.dom
 		 *
 		 *  @example
@@ -11823,7 +11823,7 @@
 		 *  @type integer
 		 *  @default 0
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.searchDelay
 		 *
 		 *  @example
@@ -11850,7 +11850,7 @@
 		 *  @type string
 		 *  @default simple_numbers
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.pagingType
 		 *
 		 *  @example
@@ -11874,7 +11874,7 @@
 		 *  @type boolean|string
 		 *  @default <i>blank string - i.e. disabled</i>
 		 *
-		 *  @dtopt Features
+		 *  @Modelpt Features
 		 *  @name DataTable.defaults.scrollX
 		 *
 		 *  @example
@@ -11898,7 +11898,7 @@
 		 *  @type string
 		 *  @default <i>blank string - i.e. disabled</i>
 		 *
-		 *  @dtopt Options
+		 *  @Modelpt Options
 		 *  @name DataTable.defaults.scrollXInner
 		 *
 		 *  @example
@@ -11922,7 +11922,7 @@
 		 *  @type string
 		 *  @default <i>blank string - i.e. disabled</i>
 		 *
-		 *  @dtopt Features
+		 *  @Modelpt Features
 		 *  @name DataTable.defaults.scrollY
 		 *
 		 *  @example
@@ -11945,8 +11945,8 @@
 		 *  @type string
 		 *  @default GET
 		 *
-		 *  @dtopt Options
-		 *  @dtopt Server-side
+		 *  @Modelpt Options
+		 *  @Modelpt Server-side
 		 *  @name DataTable.defaults.serverMethod
 		 *
 		 *  @deprecated 1.10. Please use `ajax` for this functionality now.
@@ -11988,7 +11988,7 @@
 	
 	
 	/*
-	 * Developer note - See note in model.defaults.js about the use of Hungarian
+	 * Developer note - See note in Dto.defaults.js about the use of Hungarian
 	 * notation and camel case.
 	 */
 	
@@ -12007,7 +12007,7 @@
 		 *  @default null <i>Takes the value of the column index automatically</i>
 		 *
 		 *  @name DataTable.defaults.column.orderData
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Using `columnDefs`
@@ -12047,7 +12047,7 @@
 		 *  @default [ 'asc', 'desc' ]
 		 *
 		 *  @name DataTable.defaults.column.orderSequence
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Using `columnDefs`
@@ -12084,7 +12084,7 @@
 		 *  @default true
 		 *
 		 *  @name DataTable.defaults.column.searchable
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Using `columnDefs`
@@ -12117,7 +12117,7 @@
 		 *  @default true
 		 *
 		 *  @name DataTable.defaults.column.orderable
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Using `columnDefs`
@@ -12150,7 +12150,7 @@
 		 *  @default true
 		 *
 		 *  @name DataTable.defaults.column.visible
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Using `columnDefs`
@@ -12190,7 +12190,7 @@
 		 *  @param {int} col The column index for aoColumns
 		 *
 		 *  @name DataTable.defaults.column.createdCell
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    $(document).ready( function() {
@@ -12284,7 +12284,7 @@
 		 *  @default null <i>Use automatically calculated column index</i>
 		 *
 		 *  @name DataTable.defaults.column.data
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Read table data from objects
@@ -12444,7 +12444,7 @@
 		 *  @default null Use the data source value.
 		 *
 		 *  @name DataTable.defaults.column.render
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Create a comma separated list from an array of objects
@@ -12520,7 +12520,7 @@
 		 *  @default td
 		 *
 		 *  @name DataTable.defaults.column.cellType
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Make the first column use TH cells
@@ -12542,7 +12542,7 @@
 		 *  @default <i>Empty string</i>
 		 *
 		 *  @name DataTable.defaults.column.class
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Using `columnDefs`
@@ -12584,7 +12584,7 @@
 		 *  @default <i>Empty string<i>
 		 *
 		 *  @name DataTable.defaults.column.contentPadding
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Using `columns`
@@ -12612,7 +12612,7 @@
 		 *  @default null
 		 *
 		 *  @name DataTable.defaults.column.defaultContent
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Using `columnDefs`
@@ -12658,7 +12658,7 @@
 		 *  @default <i>Empty string</i>
 		 *
 		 *  @name DataTable.defaults.column.name
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Using `columnDefs`
@@ -12700,7 +12700,7 @@
 		 *  @default std
 		 *
 		 *  @name DataTable.defaults.column.orderDataType
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Using `columnDefs`
@@ -12740,7 +12740,7 @@
 		 *    original HTML table.</i>
 		 *
 		 *  @name DataTable.defaults.column.title
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Using `columnDefs`
@@ -12781,7 +12781,7 @@
 		 *  @default null <i>Auto-detected from raw data</i>
 		 *
 		 *  @name DataTable.defaults.column.type
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Using `columnDefs`
@@ -12819,7 +12819,7 @@
 		 *  @default null <i>Automatic</i>
 		 *
 		 *  @name DataTable.defaults.column.width
-		 *  @dtopt Columns
+		 *  @Modelpt Columns
 		 *
 		 *  @example
 		 *    // Using `columnDefs`
@@ -12874,7 +12874,7 @@
 	 *    backwards compatibility with older installations. This is something that
 	 *    will be done in 2.0.
 	 */
-	DataTable.models.oSettings = {
+	DataTable.Dtos.oSettings = {
 		/**
 		 * Primary features of DataTables and their enablement state.
 		 *  @namespace
@@ -13117,7 +13117,7 @@
 		"aanFeatures": [],
 	
 		/**
-		 * Store data information - see {@link DataTable.models.oRow} for detailed
+		 * Store data information - see {@link DataTable.Dtos.oRow} for detailed
 		 * information.
 		 *  @type array
 		 *  @default []
@@ -13172,13 +13172,13 @@
 		 * Note that this parameter will be set by the initialisation routine. To
 		 * set a default use {@link DataTable.defaults}.
 		 *  @namespace
-		 *  @extends DataTable.models.oSearch
+		 *  @extends DataTable.Dtos.oSearch
 		 */
 		"oPreviousSearch": {},
 	
 		/**
 		 * Store the applied search for each column - see
-		 * {@link DataTable.models.oSearch} for the format that is used for the
+		 * {@link DataTable.Dtos.oSearch} for the format that is used for the
 		 * filtering information for each column.
 		 *  @type array
 		 *  @default []
@@ -13376,7 +13376,7 @@
 	
 		/**
 		 * Dictate the positioning of DataTables' control elements - see
-		 * {@link DataTable.model.oInit.sDom}.
+		 * {@link DataTable.Dto.oInit.sDom}.
 		 * Note that this parameter will be set by the initialisation routine. To
 		 * set a default use {@link DataTable.defaults}.
 		 *  @type string
@@ -13778,7 +13778,7 @@
 	 * `jQuery.fn.dataTable.ext` where it may be accessed and manipulated. It is
 	 * also aliased to `jQuery.fn.dataTableExt` for historic reasons.
 	 *  @namespace
-	 *  @extends DataTable.models.ext
+	 *  @extends DataTable.Dtos.ext
 	 */
 	
 	
@@ -13853,7 +13853,7 @@
 		 * The `fnInit` function has the following input parameters:
 		 *
 		 * 1. `{object}` DataTables settings object: see
-		 *    {@link DataTable.models.oSettings}
+		 *    {@link DataTable.Dtos.oSettings}
 		 *
 		 * And the following return is expected:
 		 * 
@@ -13889,11 +13889,11 @@
 		 * Searching functions have the following input parameters:
 		 *
 		 * 1. `{object}` DataTables settings object: see
-		 *    {@link DataTable.models.oSettings}
+		 *    {@link DataTable.Dtos.oSettings}
 		 * 2. `{array|object}` Data for the row to be processed (same as the
 		 *    original format that was passed in as the data source, or an array
 		 *    from a DOM data source
-		 * 3. `{int}` Row index ({@link DataTable.models.oSettings.aoData}), which
+		 * 3. `{int}` Row index ({@link DataTable.Dtos.oSettings.aoData}), which
 		 *    can be useful to retrieve the `TR` element if you need DOM interaction.
 		 *
 		 * And the following return is expected:
@@ -14075,7 +14075,7 @@
 		 * The functions defined take two parameters:
 		 *
 		 * 1. `{object}` DataTables settings object: see
-		 *    {@link DataTable.models.oSettings}
+		 *    {@link DataTable.Dtos.oSettings}
 		 * 2. `{int}` Target column index
 		 *
 		 * Each function is expected to return an array:
@@ -14613,7 +14613,7 @@
 	
 	
 	
-	// Built in type detection. See model.ext.aTypes for information about
+	// Built in type detection. See Dto.ext.aTypes for information about
 	// what is required from this methods.
 	$.extend( DataTable.ext.type.detect, [
 		// Plain numbers - first since V8 detects some plain numbers as dates
@@ -14668,7 +14668,7 @@
 	
 	
 	
-	// Filter formatting functions. See model.ext.ofnSearch for information about
+	// Filter formatting functions. See Dto.ext.ofnSearch for information about
 	// what is required from these methods.
 	// 
 	// Note that additional search methods are added for the html numbers and
@@ -15119,7 +15119,7 @@
 	 *  @name DataTable#draw.dt
 	 *  @event
 	 *  @param {event} e jQuery event object
-	 *  @param {object} o DataTables settings object {@link DataTable.models.oSettings}
+	 *  @param {object} o DataTables settings object {@link DataTable.Dtos.oSettings}
 	 */
 
 	/**
@@ -15128,7 +15128,7 @@
 	 *  @name DataTable#search.dt
 	 *  @event
 	 *  @param {event} e jQuery event object
-	 *  @param {object} o DataTables settings object {@link DataTable.models.oSettings}
+	 *  @param {object} o DataTables settings object {@link DataTable.Dtos.oSettings}
 	 */
 
 	/**
@@ -15136,7 +15136,7 @@
 	 *  @name DataTable#page.dt
 	 *  @event
 	 *  @param {event} e jQuery event object
-	 *  @param {object} o DataTables settings object {@link DataTable.models.oSettings}
+	 *  @param {object} o DataTables settings object {@link DataTable.Dtos.oSettings}
 	 */
 
 	/**
@@ -15144,7 +15144,7 @@
 	 *  @name DataTable#order.dt
 	 *  @event
 	 *  @param {event} e jQuery event object
-	 *  @param {object} o DataTables settings object {@link DataTable.models.oSettings}
+	 *  @param {object} o DataTables settings object {@link DataTable.Dtos.oSettings}
 	 */
 
 	/**
@@ -15216,7 +15216,7 @@
 	 *  @name DataTable#xhr.dt
 	 *  @event
 	 *  @param {event} e jQuery event object
-	 *  @param {object} o DataTables settings object {@link DataTable.models.oSettings}
+	 *  @param {object} o DataTables settings object {@link DataTable.Dtos.oSettings}
 	 *  @param {object} json JSON returned from the server
 	 *
 	 *  @example
@@ -15242,7 +15242,7 @@
 	 *  @name DataTable#destroy.dt
 	 *  @event
 	 *  @param {event} e jQuery event object
-	 *  @param {object} o DataTables settings object {@link DataTable.models.oSettings}
+	 *  @param {object} o DataTables settings object {@link DataTable.Dtos.oSettings}
 	 */
 
 	/**
@@ -15251,7 +15251,7 @@
 	 *  @name DataTable#length.dt
 	 *  @event
 	 *  @param {event} e jQuery event object
-	 *  @param {object} o DataTables settings object {@link DataTable.models.oSettings}
+	 *  @param {object} o DataTables settings object {@link DataTable.Dtos.oSettings}
 	 *  @param {integer} len New length
 	 */
 
@@ -15260,7 +15260,7 @@
 	 *  @name DataTable#column-sizing.dt
 	 *  @event
 	 *  @param {event} e jQuery event object
-	 *  @param {object} o DataTables settings object {@link DataTable.models.oSettings}
+	 *  @param {object} o DataTables settings object {@link DataTable.Dtos.oSettings}
 	 */
 
 	/**
@@ -15268,7 +15268,7 @@
 	 *  @name DataTable#column-visibility.dt
 	 *  @event
 	 *  @param {event} e jQuery event object
-	 *  @param {object} o DataTables settings object {@link DataTable.models.oSettings}
+	 *  @param {object} o DataTables settings object {@link DataTable.Dtos.oSettings}
 	 *  @param {int} column Column index
 	 *  @param {bool} vis `false` if column now hidden, or `true` if visible
 	 */

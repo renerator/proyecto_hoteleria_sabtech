@@ -18,33 +18,33 @@ define(function (require) {
         type: 'geoRoam',
         event: 'geoRoam',
         update: 'updateLayout'
-    }, function (payload, ecModel) {
+    }, function (payload, ecDto) {
         var componentType = payload.componentType || 'series';
 
-        ecModel.eachComponent(
+        ecDto.eachComponent(
             { mainType: componentType, query: payload },
-            function (componentModel) {
-                var geo = componentModel.coordinateSystem;
+            function (componentDto) {
+                var geo = componentDto.coordinateSystem;
                 if (geo.type !== 'geo') {
                     return;
                 }
 
                 var res = roamHelper.updateCenterAndZoom(
-                    geo, payload, componentModel.get('scaleLimit')
+                    geo, payload, componentDto.get('scaleLimit')
                 );
 
-                componentModel.setCenter
-                    && componentModel.setCenter(res.center);
+                componentDto.setCenter
+                    && componentDto.setCenter(res.center);
 
-                componentModel.setZoom
-                    && componentModel.setZoom(res.zoom);
+                componentDto.setZoom
+                    && componentDto.setZoom(res.zoom);
 
                 // All map series with same `map` use the same geo coordinate system
                 // So the center and zoom must be in sync. Include the series not selected by legend
                 if (componentType === 'series') {
-                    zrUtil.each(componentModel.seriesGroup, function (seriesModel) {
-                        seriesModel.setCenter(res.center);
-                        seriesModel.setZoom(res.zoom);
+                    zrUtil.each(componentDto.seriesGroup, function (seriesDto) {
+                        seriesDto.setCenter(res.center);
+                        seriesDto.setZoom(res.zoom);
                     });
                 }
             }

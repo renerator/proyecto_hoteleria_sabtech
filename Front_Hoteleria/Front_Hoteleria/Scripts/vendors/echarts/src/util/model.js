@@ -6,7 +6,7 @@ define(function(require) {
 
     var AXIS_DIMS = ['x', 'y', 'z', 'radius', 'angle'];
 
-    var modelUtil = {};
+    var DtoUtil = {};
 
     /**
      * Create "each" method to iterate names.
@@ -16,11 +16,11 @@ define(function(require) {
      * @param  {Array.<string>=} attrs
      * @return {Function}
      */
-    modelUtil.createNameEach = function (names, attrs) {
+    DtoUtil.createNameEach = function (names, attrs) {
         names = names.slice();
-        var capitalNames = zrUtil.map(names, modelUtil.capitalFirst);
+        var capitalNames = zrUtil.map(names, DtoUtil.capitalFirst);
         attrs = (attrs || []).slice();
-        var capitalAttrs = zrUtil.map(attrs, modelUtil.capitalFirst);
+        var capitalAttrs = zrUtil.map(attrs, DtoUtil.capitalFirst);
 
         return function (callback, context) {
             zrUtil.each(names, function (name, index) {
@@ -38,7 +38,7 @@ define(function(require) {
     /**
      * @public
      */
-    modelUtil.capitalFirst = function (str) {
+    DtoUtil.capitalFirst = function (str) {
         return str ? str.charAt(0).toUpperCase() + str.substr(1) : str;
     };
 
@@ -56,14 +56,14 @@ define(function(require) {
      *                            }
      * @param {Object} context
      */
-    modelUtil.eachAxisDim = modelUtil.createNameEach(AXIS_DIMS, ['axisIndex', 'axis', 'index']);
+    DtoUtil.eachAxisDim = DtoUtil.createNameEach(AXIS_DIMS, ['axisIndex', 'axis', 'index']);
 
     /**
      * If value is not array, then translate it to array.
      * @param  {*} value
      * @return {Array} [value] or value
      */
-    modelUtil.normalizeToArray = function (value) {
+    DtoUtil.normalizeToArray = function (value) {
         return zrUtil.isArray(value)
             ? value
             : value == null
@@ -72,9 +72,9 @@ define(function(require) {
     };
 
     /**
-     * If tow dataZoomModels has the same axis controlled, we say that they are 'linked'.
-     * dataZoomModels and 'links' make up one or more graphics.
-     * This function finds the graphic where the source dataZoomModel is in.
+     * If tow dataZoomDtos has the same axis controlled, we say that they are 'linked'.
+     * dataZoomDtos and 'links' make up one or more graphics.
+     * This function finds the graphic where the source dataZoomDto is in.
      *
      * @public
      * @param {Function} forEachNode Node iterator.
@@ -82,7 +82,7 @@ define(function(require) {
      * @param {Function} edgeIdGetter Giving node and edgeType, return an array of edge id.
      * @return {Function} Input: sourceNode, Output: Like {nodes: [], dims: {}}
      */
-    modelUtil.createLinkedNodesFinder = function (forEachNode, forEachEdgeType, edgeIdGetter) {
+    DtoUtil.createLinkedNodesFinder = function (forEachNode, forEachEdgeType, edgeIdGetter) {
 
         return function (sourceNode) {
             var result = {
@@ -159,7 +159,7 @@ define(function(require) {
      * @param {Object} opt
      * @param {Array.<string>} subOpts
      */
-     modelUtil.defaultEmphasis = function (opt, subOpts) {
+     DtoUtil.defaultEmphasis = function (opt, subOpts) {
         if (opt) {
             var emphasisOpt = opt.emphasis = opt.emphasis || {};
             var normalOpt = opt.normal = opt.normal || {};
@@ -174,7 +174,7 @@ define(function(require) {
         }
     };
 
-    modelUtil.LABEL_OPTIONS = ['position', 'show', 'textStyle', 'distance', 'formatter'];
+    DtoUtil.LABEL_OPTIONS = ['position', 'show', 'textStyle', 'distance', 'formatter'];
 
     /**
      * data could be [12, 2323, {value: 223}, [1221, 23], {value: [2, 23]}]
@@ -182,7 +182,7 @@ define(function(require) {
      * @param {string|number|Date|Array|Object} dataItem
      * @return {number|string|Date|Array.<number|string|Date>}
      */
-    modelUtil.getDataItemValue = function (dataItem) {
+    DtoUtil.getDataItemValue = function (dataItem) {
         // Performance sensitive.
         return dataItem && (dataItem.value == null ? dataItem : dataItem.value);
     };
@@ -192,7 +192,7 @@ define(function(require) {
      * @param {string|number|Date} value
      * @param {Object|string} [dimInfo] If string (like 'x'), dimType defaults 'number'.
      */
-    modelUtil.converDataValue = function (value, dimInfo) {
+    DtoUtil.converDataValue = function (value, dimInfo) {
         // Performance sensitive.
         var dimType = dimInfo && dimInfo.type;
         if (dimType === 'ordinal') {
@@ -210,7 +210,7 @@ define(function(require) {
             ? NaN : +value; // If string (like '-'), using '+' parse to NaN
     };
 
-    modelUtil.dataFormatMixin = {
+    DtoUtil.dataFormatMixin = {
         /**
          * Get params for formatter
          * @param {number} dataIndex
@@ -257,14 +257,14 @@ define(function(require) {
         getFormattedLabel: function (dataIndex, status, dataType, dimIndex) {
             status = status || 'normal';
             var data = this.getData(dataType);
-            var itemModel = data.getItemModel(dataIndex);
+            var itemDto = data.getItemDto(dataIndex);
 
             var params = this.getDataParams(dataIndex, dataType);
             if (dimIndex != null && zrUtil.isArray(params.value)) {
                 params.value = params.value[dimIndex];
             }
 
-            var formatter = itemModel.get(['label', status, 'formatter']);
+            var formatter = itemDto.get(['label', status, 'formatter']);
 
             if (typeof formatter === 'function') {
                 params.status = status;
@@ -304,12 +304,12 @@ define(function(require) {
      * Mapping to exists for merge.
      *
      * @public
-     * @param {Array.<Object>|Array.<module:echarts/model/Component>} exists
+     * @param {Array.<Object>|Array.<module:echarts/Dto/Component>} exists
      * @param {Object|Array.<Object>} newCptOptions
      * @return {Array.<Object>} Result, like [{exist: ..., option: ...}, {}],
      *                          which order is the same as exists.
      */
-    modelUtil.mappingToExists = function (exists, newCptOptions) {
+    DtoUtil.mappingToExists = function (exists, newCptOptions) {
         // Mapping by the order by original option (but not order of
         // new option) in merge mode. Because we should ensure
         // some specified index (like xAxisIndex) is consistent with
@@ -335,8 +335,8 @@ define(function(require) {
                         // id has highest priority.
                         (cptOption.id != null && exist.id === cptOption.id + '')
                         || (cptOption.name != null
-                            && !modelUtil.isIdInner(cptOption)
-                            && !modelUtil.isIdInner(exist)
+                            && !DtoUtil.isIdInner(cptOption)
+                            && !DtoUtil.isIdInner(exist)
                             && exist.name === cptOption.name + ''
                         )
                     )
@@ -358,7 +358,7 @@ define(function(require) {
             for (; i < result.length; i++) {
                 var exist = result[i].exist;
                 if (!result[i].option
-                    && !modelUtil.isIdInner(exist)
+                    && !DtoUtil.isIdInner(exist)
                     // Caution:
                     // Do not overwrite id. But name can be overwritten,
                     // because axis use name as 'show label text'.
@@ -384,11 +384,11 @@ define(function(require) {
      * @param {Object} cptOption
      * @return {boolean}
      */
-    modelUtil.isIdInner = function (cptOption) {
+    DtoUtil.isIdInner = function (cptOption) {
         return zrUtil.isObject(cptOption)
             && cptOption.id
             && (cptOption.id + '').indexOf('\0_ec_\0') === 0;
     };
 
-    return modelUtil;
+    return DtoUtil;
 });

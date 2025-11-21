@@ -1,10 +1,10 @@
 define(function(require) {
 
-    var VisualMapModel = require('./VisualMapModel');
+    var VisualMapDto = require('./VisualMapDto');
     var zrUtil = require('zrender/core/util');
     var VisualMapping = require('../../visual/VisualMapping');
 
-    var PiecewiseModel = VisualMapModel.extend({
+    var PiecewiseDto = VisualMapDto.extend({
 
         type: 'visualMap.piecewise',
 
@@ -61,7 +61,7 @@ define(function(require) {
          * @override
          */
         doMergeOption: function (newOption, isInit) {
-            PiecewiseModel.superApply(this, 'doMergeOption', arguments);
+            PiecewiseDto.superApply(this, 'doMergeOption', arguments);
 
             /**
              * The order is always [low, ..., high].
@@ -188,23 +188,23 @@ define(function(require) {
 
         /**
          * @public
-         * @params {number} pieceIndex piece index in visualMapModel.getPieceList()
+         * @params {number} pieceIndex piece index in visualMapDto.getPieceList()
          * @return {Array.<Object>} [{seriesId, dataIndices: <Array.<number>>}, ...]
          */
         findTargetDataIndices: function (pieceIndex) {
             var result = [];
 
-            this.eachTargetSeries(function (seriesModel) {
+            this.eachTargetSeries(function (seriesDto) {
                 var dataIndices = [];
-                var data = seriesModel.getData();
+                var data = seriesDto.getData();
 
                 data.each(this.getDataDimension(data), function (value, dataIndex) {
-                    // Should always base on model pieceList, because it is order sensitive.
+                    // Should always base on Dto pieceList, because it is order sensitive.
                     var pIdx = VisualMapping.findPieceIndex(value, this._pieceList);
                     pIdx === pieceIndex && dataIndices.push(dataIndex);
                 }, true, this);
 
-                result.push({seriesId: seriesModel.id, dataIndices: dataIndices});
+                result.push({seriesId: seriesDto.id, dataIndices: dataIndices});
             }, this);
 
             return result;
@@ -319,5 +319,5 @@ define(function(require) {
         }
     }
 
-    return PiecewiseModel;
+    return PiecewiseDto;
 });

@@ -143,7 +143,7 @@ var jscolor = {
 		} else if(document.createEventObject) {
 			var ev = document.createEventObject();
 			el.fireEvent('on'+evnt, ev);
-		} else if(el['on'+evnt]) { // alternatively use the traditional event model (IE5)
+		} else if(el['on'+evnt]) { // alternatively use the traditional event Dto (IE5)
 			el['on'+evnt]();
 		}
 	},

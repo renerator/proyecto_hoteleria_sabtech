@@ -1,16 +1,16 @@
 define(function (require) {
 
-    var modelUtil = require('../../util/model');
+    var DtoUtil = require('../../util/Dto');
     var zrUtil = require('zrender/core/util');
 
     function fillLabel(opt) {
-        modelUtil.defaultEmphasis(
+        DtoUtil.defaultEmphasis(
             opt.label,
-            modelUtil.LABEL_OPTIONS
+            DtoUtil.LABEL_OPTIONS
         );
     }
 
-    var MarkLineModel = require('../../echarts').extendComponentModel({
+    var MarkLineDto = require('../../echarts').extendComponentDto({
 
         type: 'markLine',
 
@@ -18,21 +18,21 @@ define(function (require) {
         /**
          * @overrite
          */
-        init: function (option, parentModel, ecModel, extraOpt) {
-            this.mergeDefaultAndTheme(option, ecModel);
-            this.mergeOption(option, ecModel, extraOpt.createdBySelf, true);
+        init: function (option, parentDto, ecDto, extraOpt) {
+            this.mergeDefaultAndTheme(option, ecDto);
+            this.mergeOption(option, ecDto, extraOpt.createdBySelf, true);
         },
 
-        mergeOption: function (newOpt, ecModel, createdBySelf, isInit) {
+        mergeOption: function (newOpt, ecDto, createdBySelf, isInit) {
             if (!createdBySelf) {
-                ecModel.eachSeries(function (seriesModel) {
-                    var markLineOpt = seriesModel.get('markLine');
-                    var mlModel = seriesModel.markLineModel;
+                ecDto.eachSeries(function (seriesDto) {
+                    var markLineOpt = seriesDto.get('markLine');
+                    var mlDto = seriesDto.markLineDto;
                     if (!markLineOpt || !markLineOpt.data) {
-                        seriesModel.markLineModel = null;
+                        seriesDto.markLineDto = null;
                         return;
                     }
-                    if (!mlModel) {
+                    if (!mlDto) {
                         if (isInit) {
                             // Default label emphasis `position` and `show`
                             fillLabel(markLineOpt);
@@ -49,18 +49,18 @@ define(function (require) {
                         var opt = {
                             mainType: 'markLine',
                             // Use the same series index and name
-                            seriesIndex: seriesModel.seriesIndex,
-                            name: seriesModel.name,
+                            seriesIndex: seriesDto.seriesIndex,
+                            name: seriesDto.name,
                             createdBySelf: true
                         };
-                        mlModel = new MarkLineModel(
-                            markLineOpt, this, ecModel, opt
+                        mlDto = new MarkLineDto(
+                            markLineOpt, this, ecDto, opt
                         );
                     }
                     else {
-                        mlModel.mergeOption(markLineOpt, ecModel, true);
+                        mlDto.mergeOption(markLineOpt, ecDto, true);
                     }
-                    seriesModel.markLineModel = mlModel;
+                    seriesDto.markLineDto = mlDto;
                 }, this);
             }
         },
@@ -99,5 +99,5 @@ define(function (require) {
         }
     });
 
-    return MarkLineModel;
+    return MarkLineDto;
 });

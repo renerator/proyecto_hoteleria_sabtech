@@ -170,11 +170,11 @@ describe('Bar controller tests', function() {
 			expect(meta.data[i]._index).toBe(i);
 			expect(meta.data[i]._xScale).toBe(chart.scales.firstXScaleID);
 			expect(meta.data[i]._yScale).toBe(chart.scales.firstYScaleID);
-			expect(meta.data[i]._model.x).toBeCloseToPixel(expected.x);
-			expect(meta.data[i]._model.y).toBeCloseToPixel(expected.y);
-			expect(meta.data[i]._model.base).toBeCloseToPixel(484);
-			expect(meta.data[i]._model.width).toBeCloseToPixel(40);
-			expect(meta.data[i]._model).toEqual(jasmine.objectContaining({
+			expect(meta.data[i]._Dto.x).toBeCloseToPixel(expected.x);
+			expect(meta.data[i]._Dto.y).toBeCloseToPixel(expected.y);
+			expect(meta.data[i]._Dto.base).toBeCloseToPixel(484);
+			expect(meta.data[i]._Dto.width).toBeCloseToPixel(40);
+			expect(meta.data[i]._Dto).toEqual(jasmine.objectContaining({
 				datasetLabel: chart.config.data.datasets[1].label,
 				label: chart.config.data.labels[i],
 				backgroundColor: 'red',
@@ -225,10 +225,10 @@ describe('Bar controller tests', function() {
 		var bar1 = meta.data[0];
 		var bar2 = meta.data[1];
 
-		expect(bar1._model.x).toBeCloseToPixel(194);
-		expect(bar1._model.y).toBeCloseToPixel(132);
-		expect(bar2._model.x).toBeCloseToPixel(424);
-		expect(bar2._model.y).toBeCloseToPixel(32);
+		expect(bar1._Dto.x).toBeCloseToPixel(194);
+		expect(bar1._Dto.y).toBeCloseToPixel(132);
+		expect(bar2._Dto.x).toBeCloseToPixel(424);
+		expect(bar2._Dto.y).toBeCloseToPixel(32);
 	});
 
 	it('should update elements when the scales are stacked', function() {
@@ -265,10 +265,10 @@ describe('Bar controller tests', function() {
 			{ b: 290, w: 91, x: 322, y: 161 },
 			{ b: 290, w: 91, x: 436, y: 419 }
 		].forEach(function(values, i) {
-			expect(meta0.data[i]._model.base).toBeCloseToPixel(values.b);
-			expect(meta0.data[i]._model.width).toBeCloseToPixel(values.w);
-			expect(meta0.data[i]._model.x).toBeCloseToPixel(values.x);
-			expect(meta0.data[i]._model.y).toBeCloseToPixel(values.y);
+			expect(meta0.data[i]._Dto.base).toBeCloseToPixel(values.b);
+			expect(meta0.data[i]._Dto.width).toBeCloseToPixel(values.w);
+			expect(meta0.data[i]._Dto.x).toBeCloseToPixel(values.x);
+			expect(meta0.data[i]._Dto.y).toBeCloseToPixel(values.y);
 		});
 
 		var meta1 = chart.getDatasetMeta(1);
@@ -278,10 +278,10 @@ describe('Bar controller tests', function() {
 			{ b: 161, w: 91, x: 322, y: 161 },
 			{ b: 419, w: 91, x: 436, y: 471 }
 		].forEach(function(values, i) {
-			expect(meta1.data[i]._model.base).toBeCloseToPixel(values.b);
-			expect(meta1.data[i]._model.width).toBeCloseToPixel(values.w);
-			expect(meta1.data[i]._model.x).toBeCloseToPixel(values.x);
-			expect(meta1.data[i]._model.y).toBeCloseToPixel(values.y);
+			expect(meta1.data[i]._Dto.base).toBeCloseToPixel(values.b);
+			expect(meta1.data[i]._Dto.width).toBeCloseToPixel(values.w);
+			expect(meta1.data[i]._Dto.x).toBeCloseToPixel(values.x);
+			expect(meta1.data[i]._Dto.y).toBeCloseToPixel(values.y);
 		});
 	});
 
@@ -341,9 +341,9 @@ describe('Bar controller tests', function() {
 		var bar = meta.data[0];
 
 		meta.controller.setHoverStyle(bar);
-		expect(bar._model.backgroundColor).toBe('rgb(230, 0, 0)');
-		expect(bar._model.borderColor).toBe('rgb(0, 0, 230)');
-		expect(bar._model.borderWidth).toBe(2);
+		expect(bar._Dto.backgroundColor).toBe('rgb(230, 0, 0)');
+		expect(bar._Dto.borderColor).toBe('rgb(0, 0, 230)');
+		expect(bar._Dto.borderWidth).toBe(2);
 
 		// Set a dataset style
 		chart.data.datasets[1].hoverBackgroundColor = 'rgb(128, 128, 128)';
@@ -351,9 +351,9 @@ describe('Bar controller tests', function() {
 		chart.data.datasets[1].hoverBorderWidth = 5;
 
 		meta.controller.setHoverStyle(bar);
-		expect(bar._model.backgroundColor).toBe('rgb(128, 128, 128)');
-		expect(bar._model.borderColor).toBe('rgb(0, 0, 0)');
-		expect(bar._model.borderWidth).toBe(5);
+		expect(bar._Dto.backgroundColor).toBe('rgb(128, 128, 128)');
+		expect(bar._Dto.borderColor).toBe('rgb(0, 0, 0)');
+		expect(bar._Dto.borderWidth).toBe(5);
 
 		// Should work with array styles so that we can set per bar
 		chart.data.datasets[1].hoverBackgroundColor = ['rgb(255, 255, 255)', 'rgb(128, 128, 128)'];
@@ -361,9 +361,9 @@ describe('Bar controller tests', function() {
 		chart.data.datasets[1].hoverBorderWidth = [2.5, 5];
 
 		meta.controller.setHoverStyle(bar);
-		expect(bar._model.backgroundColor).toBe('rgb(255, 255, 255)');
-		expect(bar._model.borderColor).toBe('rgb(9, 9, 9)');
-		expect(bar._model.borderWidth).toBe(2.5);
+		expect(bar._Dto.backgroundColor).toBe('rgb(255, 255, 255)');
+		expect(bar._Dto.borderColor).toBe('rgb(9, 9, 9)');
+		expect(bar._Dto.borderWidth).toBe(2.5);
 
 		// Should allow a custom style
 		bar.custom = {
@@ -373,9 +373,9 @@ describe('Bar controller tests', function() {
 		};
 
 		meta.controller.setHoverStyle(bar);
-		expect(bar._model.backgroundColor).toBe('rgb(255, 0, 0)');
-		expect(bar._model.borderColor).toBe('rgb(0, 255, 0)');
-		expect(bar._model.borderWidth).toBe(1.5);
+		expect(bar._Dto.backgroundColor).toBe('rgb(255, 0, 0)');
+		expect(bar._Dto.borderColor).toBe('rgb(0, 255, 0)');
+		expect(bar._Dto.borderWidth).toBe(1.5);
 	});
 
 	it('should remove a hover style from a bar', function() {
@@ -411,9 +411,9 @@ describe('Bar controller tests', function() {
 
 		// Remove to defaults
 		meta.controller.removeHoverStyle(bar);
-		expect(bar._model.backgroundColor).toBe('rgb(128, 128, 128)');
-		expect(bar._model.borderColor).toBe('rgb(15, 15, 15)');
-		expect(bar._model.borderWidth).toBe(3.14);
+		expect(bar._Dto.backgroundColor).toBe('rgb(128, 128, 128)');
+		expect(bar._Dto.borderColor).toBe('rgb(15, 15, 15)');
+		expect(bar._Dto.borderWidth).toBe(3.14);
 
 		// Should work with array styles so that we can set per bar
 		chart.data.datasets[1].backgroundColor = ['rgb(255, 255, 255)', 'rgb(128, 128, 128)'];
@@ -421,9 +421,9 @@ describe('Bar controller tests', function() {
 		chart.data.datasets[1].borderWidth = [2.5, 5];
 
 		meta.controller.removeHoverStyle(bar);
-		expect(bar._model.backgroundColor).toBe('rgb(255, 255, 255)');
-		expect(bar._model.borderColor).toBe('rgb(9, 9, 9)');
-		expect(bar._model.borderWidth).toBe(2.5);
+		expect(bar._Dto.backgroundColor).toBe('rgb(255, 255, 255)');
+		expect(bar._Dto.borderColor).toBe('rgb(9, 9, 9)');
+		expect(bar._Dto.borderWidth).toBe(2.5);
 
 		// Should allow a custom style
 		bar.custom = {
@@ -433,8 +433,8 @@ describe('Bar controller tests', function() {
 		};
 
 		meta.controller.removeHoverStyle(bar);
-		expect(bar._model.backgroundColor).toBe('rgb(255, 0, 0)');
-		expect(bar._model.borderColor).toBe('rgb(0, 255, 0)');
-		expect(bar._model.borderWidth).toBe(1.5);
+		expect(bar._Dto.backgroundColor).toBe('rgb(255, 0, 0)');
+		expect(bar._Dto.borderColor).toBe('rgb(0, 255, 0)');
+		expect(bar._Dto.borderWidth).toBe(1.5);
 	});
 });

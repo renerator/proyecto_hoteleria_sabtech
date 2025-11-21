@@ -4,21 +4,21 @@ define(function (require) {
     var nest = require('../../util/array/nest');
     var zrUtil = require('zrender/core/util');
 
-    return function (ecModel, api) {
+    return function (ecDto, api) {
 
-        ecModel.eachSeriesByType('sankey', function (seriesModel) {
+        ecDto.eachSeriesByType('sankey', function (seriesDto) {
 
-            var nodeWidth = seriesModel.get('nodeWidth');
-            var nodeGap = seriesModel.get('nodeGap');
+            var nodeWidth = seriesDto.get('nodeWidth');
+            var nodeGap = seriesDto.get('nodeGap');
 
-            var layoutInfo = getViewRect(seriesModel, api);
+            var layoutInfo = getViewRect(seriesDto, api);
 
-            seriesModel.layoutInfo = layoutInfo;
+            seriesDto.layoutInfo = layoutInfo;
 
             var width = layoutInfo.width;
             var height = layoutInfo.height;
 
-            var graph = seriesModel.getGraph();
+            var graph = seriesDto.getGraph();
 
             var nodes = graph.nodes;
             var edges = graph.edges;
@@ -30,7 +30,7 @@ define(function (require) {
             });
 
             var iterations = filteredNodes.length !== 0
-                ? 0 : seriesModel.get('layoutIterations');
+                ? 0 : seriesDto.get('layoutIterations');
 
             layoutSankey(nodes, edges, nodeWidth, nodeGap, width, height, iterations);
         });
@@ -39,9 +39,9 @@ define(function (require) {
     /**
      * get the layout position of the whole view.
      */
-    function getViewRect(seriesModel, api) {
+    function getViewRect(seriesDto, api) {
         return layout.getLayoutRect(
-            seriesModel.getBoxLayoutParams(), {
+            seriesDto.getBoxLayoutParams(), {
                 width: api.getWidth(),
                 height: api.getHeight()
             }

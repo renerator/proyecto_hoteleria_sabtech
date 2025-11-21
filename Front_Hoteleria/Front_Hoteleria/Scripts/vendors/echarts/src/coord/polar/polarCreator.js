@@ -7,17 +7,17 @@ define(function (require) {
     var axisHelper = require('../../coord/axisHelper');
     var niceScaleExtent = axisHelper.niceScaleExtent;
 
-    // 依赖 PolarModel 做预处理
-    require('./PolarModel');
+    // 依赖 PolarDto 做预处理
+    require('./PolarDto');
 
     /**
      * Resize method bound to the polar
-     * @param {module:echarts/coord/polar/PolarModel} polarModel
+     * @param {module:echarts/coord/polar/PolarDto} polarDto
      * @param {module:echarts/ExtensionAPI} api
      */
-    function resizePolar(polarModel, api) {
-        var center = polarModel.get('center');
-        var radius = polarModel.get('radius');
+    function resizePolar(polarDto, api) {
+        var center = polarDto.get('center');
+        var radius = polarDto.get('radius');
         var width = api.getWidth();
         var height = api.getHeight();
         var parsePercent = numberUtil.parsePercent;
@@ -34,7 +34,7 @@ define(function (require) {
     /**
      * Update polar
      */
-    function updatePolarScale(ecModel, api) {
+    function updatePolarScale(ecDto, api) {
         var polar = this;
         var angleAxis = polar.getAngleAxis();
         var radiusAxis = polar.getRadiusAxis();
@@ -42,9 +42,9 @@ define(function (require) {
         angleAxis.scale.setExtent(Infinity, -Infinity);
         radiusAxis.scale.setExtent(Infinity, -Infinity);
 
-        ecModel.eachSeries(function (seriesModel) {
-            if (seriesModel.coordinateSystem === polar) {
-                var data = seriesModel.getData();
+        ecDto.eachSeries(function (seriesDto) {
+            if (seriesDto.coordinateSystem === polar) {
+                var data = seriesDto.getData();
                 radiusAxis.scale.unionExtent(
                     data.getDataExtent('radius', radiusAxis.type !== 'category')
                 );
@@ -54,8 +54,8 @@ define(function (require) {
             }
         });
 
-        niceScaleExtent(angleAxis, angleAxis.model);
-        niceScaleExtent(radiusAxis, radiusAxis.model);
+        niceScaleExtent(angleAxis, angleAxis.Dto);
+        niceScaleExtent(radiusAxis, radiusAxis.Dto);
 
         // Fix extent of category angle axis
         if (angleAxis.type === 'category' && !angleAxis.onBand) {
@@ -69,24 +69,24 @@ define(function (require) {
     /**
      * Set common axis properties
      * @param {module:echarts/coord/polar/AngleAxis|module:echarts/coord/polar/RadiusAxis}
-     * @param {module:echarts/coord/polar/AxisModel}
+     * @param {module:echarts/coord/polar/AxisDto}
      * @inner
      */
-    function setAxis(axis, axisModel) {
-        axis.type = axisModel.get('type');
-        axis.scale = axisHelper.createScaleByModel(axisModel);
-        axis.onBand = axisModel.get('boundaryGap') && axis.type === 'category';
+    function setAxis(axis, axisDto) {
+        axis.type = axisDto.get('type');
+        axis.scale = axisHelper.createScaleByDto(axisDto);
+        axis.onBand = axisDto.get('boundaryGap') && axis.type === 'category';
 
         // FIXME Radius axis not support inverse axis
-        if (axisModel.mainType === 'angleAxis') {
-            var startAngle = axisModel.get('startAngle');
-            axis.inverse = axisModel.get('inverse') ^ axisModel.get('clockwise');
+        if (axisDto.mainType === 'angleAxis') {
+            var startAngle = axisDto.get('startAngle');
+            axis.inverse = axisDto.get('inverse') ^ axisDto.get('clockwise');
             axis.setExtent(startAngle, startAngle + (axis.inverse ? -360 : 360));
         }
 
         // Inject axis instance
-        axisModel.axis = axis;
-        axis.model = axisModel;
+        axisDto.axis = axis;
+        axis.Dto = axisDto;
     }
 
 
@@ -94,9 +94,9 @@ define(function (require) {
 
         dimensions: Polar.prototype.dimensions,
 
-        create: function (ecModel, api) {
+        create: function (ecDto, api) {
             var polarList = [];
-            ecModel.eachComponent('polar', function (polarModel, idx) {
+            ecDto.eachComponent('polar', function (polarDto, idx) {
                 var polar = new Polar(idx);
                 // Inject resize and update method
                 polar.resize = resizePolar;
@@ -105,21 +105,21 @@ define(function (require) {
                 var radiusAxis = polar.getRadiusAxis();
                 var angleAxis = polar.getAngleAxis();
 
-                var radiusAxisModel = polarModel.findAxisModel('radiusAxis');
-                var angleAxisModel = polarModel.findAxisModel('angleAxis');
+                var radiusAxisDto = polarDto.findAxisDto('radiusAxis');
+                var angleAxisDto = polarDto.findAxisDto('angleAxis');
 
-                setAxis(radiusAxis, radiusAxisModel);
-                setAxis(angleAxis, angleAxisModel);
+                setAxis(radiusAxis, radiusAxisDto);
+                setAxis(angleAxis, angleAxisDto);
 
-                polar.resize(polarModel, api);
+                polar.resize(polarDto, api);
                 polarList.push(polar);
 
-                polarModel.coordinateSystem = polar;
+                polarDto.coordinateSystem = polar;
             });
             // Inject coordinateSystem to series
-            ecModel.eachSeries(function (seriesModel) {
-                if (seriesModel.get('coordinateSystem') === 'polar') {
-                    seriesModel.coordinateSystem = polarList[seriesModel.get('polarIndex')];
+            ecDto.eachSeries(function (seriesDto) {
+                if (seriesDto.get('coordinateSystem') === 'polar') {
+                    seriesDto.coordinateSystem = polarList[seriesDto.get('polarIndex')];
                 }
             });
 

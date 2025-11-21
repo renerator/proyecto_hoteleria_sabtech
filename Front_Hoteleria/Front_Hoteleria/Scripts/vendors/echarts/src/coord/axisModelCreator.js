@@ -2,34 +2,34 @@ define(function (require) {
 
     var axisDefault = require('./axisDefault');
     var zrUtil = require('zrender/core/util');
-    var ComponentModel = require('../model/Component');
+    var ComponentDto = require('../Dto/Component');
     var layout = require('../util/layout');
 
     // FIXME axisType is fixed ?
     var AXIS_TYPES = ['value', 'category', 'time', 'log'];
 
     /**
-     * Generate sub axis model class
+     * Generate sub axis Dto class
      * @param {string} axisName 'x' 'y' 'radius' 'angle' 'parallel'
-     * @param {module:echarts/model/Component} BaseAxisModelClass
+     * @param {module:echarts/Dto/Component} BaseAxisDtoClass
      * @param {Function} axisTypeDefaulter
      * @param {Object} [extraDefaultOption]
      */
-    return function (axisName, BaseAxisModelClass, axisTypeDefaulter, extraDefaultOption) {
+    return function (axisName, BaseAxisDtoClass, axisTypeDefaulter, extraDefaultOption) {
 
         zrUtil.each(AXIS_TYPES, function (axisType) {
 
-            BaseAxisModelClass.extend({
+            BaseAxisDtoClass.extend({
 
                 type: axisName + 'Axis.' + axisType,
 
-                mergeDefaultAndTheme: function (option, ecModel) {
+                mergeDefaultAndTheme: function (option, ecDto) {
                     var layoutMode = this.layoutMode;
                     var inputPositionParams = layoutMode
                         ? layout.getLayoutParams(option) : {};
 
-                    var themeModel = ecModel.getTheme();
-                    zrUtil.merge(option, themeModel.get(axisType + 'Axis'));
+                    var themeDto = ecDto.getTheme();
+                    zrUtil.merge(option, themeDto.get(axisType + 'Axis'));
                     zrUtil.merge(option, this.getDefaultOption());
 
                     option.type = axisTypeDefaulter(axisName, option);
@@ -50,7 +50,7 @@ define(function (require) {
             });
         });
 
-        ComponentModel.registerSubTypeDefaulter(
+        ComponentDto.registerSubTypeDefaulter(
             axisName + 'Axis',
             zrUtil.curry(axisTypeDefaulter, axisName)
         );

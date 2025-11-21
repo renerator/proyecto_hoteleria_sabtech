@@ -1,6 +1,6 @@
 define(function (require) {
 
-    require('../../model/Component').registerSubTypeDefaulter('timeline', function () {
+    require('../../Dto/Component').registerSubTypeDefaulter('timeline', function () {
         // Only slider now.
         return 'slider';
     });

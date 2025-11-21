@@ -14,21 +14,21 @@ define(function(require) {
 
         constructor: CoordinateSystemManager,
 
-        create: function (ecModel, api) {
+        create: function (ecDto, api) {
             var coordinateSystems = [];
             for (var type in coordinateSystemCreators) {
-                var list = coordinateSystemCreators[type].create(ecModel, api);
+                var list = coordinateSystemCreators[type].create(ecDto, api);
                 list && (coordinateSystems = coordinateSystems.concat(list));
             }
 
             this._coordinateSystems = coordinateSystems;
         },
 
-        update: function (ecModel, api) {
+        update: function (ecDto, api) {
             var coordinateSystems = this._coordinateSystems;
             for (var i = 0; i < coordinateSystems.length; i++) {
                 // FIXME MUST have
-                coordinateSystems[i].update && coordinateSystems[i].update(ecModel, api);
+                coordinateSystems[i].update && coordinateSystems[i].update(ecDto, api);
             }
         }
     };

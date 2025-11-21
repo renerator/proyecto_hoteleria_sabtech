@@ -1,5 +1,5 @@
 /**
- * @module echarts/model/Model
+ * @module echarts/Dto/Dto
  */
 define(function (require) {
 
@@ -7,25 +7,25 @@ define(function (require) {
     var clazzUtil = require('../util/clazz');
 
     /**
-     * @alias module:echarts/model/Model
+     * @alias module:echarts/Dto/Dto
      * @constructor
      * @param {Object} option
-     * @param {module:echarts/model/Model} [parentModel]
-     * @param {module:echarts/model/Global} [ecModel]
+     * @param {module:echarts/Dto/Dto} [parentDto]
+     * @param {module:echarts/Dto/Global} [ecDto]
      * @param {Object} extraOpt
      */
-    function Model(option, parentModel, ecModel, extraOpt) {
+    function Dto(option, parentDto, ecDto, extraOpt) {
         /**
-         * @type {module:echarts/model/Model}
+         * @type {module:echarts/Dto/Dto}
          * @readOnly
          */
-        this.parentModel = parentModel;
+        this.parentDto = parentDto;
 
         /**
-         * @type {module:echarts/model/Global}
+         * @type {module:echarts/Dto/Global}
          * @readOnly
          */
-        this.ecModel = ecModel;
+        this.ecDto = ecDto;
 
         /**
          * @type {Object}
@@ -36,7 +36,7 @@ define(function (require) {
         // Simple optimization
         if (this.init) {
             if (arguments.length <= 4) {
-                this.init(option, parentModel, ecModel, extraOpt);
+                this.init(option, parentDto, ecDto, extraOpt);
             }
             else {
                 this.init.apply(this, arguments);
@@ -44,12 +44,12 @@ define(function (require) {
         }
     }
 
-    Model.prototype = {
+    Dto.prototype = {
 
-        constructor: Model,
+        constructor: Dto,
 
         /**
-         * Model 的初始化函数
+         * Dto 的初始化函数
          * @param {Object} option
          */
         init: null,
@@ -76,7 +76,7 @@ define(function (require) {
             }
 
             var obj = this.option;
-            var parentModel = this.parentModel;
+            var parentDto = this.parentDto;
             for (var i = 0; i < path.length; i++) {
                 // Ignore empty
                 if (!path[i]) {
@@ -88,8 +88,8 @@ define(function (require) {
                     break;
                 }
             }
-            if (obj == null && parentModel && !ignoreParent) {
-                obj = parentModel.get(path);
+            if (obj == null && parentDto && !ignoreParent) {
+                obj = parentDto.get(path);
             }
             return obj;
         },
@@ -102,30 +102,30 @@ define(function (require) {
         getShallow: function (key, ignoreParent) {
             var option = this.option;
             var val = option && option[key];
-            var parentModel = this.parentModel;
-            if (val == null && parentModel && !ignoreParent) {
-                val = parentModel.getShallow(key);
+            var parentDto = this.parentDto;
+            if (val == null && parentDto && !ignoreParent) {
+                val = parentDto.getShallow(key);
             }
             return val;
         },
 
         /**
          * @param {string} path
-         * @param {module:echarts/model/Model} [parentModel]
-         * @return {module:echarts/model/Model}
+         * @param {module:echarts/Dto/Dto} [parentDto]
+         * @return {module:echarts/Dto/Dto}
          */
-        getModel: function (path, parentModel) {
+        getDto: function (path, parentDto) {
             var obj = this.get(path, true);
-            var thisParentModel = this.parentModel;
-            var model = new Model(
-                obj, parentModel || (thisParentModel && thisParentModel.getModel(path)),
-                this.ecModel
+            var thisParentDto = this.parentDto;
+            var Dto = new Dto(
+                obj, parentDto || (thisParentDto && thisParentDto.getDto(path)),
+                this.ecDto
             );
-            return model;
+            return Dto;
         },
 
         /**
-         * If model has option
+         * If Dto has option
          */
         isEmpty: function () {
             return this.option == null;
@@ -144,14 +144,14 @@ define(function (require) {
         }
     };
 
-    // Enable Model.extend.
-    clazzUtil.enableClassExtend(Model);
+    // Enable Dto.extend.
+    clazzUtil.enableClassExtend(Dto);
 
     var mixin = zrUtil.mixin;
-    mixin(Model, require('./mixin/lineStyle'));
-    mixin(Model, require('./mixin/areaStyle'));
-    mixin(Model, require('./mixin/textStyle'));
-    mixin(Model, require('./mixin/itemStyle'));
+    mixin(Dto, require('./mixin/lineStyle'));
+    mixin(Dto, require('./mixin/areaStyle'));
+    mixin(Dto, require('./mixin/textStyle'));
+    mixin(Dto, require('./mixin/itemStyle'));
 
-    return Model;
+    return Dto;
 });

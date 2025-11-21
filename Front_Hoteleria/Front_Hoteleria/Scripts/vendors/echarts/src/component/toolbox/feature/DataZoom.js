@@ -15,11 +15,11 @@ define(function(require) {
     // Use dataZoomSelect
     require('../../dataZoomSelect');
 
-    // Spectial component id start with \0ec\0, see echarts/model/Global.js~hasInnerId
+    // Spectial component id start with \0ec\0, see echarts/Dto/Global.js~hasInnerId
     var DATA_ZOOM_ID_BASE = '\0_ec_\0toolbox-dataZoom_';
 
-    function DataZoom(model) {
-        this.model = model;
+    function DataZoom(Dto) {
+        this.Dto = Dto;
 
         /**
          * @private
@@ -56,26 +56,26 @@ define(function(require) {
 
     var proto = DataZoom.prototype;
 
-    proto.render = function (featureModel, ecModel, api) {
-        updateBackBtnStatus(featureModel, ecModel);
+    proto.render = function (featureDto, ecDto, api) {
+        updateBackBtnStatus(featureDto, ecDto);
     };
 
-    proto.onclick = function (ecModel, api, type) {
+    proto.onclick = function (ecDto, api, type) {
         var controllerGroup = this._controllerGroup;
         if (!this._controllerGroup) {
             controllerGroup = this._controllerGroup = new Group();
             api.getZr().add(controllerGroup);
         }
 
-        handlers[type].call(this, controllerGroup, this.model, ecModel, api);
+        handlers[type].call(this, controllerGroup, this.Dto, ecDto, api);
     };
 
-    proto.remove = function (ecModel, api) {
+    proto.remove = function (ecDto, api) {
         this._disposeController();
         interactionMutex.release('globalPan', api.getZr());
     };
 
-    proto.dispose = function (ecModel, api) {
+    proto.dispose = function (ecDto, api) {
         var zr = api.getZr();
         interactionMutex.release('globalPan', zr);
         this._disposeController();
@@ -87,19 +87,19 @@ define(function(require) {
      */
     var handlers = {
 
-        zoom: function (controllerGroup, featureModel, ecModel, api) {
+        zoom: function (controllerGroup, featureDto, ecDto, api) {
             var isZoomActive = this._isZoomActive = !this._isZoomActive;
             var zr = api.getZr();
 
             interactionMutex[isZoomActive ? 'take' : 'release']('globalPan', zr);
 
-            featureModel.setIconStatus('zoom', isZoomActive ? 'emphasis' : 'normal');
+            featureDto.setIconStatus('zoom', isZoomActive ? 'emphasis' : 'normal');
 
             if (isZoomActive) {
                 zr.setDefaultCursorStyle('crosshair');
 
                 this._createController(
-                    controllerGroup, featureModel, ecModel, api
+                    controllerGroup, featureDto, ecDto, api
                 );
             }
             else {
@@ -108,8 +108,8 @@ define(function(require) {
             }
         },
 
-        back: function (controllerGroup, featureModel, ecModel, api) {
-            this._dispatchAction(history.pop(ecModel), api);
+        back: function (controllerGroup, featureDto, ecDto, api) {
+            this._dispatchAction(history.pop(ecDto), api);
         }
     };
 
@@ -117,7 +117,7 @@ define(function(require) {
      * @private
      */
     proto._createController = function (
-        controllerGroup, featureModel, ecModel, api
+        controllerGroup, featureDto, ecDto, api
     ) {
         var controller = this._controller = new SelectController(
             'rect',
@@ -133,7 +133,7 @@ define(function(require) {
             'selectEnd',
             zrUtil.bind(
                 this._onSelected, this, controller,
-                featureModel, ecModel, api
+                featureDto, ecDto, api
             )
         );
         controller.enable(controllerGroup, false);
@@ -147,23 +147,23 @@ define(function(require) {
         }
     };
 
-    function prepareCoordInfo(grid, ecModel) {
+    function prepareCoordInfo(grid, ecDto) {
         // Default use the first axis.
         // FIXME
         var coordInfo = [
-            {axisModel: grid.getAxis('x').model, axisIndex: 0}, // x
-            {axisModel: grid.getAxis('y').model, axisIndex: 0}  // y
+            {axisDto: grid.getAxis('x').Dto, axisIndex: 0}, // x
+            {axisDto: grid.getAxis('y').Dto, axisIndex: 0}  // y
         ];
         coordInfo.grid = grid;
 
-        ecModel.eachComponent(
+        ecDto.eachComponent(
             {mainType: 'dataZoom', subType: 'select'},
-            function (dzModel, dataZoomIndex) {
-                if (isTheAxis('xAxis', coordInfo[0].axisModel, dzModel, ecModel)) {
-                    coordInfo[0].dataZoomModel = dzModel;
+            function (dzDto, dataZoomIndex) {
+                if (isTheAxis('xAxis', coordInfo[0].axisDto, dzDto, ecDto)) {
+                    coordInfo[0].dataZoomDto = dzDto;
                 }
-                if (isTheAxis('yAxis', coordInfo[1].axisModel, dzModel, ecModel)) {
-                    coordInfo[1].dataZoomModel = dzModel;
+                if (isTheAxis('yAxis', coordInfo[1].axisDto, dzDto, ecDto)) {
+                    coordInfo[1].dataZoomDto = dzDto;
                 }
             }
         );
@@ -171,16 +171,16 @@ define(function(require) {
         return coordInfo;
     }
 
-    function isTheAxis(axisName, axisModel, dataZoomModel, ecModel) {
-        var axisIndex = dataZoomModel.get(axisName + 'Index');
+    function isTheAxis(axisName, axisDto, dataZoomDto, ecDto) {
+        var axisIndex = dataZoomDto.get(axisName + 'Index');
         return axisIndex != null
-            && ecModel.getComponent(axisName, axisIndex) === axisModel;
+            && ecDto.getComponent(axisName, axisIndex) === axisDto;
     }
 
     /**
      * @private
      */
-    proto._onSelected = function (controller, featureModel, ecModel, api, selRanges) {
+    proto._onSelected = function (controller, featureDto, ecDto, api, selRanges) {
         if (!selRanges.length) {
             return;
         }
@@ -193,9 +193,9 @@ define(function(require) {
         // FIXME
         // polar
 
-        ecModel.eachComponent('grid', function (gridModel, gridIndex) {
-            var grid = gridModel.coordinateSystem;
-            var coordInfo = prepareCoordInfo(grid, ecModel);
+        ecDto.eachComponent('grid', function (gridDto, gridIndex) {
+            var grid = gridDto.coordinateSystem;
+            var coordInfo = prepareCoordInfo(grid, ecDto);
             var selDataRange = pointToDataInCartesian(selRange, coordInfo);
 
             if (selDataRange) {
@@ -207,7 +207,7 @@ define(function(require) {
             }
         }, this);
 
-        history.push(ecModel, snapshot);
+        history.push(ecDto, snapshot);
 
         this._dispatchAction(snapshot, api);
     };
@@ -236,11 +236,11 @@ define(function(require) {
 
     function scaleCartesianAxis(selDataRange, coordInfo, dimIdx, dimName) {
         var dimCoordInfo = coordInfo[dimIdx];
-        var dataZoomModel = dimCoordInfo.dataZoomModel;
+        var dataZoomDto = dimCoordInfo.dataZoomDto;
 
-        if (dataZoomModel) {
+        if (dataZoomDto) {
             return {
-                dataZoomId: dataZoomModel.id,
+                dataZoomId: dataZoomDto.id,
                 startValue: selDataRange[dimIdx][0],
                 endValue: selDataRange[dimIdx][1]
             };
@@ -264,10 +264,10 @@ define(function(require) {
         });
     };
 
-    function updateBackBtnStatus(featureModel, ecModel) {
-        featureModel.setIconStatus(
+    function updateBackBtnStatus(featureDto, ecDto) {
+        featureDto.setIconStatus(
             'back',
-            history.count(ecModel) > 1 ? 'emphasis' : 'normal'
+            history.count(ecDto) > 1 ? 'emphasis' : 'normal'
         );
     }
 

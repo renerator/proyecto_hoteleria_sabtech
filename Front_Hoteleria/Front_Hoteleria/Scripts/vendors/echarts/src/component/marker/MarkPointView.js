@@ -3,7 +3,7 @@ define(function (require) {
     var SymbolDraw = require('../../chart/helper/SymbolDraw');
     var zrUtil = require('zrender/core/util');
     var formatUtil = require('../../util/format');
-    var modelUtil = require('../../util/model');
+    var DtoUtil = require('../../util/Dto');
     var numberUtil = require('../../util/number');
 
     var addCommas = formatUtil.addCommas;
@@ -13,13 +13,13 @@ define(function (require) {
 
     var markerHelper = require('./markerHelper');
 
-    function updateMarkerLayout(mpData, seriesModel, api) {
-        var coordSys = seriesModel.coordinateSystem;
+    function updateMarkerLayout(mpData, seriesDto, api) {
+        var coordSys = seriesDto.coordinateSystem;
         mpData.each(function (idx) {
-            var itemModel = mpData.getItemModel(idx);
+            var itemDto = mpData.getItemDto(idx);
             var point;
-            var xPx = itemModel.getShallow('x');
-            var yPx = itemModel.getShallow('y');
+            var xPx = itemDto.getShallow('x');
+            var yPx = itemDto.getShallow('y');
             if (xPx != null && yPx != null) {
                 point = [
                     numberUtil.parsePercent(xPx, api.getWidth()),
@@ -27,9 +27,9 @@ define(function (require) {
                 ];
             }
             // Chart like bar may have there own marker positioning logic
-            else if (seriesModel.getMarkerPosition) {
+            else if (seriesDto.getMarkerPosition) {
                 // Use the getMarkerPoisition
-                point = seriesModel.getMarkerPosition(
+                point = seriesDto.getMarkerPosition(
                     mpData.getValues(mpData.dimensions, idx)
                 );
             }
@@ -64,7 +64,7 @@ define(function (require) {
         }
     };
 
-    zrUtil.defaults(markPointFormatMixin, modelUtil.dataFormatMixin);
+    zrUtil.defaults(markPointFormatMixin, DtoUtil.dataFormatMixin);
 
     require('../../echarts').extendComponentView({
 
@@ -74,15 +74,15 @@ define(function (require) {
             this._symbolDrawMap = {};
         },
 
-        render: function (markPointModel, ecModel, api) {
+        render: function (markPointDto, ecDto, api) {
             var symbolDrawMap = this._symbolDrawMap;
             for (var name in symbolDrawMap) {
                 symbolDrawMap[name].__keep = false;
             }
 
-            ecModel.eachSeries(function (seriesModel) {
-                var mpModel = seriesModel.markPointModel;
-                mpModel && this._renderSeriesMP(seriesModel, mpModel, api);
+            ecDto.eachSeries(function (seriesDto) {
+                var mpDto = seriesDto.markPointDto;
+                mpDto && this._renderSeriesMP(seriesDto, mpDto, api);
             }, this);
 
             for (var name in symbolDrawMap) {
@@ -93,20 +93,20 @@ define(function (require) {
             }
         },
 
-        updateLayout: function (markPointModel, ecModel, api) {
-            ecModel.eachSeries(function (seriesModel) {
-                var mpModel = seriesModel.markPointModel;
-                if (mpModel) {
-                    updateMarkerLayout(mpModel.getData(), seriesModel, api);
-                    this._symbolDrawMap[seriesModel.name].updateLayout(mpModel);
+        updateLayout: function (markPointDto, ecDto, api) {
+            ecDto.eachSeries(function (seriesDto) {
+                var mpDto = seriesDto.markPointDto;
+                if (mpDto) {
+                    updateMarkerLayout(mpDto.getData(), seriesDto, api);
+                    this._symbolDrawMap[seriesDto.name].updateLayout(mpDto);
                 }
             }, this);
         },
 
-        _renderSeriesMP: function (seriesModel, mpModel, api) {
-            var coordSys = seriesModel.coordinateSystem;
-            var seriesName = seriesModel.name;
-            var seriesData = seriesModel.getData();
+        _renderSeriesMP: function (seriesDto, mpDto, api) {
+            var coordSys = seriesDto.coordinateSystem;
+            var seriesName = seriesDto.name;
+            var seriesData = seriesDto.getData();
 
             var symbolDrawMap = this._symbolDrawMap;
             var symbolDraw = symbolDrawMap[seriesName];
@@ -114,28 +114,28 @@ define(function (require) {
                 symbolDraw = symbolDrawMap[seriesName] = new SymbolDraw();
             }
 
-            var mpData = createList(coordSys, seriesModel, mpModel);
+            var mpData = createList(coordSys, seriesDto, mpDto);
 
             // FIXME
-            zrUtil.mixin(mpModel, markPointFormatMixin);
-            mpModel.setData(mpData);
+            zrUtil.mixin(mpDto, markPointFormatMixin);
+            mpDto.setData(mpData);
 
-            updateMarkerLayout(mpModel.getData(), seriesModel, api);
+            updateMarkerLayout(mpDto.getData(), seriesDto, api);
 
             mpData.each(function (idx) {
-                var itemModel = mpData.getItemModel(idx);
-                var symbolSize = itemModel.getShallow('symbolSize');
+                var itemDto = mpData.getItemDto(idx);
+                var symbolSize = itemDto.getShallow('symbolSize');
                 if (typeof symbolSize === 'function') {
                     // FIXME 这里不兼容 ECharts 2.x，2.x 貌似参数是整个数据？
                     symbolSize = symbolSize(
-                        mpModel.getRawValue(idx), mpModel.getDataParams(idx)
+                        mpDto.getRawValue(idx), mpDto.getDataParams(idx)
                     );
                 }
                 mpData.setItemVisual(idx, {
                     symbolSize: symbolSize,
-                    color: itemModel.get('itemStyle.normal.color')
+                    color: itemDto.get('itemStyle.normal.color')
                         || seriesData.getVisual('color'),
-                    symbol: itemModel.getShallow('symbol')
+                    symbol: itemDto.getShallow('symbol')
                 });
             });
 
@@ -143,11 +143,11 @@ define(function (require) {
             symbolDraw.updateData(mpData);
             this.group.add(symbolDraw.group);
 
-            // Set host model for tooltip
+            // Set host Dto for tooltip
             // FIXME
             mpData.eachItemGraphicEl(function (el) {
                 el.traverse(function (child) {
-                    child.dataModel = mpModel;
+                    child.dataDto = mpDto;
                 });
             });
 
@@ -158,15 +158,15 @@ define(function (require) {
     /**
      * @inner
      * @param {module:echarts/coord/*} [coordSys]
-     * @param {module:echarts/model/Series} seriesModel
-     * @param {module:echarts/model/Model} mpModel
+     * @param {module:echarts/Dto/Series} seriesDto
+     * @param {module:echarts/Dto/Dto} mpDto
      */
-    function createList(coordSys, seriesModel, mpModel) {
+    function createList(coordSys, seriesDto, mpDto) {
         var coordDimsInfos;
         if (coordSys) {
             coordDimsInfos = zrUtil.map(coordSys && coordSys.dimensions, function (coordDim) {
-                var info = seriesModel.getData().getDimensionInfo(
-                    seriesModel.coordDimToDataDim(coordDim)[0]
+                var info = seriesDto.getData().getDimensionInfo(
+                    seriesDto.coordDimToDataDim(coordDim)[0]
                 ) || {}; // In map series data don't have lng and lat dimension. Fallback to same with coordSys
                 info.name = coordDim;
                 return info;
@@ -179,9 +179,9 @@ define(function (require) {
             }];
         }
 
-        var mpData = new List(coordDimsInfos, mpModel);
-        var dataOpt = zrUtil.map(mpModel.get('data'), zrUtil.curry(
-                markerHelper.dataTransform, seriesModel
+        var mpData = new List(coordDimsInfos, mpDto);
+        var dataOpt = zrUtil.map(mpDto.get('data'), zrUtil.curry(
+                markerHelper.dataTransform, seriesDto
             ));
         if (coordSys) {
             dataOpt = zrUtil.filter(

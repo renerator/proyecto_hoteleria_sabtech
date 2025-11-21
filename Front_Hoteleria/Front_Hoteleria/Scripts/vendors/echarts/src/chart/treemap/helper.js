@@ -4,14 +4,14 @@ define(function (require) {
 
     var helper = {
 
-        retrieveTargetInfo: function (payload, seriesModel) {
+        retrieveTargetInfo: function (payload, seriesDto) {
             if (payload
                 && (
                     payload.type === 'treemapZoomToNode'
                     || payload.type === 'treemapRootToNode'
                 )
             ) {
-                var root = seriesModel.getData().tree.root;
+                var root = seriesDto.getData().tree.root;
                 var targetNode = payload.targetNode;
                 if (targetNode && root.contains(targetNode)) {
                     return {node: targetNode};

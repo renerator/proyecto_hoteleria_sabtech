@@ -3,12 +3,12 @@ define(function (require) {
     return require('echarts').extendComponentView({
         type: 'bmap',
 
-        render: function (bMapModel, ecModel, api) {
+        render: function (bMapDto, ecDto, api) {
             var rendering = true;
 
-            var bmap = bMapModel.getBMap();
+            var bmap = bMapDto.getBMap();
             var viewportRoot = api.getZr().painter.getViewportRoot();
-            var coordSys = bMapModel.coordinateSystem;
+            var coordSys = bMapDto.coordinateSystem;
             var moveHandler = function (type, target) {
                 if (rendering) {
                     return;
@@ -22,7 +22,7 @@ define(function (require) {
                 viewportRoot.style.top = mapOffset[1] + 'px';
 
                 coordSys.setMapOffset(mapOffset);
-                bMapModel.__mapOffset = mapOffset;
+                bMapDto.__mapOffset = mapOffset;
 
                 api.dispatchAction({
                     type: 'bmapRoam'
@@ -50,7 +50,7 @@ define(function (require) {
             this._oldMoveHandler = moveHandler;
             this._oldZoomEndHandler = zoomEndHandler;
 
-            var roam = bMapModel.get('roam');
+            var roam = bMapDto.get('roam');
             if (roam && roam !== 'scale') {
                 bmap.enableDragging();
             }
@@ -68,14 +68,14 @@ define(function (require) {
                 bmap.disablePinchToZoom();
             }
 
-            var originalStyle = bMapModel.__mapStyle;
+            var originalStyle = bMapDto.__mapStyle;
 
-            var newMapStyle = bMapModel.get('mapStyle') || {};
+            var newMapStyle = bMapDto.get('mapStyle') || {};
             // FIXME, Not use JSON methods
             var mapStyleStr = JSON.stringify(newMapStyle);
             if (JSON.stringify(originalStyle) !== mapStyleStr) {
                 bmap.setMapStyle(newMapStyle);
-                bMapModel.__mapStyle = JSON.parse(mapStyleStr);
+                bMapDto.__mapStyle = JSON.parse(mapStyleStr);
             }
 
             rendering = false;

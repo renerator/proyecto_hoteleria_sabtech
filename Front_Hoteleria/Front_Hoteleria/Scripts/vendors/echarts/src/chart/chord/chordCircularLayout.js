@@ -95,8 +95,8 @@ define(function (require) {
         return a.size - b.size;
     };
 
-    return function (ecModel, api) {
-        ecModel.eachSeriesByType('chord', function (chordSeries) {
+    return function (ecDto, api) {
+        ecDto.eachSeriesByType('chord', function (chordSeries) {
             var graph = chordSeries.getGraph();
 
             var center = chordSeries.get('center');

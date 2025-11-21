@@ -35,8 +35,8 @@ describe('List', function () {
                 value: 2,
                 somProp: 'foo'
             }]);
-            expect(list.getItemModel(1).get('somProp')).toEqual('foo');
-            expect(list.getItemModel(0).get('somProp')).toBeNull();
+            expect(list.getItemDto(1).get('somProp')).toEqual('foo');
+            expect(list.getItemDto(0).get('somProp')).toBeNull();
         });
 
         testCase('Empty data', function (List) {
@@ -68,10 +68,10 @@ describe('List', function () {
             var list = new List(['x', 'y']);
 
             list.initData([1, 2, 3]);
-            expect(list.getItemModel(1).option).toEqual(2);
+            expect(list.getItemDto(1).option).toEqual(2);
 
             list.initData([[10, 15], [20, 25], [30, 35]]);
-            expect(list.getItemModel(1).option).toEqual([20, 25]);
+            expect(list.getItemDto(1).option).toEqual([20, 25]);
         });
 
         testCase('getDataExtent', function (List) {

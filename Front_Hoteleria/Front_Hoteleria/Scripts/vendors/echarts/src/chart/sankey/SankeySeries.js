@@ -2,16 +2,16 @@ define(function (require) {
 
     'use strict';
 
-    var SeriesModel = require('../../model/Series');
+    var SeriesDto = require('../../Dto/Series');
     var createGraphFromNodeEdge = require('../helper/createGraphFromNodeEdge');
 
-    var SankeySeries = SeriesModel.extend({
+    var SankeySeries = SeriesDto.extend({
 
         type: 'series.sankey',
 
         layoutInfo: null,
 
-        getInitialData: function (option, ecModel) {
+        getInitialData: function (option, ecDto) {
             var links = option.edges || option.links;
             var nodes = option.data || option.nodes;
             if (nodes && links) {

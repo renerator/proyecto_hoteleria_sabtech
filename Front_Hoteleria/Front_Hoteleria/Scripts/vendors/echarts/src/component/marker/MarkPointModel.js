@@ -1,15 +1,15 @@
 define(function (require) {
 
-    var modelUtil = require('../../util/model');
+    var DtoUtil = require('../../util/Dto');
     var zrUtil = require('zrender/core/util');
 
     function fillLabel(opt) {
-        modelUtil.defaultEmphasis(
+        DtoUtil.defaultEmphasis(
             opt.label,
-            modelUtil.LABEL_OPTIONS
+            DtoUtil.LABEL_OPTIONS
         );
     }
-    var MarkPointModel = require('../../echarts').extendComponentModel({
+    var MarkPointDto = require('../../echarts').extendComponentDto({
 
         type: 'markPoint',
 
@@ -17,21 +17,21 @@ define(function (require) {
         /**
          * @overrite
          */
-        init: function (option, parentModel, ecModel, extraOpt) {
-            this.mergeDefaultAndTheme(option, ecModel);
-            this.mergeOption(option, ecModel, extraOpt.createdBySelf, true);
+        init: function (option, parentDto, ecDto, extraOpt) {
+            this.mergeDefaultAndTheme(option, ecDto);
+            this.mergeOption(option, ecDto, extraOpt.createdBySelf, true);
         },
 
-        mergeOption: function (newOpt, ecModel, createdBySelf, isInit) {
+        mergeOption: function (newOpt, ecDto, createdBySelf, isInit) {
             if (!createdBySelf) {
-                ecModel.eachSeries(function (seriesModel) {
-                    var markPointOpt = seriesModel.get('markPoint');
-                    var mpModel = seriesModel.markPointModel;
+                ecDto.eachSeries(function (seriesDto) {
+                    var markPointOpt = seriesDto.get('markPoint');
+                    var mpDto = seriesDto.markPointDto;
                     if (!markPointOpt || !markPointOpt.data) {
-                        seriesModel.markPointModel = null;
+                        seriesDto.markPointDto = null;
                         return;
                     }
-                    if (!mpModel) {
+                    if (!mpDto) {
                         if (isInit) {
                             // Default label emphasis `position` and `show`
                             fillLabel(markPointOpt);
@@ -40,18 +40,18 @@ define(function (require) {
                         var opt = {
                             mainType: 'markPoint',
                             // Use the same series index and name
-                            seriesIndex: seriesModel.seriesIndex,
-                            name: seriesModel.name,
+                            seriesIndex: seriesDto.seriesIndex,
+                            name: seriesDto.name,
                             createdBySelf: true
                         };
-                        mpModel = new MarkPointModel(
-                            markPointOpt, this, ecModel, opt
+                        mpDto = new MarkPointDto(
+                            markPointOpt, this, ecDto, opt
                         );
                     }
                     else {
-                        mpModel.mergeOption(markPointOpt, ecModel, true);
+                        mpDto.mergeOption(markPointOpt, ecDto, true);
                     }
-                    seriesModel.markPointModel = mpModel;
+                    seriesDto.markPointDto = mpDto;
                 }, this);
             }
         },
@@ -83,5 +83,5 @@ define(function (require) {
         }
     });
 
-    return MarkPointModel;
+    return MarkPointDto;
 });

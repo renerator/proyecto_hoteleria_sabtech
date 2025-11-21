@@ -95,13 +95,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 
-	    var GlobalModel = __webpack_require__(2);
+	    var GlobalDto = __webpack_require__(2);
 	    var ExtensionAPI = __webpack_require__(24);
 	    var CoordinateSystemManager = __webpack_require__(25);
 	    var OptionManager = __webpack_require__(26);
 
-	    var ComponentModel = __webpack_require__(19);
-	    var SeriesModel = __webpack_require__(27);
+	    var ComponentDto = __webpack_require__(19);
+	    var SeriesDto = __webpack_require__(27);
 
 	    var ComponentView = __webpack_require__(28);
 	    var ChartView = __webpack_require__(41);
@@ -255,13 +255,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {boolean} [notRefreshImmediately=false] Useful when setOption frequently.
 	     */
 	    echartsProto.setOption = function (option, notMerge, notRefreshImmediately) {
-	        if (!this._model || notMerge) {
-	            this._model = new GlobalModel(
+	        if (!this._Dto || notMerge) {
+	            this._Dto = new GlobalDto(
 	                null, null, this._theme, new OptionManager(this._api)
 	            );
 	        }
 
-	        this._model.setOption(option, optionPreprocessorFuncs);
+	        this._Dto.setOption(option, optionPreprocessorFuncs);
 
 	        updateMethods.prepareAndUpdate.call(this);
 
@@ -276,17 +276,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
-	     * @return {module:echarts/model/Global}
+	     * @return {module:echarts/Dto/Global}
 	     */
-	    echartsProto.getModel = function () {
-	        return this._model;
+	    echartsProto.getDto = function () {
+	        return this._Dto;
 	    };
 
 	    /**
 	     * @return {Object}
 	     */
 	    echartsProto.getOption = function () {
-	        return this._model.getOption();
+	        return this._Dto.getOption();
 	    };
 
 	    /**
@@ -315,7 +315,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        opts = opts || {};
 	        opts.pixelRatio = opts.pixelRatio || 1;
 	        opts.backgroundColor = opts.backgroundColor
-	            || this._model.get('backgroundColor');
+	            || this._Dto.get('backgroundColor');
 	        var zr = this._zr;
 	        var list = zr.storage.getDisplayList();
 	        // Stop animations
@@ -334,12 +334,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    echartsProto.getDataURL = function (opts) {
 	        opts = opts || {};
 	        var excludeComponents = opts.excludeComponents;
-	        var ecModel = this._model;
+	        var ecDto = this._Dto;
 	        var excludesComponentViews = [];
 	        var self = this;
 
 	        each(excludeComponents, function (componentType) {
-	            ecModel.eachComponent({
+	            ecDto.eachComponent({
 	                mainType: componentType
 	            }, function (component) {
 	                var view = self._componentsMap[component.__viewId];
@@ -441,39 +441,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	        update: function (payload) {
 	            // console.time && console.time('update');
 
-	            var ecModel = this._model;
+	            var ecDto = this._Dto;
 	            var api = this._api;
 	            var coordSysMgr = this._coordSysMgr;
 	            // update before setOption
-	            if (!ecModel) {
+	            if (!ecDto) {
 	                return;
 	            }
 
 	            // Fixme First time update ?
-	            ecModel.restoreData();
+	            ecDto.restoreData();
 
 	            // TODO
-	            // Save total ecModel here for undo/redo (after restoring data and before processing data).
-	            // Undo (restoration of total ecModel) can be carried out in 'action' or outside API call.
+	            // Save total ecDto here for undo/redo (after restoring data and before processing data).
+	            // Undo (restoration of total ecDto) can be carried out in 'action' or outside API call.
 
 	            // Create new coordinate system each update
 	            // In LineView may save the old coordinate system and use it to get the orignal point
-	            coordSysMgr.create(this._model, this._api);
+	            coordSysMgr.create(this._Dto, this._api);
 
-	            processData.call(this, ecModel, api);
+	            processData.call(this, ecDto, api);
 
-	            stackSeriesData.call(this, ecModel);
+	            stackSeriesData.call(this, ecDto);
 
-	            coordSysMgr.update(ecModel, api);
+	            coordSysMgr.update(ecDto, api);
 
-	            doLayout.call(this, ecModel, payload);
+	            doLayout.call(this, ecDto, payload);
 
-	            doVisualCoding.call(this, ecModel, payload);
+	            doVisualCoding.call(this, ecDto, payload);
 
-	            doRender.call(this, ecModel, payload);
+	            doRender.call(this, ecDto, payload);
 
 	            // Set background
-	            var backgroundColor = ecModel.get('backgroundColor') || 'transparent';
+	            var backgroundColor = ecDto.get('backgroundColor') || 'transparent';
 
 	            var painter = this._zr.painter;
 	            // TODO all use clearColor ?
@@ -504,18 +504,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @private
 	         */
 	        updateView: function (payload) {
-	            var ecModel = this._model;
+	            var ecDto = this._Dto;
 
 	            // update before setOption
-	            if (!ecModel) {
+	            if (!ecDto) {
 	                return;
 	            }
 
-	            doLayout.call(this, ecModel, payload);
+	            doLayout.call(this, ecDto, payload);
 
-	            doVisualCoding.call(this, ecModel, payload);
+	            doVisualCoding.call(this, ecDto, payload);
 
-	            invokeUpdateMethod.call(this, 'updateView', ecModel, payload);
+	            invokeUpdateMethod.call(this, 'updateView', ecDto, payload);
 	        },
 
 	        /**
@@ -523,16 +523,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @private
 	         */
 	        updateVisual: function (payload) {
-	            var ecModel = this._model;
+	            var ecDto = this._Dto;
 
 	            // update before setOption
-	            if (!ecModel) {
+	            if (!ecDto) {
 	                return;
 	            }
 
-	            doVisualCoding.call(this, ecModel, payload);
+	            doVisualCoding.call(this, ecDto, payload);
 
-	            invokeUpdateMethod.call(this, 'updateVisual', ecModel, payload);
+	            invokeUpdateMethod.call(this, 'updateVisual', ecDto, payload);
 	        },
 
 	        /**
@@ -540,16 +540,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @private
 	         */
 	        updateLayout: function (payload) {
-	            var ecModel = this._model;
+	            var ecDto = this._Dto;
 
 	            // update before setOption
-	            if (!ecModel) {
+	            if (!ecDto) {
 	                return;
 	            }
 
-	            doLayout.call(this, ecModel, payload);
+	            doLayout.call(this, ecDto, payload);
 
-	            invokeUpdateMethod.call(this, 'updateLayout', ecModel, payload);
+	            invokeUpdateMethod.call(this, 'updateLayout', ecDto, payload);
 	        },
 
 	        /**
@@ -573,11 +573,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @private
 	         */
 	        prepareAndUpdate: function (payload) {
-	            var ecModel = this._model;
+	            var ecDto = this._Dto;
 
-	            prepareView.call(this, 'component', ecModel);
+	            prepareView.call(this, 'component', ecDto);
 
-	            prepareView.call(this, 'chart', ecModel);
+	            prepareView.call(this, 'chart', ecDto);
 
 	            updateMethods.update.call(this, payload);
 	        }
@@ -588,20 +588,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    function toggleHighlight(method, payload) {
-	        var ecModel = this._model;
+	        var ecDto = this._Dto;
 
 	        // dispatchAction before setOption
-	        if (!ecModel) {
+	        if (!ecDto) {
 	            return;
 	        }
 
-	        ecModel.eachComponent(
+	        ecDto.eachComponent(
 	            {mainType: 'series', query: payload},
-	            function (seriesModel, index) {
-	                var chartView = this._chartsMap[seriesModel.__viewId];
+	            function (seriesDto, index) {
+	                var chartView = this._chartsMap[seriesDto.__viewId];
 	                if (chartView && chartView.__alive) {
 	                    chartView[method](
-	                        seriesModel, ecModel, this._api, payload
+	                        seriesDto, ecDto, this._api, payload
 	                    );
 	                }
 	            },
@@ -615,7 +615,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    echartsProto.resize = function () {
 	        this._zr.resize();
 
-	        var optionChanged = this._model && this._model.resetOption('media');
+	        var optionChanged = this._Dto && this._Dto.resetOption('media');
 	        updateMethods[optionChanged ? 'prepareAndUpdate' : 'update'].call(this);
 
 	        // Resize loading effect
@@ -689,7 +689,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            for (var i = 0; i < payloads.length; i++) {
 	                var batchItem = payloads[i];
 	                // Action can specify the event by return it.
-	                eventObj = actionWrap.action(batchItem, this._model);
+	                eventObj = actionWrap.action(batchItem, this._Dto);
 	                // Emit event outside
 	                eventObj = eventObj || zrUtil.extend({}, batchItem);
 	                // Convert type to eventType
@@ -731,33 +731,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {string} methodName
 	     * @private
 	     */
-	    function invokeUpdateMethod(methodName, ecModel, payload) {
+	    function invokeUpdateMethod(methodName, ecDto, payload) {
 	        var api = this._api;
 
 	        // Update all components
 	        each(this._componentsViews, function (component) {
-	            var componentModel = component.__model;
-	            component[methodName](componentModel, ecModel, api, payload);
+	            var componentDto = component.__Dto;
+	            component[methodName](componentDto, ecDto, api, payload);
 
-	            updateZ(componentModel, component);
+	            updateZ(componentDto, component);
 	        }, this);
 
 	        // Upate all charts
-	        ecModel.eachSeries(function (seriesModel, idx) {
-	            var chart = this._chartsMap[seriesModel.__viewId];
-	            chart[methodName](seriesModel, ecModel, api, payload);
+	        ecDto.eachSeries(function (seriesDto, idx) {
+	            var chart = this._chartsMap[seriesDto.__viewId];
+	            chart[methodName](seriesDto, ecDto, api, payload);
 
-	            updateZ(seriesModel, chart);
+	            updateZ(seriesDto, chart);
 	        }, this);
 
 	    }
 
 	    /**
 	     * Prepare view instances of charts and components
-	     * @param  {module:echarts/model/Global} ecModel
+	     * @param  {module:echarts/Dto/Global} ecDto
 	     * @private
 	     */
-	    function prepareView(type, ecModel) {
+	    function prepareView(type, ecDto) {
 	        var isComponent = type === 'component';
 	        var viewList = isComponent ? this._componentsViews : this._chartsViews;
 	        var viewMap = isComponent ? this._componentsMap : this._chartsMap;
@@ -767,27 +767,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	            viewList[i].__alive = false;
 	        }
 
-	        ecModel[isComponent ? 'eachComponent' : 'eachSeries'](function (componentType, model) {
+	        ecDto[isComponent ? 'eachComponent' : 'eachSeries'](function (componentType, Dto) {
 	            if (isComponent) {
 	                if (componentType === 'series') {
 	                    return;
 	                }
 	            }
 	            else {
-	                model = componentType;
+	                Dto = componentType;
 	            }
 
 	            // Consider: id same and type changed.
-	            var viewId = model.id + '_' + model.type;
+	            var viewId = Dto.id + '_' + Dto.type;
 	            var view = viewMap[viewId];
 	            if (!view) {
-	                var classType = ComponentModel.parseClassType(model.type);
+	                var classType = ComponentDto.parseClassType(Dto.type);
 	                var Clazz = isComponent
 	                    ? ComponentView.getClass(classType.main, classType.sub)
 	                    : ChartView.getClass(classType.sub);
 	                if (Clazz) {
 	                    view = new Clazz();
-	                    view.init(ecModel, this._api);
+	                    view.init(ecDto, this._api);
 	                    viewMap[viewId] = view;
 	                    viewList.push(view);
 	                    zr.add(view.group);
@@ -798,17 +798,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }
 
-	            model.__viewId = viewId;
+	            Dto.__viewId = viewId;
 	            view.__alive = true;
 	            view.__id = viewId;
-	            view.__model = model;
+	            view.__Dto = Dto;
 	        }, this);
 
 	        for (var i = 0; i < viewList.length;) {
 	            var view = viewList[i];
 	            if (!view.__alive) {
 	                zr.remove(view.group);
-	                view.dispose(ecModel, this._api);
+	                view.dispose(ecDto, this._api);
 	                viewList.splice(i, 1);
 	                delete viewMap[view.__id];
 	            }
@@ -821,13 +821,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Processor data in each series
 	     *
-	     * @param {module:echarts/model/Global} ecModel
+	     * @param {module:echarts/Dto/Global} ecDto
 	     * @private
 	     */
-	    function processData(ecModel, api) {
+	    function processData(ecDto, api) {
 	        each(PROCESSOR_STAGES, function (stage) {
 	            each(dataProcessorFuncs[stage] || [], function (process) {
-	                process(ecModel, api);
+	                process(ecDto, api);
 	            });
 	        });
 	    }
@@ -835,9 +835,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * @private
 	     */
-	    function stackSeriesData(ecModel) {
+	    function stackSeriesData(ecDto) {
 	        var stackedDataMap = {};
-	        ecModel.eachSeries(function (series) {
+	        ecDto.eachSeries(function (series) {
 	            var stack = series.get('stack');
 	            var data = series.getData();
 	            if (stack && data.type === 'list') {
@@ -853,26 +853,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Layout before each chart render there series, after visual coding and data processing
 	     *
-	     * @param {module:echarts/model/Global} ecModel
+	     * @param {module:echarts/Dto/Global} ecDto
 	     * @private
 	     */
-	    function doLayout(ecModel, payload) {
+	    function doLayout(ecDto, payload) {
 	        var api = this._api;
 	        each(layoutFuncs, function (layout) {
-	            layout(ecModel, api, payload);
+	            layout(ecDto, api, payload);
 	        });
 	    }
 
 	    /**
 	     * Code visual infomation from data after data processing
 	     *
-	     * @param {module:echarts/model/Global} ecModel
+	     * @param {module:echarts/Dto/Global} ecDto
 	     * @private
 	     */
-	    function doVisualCoding(ecModel, payload) {
+	    function doVisualCoding(ecDto, payload) {
 	        each(VISUAL_CODING_STAGES, function (stage) {
 	            each(visualCodingFuncs[stage] || [], function (visualCoding) {
-	                visualCoding(ecModel, payload);
+	                visualCoding(ecDto, payload);
 	            });
 	        });
 	    }
@@ -881,14 +881,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Render each chart and component
 	     * @private
 	     */
-	    function doRender(ecModel, payload) {
+	    function doRender(ecDto, payload) {
 	        var api = this._api;
 	        // Render all components
 	        each(this._componentsViews, function (componentView) {
-	            var componentModel = componentView.__model;
-	            componentView.render(componentModel, ecModel, api, payload);
+	            var componentDto = componentView.__Dto;
+	            componentView.render(componentDto, ecDto, api, payload);
 
-	            updateZ(componentModel, componentView);
+	            updateZ(componentDto, componentView);
 	        }, this);
 
 	        each(this._chartsViews, function (chart) {
@@ -896,20 +896,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, this);
 
 	        // Render all charts
-	        ecModel.eachSeries(function (seriesModel, idx) {
-	            var chartView = this._chartsMap[seriesModel.__viewId];
+	        ecDto.eachSeries(function (seriesDto, idx) {
+	            var chartView = this._chartsMap[seriesDto.__viewId];
 	            chartView.__alive = true;
-	            chartView.render(seriesModel, ecModel, api, payload);
+	            chartView.render(seriesDto, ecDto, api, payload);
 
-	            chartView.group.silent = !!seriesModel.get('silent');
+	            chartView.group.silent = !!seriesDto.get('silent');
 
-	            updateZ(seriesModel, chartView);
+	            updateZ(seriesDto, chartView);
 	        }, this);
 
 	        // Remove groups of unrendered charts
 	        each(this._chartsViews, function (chart) {
 	            if (!chart.__alive) {
-	                chart.remove(ecModel, api);
+	                chart.remove(ecDto, api);
 	            }
 	        }, this);
 	    }
@@ -923,11 +923,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    echartsProto._initEvents = function () {
 	        each(MOUSE_EVENT_NAMES, function (eveName) {
 	            this._zr.on(eveName, function (e) {
-	                var ecModel = this.getModel();
+	                var ecDto = this.getDto();
 	                var el = e.target;
 	                if (el && el.dataIndex != null) {
-	                    var dataModel = el.dataModel || ecModel.getSeriesByIndex(el.seriesIndex);
-	                    var params = dataModel && dataModel.getDataParams(el.dataIndex, el.dataType) || {};
+	                    var dataDto = el.dataDto || ecDto.getSeriesByIndex(el.seriesIndex);
+	                    var params = dataDto && dataDto.getDataParams(el.dataIndex, el.dataType) || {};
 	                    params.event = e;
 	                    params.type = eveName;
 	                    this.trigger(eveName, params);
@@ -965,13 +965,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    echartsProto.dispose = function () {
 	        this._disposed = true;
 	        var api = this._api;
-	        var ecModel = this._model;
+	        var ecDto = this._Dto;
 
 	        each(this._componentsViews, function (component) {
-	            component.dispose(ecModel, api);
+	            component.dispose(ecDto, api);
 	        });
 	        each(this._chartsViews, function (chart) {
-	            chart.dispose(ecModel, api);
+	            chart.dispose(ecDto, api);
 	        });
 
 	        this._zr.dispose();
@@ -982,13 +982,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    zrUtil.mixin(ECharts, Eventful);
 
 	    /**
-	     * @param {module:echarts/model/Series|module:echarts/model/Component} model
+	     * @param {module:echarts/Dto/Series|module:echarts/Dto/Component} Dto
 	     * @param {module:echarts/view/Component|module:echarts/view/Chart} view
 	     * @return {string}
 	     */
-	    function updateZ(model, view) {
-	        var z = model.get('z');
-	        var zlevel = model.get('zlevel');
+	    function updateZ(Dto, view) {
+	        var z = Dto.get('z');
+	        var zlevel = Dto.get('zlevel');
 	        // Set z and zlevel
 	        view.group.traverse(function (el) {
 	            z != null && (el.z = z);
@@ -1290,15 +1290,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * @param {Object} opts
 	     */
-	    echarts.extendComponentModel = function (opts) {
-	        return ComponentModel.extend(opts);
+	    echarts.extendComponentDto = function (opts) {
+	        return ComponentDto.extend(opts);
 	    };
 
 	    /**
 	     * @param {Object} opts
 	     */
-	    echarts.extendSeriesModel = function (opts) {
-	        return SeriesModel.extend(opts);
+	    echarts.extendSeriesDto = function (opts) {
+	        return SeriesDto.extend(opts);
 	    };
 
 	    /**
@@ -1375,17 +1375,17 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * ECharts global model
+	 * ECharts global Dto
 	 *
-	 * @module {echarts/model/Global}
+	 * @module {echarts/Dto/Global}
 	 *
 	 */
 
 
 
 	    var zrUtil = __webpack_require__(3);
-	    var modelUtil = __webpack_require__(5);
-	    var Model = __webpack_require__(8);
+	    var DtoUtil = __webpack_require__(5);
+	    var Dto = __webpack_require__(8);
 	    var each = zrUtil.each;
 	    var filter = zrUtil.filter;
 	    var map = zrUtil.map;
@@ -1393,36 +1393,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var indexOf = zrUtil.indexOf;
 	    var isObject = zrUtil.isObject;
 
-	    var ComponentModel = __webpack_require__(19);
+	    var ComponentDto = __webpack_require__(19);
 
 	    var globalDefault = __webpack_require__(23);
 
 	    var OPTION_INNER_KEY = '\0_ec_inner';
 
 	    /**
-	     * @alias module:echarts/model/Global
+	     * @alias module:echarts/Dto/Global
 	     *
 	     * @param {Object} option
-	     * @param {module:echarts/model/Model} parentModel
+	     * @param {module:echarts/Dto/Dto} parentDto
 	     * @param {Object} theme
 	     */
-	    var GlobalModel = Model.extend({
+	    var GlobalDto = Dto.extend({
 
-	        constructor: GlobalModel,
+	        constructor: GlobalDto,
 
-	        init: function (option, parentModel, theme, optionManager) {
+	        init: function (option, parentDto, theme, optionManager) {
 	            theme = theme || {};
 
 	            this.option = null; // Mark as not initialized.
 
 	            /**
-	             * @type {module:echarts/model/Model}
+	             * @type {module:echarts/Dto/Dto}
 	             * @private
 	             */
-	            this._theme = new Model(theme);
+	            this._theme = new Dto(theme);
 
 	            /**
-	             * @type {module:echarts/model/OptionManager}
+	             * @type {module:echarts/Dto/OptionManager}
 	             */
 	            this._optionManager = optionManager;
 	        },
@@ -1491,13 +1491,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var componentsMap = this._componentsMap;
 	            var newCptTypes = [];
 
-	            // 如果不存在对应的 component model 则直接 merge
+	            // 如果不存在对应的 component Dto 则直接 merge
 	            each(newOption, function (componentOption, mainType) {
 	                if (componentOption == null) {
 	                    return;
 	                }
 
-	                if (!ComponentModel.hasClass(mainType)) {
+	                if (!ComponentDto.hasClass(mainType)) {
 	                    option[mainType] = option[mainType] == null
 	                        ? zrUtil.clone(componentOption)
 	                        : zrUtil.merge(option[mainType], componentOption, true);
@@ -1508,20 +1508,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 
 	            // FIXME OPTION 同步是否要改回原来的
-	            ComponentModel.topologicalTravel(
-	                newCptTypes, ComponentModel.getAllClassMainTypes(), visitComponent, this
+	            ComponentDto.topologicalTravel(
+	                newCptTypes, ComponentDto.getAllClassMainTypes(), visitComponent, this
 	            );
 
 	            function visitComponent(mainType, dependencies) {
-	                var newCptOptionList = modelUtil.normalizeToArray(newOption[mainType]);
+	                var newCptOptionList = DtoUtil.normalizeToArray(newOption[mainType]);
 
-	                var mapResult = modelUtil.mappingToExists(
+	                var mapResult = DtoUtil.mappingToExists(
 	                    componentsMap[mainType], newCptOptionList
 	                );
 
 	                makeKeyInfo(mainType, mapResult);
 
-	                var dependentModels = getComponentsByTypes(
+	                var dependentDtos = getComponentsByTypes(
 	                    componentsMap, dependencies
 	                );
 
@@ -1529,49 +1529,49 @@ return /******/ (function(modules) { // webpackBootstrap
 	                componentsMap[mainType] = [];
 
 	                each(mapResult, function (resultItem, index) {
-	                    var componentModel = resultItem.exist;
+	                    var componentDto = resultItem.exist;
 	                    var newCptOption = resultItem.option;
 
 	                    zrUtil.assert(
-	                        isObject(newCptOption) || componentModel,
+	                        isObject(newCptOption) || componentDto,
 	                        'Empty component definition'
 	                    );
 
 	                    // Consider where is no new option and should be merged using {},
 	                    // see removeEdgeAndAdd in topologicalTravel and
-	                    // ComponentModel.getAllClassMainTypes.
+	                    // ComponentDto.getAllClassMainTypes.
 	                    if (!newCptOption) {
-	                        componentModel.mergeOption({}, this);
-	                        componentModel.optionUpdated(this);
+	                        componentDto.mergeOption({}, this);
+	                        componentDto.optionUpdated(this);
 	                    }
 	                    else {
-	                        var ComponentModelClass = ComponentModel.getClass(
+	                        var ComponentDtoClass = ComponentDto.getClass(
 	                            mainType, resultItem.keyInfo.subType, true
 	                        );
 
-	                        if (componentModel && componentModel instanceof ComponentModelClass) {
-	                            componentModel.mergeOption(newCptOption, this);
-	                            componentModel.optionUpdated(this);
+	                        if (componentDto && componentDto instanceof ComponentDtoClass) {
+	                            componentDto.mergeOption(newCptOption, this);
+	                            componentDto.optionUpdated(this);
 	                        }
 	                        else {
 	                            // PENDING Global as parent ?
-	                            componentModel = new ComponentModelClass(
+	                            componentDto = new ComponentDtoClass(
 	                                newCptOption, this, this,
 	                                zrUtil.extend(
 	                                    {
-	                                        dependentModels: dependentModels,
+	                                        dependentDtos: dependentDtos,
 	                                        componentIndex: index
 	                                    },
 	                                    resultItem.keyInfo
 	                                )
 	                            );
 	                            // Call optionUpdated after init
-	                            componentModel.optionUpdated(this);
+	                            componentDto.optionUpdated(this);
 	                        }
 	                    }
 
-	                    componentsMap[mainType][index] = componentModel;
-	                    option[mainType][index] = componentModel.option;
+	                    componentsMap[mainType][index] = componentDto;
+	                    option[mainType][index] = componentDto.option;
 	                }, this);
 
 	                // Backup series for filtering.
@@ -1590,11 +1590,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var option = zrUtil.clone(this.option);
 
 	            each(option, function (opts, mainType) {
-	                if (ComponentModel.hasClass(mainType)) {
-	                    var opts = modelUtil.normalizeToArray(opts);
+	                if (ComponentDto.hasClass(mainType)) {
+	                    var opts = DtoUtil.normalizeToArray(opts);
 	                    for (var i = opts.length - 1; i >= 0; i--) {
 	                        // Remove options with inner id.
-	                        if (modelUtil.isIdInner(opts[i])) {
+	                        if (DtoUtil.isIdInner(opts[i])) {
 	                            opts.splice(i, 1);
 	                        }
 	                    }
@@ -1608,7 +1608,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 
 	        /**
-	         * @return {module:echarts/model/Model}
+	         * @return {module:echarts/Dto/Dto}
 	         */
 	        getTheme: function () {
 	            return this._theme;
@@ -1617,7 +1617,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @param {string} mainType
 	         * @param {number} [idx=0]
-	         * @return {module:echarts/model/Component}
+	         * @return {module:echarts/Dto/Component}
 	         */
 	        getComponent: function (mainType, idx) {
 	            var list = this._componentsMap[mainType];
@@ -1633,7 +1633,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @param {number} [condition.index] Either input index or id or name.
 	         * @param {string} [condition.id] Either input index or id or name.
 	         * @param {string} [condition.name] Either input index or id or name.
-	         * @return {Array.<module:echarts/model/Component>}
+	         * @return {Array.<module:echarts/Dto/Component>}
 	         */
 	        queryComponents: function (condition) {
 	            var mainType = condition.mainType;
@@ -1694,7 +1694,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * );
 	         * var result = findComponents(
 	         *     {mainType: 'series'},
-	         *     function (model, index) {...}
+	         *     function (Dto, index) {...}
 	         * );
 	         * // result like [component0, componnet1, ...]
 	         *
@@ -1707,7 +1707,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *        do not filtering by query conditions, which is convenient for
 	         *        no-payload situations or when target of action is global.
 	         * @param {Function} [condition.filter] parameter: component, return boolean.
-	         * @return {Array.<module:echarts/model/Component>}
+	         * @return {Array.<module:echarts/Dto/Component>}
 	         */
 	        findComponents: function (condition) {
 	            var query = condition.query;
@@ -1748,20 +1748,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * @usage
-	         * eachComponent('legend', function (legendModel, index) {
+	         * eachComponent('legend', function (legendDto, index) {
 	         *     ...
 	         * });
-	         * eachComponent(function (componentType, model, index) {
+	         * eachComponent(function (componentType, Dto, index) {
 	         *     // componentType does not include subType
 	         *     // (componentType is 'xxx' but not 'xxx.aa')
 	         * });
 	         * eachComponent(
 	         *     {mainType: 'dataZoom', query: {dataZoomId: 'abc'}},
-	         *     function (model, index) {...}
+	         *     function (Dto, index) {...}
 	         * );
 	         * eachComponent(
 	         *     {mainType: 'series', subType: 'pie', query: {seriesName: 'uio'}},
-	         *     function (model, index) {...}
+	         *     function (Dto, index) {...}
 	         * );
 	         *
 	         * @param {string|Object=} mainType When mainType is object, the definition
@@ -1792,7 +1792,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * @param {string} name
-	         * @return {Array.<module:echarts/model/Series>}
+	         * @return {Array.<module:echarts/Dto/Series>}
 	         */
 	        getSeriesByName: function (name) {
 	            var series = this._componentsMap.series;
@@ -1803,7 +1803,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * @param {number} seriesIndex
-	         * @return {module:echarts/model/Series}
+	         * @return {module:echarts/Dto/Series}
 	         */
 	        getSeriesByIndex: function (seriesIndex) {
 	            return this._componentsMap.series[seriesIndex];
@@ -1811,7 +1811,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * @param {string} subType
-	         * @return {Array.<module:echarts/model/Series>}
+	         * @return {Array.<module:echarts/Dto/Series>}
 	         */
 	        getSeriesByType: function (subType) {
 	            var series = this._componentsMap.series;
@@ -1821,7 +1821,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 
 	        /**
-	         * @return {Array.<module:echarts/model/Series>}
+	         * @return {Array.<module:echarts/Dto/Series>}
 	         */
 	        getSeries: function () {
 	            return this._componentsMap.series.slice();
@@ -1882,11 +1882,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 
 	        /**
-	         * @param {module:echarts/model/Series} seriesModel
+	         * @param {module:echarts/Dto/Series} seriesDto
 	         */
-	        isSeriesFiltered: function (seriesModel) {
+	        isSeriesFiltered: function (seriesDto) {
 	            assertSeriesInitialized(this);
-	            return zrUtil.indexOf(this._seriesIndices, seriesModel.componentIndex) < 0;
+	            return zrUtil.indexOf(this._seriesIndices, seriesDto.componentIndex) < 0;
 	        },
 
 	        /**
@@ -1911,9 +1911,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                componentTypes.push(componentType);
 	            });
 
-	            ComponentModel.topologicalTravel(
+	            ComponentDto.topologicalTravel(
 	                componentTypes,
-	                ComponentModel.getAllClassMainTypes(),
+	                ComponentDto.getAllClassMainTypes(),
 	                function (componentType, dependencies) {
 	                    each(componentsMap[componentType], function (component) {
 	                        component.restoreData();
@@ -1929,8 +1929,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    function mergeTheme(option, theme) {
 	        for (var name in theme) {
-	            // 如果有 component model 则把具体的 merge 逻辑交给该 model 处理
-	            if (!ComponentModel.hasClass(name)) {
+	            // 如果有 component Dto 则把具体的 merge 逻辑交给该 Dto 处理
+	            if (!ComponentDto.hasClass(name)) {
 	                if (typeof theme[name] === 'object') {
 	                    option[name] = !option[name]
 	                        ? zrUtil.clone(theme[name])
@@ -1949,12 +1949,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        baseOption = baseOption;
 
 	        // Using OPTION_INNER_KEY to mark that this option can not be used outside,
-	        // i.e. `chart.setOption(chart.getModel().option);` is forbiden.
+	        // i.e. `chart.setOption(chart.getDto().option);` is forbiden.
 	        this.option = {};
 	        this.option[OPTION_INNER_KEY] = 1;
 
 	        /**
-	         * @type {Object.<string, Array.<module:echarts/model/Model>>}
+	         * @type {Object.<string, Array.<module:echarts/Dto/Dto>>}
 	         * @private
 	         */
 	        this._componentsMap = {};
@@ -1977,8 +1977,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    /**
 	     * @inner
-	     * @param {Array.<string>|string} types model types
-	     * @return {Object} key: {string} type, value: {Array.<Object>} models
+	     * @param {Array.<string>|string} types Dto types
+	     * @return {Object} key: {string} type, value: {Array.<Object>} Dtos
 	     */
 	    function getComponentsByTypes(componentsMap, types) {
 	        if (!zrUtil.isArray(types)) {
@@ -1997,12 +1997,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @inner
 	     */
 	    function makeKeyInfo(mainType, mapResult) {
-	        // We use this id to hash component models and view instances
+	        // We use this id to hash component Dtos and view instances
 	        // in echarts. id can be specified by user, or auto generated.
 
 	        // The id generation rule ensures new view instance are able
 	        // to mapped to old instance when setOption are called in
-	        // no-merge mode. So we generate model id by name and plus
+	        // no-merge mode. So we generate Dto id by name and plus
 	        // type in view id.
 
 	        // name can be duplicated among components, which is convenient
@@ -2085,7 +2085,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            : existComponent
 	            ? existComponent.subType
 	            // Use determineSubType only when there is no existComponent.
-	            : ComponentModel.determineSubType(mainType, newCptOption);
+	            : ComponentDto.determineSubType(mainType, newCptOption);
 
 	        // tooltip, markline, markpoint may always has no subType
 	        return subType;
@@ -2094,8 +2094,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * @inner
 	     */
-	    function createSeriesIndices(seriesModels) {
-	        return map(seriesModels, function (series) {
+	    function createSeriesIndices(seriesDtos) {
+	        return map(seriesDtos, function (series) {
 	            return series.componentIndex;
 	        }) || [];
 	    }
@@ -2116,15 +2116,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * @inner
 	     */
-	    function assertSeriesInitialized(ecModel) {
+	    function assertSeriesInitialized(ecDto) {
 	        // Components that use _seriesIndices should depends on series component,
 	        // which make sure that their initialization is after series.
-	        if (!ecModel._seriesIndices) {
+	        if (!ecDto._seriesIndices) {
 	            throw new Error('Series has not been initialized yet.');
 	        }
 	    }
 
-	    module.exports = GlobalModel;
+	    module.exports = GlobalDto;
 
 
 /***/ },
@@ -2665,7 +2665,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var AXIS_DIMS = ['x', 'y', 'z', 'radius', 'angle'];
 
-	    var modelUtil = {};
+	    var DtoUtil = {};
 
 	    /**
 	     * Create "each" method to iterate names.
@@ -2675,11 +2675,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param  {Array.<string>=} attrs
 	     * @return {Function}
 	     */
-	    modelUtil.createNameEach = function (names, attrs) {
+	    DtoUtil.createNameEach = function (names, attrs) {
 	        names = names.slice();
-	        var capitalNames = zrUtil.map(names, modelUtil.capitalFirst);
+	        var capitalNames = zrUtil.map(names, DtoUtil.capitalFirst);
 	        attrs = (attrs || []).slice();
-	        var capitalAttrs = zrUtil.map(attrs, modelUtil.capitalFirst);
+	        var capitalAttrs = zrUtil.map(attrs, DtoUtil.capitalFirst);
 
 	        return function (callback, context) {
 	            zrUtil.each(names, function (name, index) {
@@ -2697,7 +2697,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * @public
 	     */
-	    modelUtil.capitalFirst = function (str) {
+	    DtoUtil.capitalFirst = function (str) {
 	        return str ? str.charAt(0).toUpperCase() + str.substr(1) : str;
 	    };
 
@@ -2715,14 +2715,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *                            }
 	     * @param {Object} context
 	     */
-	    modelUtil.eachAxisDim = modelUtil.createNameEach(AXIS_DIMS, ['axisIndex', 'axis', 'index']);
+	    DtoUtil.eachAxisDim = DtoUtil.createNameEach(AXIS_DIMS, ['axisIndex', 'axis', 'index']);
 
 	    /**
 	     * If value is not array, then translate it to array.
 	     * @param  {*} value
 	     * @return {Array} [value] or value
 	     */
-	    modelUtil.normalizeToArray = function (value) {
+	    DtoUtil.normalizeToArray = function (value) {
 	        return zrUtil.isArray(value)
 	            ? value
 	            : value == null
@@ -2731,9 +2731,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
-	     * If tow dataZoomModels has the same axis controlled, we say that they are 'linked'.
-	     * dataZoomModels and 'links' make up one or more graphics.
-	     * This function finds the graphic where the source dataZoomModel is in.
+	     * If tow dataZoomDtos has the same axis controlled, we say that they are 'linked'.
+	     * dataZoomDtos and 'links' make up one or more graphics.
+	     * This function finds the graphic where the source dataZoomDto is in.
 	     *
 	     * @public
 	     * @param {Function} forEachNode Node iterator.
@@ -2741,7 +2741,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {Function} edgeIdGetter Giving node and edgeType, return an array of edge id.
 	     * @return {Function} Input: sourceNode, Output: Like {nodes: [], dims: {}}
 	     */
-	    modelUtil.createLinkedNodesFinder = function (forEachNode, forEachEdgeType, edgeIdGetter) {
+	    DtoUtil.createLinkedNodesFinder = function (forEachNode, forEachEdgeType, edgeIdGetter) {
 
 	        return function (sourceNode) {
 	            var result = {
@@ -2818,7 +2818,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {Object} opt
 	     * @param {Array.<string>} subOpts
 	     */
-	     modelUtil.defaultEmphasis = function (opt, subOpts) {
+	     DtoUtil.defaultEmphasis = function (opt, subOpts) {
 	        if (opt) {
 	            var emphasisOpt = opt.emphasis = opt.emphasis || {};
 	            var normalOpt = opt.normal = opt.normal || {};
@@ -2833,7 +2833,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 
-	    modelUtil.LABEL_OPTIONS = ['position', 'show', 'textStyle', 'distance', 'formatter'];
+	    DtoUtil.LABEL_OPTIONS = ['position', 'show', 'textStyle', 'distance', 'formatter'];
 
 	    /**
 	     * data could be [12, 2323, {value: 223}, [1221, 23], {value: [2, 23]}]
@@ -2841,7 +2841,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {string|number|Date|Array|Object} dataItem
 	     * @return {number|string|Date|Array.<number|string|Date>}
 	     */
-	    modelUtil.getDataItemValue = function (dataItem) {
+	    DtoUtil.getDataItemValue = function (dataItem) {
 	        // Performance sensitive.
 	        return dataItem && (dataItem.value == null ? dataItem : dataItem.value);
 	    };
@@ -2851,7 +2851,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {string|number|Date} value
 	     * @param {Object|string} [dimInfo] If string (like 'x'), dimType defaults 'number'.
 	     */
-	    modelUtil.converDataValue = function (value, dimInfo) {
+	    DtoUtil.converDataValue = function (value, dimInfo) {
 	        // Performance sensitive.
 	        var dimType = dimInfo && dimInfo.type;
 	        if (dimType === 'ordinal') {
@@ -2869,7 +2869,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            ? NaN : +value; // If string (like '-'), using '+' parse to NaN
 	    };
 
-	    modelUtil.dataFormatMixin = {
+	    DtoUtil.dataFormatMixin = {
 	        /**
 	         * Get params for formatter
 	         * @param {number} dataIndex
@@ -2916,14 +2916,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        getFormattedLabel: function (dataIndex, status, dataType, dimIndex) {
 	            status = status || 'normal';
 	            var data = this.getData(dataType);
-	            var itemModel = data.getItemModel(dataIndex);
+	            var itemDto = data.getItemDto(dataIndex);
 
 	            var params = this.getDataParams(dataIndex, dataType);
 	            if (dimIndex != null && zrUtil.isArray(params.value)) {
 	                params.value = params.value[dimIndex];
 	            }
 
-	            var formatter = itemModel.get(['label', status, 'formatter']);
+	            var formatter = itemDto.get(['label', status, 'formatter']);
 
 	            if (typeof formatter === 'function') {
 	                params.status = status;
@@ -2963,12 +2963,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Mapping to exists for merge.
 	     *
 	     * @public
-	     * @param {Array.<Object>|Array.<module:echarts/model/Component>} exists
+	     * @param {Array.<Object>|Array.<module:echarts/Dto/Component>} exists
 	     * @param {Object|Array.<Object>} newCptOptions
 	     * @return {Array.<Object>} Result, like [{exist: ..., option: ...}, {}],
 	     *                          which order is the same as exists.
 	     */
-	    modelUtil.mappingToExists = function (exists, newCptOptions) {
+	    DtoUtil.mappingToExists = function (exists, newCptOptions) {
 	        // Mapping by the order by original option (but not order of
 	        // new option) in merge mode. Because we should ensure
 	        // some specified index (like xAxisIndex) is consistent with
@@ -2994,8 +2994,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        // id has highest priority.
 	                        (cptOption.id != null && exist.id === cptOption.id + '')
 	                        || (cptOption.name != null
-	                            && !modelUtil.isIdInner(cptOption)
-	                            && !modelUtil.isIdInner(exist)
+	                            && !DtoUtil.isIdInner(cptOption)
+	                            && !DtoUtil.isIdInner(exist)
 	                            && exist.name === cptOption.name + ''
 	                        )
 	                    )
@@ -3017,7 +3017,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            for (; i < result.length; i++) {
 	                var exist = result[i].exist;
 	                if (!result[i].option
-	                    && !modelUtil.isIdInner(exist)
+	                    && !DtoUtil.isIdInner(exist)
 	                    // Caution:
 	                    // Do not overwrite id. But name can be overwritten,
 	                    // because axis use name as 'show label text'.
@@ -3043,13 +3043,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {Object} cptOption
 	     * @return {boolean}
 	     */
-	    modelUtil.isIdInner = function (cptOption) {
+	    DtoUtil.isIdInner = function (cptOption) {
 	        return zrUtil.isObject(cptOption)
 	            && cptOption.id
 	            && (cptOption.id + '').indexOf('\0_ec_\0') === 0;
 	    };
 
-	    module.exports = modelUtil;
+	    module.exports = DtoUtil;
 
 
 /***/ },
@@ -3461,7 +3461,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @module echarts/model/Model
+	 * @module echarts/Dto/Dto
 	 */
 
 
@@ -3469,25 +3469,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var clazzUtil = __webpack_require__(9);
 
 	    /**
-	     * @alias module:echarts/model/Model
+	     * @alias module:echarts/Dto/Dto
 	     * @constructor
 	     * @param {Object} option
-	     * @param {module:echarts/model/Model} [parentModel]
-	     * @param {module:echarts/model/Global} [ecModel]
+	     * @param {module:echarts/Dto/Dto} [parentDto]
+	     * @param {module:echarts/Dto/Global} [ecDto]
 	     * @param {Object} extraOpt
 	     */
-	    function Model(option, parentModel, ecModel, extraOpt) {
+	    function Dto(option, parentDto, ecDto, extraOpt) {
 	        /**
-	         * @type {module:echarts/model/Model}
+	         * @type {module:echarts/Dto/Dto}
 	         * @readOnly
 	         */
-	        this.parentModel = parentModel;
+	        this.parentDto = parentDto;
 
 	        /**
-	         * @type {module:echarts/model/Global}
+	         * @type {module:echarts/Dto/Global}
 	         * @readOnly
 	         */
-	        this.ecModel = ecModel;
+	        this.ecDto = ecDto;
 
 	        /**
 	         * @type {Object}
@@ -3498,7 +3498,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Simple optimization
 	        if (this.init) {
 	            if (arguments.length <= 4) {
-	                this.init(option, parentModel, ecModel, extraOpt);
+	                this.init(option, parentDto, ecDto, extraOpt);
 	            }
 	            else {
 	                this.init.apply(this, arguments);
@@ -3506,12 +3506,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    Model.prototype = {
+	    Dto.prototype = {
 
-	        constructor: Model,
+	        constructor: Dto,
 
 	        /**
-	         * Model 的初始化函数
+	         * Dto 的初始化函数
 	         * @param {Object} option
 	         */
 	        init: null,
@@ -3538,7 +3538,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            var obj = this.option;
-	            var parentModel = this.parentModel;
+	            var parentDto = this.parentDto;
 	            for (var i = 0; i < path.length; i++) {
 	                // Ignore empty
 	                if (!path[i]) {
@@ -3550,8 +3550,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    break;
 	                }
 	            }
-	            if (obj == null && parentModel && !ignoreParent) {
-	                obj = parentModel.get(path);
+	            if (obj == null && parentDto && !ignoreParent) {
+	                obj = parentDto.get(path);
 	            }
 	            return obj;
 	        },
@@ -3564,30 +3564,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	        getShallow: function (key, ignoreParent) {
 	            var option = this.option;
 	            var val = option && option[key];
-	            var parentModel = this.parentModel;
-	            if (val == null && parentModel && !ignoreParent) {
-	                val = parentModel.getShallow(key);
+	            var parentDto = this.parentDto;
+	            if (val == null && parentDto && !ignoreParent) {
+	                val = parentDto.getShallow(key);
 	            }
 	            return val;
 	        },
 
 	        /**
 	         * @param {string} path
-	         * @param {module:echarts/model/Model} [parentModel]
-	         * @return {module:echarts/model/Model}
+	         * @param {module:echarts/Dto/Dto} [parentDto]
+	         * @return {module:echarts/Dto/Dto}
 	         */
-	        getModel: function (path, parentModel) {
+	        getDto: function (path, parentDto) {
 	            var obj = this.get(path, true);
-	            var thisParentModel = this.parentModel;
-	            var model = new Model(
-	                obj, parentModel || (thisParentModel && thisParentModel.getModel(path)),
-	                this.ecModel
+	            var thisParentDto = this.parentDto;
+	            var Dto = new Dto(
+	                obj, parentDto || (thisParentDto && thisParentDto.getDto(path)),
+	                this.ecDto
 	            );
-	            return model;
+	            return Dto;
 	        },
 
 	        /**
-	         * If model has option
+	         * If Dto has option
 	         */
 	        isEmpty: function () {
 	            return this.option == null;
@@ -3606,16 +3606,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 
-	    // Enable Model.extend.
-	    clazzUtil.enableClassExtend(Model);
+	    // Enable Dto.extend.
+	    clazzUtil.enableClassExtend(Dto);
 
 	    var mixin = zrUtil.mixin;
-	    mixin(Model, __webpack_require__(10));
-	    mixin(Model, __webpack_require__(12));
-	    mixin(Model, __webpack_require__(13));
-	    mixin(Model, __webpack_require__(18));
+	    mixin(Dto, __webpack_require__(10));
+	    mixin(Dto, __webpack_require__(12));
+	    mixin(Dto, __webpack_require__(13));
+	    mixin(Dto, __webpack_require__(18));
 
-	    module.exports = Model;
+	    module.exports = Dto;
 
 
 /***/ },
@@ -3689,7 +3689,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        options = options || {};
 
 	        /**
-	         * Component model classes
+	         * Component Dto classes
 	         * key: componentType,
 	         * value:
 	         *     componentClass, when componentType is 'xxx'
@@ -3918,8 +3918,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var textContain = __webpack_require__(14);
 
-	    function getShallow(model, path) {
-	        return model && model.getShallow(path);
+	    function getShallow(Dto, path) {
+	        return Dto && Dto.getShallow(path);
 	    }
 
 	    module.exports = {
@@ -3928,9 +3928,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @return {string}
 	         */
 	        getTextColor: function () {
-	            var ecModel = this.ecModel;
+	            var ecDto = this.ecDto;
 	            return this.getShallow('color')
-	                || (ecModel && ecModel.get('textStyle.color'));
+	                || (ecDto && ecDto.get('textStyle.color'));
 	        },
 
 	        /**
@@ -3938,14 +3938,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @return {string}
 	         */
 	        getFont: function () {
-	            var ecModel = this.ecModel;
-	            var gTextStyleModel = ecModel && ecModel.getModel('textStyle');
+	            var ecDto = this.ecDto;
+	            var gTextStyleDto = ecDto && ecDto.getDto('textStyle');
 	            return [
 	                // FIXME in node-canvas fontWeight is before fontStyle
-	                this.getShallow('fontStyle') || getShallow(gTextStyleModel, 'fontStyle'),
-	                this.getShallow('fontWeight') || getShallow(gTextStyleModel, 'fontWeight'),
-	                (this.getShallow('fontSize') || getShallow(gTextStyleModel, 'fontSize') || 12) + 'px',
-	                this.getShallow('fontFamily') || getShallow(gTextStyleModel, 'fontFamily') || 'sans-serif'
+	                this.getShallow('fontStyle') || getShallow(gTextStyleDto, 'fontStyle'),
+	                this.getShallow('fontWeight') || getShallow(gTextStyleDto, 'fontWeight'),
+	                (this.getShallow('fontSize') || getShallow(gTextStyleDto, 'fontSize') || 12) + 'px',
+	                this.getShallow('fontFamily') || getShallow(gTextStyleDto, 'fontFamily') || 'sans-serif'
 	            ].join(' ');
 	        },
 
@@ -4859,13 +4859,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * Component model
+	 * Component Dto
 	 *
-	 * @module echarts/model/Component
+	 * @module echarts/Dto/Component
 	 */
 
 
-	    var Model = __webpack_require__(8);
+	    var Dto = __webpack_require__(8);
 	    var zrUtil = __webpack_require__(3);
 	    var arrayPush = Array.prototype.push;
 	    var componentUtil = __webpack_require__(20);
@@ -4873,13 +4873,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var layout = __webpack_require__(21);
 
 	    /**
-	     * @alias module:echarts/model/Component
+	     * @alias module:echarts/Dto/Component
 	     * @constructor
 	     * @param {Object} option
-	     * @param {module:echarts/model/Model} parentModel
-	     * @param {module:echarts/model/Model} ecModel
+	     * @param {module:echarts/Dto/Dto} parentDto
+	     * @param {module:echarts/Dto/Dto} ecDto
 	     */
-	    var ComponentModel = Model.extend({
+	    var ComponentDto = Dto.extend({
 
 	        type: 'component',
 
@@ -4919,18 +4919,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        defaultOption: null,
 
 	        /**
-	         * @type {module:echarts/model/Global}
+	         * @type {module:echarts/Dto/Global}
 	         * @readOnly
 	         */
-	        ecModel: null,
+	        ecDto: null,
 
 	        /**
 	         * key: componentType
-	         * value:  Component model list, can not be null.
-	         * @type {Object.<string, Array.<module:echarts/model/Model>>}
+	         * value:  Component Dto list, can not be null.
+	         * @type {Object.<string, Array.<module:echarts/Dto/Dto>>}
 	         * @readOnly
 	         */
-	        dependentModels: [],
+	        dependentDtos: [],
 
 	        /**
 	         * @type {string}
@@ -4947,17 +4947,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        layoutMode: null,
 
 
-	        init: function (option, parentModel, ecModel, extraOpt) {
-	            this.mergeDefaultAndTheme(this.option, this.ecModel);
+	        init: function (option, parentDto, ecDto, extraOpt) {
+	            this.mergeDefaultAndTheme(this.option, this.ecDto);
 	        },
 
-	        mergeDefaultAndTheme: function (option, ecModel) {
+	        mergeDefaultAndTheme: function (option, ecDto) {
 	            var layoutMode = this.layoutMode;
 	            var inputPositionParams = layoutMode
 	                ? layout.getLayoutParams(option) : {};
 
-	            var themeModel = ecModel.getTheme();
-	            zrUtil.merge(option, themeModel.get(this.mainType));
+	            var themeDto = ecDto.getTheme();
+	            zrUtil.merge(option, themeDto.get(this.mainType));
 	            zrUtil.merge(option, this.getDefaultOption());
 
 	            if (layoutMode) {
@@ -4975,7 +4975,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 
 	        // Hooker after init or mergeOption
-	        optionUpdated: function (ecModel) {},
+	        optionUpdated: function (ecDto) {},
 
 	        getDefaultOption: function () {
 	            if (!this.hasOwnProperty('__defaultOption')) {
@@ -4998,34 +4998,34 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    });
 
-	    // Reset ComponentModel.extend, add preConstruct.
+	    // Reset ComponentDto.extend, add preConstruct.
 	    clazzUtil.enableClassExtend(
-	        ComponentModel,
-	        function (option, parentModel, ecModel, extraOpt) {
-	            // Set dependentModels, componentIndex, name, id, mainType, subType.
+	        ComponentDto,
+	        function (option, parentDto, ecDto, extraOpt) {
+	            // Set dependentDtos, componentIndex, name, id, mainType, subType.
 	            zrUtil.extend(this, extraOpt);
 
-	            this.uid = componentUtil.getUID('componentModel');
+	            this.uid = componentUtil.getUID('componentDto');
 
 	            // this.setReadOnly([
 	            //     'type', 'id', 'uid', 'name', 'mainType', 'subType',
-	            //     'dependentModels', 'componentIndex'
+	            //     'dependentDtos', 'componentIndex'
 	            // ]);
 	        }
 	    );
 
 	    // Add capability of registerClass, getClass, hasClass, registerSubTypeDefaulter and so on.
 	    clazzUtil.enableClassManagement(
-	        ComponentModel, {registerWhenExtend: true}
+	        ComponentDto, {registerWhenExtend: true}
 	    );
-	    componentUtil.enableSubTypeDefaulter(ComponentModel);
+	    componentUtil.enableSubTypeDefaulter(ComponentDto);
 
-	    // Add capability of ComponentModel.topologicalTravel.
-	    componentUtil.enableTopologicalTravel(ComponentModel, getDependencies);
+	    // Add capability of ComponentDto.topologicalTravel.
+	    componentUtil.enableTopologicalTravel(ComponentDto, getDependencies);
 
 	    function getDependencies(componentType) {
 	        var deps = [];
-	        zrUtil.each(ComponentModel.getClassesByMainType(componentType), function (Clazz) {
+	        zrUtil.each(ComponentDto.getClassesByMainType(componentType), function (Clazz) {
 	            arrayPush.apply(deps, Clazz.prototype.dependencies || []);
 	        });
 	        // Ensure main type
@@ -5034,9 +5034,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	    }
 
-	    zrUtil.mixin(ComponentModel, __webpack_require__(22));
+	    zrUtil.mixin(ComponentDto, __webpack_require__(22));
 
-	    module.exports = ComponentModel;
+	    module.exports = ComponentDto;
 
 
 /***/ },
@@ -5095,7 +5095,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    /**
 	     * Topological travel on Activity Network (Activity On Vertices).
-	     * Dependencies is defined in Model.prototype.dependencies, like ['xAxis', 'yAxis'].
+	     * Dependencies is defined in Dto.prototype.dependencies, like ['xAxis', 'yAxis'].
 	     *
 	     * If 'xAxis' or 'yAxis' is absent in componentTypeList, just ignore it in topology.
 	     *
@@ -5153,7 +5153,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            // Consider this case: legend depends on series, and we call
 	            // chart.setOption({series: [...]}), where only series is in option.
-	            // If we do not have 'removeEdgeAndAdd', legendModel.mergeOption will
+	            // If we do not have 'removeEdgeAndAdd', legendDto.mergeOption will
 	            // not be called, but only sereis.mergeOption is called. Thus legend
 	            // have no chance to update its local record about series (like which
 	            // name of series is available in legend).
@@ -5514,7 +5514,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * {right: 0} does not take effect.
 	     *
 	     * @example
-	     * ComponentModel.extend({
+	     * ComponentDto.extend({
 	     *     init: function () {
 	     *         ...
 	     *         var inputPositionParams = layout.getLayoutParams(option);
@@ -5705,7 +5705,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var echartsAPIList = [
 	        'getDom', 'getZr', 'getWidth', 'getHeight', 'dispatchAction',
-	        'on', 'off', 'getDataURL', 'getConnectedDataURL', 'getModel', 'getOption'
+	        'on', 'off', 'getDataURL', 'getConnectedDataURL', 'getDto', 'getOption'
 	    ];
 
 	    function ExtensionAPI(chartInstance) {
@@ -5736,21 +5736,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        constructor: CoordinateSystemManager,
 
-	        create: function (ecModel, api) {
+	        create: function (ecDto, api) {
 	            var coordinateSystems = [];
 	            for (var type in coordinateSystemCreators) {
-	                var list = coordinateSystemCreators[type].create(ecModel, api);
+	                var list = coordinateSystemCreators[type].create(ecDto, api);
 	                list && (coordinateSystems = coordinateSystems.concat(list));
 	            }
 
 	            this._coordinateSystems = coordinateSystems;
 	        },
 
-	        update: function (ecModel, api) {
+	        update: function (ecDto, api) {
 	            var coordinateSystems = this._coordinateSystems;
 	            for (var i = 0; i < coordinateSystems.length; i++) {
 	                // FIXME MUST have
-	                coordinateSystems[i].update && coordinateSystems[i].update(ecModel, api);
+	                coordinateSystems[i].update && coordinateSystems[i].update(ecDto, api);
 	            }
 	        }
 	    };
@@ -5773,14 +5773,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * ECharts option manager
 	 *
-	 * @module {echarts/model/OptionManager}
+	 * @module {echarts/Dto/OptionManager}
 	 */
 
 
 
 	    var zrUtil = __webpack_require__(3);
-	    var modelUtil = __webpack_require__(5);
-	    var ComponentModel = __webpack_require__(19);
+	    var DtoUtil = __webpack_require__(5);
+	    var ComponentDto = __webpack_require__(19);
 	    var each = zrUtil.each;
 	    var clone = zrUtil.clone;
 	    var map = zrUtil.map;
@@ -5840,7 +5840,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *         ]
 	     *     };
 	     *
-	     * @alias module:echarts/model/OptionManager
+	     * @alias module:echarts/Dto/OptionManager
 	     * @param {module:echarts/ExtensionAPI} api
 	     */
 	    function OptionManager(api) {
@@ -5906,7 +5906,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @public
 	         * @param {Object} rawOption Raw option.
-	         * @param {module:echarts/model/Global} ecModel
+	         * @param {module:echarts/Dto/Global} ecDto
 	         * @param {Array.<Function>} optionPreprocessorFuncs
 	         * @return {Object} Init option
 	         */
@@ -5965,26 +5965,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // called, and is merged into every new option by inner method `mergeOption`
 	                // each time `setOption` called, can be only used in `isRecreate`, because
 	                // its reliability is under suspicion. In other cases option merge is
-	                // proformed by `model.mergeOption`.
+	                // proformed by `Dto.mergeOption`.
 	                ? optionBackup.baseOption : this._newBaseOption
 	            );
 	        },
 
 	        /**
-	         * @param {module:echarts/model/Global} ecModel
+	         * @param {module:echarts/Dto/Global} ecDto
 	         * @return {Object}
 	         */
-	        getTimelineOption: function (ecModel) {
+	        getTimelineOption: function (ecDto) {
 	            var option;
 	            var timelineOptions = this._timelineOptions;
 
 	            if (timelineOptions.length) {
-	                // getTimelineOption can only be called after ecModel inited,
-	                // so we can get currentIndex from timelineModel.
-	                var timelineModel = ecModel.getComponent('timeline');
-	                if (timelineModel) {
+	                // getTimelineOption can only be called after ecDto inited,
+	                // so we can get currentIndex from timelineDto.
+	                var timelineDto = ecDto.getComponent('timeline');
+	                if (timelineDto) {
 	                    option = clone(
-	                        timelineOptions[timelineModel.getCurrentIndex()],
+	                        timelineOptions[timelineDto.getCurrentIndex()],
 	                        true
 	                    );
 	                }
@@ -5994,10 +5994,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 
 	        /**
-	         * @param {module:echarts/model/Global} ecModel
+	         * @param {module:echarts/Dto/Global} ecDto
 	         * @return {Array.<Object>}
 	         */
-	        getMediaOption: function (ecModel) {
+	        getMediaOption: function (ecDto) {
 	            var ecWidth = this._api.getWidth();
 	            var ecHeight = this._api.getHeight();
 	            var mediaList = this._mediaList;
@@ -6171,9 +6171,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * this might be the only simple way to implement that feature.
 	     *
 	     * MEMO: We've considered some other approaches:
-	     * 1. Each model handle its self restoration but not uniform treatment.
+	     * 1. Each Dto handle its self restoration but not uniform treatment.
 	     *     (Too complex in logic and error-prone)
-	     * 2. Use a shadow ecModel. (Performace expensive)
+	     * 2. Use a shadow ecDto. (Performace expensive)
 	     */
 	    function mergeOption(oldOption, newOption) {
 	        newOption = newOption || {};
@@ -6185,14 +6185,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            var oldCptOpt = oldOption[mainType];
 
-	            if (!ComponentModel.hasClass(mainType)) {
+	            if (!ComponentDto.hasClass(mainType)) {
 	                oldOption[mainType] = merge(oldCptOpt, newCptOpt, true);
 	            }
 	            else {
-	                newCptOpt = modelUtil.normalizeToArray(newCptOpt);
-	                oldCptOpt = modelUtil.normalizeToArray(oldCptOpt);
+	                newCptOpt = DtoUtil.normalizeToArray(newCptOpt);
+	                oldCptOpt = DtoUtil.normalizeToArray(oldCptOpt);
 
-	                var mapResult = modelUtil.mappingToExists(oldCptOpt, newCptOpt);
+	                var mapResult = DtoUtil.mappingToExists(oldCptOpt, newCptOpt);
 
 	                oldOption[mainType] = map(mapResult, function (item) {
 	                    return (item.option && item.exist)
@@ -6215,13 +6215,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var zrUtil = __webpack_require__(3);
 	    var formatUtil = __webpack_require__(6);
-	    var modelUtil = __webpack_require__(5);
-	    var ComponentModel = __webpack_require__(19);
+	    var DtoUtil = __webpack_require__(5);
+	    var ComponentDto = __webpack_require__(19);
 
 	    var encodeHTML = formatUtil.encodeHTML;
 	    var addCommas = formatUtil.addCommas;
 
-	    var SeriesModel = ComponentModel.extend({
+	    var SeriesDto = ComponentDto.extend({
 
 	        type: 'series.__base__',
 
@@ -6246,7 +6246,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // PENDING
 	        legendDataProvider: null,
 
-	        init: function (option, parentModel, ecModel, extraOpt) {
+	        init: function (option, parentDto, ecDto, extraOpt) {
 
 	            /**
 	             * @type {number}
@@ -6254,13 +6254,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	             */
 	            this.seriesIndex = this.componentIndex;
 
-	            this.mergeDefaultAndTheme(option, ecModel);
+	            this.mergeDefaultAndTheme(option, ecDto);
 
 	            /**
 	             * @type {module:echarts/data/List|module:echarts/data/Tree|module:echarts/data/Graph}
 	             * @private
 	             */
-	            this._dataBeforeProcessed = this.getInitialData(option, ecModel);
+	            this._dataBeforeProcessed = this.getInitialData(option, ecDto);
 
 	            // If we reverse the order (make this._data firstly, and then make
 	            // this._dataBeforeProcessed by cloneShallow), cloneShallow will
@@ -6273,27 +6273,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * Util for merge default and theme to option
 	         * @param  {Object} option
-	         * @param  {module:echarts/model/Global} ecModel
+	         * @param  {module:echarts/Dto/Global} ecDto
 	         */
-	        mergeDefaultAndTheme: function (option, ecModel) {
+	        mergeDefaultAndTheme: function (option, ecDto) {
 	            zrUtil.merge(
 	                option,
-	                ecModel.getTheme().get(this.subType)
+	                ecDto.getTheme().get(this.subType)
 	            );
 	            zrUtil.merge(option, this.getDefaultOption());
 
 	            // Default label emphasis `position` and `show`
 	            // FIXME Set label in mergeOption
-	            modelUtil.defaultEmphasis(option.label, modelUtil.LABEL_OPTIONS);
+	            DtoUtil.defaultEmphasis(option.label, DtoUtil.LABEL_OPTIONS);
 
 	            this.fillDataTextStyle(option.data);
 	        },
 
-	        mergeOption: function (newSeriesOption, ecModel) {
+	        mergeOption: function (newSeriesOption, ecDto) {
 	            newSeriesOption = zrUtil.merge(this.option, newSeriesOption, true);
 	            this.fillDataTextStyle(newSeriesOption.data);
 
-	            var data = this.getInitialData(newSeriesOption, ecModel);
+	            var data = this.getInitialData(newSeriesOption, ecDto);
 	            // TODO Merge data?
 	            if (data) {
 	                this._data = data;
@@ -6308,7 +6308,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (data) {
 	                for (var i = 0; i < data.length; i++) {
 	                    if (data[i] && data[i].label) {
-	                        modelUtil.defaultEmphasis(data[i].label, modelUtil.LABEL_OPTIONS);
+	                        DtoUtil.defaultEmphasis(data[i].label, DtoUtil.LABEL_OPTIONS);
 	                    }
 	                }
 	            }
@@ -6420,9 +6420,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        getAxisTooltipDataIndex: null
 	    });
 
-	    zrUtil.mixin(SeriesModel, modelUtil.dataFormatMixin);
+	    zrUtil.mixin(SeriesDto, DtoUtil.dataFormatMixin);
 
-	    module.exports = SeriesModel;
+	    module.exports = SeriesDto;
 
 
 /***/ },
@@ -6453,9 +6453,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        constructor: Component,
 
-	        init: function (ecModel, api) {},
+	        init: function (ecDto, api) {},
 
-	        render: function (componentModel, ecModel, api, payload) {},
+	        render: function (componentDto, ecDto, api, payload) {},
 
 	        dispose: function () {}
 	    };
@@ -6464,7 +6464,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    componentProto.updateView
 	        = componentProto.updateLayout
 	        = componentProto.updateVisual
-	        = function (seriesModel, ecModel, api, payload) {
+	        = function (seriesDto, ecDto, api, payload) {
 	            // Do nothing;
 	        };
 	    // Enable Component.extend.
@@ -9557,54 +9557,54 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * Init the chart
-	         * @param  {module:echarts/model/Global} ecModel
+	         * @param  {module:echarts/Dto/Global} ecDto
 	         * @param  {module:echarts/ExtensionAPI} api
 	         */
-	        init: function (ecModel, api) {},
+	        init: function (ecDto, api) {},
 
 	        /**
 	         * Render the chart
-	         * @param  {module:echarts/model/Series} seriesModel
-	         * @param  {module:echarts/model/Global} ecModel
+	         * @param  {module:echarts/Dto/Series} seriesDto
+	         * @param  {module:echarts/Dto/Global} ecDto
 	         * @param  {module:echarts/ExtensionAPI} api
 	         * @param  {Object} payload
 	         */
-	        render: function (seriesModel, ecModel, api, payload) {},
+	        render: function (seriesDto, ecDto, api, payload) {},
 
 	        /**
 	         * Highlight series or specified data item
-	         * @param  {module:echarts/model/Series} seriesModel
-	         * @param  {module:echarts/model/Global} ecModel
+	         * @param  {module:echarts/Dto/Series} seriesDto
+	         * @param  {module:echarts/Dto/Global} ecDto
 	         * @param  {module:echarts/ExtensionAPI} api
 	         * @param  {Object} payload
 	         */
-	        highlight: function (seriesModel, ecModel, api, payload) {
-	            toggleHighlight(seriesModel.getData(), payload, 'emphasis');
+	        highlight: function (seriesDto, ecDto, api, payload) {
+	            toggleHighlight(seriesDto.getData(), payload, 'emphasis');
 	        },
 
 	        /**
 	         * Downplay series or specified data item
-	         * @param  {module:echarts/model/Series} seriesModel
-	         * @param  {module:echarts/model/Global} ecModel
+	         * @param  {module:echarts/Dto/Series} seriesDto
+	         * @param  {module:echarts/Dto/Global} ecDto
 	         * @param  {module:echarts/ExtensionAPI} api
 	         * @param  {Object} payload
 	         */
-	        downplay: function (seriesModel, ecModel, api, payload) {
-	            toggleHighlight(seriesModel.getData(), payload, 'normal');
+	        downplay: function (seriesDto, ecDto, api, payload) {
+	            toggleHighlight(seriesDto.getData(), payload, 'normal');
 	        },
 
 	        /**
 	         * Remove self
-	         * @param  {module:echarts/model/Global} ecModel
+	         * @param  {module:echarts/Dto/Global} ecDto
 	         * @param  {module:echarts/ExtensionAPI} api
 	         */
-	        remove: function (ecModel, api) {
+	        remove: function (ecDto, api) {
 	            this.group.removeAll();
 	        },
 
 	        /**
 	         * Dispose self
-	         * @param  {module:echarts/model/Global} ecModel
+	         * @param  {module:echarts/Dto/Global} ecDto
 	         * @param  {module:echarts/ExtensionAPI} api
 	         */
 	        dispose: function () {}
@@ -9614,8 +9614,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    chartProto.updateView
 	        = chartProto.updateLayout
 	        = chartProto.updateVisual
-	        = function (seriesModel, ecModel, api, payload) {
-	            this.render(seriesModel, ecModel, api, payload);
+	        = function (seriesDto, ecDto, api, payload) {
+	            this.render(seriesDto, ecDto, api, payload);
 	        };
 
 	    /**
@@ -10026,39 +10026,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Set text option in the style
 	     * @param {Object} textStyle
-	     * @param {module:echarts/model/Model} labelModel
+	     * @param {module:echarts/Dto/Dto} labelDto
 	     * @param {string} color
 	     */
-	    graphic.setText = function (textStyle, labelModel, color) {
-	        var labelPosition = labelModel.getShallow('position') || 'inside';
+	    graphic.setText = function (textStyle, labelDto, color) {
+	        var labelPosition = labelDto.getShallow('position') || 'inside';
 	        var labelColor = labelPosition.indexOf('inside') >= 0 ? 'white' : color;
-	        var textStyleModel = labelModel.getModel('textStyle');
+	        var textStyleDto = labelDto.getDto('textStyle');
 	        zrUtil.extend(textStyle, {
-	            textDistance: labelModel.getShallow('distance') || 5,
-	            textFont: textStyleModel.getFont(),
+	            textDistance: labelDto.getShallow('distance') || 5,
+	            textFont: textStyleDto.getFont(),
 	            textPosition: labelPosition,
-	            textFill: textStyleModel.getTextColor() || labelColor
+	            textFill: textStyleDto.getTextColor() || labelColor
 	        });
 	    };
 
-	    function animateOrSetProps(isUpdate, el, props, animatableModel, dataIndex, cb) {
+	    function animateOrSetProps(isUpdate, el, props, animatableDto, dataIndex, cb) {
 	        if (typeof dataIndex === 'function') {
 	            cb = dataIndex;
 	            dataIndex = null;
 	        }
 
 	        var postfix = isUpdate ? 'Update' : '';
-	        var duration = animatableModel
-	            && animatableModel.getShallow('animationDuration' + postfix);
-	        var animationEasing = animatableModel
-	            && animatableModel.getShallow('animationEasing' + postfix);
-	        var animationDelay = animatableModel
-	            && animatableModel.getShallow('animationDelay' + postfix);
+	        var duration = animatableDto
+	            && animatableDto.getShallow('animationDuration' + postfix);
+	        var animationEasing = animatableDto
+	            && animatableDto.getShallow('animationEasing' + postfix);
+	        var animationDelay = animatableDto
+	            && animatableDto.getShallow('animationDelay' + postfix);
 	        if (typeof animationDelay === 'function') {
 	            animationDelay = animationDelay(dataIndex);
 	        }
 
-	        animatableModel && animatableModel.getShallow('animation')
+	        animatableDto && animatableDto.getShallow('animation')
 	            ? el.animateTo(props, duration, animationDelay || 0, animationEasing, cb)
 	            : (el.attr(props), cb && cb());
 	    }
@@ -10066,17 +10066,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Update graphic element properties with or without animation according to the configuration in series
 	     * @param {module:zrender/Element} el
 	     * @param {Object} props
-	     * @param {module:echarts/model/Model} [animatableModel]
+	     * @param {module:echarts/Dto/Dto} [animatableDto]
 	     * @param {number} [dataIndex]
 	     * @param {Function} [cb]
 	     * @example
 	     *     graphic.updateProps(el, {
 	     *         position: [100, 100]
-	     *     }, seriesModel, dataIndex, function () { console.log('Animation done!'); });
+	     *     }, seriesDto, dataIndex, function () { console.log('Animation done!'); });
 	     *     // Or
 	     *     graphic.updateProps(el, {
 	     *         position: [100, 100]
-	     *     }, seriesModel, function () { console.log('Animation done!'); });
+	     *     }, seriesDto, function () { console.log('Animation done!'); });
 	     */
 	    graphic.updateProps = zrUtil.curry(animateOrSetProps, true);
 
@@ -10084,7 +10084,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Init graphic element properties with or without animation according to the configuration in series
 	     * @param {module:zrender/Element} el
 	     * @param {Object} props
-	     * @param {module:echarts/model/Model} [animatableModel]
+	     * @param {module:echarts/Dto/Dto} [animatableDto]
 	     * @param {Function} cb
 	     */
 	    graphic.initProps = zrUtil.curry(animateOrSetProps, false);
@@ -18167,38 +18167,38 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	
 	    var Gradient = __webpack_require__(4);
-	    module.exports = function (seriesType, styleType, ecModel) {
-	        function encodeColor(seriesModel) {
+	    module.exports = function (seriesType, styleType, ecDto) {
+	        function encodeColor(seriesDto) {
 	            var colorAccessPath = [styleType, 'normal', 'color'];
-	            var colorList = ecModel.get('color');
-	            var data = seriesModel.getData();
-	            var color = seriesModel.get(colorAccessPath) // Set in itemStyle
-	                || colorList[seriesModel.seriesIndex % colorList.length];  // Default color
+	            var colorList = ecDto.get('color');
+	            var data = seriesDto.getData();
+	            var color = seriesDto.get(colorAccessPath) // Set in itemStyle
+	                || colorList[seriesDto.seriesIndex % colorList.length];  // Default color
 
 	            // FIXME Set color function or use the platte color
 	            data.setVisual('color', color);
 
 	            // Only visible series has each data be visual encoded
-	            if (!ecModel.isSeriesFiltered(seriesModel)) {
+	            if (!ecDto.isSeriesFiltered(seriesDto)) {
 	                if (typeof color === 'function' && !(color instanceof Gradient)) {
 	                    data.each(function (idx) {
 	                        data.setItemVisual(
-	                            idx, 'color', color(seriesModel.getDataParams(idx))
+	                            idx, 'color', color(seriesDto.getDataParams(idx))
 	                        );
 	                    });
 	                }
 
 	                data.each(function (idx) {
-	                    var itemModel = data.getItemModel(idx);
-	                    var color = itemModel.get(colorAccessPath, true);
+	                    var itemDto = data.getItemDto(idx);
+	                    var color = itemDto.get(colorAccessPath, true);
 	                    if (color != null) {
 	                        data.setItemVisual(idx, 'color', color);
 	                    }
 	                });
 	            }
 	        }
-	        seriesType ? ecModel.eachSeriesByType(seriesType, encodeColor)
-	            : ecModel.eachSeries(encodeColor);
+	        seriesType ? ecDto.eachSeriesByType(seriesType, encodeColor)
+	            : ecDto.eachSeries(encodeColor);
 	    };
 
 
@@ -18429,16 +18429,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	    var createListFromArray = __webpack_require__(94);
-	    var SeriesModel = __webpack_require__(27);
+	    var SeriesDto = __webpack_require__(27);
 
-	    module.exports = SeriesModel.extend({
+	    module.exports = SeriesDto.extend({
 
 	        type: 'series.line',
 
 	        dependencies: ['grid', 'polar'],
 
-	        getInitialData: function (option, ecModel) {
-	            return createListFromArray(option.data, this, ecModel);
+	        getInitialData: function (option, ecDto) {
+	            return createListFromArray(option.data, this, ecDto);
 	        },
 
 	        defaultOption: {
@@ -18509,10 +18509,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var List = __webpack_require__(95);
 	    var completeDimensions = __webpack_require__(97);
 	    var zrUtil = __webpack_require__(3);
-	    var modelUtil = __webpack_require__(5);
+	    var DtoUtil = __webpack_require__(5);
 	    var CoordinateSystem = __webpack_require__(25);
-	    var getDataItemValue = modelUtil.getDataItemValue;
-	    var converDataValue = modelUtil.converDataValue;
+	    var getDataItemValue = DtoUtil.getDataItemValue;
+	    var converDataValue = DtoUtil.converDataValue;
 
 	    function firstDataNotNull(data) {
 	        var i = 0;
@@ -18530,7 +18530,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Helper function to create a list from option data
 	     */
-	    function createListFromArray(data, seriesModel, ecModel) {
+	    function createListFromArray(data, seriesDto, ecDto) {
 	        // If data is undefined
 	        data = data || [];
 
@@ -18538,28 +18538,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	            throw new Error('Invalid data.');
 	        }
 
-	        var coordSysName = seriesModel.get('coordinateSystem');
+	        var coordSysName = seriesDto.get('coordinateSystem');
 	        var creator = creators[coordSysName];
 	        var registeredCoordSys = CoordinateSystem.get(coordSysName);
 	        // FIXME
-	        var result = creator && creator(data, seriesModel, ecModel);
+	        var result = creator && creator(data, seriesDto, ecDto);
 	        var dimensions = result && result.dimensions;
 	        if (!dimensions) {
 	            // Get dimensions from registered coordinate system
 	            dimensions = (registeredCoordSys && registeredCoordSys.dimensions) || ['x', 'y'];
 	            dimensions = completeDimensions(dimensions, data, dimensions.concat(['value']));
 	        }
-	        var categoryAxisModel = result && result.categoryAxisModel;
+	        var categoryAxisDto = result && result.categoryAxisDto;
 	        var categories;
 
 	        var categoryDimIndex = dimensions[0].type === 'ordinal'
 	            ? 0 : (dimensions[1].type === 'ordinal' ? 1 : -1);
 
-	        var list = new List(dimensions, seriesModel);
+	        var list = new List(dimensions, seriesDto);
 
 	        var nameList = createNameList(result, data);
 
-	        var dimValueGetter = (categoryAxisModel && ifNeedCompleteOrdinalData(data))
+	        var dimValueGetter = (categoryAxisDto && ifNeedCompleteOrdinalData(data))
 	            ? function (itemOpt, dimName, dataIndex, dimIndex) {
 	                // Use dataIndex as ordinal value in categoryAxis
 	                return dimIndex === categoryDimIndex
@@ -18573,7 +18573,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    // If given value is a category string
 	                    if (typeof val === 'string') {
 	                        // Lazy get categories
-	                        categories = categories || categoryAxisModel.getCategories();
+	                        categories = categories || categoryAxisDto.getCategories();
 	                        val = zrUtil.indexOf(categories, val);
 	                        if (val < 0 && !isNaN(val)) {
 	                            // In case some one write '1', '2' istead of 1, 2
@@ -18603,19 +18603,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    /**
 	     * Creaters for each coord system.
-	     * @return {Object} {dimensions, categoryAxisModel};
+	     * @return {Object} {dimensions, categoryAxisDto};
 	     */
 	    var creators = {
 
-	        cartesian2d: function (data, seriesModel, ecModel) {
-	            var xAxisModel = ecModel.getComponent('xAxis', seriesModel.get('xAxisIndex'));
-	            var yAxisModel = ecModel.getComponent('yAxis', seriesModel.get('yAxisIndex'));
-	            if (!xAxisModel || !yAxisModel) {
+	        cartesian2d: function (data, seriesDto, ecDto) {
+	            var xAxisDto = ecDto.getComponent('xAxis', seriesDto.get('xAxisIndex'));
+	            var yAxisDto = ecDto.getComponent('yAxis', seriesDto.get('yAxisIndex'));
+	            if (!xAxisDto || !yAxisDto) {
 	                throw new Error('Axis option not found');
 	            }
 
-	            var xAxisType = xAxisModel.get('type');
-	            var yAxisType = yAxisModel.get('type');
+	            var xAxisType = xAxisDto.get('type');
+	            var yAxisType = yAxisDto.get('type');
 
 	            var dimensions = [
 	                {
@@ -18638,32 +18638,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return {
 	                dimensions: dimensions,
 	                categoryIndex: isXAxisCateogry ? 0 : 1,
-	                categoryAxisModel: isXAxisCateogry
-	                    ? xAxisModel
-	                    : (yAxisType === 'category' ? yAxisModel : null)
+	                categoryAxisDto: isXAxisCateogry
+	                    ? xAxisDto
+	                    : (yAxisType === 'category' ? yAxisDto : null)
 	            };
 	        },
 
-	        polar: function (data, seriesModel, ecModel) {
-	            var polarIndex = seriesModel.get('polarIndex') || 0;
+	        polar: function (data, seriesDto, ecDto) {
+	            var polarIndex = seriesDto.get('polarIndex') || 0;
 
-	            var axisFinder = function (axisModel) {
-	                return axisModel.get('polarIndex') === polarIndex;
+	            var axisFinder = function (axisDto) {
+	                return axisDto.get('polarIndex') === polarIndex;
 	            };
 
-	            var angleAxisModel = ecModel.findComponents({
+	            var angleAxisDto = ecDto.findComponents({
 	                mainType: 'angleAxis', filter: axisFinder
 	            })[0];
-	            var radiusAxisModel = ecModel.findComponents({
+	            var radiusAxisDto = ecDto.findComponents({
 	                mainType: 'radiusAxis', filter: axisFinder
 	            })[0];
 
-	            if (!angleAxisModel || !radiusAxisModel) {
+	            if (!angleAxisDto || !radiusAxisDto) {
 	                throw new Error('Axis option not found');
 	            }
 
-	            var radiusAxisType = radiusAxisModel.get('type');
-	            var angleAxisType = angleAxisModel.get('type');
+	            var radiusAxisType = radiusAxisDto.get('type');
+	            var angleAxisType = angleAxisDto.get('type');
 
 	            var dimensions = [
 	                {
@@ -18684,13 +18684,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return {
 	                dimensions: dimensions,
 	                categoryIndex: isAngleAxisCateogry ? 1 : 0,
-	                categoryAxisModel: isAngleAxisCateogry
-	                    ? angleAxisModel
-	                    : (radiusAxisType === 'category' ? radiusAxisModel : null)
+	                categoryAxisDto: isAngleAxisCateogry
+	                    ? angleAxisDto
+	                    : (radiusAxisType === 'category' ? radiusAxisDto : null)
 	            };
 	        },
 
-	        geo: function (data, seriesModel, ecModel) {
+	        geo: function (data, seriesDto, ecDto) {
 	            // TODO Region
 	            // 多个散点图系列在同一个地区的时候
 	            return {
@@ -18705,9 +18705,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function createNameList(result, data) {
 	        var nameList = [];
 
-	        if (result && result.categoryAxisModel) {
+	        if (result && result.categoryAxisDto) {
 	            // FIXME Two category axis
-	            var categories = result.categoryAxisModel.getCategories();
+	            var categories = result.categoryAxisDto.getCategories();
 	            if (categories) {
 	                var dataLen = data.length;
 	                // Ordered data is given explicitly like
@@ -18759,11 +18759,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        'time': Array
 	    };
 
-	    var Model = __webpack_require__(8);
+	    var Dto = __webpack_require__(8);
 	    var DataDiffer = __webpack_require__(96);
 
 	    var zrUtil = __webpack_require__(3);
-	    var modelUtil = __webpack_require__(5);
+	    var DtoUtil = __webpack_require__(5);
 	    var isObject = zrUtil.isObject;
 
 	    var IMMUTABLE_PROPERTIES = [
@@ -18786,9 +18786,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * @param {Array.<string>} dimensions
 	     *        Dimensions should be concrete names like x, y, z, lng, lat, angle, radius
-	     * @param {module:echarts/model/Model} hostModel
+	     * @param {module:echarts/Dto/Dto} hostDto
 	     */
-	    var List = function (dimensions, hostModel) {
+	    var List = function (dimensions, hostDto) {
 
 	        dimensions = dimensions || ['x', 'y'];
 
@@ -18828,12 +18828,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._dimensionInfos = dimensionInfos;
 
 	        /**
-	         * @type {module:echarts/model/Model}
+	         * @type {module:echarts/Dto/Dto}
 	         */
-	        this.hostModel = hostModel;
+	        this.hostDto = hostDto;
 
 	        /**
-	         * @type {module:echarts/model/Model}
+	         * @type {module:echarts/Dto/Dto}
 	         */
 	        this.dataType;
 
@@ -18861,11 +18861,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	         */
 	        this._idList = [];
 	        /**
-	         * Models of data option is stored sparse for optimizing memory cost
-	         * @type {Array.<module:echarts/model/Model>}
+	         * Dtos of data option is stored sparse for optimizing memory cost
+	         * @type {Array.<module:echarts/Dto/Dto>}
 	         * @private
 	         */
-	        this._optionModels = [];
+	        this._optionDtos = [];
 
 	        /**
 	         * @param {module:echarts/data/List}
@@ -18984,8 +18984,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // Default dim value getter
 	        dimValueGetter = dimValueGetter || function (dataItem, dimName, dataIndex, dimIndex) {
-	            var value = modelUtil.getDataItemValue(dataItem);
-	            return modelUtil.converDataValue(
+	            var value = DtoUtil.getDataItemValue(dataItem);
+	            return DtoUtil.converDataValue(
 	                zrUtil.isArray(value)
 	                    ? value[dimIndex]
 	                    // If value is a single number or something else not array.
@@ -19432,7 +19432,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var allDimensions = original.dimensions;
 	        var list = new List(
 	            zrUtil.map(allDimensions, original.getDimensionInfo, original),
-	            original.hostModel
+	            original.hostDto
 	        );
 	        // FIXME If needs stackedOn, value may already been stacked
 	        transferImmuProperties(list, original);
@@ -19547,15 +19547,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
-	     * Get model of one data item.
+	     * Get Dto of one data item.
 	     *
 	     * @param {number} idx
 	     */
-	    // FIXME Model proxy ?
-	    listProto.getItemModel = function (idx) {
-	        var hostModel = this.hostModel;
+	    // FIXME Dto proxy ?
+	    listProto.getItemDto = function (idx) {
+	        var hostDto = this.hostDto;
 	        idx = this.indices[idx];
-	        return new Model(this._rawData[idx], hostModel, hostModel && hostModel.ecModel);
+	        return new Dto(this._rawData[idx], hostDto, hostDto && hostDto.ecDto);
 	    };
 
 	    /**
@@ -19715,14 +19715,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {module:zrender/Element} [el]
 	     */
 	    listProto.setItemGraphicEl = function (idx, el) {
-	        var hostModel = this.hostModel;
+	        var hostDto = this.hostDto;
 
 	        if (el) {
 	            // Add data index and series index for indexing the data by element
 	            // Useful in tooltip
 	            el.dataIndex = idx;
 	            el.dataType = this.dataType;
-	            el.seriesIndex = hostModel && hostModel.seriesIndex;
+	            el.seriesIndex = hostDto && hostDto.seriesIndex;
 	            if (el.type === 'group') {
 	                el.traverse(setItemDataAndSeriesIndex, el);
 	            }
@@ -19757,7 +19757,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    listProto.cloneShallow = function () {
 	        var dimensionInfoList = zrUtil.map(this.dimensions, this.getDimensionInfo, this);
-	        var list = new List(dimensionInfoList, this.hostModel);
+	        var list = new List(dimensionInfoList, this.hostDto);
 
 	        // FIXME
 	        list._storage = this._storage;
@@ -20086,7 +20086,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    function createGridClipShape(cartesian, hasAnimation, seriesModel) {
+	    function createGridClipShape(cartesian, hasAnimation, seriesDto) {
 	        var xExtent = getAxisExtentWithGap(cartesian.getAxis('x'));
 	        var yExtent = getAxisExtentWithGap(cartesian.getAxis('y'));
 	        var isHorizontal = cartesian.getBaseAxis().isHorizontal();
@@ -20095,9 +20095,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var y = Math.min(yExtent[0], yExtent[1]);
 	        var width = Math.max(xExtent[0], xExtent[1]) - x;
 	        var height = Math.max(yExtent[0], yExtent[1]) - y;
-	        var lineWidth = seriesModel.get('lineStyle.normal.width') || 2;
+	        var lineWidth = seriesDto.get('lineStyle.normal.width') || 2;
 	        // Expand clip shape to avoid clipping when line value exceeds axis
-	        var expandSize = seriesModel.get('clipOverflow') ? lineWidth / 2 : Math.max(width, height);
+	        var expandSize = seriesDto.get('clipOverflow') ? lineWidth / 2 : Math.max(width, height);
 	        if (isHorizontal) {
 	            y -= expandSize;
 	            height += expandSize * 2;
@@ -20123,13 +20123,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    width: width,
 	                    height: height
 	                }
-	            }, seriesModel);
+	            }, seriesDto);
 	        }
 
 	        return clipPath;
 	    }
 
-	    function createPolarClipShape(polar, hasAnimation, seriesModel) {
+	    function createPolarClipShape(polar, hasAnimation, seriesDto) {
 	        var angleAxis = polar.getAngleAxis();
 	        var radiusAxis = polar.getRadiusAxis();
 
@@ -20156,16 +20156,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	                shape: {
 	                    endAngle: -angleExtent[1] * RADIAN
 	                }
-	            }, seriesModel);
+	            }, seriesDto);
 	        }
 
 	        return clipPath;
 	    }
 
-	    function createClipShape(coordSys, hasAnimation, seriesModel) {
+	    function createClipShape(coordSys, hasAnimation, seriesDto) {
 	        return coordSys.type === 'polar'
-	            ? createPolarClipShape(coordSys, hasAnimation, seriesModel)
-	            : createGridClipShape(coordSys, hasAnimation, seriesModel);
+	            ? createPolarClipShape(coordSys, hasAnimation, seriesDto)
+	            : createGridClipShape(coordSys, hasAnimation, seriesDto);
 	    }
 
 	    module.exports = ChartView.extend({
@@ -20182,12 +20182,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._lineGroup = lineGroup;
 	        },
 
-	        render: function (seriesModel, ecModel, api) {
-	            var coordSys = seriesModel.coordinateSystem;
+	        render: function (seriesDto, ecDto, api) {
+	            var coordSys = seriesDto.coordinateSystem;
 	            var group = this.group;
-	            var data = seriesModel.getData();
-	            var lineStyleModel = seriesModel.getModel('lineStyle.normal');
-	            var areaStyleModel = seriesModel.getModel('areaStyle.normal');
+	            var data = seriesDto.getData();
+	            var lineStyleDto = seriesDto.getDto('lineStyle.normal');
+	            var areaStyleDto = seriesDto.getDto('areaStyle.normal');
 
 	            var points = data.mapArray(data.getItemLayout, true);
 
@@ -20200,14 +20200,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            var lineGroup = this._lineGroup;
 
-	            var hasAnimation = seriesModel.get('animation');
+	            var hasAnimation = seriesDto.get('animation');
 
-	            var isAreaChart = !areaStyleModel.isEmpty();
+	            var isAreaChart = !areaStyleDto.isEmpty();
 	            var stackedOnPoints = getStackedOnPoints(coordSys, data);
 
-	            var showSymbol = seriesModel.get('showSymbol');
+	            var showSymbol = seriesDto.get('showSymbol');
 
-	            var isSymbolIgnore = showSymbol && !isCoordSysPolar && !seriesModel.get('showAllSymbol')
+	            var isSymbolIgnore = showSymbol && !isCoordSysPolar && !seriesDto.get('showAllSymbol')
 	                && this._getSymbolIgnoreFunc(data, coordSys);
 
 	            // Remove temporary symbols
@@ -20239,7 +20239,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        coordSys, hasAnimation
 	                    );
 	                }
-	                lineGroup.setClipPath(createClipShape(coordSys, true, seriesModel));
+	                lineGroup.setClipPath(createClipShape(coordSys, true, seriesDto));
 	            }
 	            else {
 	                if (isAreaChart && !polygon) {
@@ -20256,7 +20256,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                // Update clipPath
-	                lineGroup.setClipPath(createClipShape(coordSys, false, seriesModel));
+	                lineGroup.setClipPath(createClipShape(coordSys, false, seriesDto));
 
 	                // Always update, or it is wrong in the case turning on legend
 	                // because points are not changed
@@ -20292,7 +20292,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            polyline.useStyle(zrUtil.defaults(
 	                // Use color in lineStyle first
-	                lineStyleModel.getLineStyle(),
+	                lineStyleDto.getLineStyle(),
 	                {
 	                    fill: 'none',
 	                    stroke: data.getVisual('color'),
@@ -20300,12 +20300,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            ));
 
-	            var smooth = seriesModel.get('smooth');
-	            smooth = getSmooth(seriesModel.get('smooth'));
+	            var smooth = seriesDto.get('smooth');
+	            smooth = getSmooth(seriesDto.get('smooth'));
 	            polyline.setShape({
 	                smooth: smooth,
-	                smoothMonotone: seriesModel.get('smoothMonotone'),
-	                connectNulls: seriesModel.get('connectNulls')
+	                smoothMonotone: seriesDto.get('smoothMonotone'),
+	                connectNulls: seriesDto.get('connectNulls')
 	            });
 
 	            if (polygon) {
@@ -20313,7 +20313,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                var stackedOnSmooth = 0;
 
 	                polygon.useStyle(zrUtil.defaults(
-	                    areaStyleModel.getAreaStyle(),
+	                    areaStyleDto.getAreaStyle(),
 	                    {
 	                        fill: data.getVisual('color'),
 	                        opacity: 0.7,
@@ -20322,15 +20322,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	                ));
 
 	                if (stackedOn) {
-	                    var stackedOnSeries = stackedOn.hostModel;
+	                    var stackedOnSeries = stackedOn.hostDto;
 	                    stackedOnSmooth = getSmooth(stackedOnSeries.get('smooth'));
 	                }
 
 	                polygon.setShape({
 	                    smooth: smooth,
 	                    stackedOnSmooth: stackedOnSmooth,
-	                    smoothMonotone: seriesModel.get('smoothMonotone'),
-	                    connectNulls: seriesModel.get('connectNulls')
+	                    smoothMonotone: seriesDto.get('smoothMonotone'),
+	                    connectNulls: seriesDto.get('connectNulls')
 	                });
 	            }
 
@@ -20341,8 +20341,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._points = points;
 	        },
 
-	        highlight: function (seriesModel, ecModel, api, payload) {
-	            var data = seriesModel.getData();
+	        highlight: function (seriesDto, ecDto, api, payload) {
+	            var data = seriesDto.getData();
 	            var dataIndex = queryDataIndex(data, payload);
 
 	            if (dataIndex != null && dataIndex >= 0) {
@@ -20353,8 +20353,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    symbol = new Symbol(data, dataIndex, api);
 	                    symbol.position = pt;
 	                    symbol.setZ(
-	                        seriesModel.get('zlevel'),
-	                        seriesModel.get('z')
+	                        seriesDto.get('zlevel'),
+	                        seriesDto.get('z')
 	                    );
 	                    symbol.ignore = isNaN(pt[0]) || isNaN(pt[1]);
 	                    symbol.__temp = true;
@@ -20370,13 +20370,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            else {
 	                // Highlight whole series
 	                ChartView.prototype.highlight.call(
-	                    this, seriesModel, ecModel, api, payload
+	                    this, seriesDto, ecDto, api, payload
 	                );
 	            }
 	        },
 
-	        downplay: function (seriesModel, ecModel, api, payload) {
-	            var data = seriesModel.getData();
+	        downplay: function (seriesDto, ecDto, api, payload) {
+	            var data = seriesDto.getData();
 	            var dataIndex = queryDataIndex(data, payload);
 	            if (dataIndex != null && dataIndex >= 0) {
 	                var symbol = data.getItemGraphicEl(dataIndex);
@@ -20393,7 +20393,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            else {
 	                // Downplay whole series
 	                ChartView.prototype.downplay.call(
-	                    this, seriesModel, ecModel, api, payload
+	                    this, seriesDto, ecDto, api, payload
 	                );
 	            }
 	        },
@@ -20469,7 +20469,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _updateAnimation: function (data, stackedOnPoints, coordSys, api) {
 	            var polyline = this._polyline;
 	            var polygon = this._polygon;
-	            var seriesModel = data.hostModel;
+	            var seriesDto = data.hostDto;
 
 	            var diff = lineAnimationDiff(
 	                this._data, data,
@@ -20482,7 +20482,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                shape: {
 	                    points: diff.next
 	                }
-	            }, seriesModel);
+	            }, seriesDto);
 
 	            if (polygon) {
 	                polygon.setShape({
@@ -20494,7 +20494,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        points: diff.next,
 	                        stackedOnPoints: diff.stackedOnNext
 	                    }
-	                }, seriesModel);
+	                }, seriesDto);
 	            }
 
 	            var updatedDataInfo = [];
@@ -20523,7 +20523,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        },
 
-	        remove: function (ecModel) {
+	        remove: function (ecDto) {
 	            var group = this.group;
 	            var oldData = this._data;
 	            this._lineGroup.removeAll();
@@ -20583,7 +20583,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    symbolDrawProto.updateData = function (data, isIgnore) {
 	        var group = this.group;
-	        var seriesModel = data.hostModel;
+	        var seriesDto = data.hostDto;
 	        var oldData = this._data;
 
 	        var SymbolCtor = this._symbolCtor;
@@ -20613,7 +20613,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    symbolEl.updateData(data, newIdx);
 	                    graphic.updateProps(symbolEl, {
 	                        position: point
-	                    }, seriesModel);
+	                    }, seriesDto);
 	                }
 
 	                // Add back
@@ -20706,7 +20706,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Remove paths created before
 	        this.removeAll();
 
-	        var seriesModel = data.hostModel;
+	        var seriesDto = data.hostDto;
 	        var color = data.getItemVisual(idx, 'color');
 
 	        var symbolPath = symbolUtil.createSymbol(
@@ -20725,7 +20725,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        graphic.initProps(symbolPath, {
 	            scale: size
-	        }, seriesModel, idx);
+	        }, seriesDto, idx);
 
 	        this._symbolType = symbolType;
 
@@ -20785,7 +20785,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    symbolProto.updateData = function (data, idx) {
 	        var symbolType = data.getItemVisual(idx, 'symbol') || 'circle';
-	        var seriesModel = data.hostModel;
+	        var seriesDto = data.hostDto;
 	        var symbolSize = normalizeSymbolSize(data.getItemVisual(idx, 'symbolSize'));
 	        if (symbolType !== this._symbolType) {
 	            this._createSymbol(symbolType, data, idx);
@@ -20794,11 +20794,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var symbolPath = this.childAt(0);
 	            graphic.updateProps(symbolPath, {
 	                scale: symbolSize
-	            }, seriesModel, idx);
+	            }, seriesDto, idx);
 	        }
 	        this._updateCommon(data, idx, symbolSize);
 
-	        this._seriesModel = seriesModel;
+	        this._seriesDto = seriesDto;
 	    };
 
 	    // Update common properties
@@ -20809,9 +20809,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    symbolProto._updateCommon = function (data, idx, symbolSize) {
 	        var symbolPath = this.childAt(0);
-	        var seriesModel = data.hostModel;
-	        var itemModel = data.getItemModel(idx);
-	        var normalItemStyleModel = itemModel.getModel(normalStyleAccessPath);
+	        var seriesDto = data.hostDto;
+	        var itemDto = data.getItemDto(idx);
+	        var normalItemStyleDto = itemDto.getDto(normalStyleAccessPath);
 	        var color = data.getItemVisual(idx, 'color');
 
 	        // Reset style
@@ -20822,11 +20822,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        var elStyle = symbolPath.style;
 
-	        var hoverStyle = itemModel.getModel(emphasisStyleAccessPath).getItemStyle();
+	        var hoverStyle = itemDto.getDto(emphasisStyleAccessPath).getItemStyle();
 
-	        symbolPath.rotation = (itemModel.getShallow('symbolRotate') || 0) * Math.PI / 180 || 0;
+	        symbolPath.rotation = (itemDto.getShallow('symbolRotate') || 0) * Math.PI / 180 || 0;
 
-	        var symbolOffset = itemModel.getShallow('symbolOffset');
+	        var symbolOffset = itemDto.getShallow('symbolOffset');
 	        if (symbolOffset) {
 	            var pos = symbolPath.position;
 	            pos[0] = numberUtil.parsePercent(symbolOffset[0], symbolSize[0]);
@@ -20839,7 +20839,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            elStyle,
 	            // Color must be excluded.
 	            // Because symbol provide setColor individually to set fill and stroke
-	            normalItemStyleModel.getItemStyle(['color'])
+	            normalItemStyleDto.getItemStyle(['color'])
 	        );
 
 	        var opacity = data.getItemVisual(idx, 'opacity');
@@ -20847,8 +20847,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            elStyle.opacity = opacity;
 	        }
 
-	        var labelModel = itemModel.getModel(normalLabelAccessPath);
-	        var hoverLabelModel = itemModel.getModel(emphasisLabelAccessPath);
+	        var labelDto = itemDto.getDto(normalLabelAccessPath);
+	        var hoverLabelDto = itemDto.getDto(emphasisLabelAccessPath);
 
 	        // Get last value dim
 	        var dimensions = data.dimensions.slice();
@@ -20860,10 +20860,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            dataType === 'ordinal' || dataType === 'time'
 	        )) {} // jshint ignore:line
 
-	        if (valueDim != null && labelModel.get('show')) {
-	            graphic.setText(elStyle, labelModel, color);
+	        if (valueDim != null && labelDto.get('show')) {
+	            graphic.setText(elStyle, labelDto, color);
 	            elStyle.text = zrUtil.retrieve(
-	                seriesModel.getFormattedLabel(idx, 'normal'),
+	                seriesDto.getFormattedLabel(idx, 'normal'),
 	                data.get(valueDim, idx)
 	            );
 	        }
@@ -20871,10 +20871,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            elStyle.text = '';
 	        }
 
-	        if (valueDim != null && hoverLabelModel.getShallow('show')) {
-	            graphic.setText(hoverStyle, hoverLabelModel, color);
+	        if (valueDim != null && hoverLabelDto.getShallow('show')) {
+	            graphic.setText(hoverStyle, hoverLabelDto, color);
 	            hoverStyle.text = zrUtil.retrieve(
-	                seriesModel.getFormattedLabel(idx, 'emphasis'),
+	                seriesDto.getFormattedLabel(idx, 'emphasis'),
 	                data.get(valueDim, idx)
 	            );
 	        }
@@ -20891,7 +20891,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        graphic.setHoverStyle(symbolPath, hoverStyle);
 
-	        if (itemModel.getShallow('hoverAnimation')) {
+	        if (itemDto.getShallow('hoverAnimation')) {
 	            var onEmphasis = function() {
 	                var ratio = size[1] / size[0];
 	                this.animateTo({
@@ -20924,7 +20924,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        symbolPath.style.text = '';
 	        graphic.updateProps(symbolPath, {
 	            scale: [0, 0]
-	        }, this._seriesModel, this.dataIndex, cb);
+	        }, this._seriesDto, this.dataIndex, cb);
 	    };
 
 	    zrUtil.inherits(Symbol, graphic.Group);
@@ -21765,14 +21765,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	
 
-	    module.exports = function (seriesType, defaultSymbolType, legendSymbol, ecModel, api) {
+	    module.exports = function (seriesType, defaultSymbolType, legendSymbol, ecDto, api) {
 
 	        // Encoding visual for all series include which is filtered for legend drawing
-	        ecModel.eachRawSeriesByType(seriesType, function (seriesModel) {
-	            var data = seriesModel.getData();
+	        ecDto.eachRawSeriesByType(seriesType, function (seriesDto) {
+	            var data = seriesDto.getData();
 
-	            var symbolType = seriesModel.get('symbol') || defaultSymbolType;
-	            var symbolSize = seriesModel.get('symbolSize');
+	            var symbolType = seriesDto.get('symbol') || defaultSymbolType;
+	            var symbolSize = seriesDto.get('symbolSize');
 
 	            data.setVisual({
 	                legendSymbol: legendSymbol || symbolType,
@@ -21781,19 +21781,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 
 	            // Only visible series has each data be visual encoded
-	            if (!ecModel.isSeriesFiltered(seriesModel)) {
+	            if (!ecDto.isSeriesFiltered(seriesDto)) {
 	                if (typeof symbolSize === 'function') {
 	                    data.each(function (idx) {
-	                        var rawValue = seriesModel.getRawValue(idx);
+	                        var rawValue = seriesDto.getRawValue(idx);
 	                        // FIXME
-	                        var params = seriesModel.getDataParams(idx);
+	                        var params = seriesDto.getDataParams(idx);
 	                        data.setItemVisual(idx, 'symbolSize', symbolSize(rawValue, params));
 	                    });
 	                }
 	                data.each(function (idx) {
-	                    var itemModel = data.getItemModel(idx);
-	                    var itemSymbolType = itemModel.get('symbol', true);
-	                    var itemSymbolSize = itemModel.get('symbolSize', true);
+	                    var itemDto = data.getItemDto(idx);
+	                    var itemSymbolType = itemDto.get('symbol', true);
+	                    var itemSymbolSize = itemDto.get('symbolSize', true);
 	                    // If has item symbol
 	                    if (itemSymbolType != null) {
 	                        data.setItemVisual(idx, 'symbol', itemSymbolType);
@@ -21814,10 +21814,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	
 
-	    module.exports = function (seriesType, ecModel, api) {
-	        ecModel.eachSeriesByType(seriesType, function (seriesModel) {
-	            var data = seriesModel.getData();
-	            var coordSys = seriesModel.coordinateSystem;
+	    module.exports = function (seriesType, ecDto, api) {
+	        ecDto.eachSeriesByType(seriesType, function (seriesDto) {
+	            var data = seriesDto.getData();
+	            var coordSys = seriesDto.coordinateSystem;
 
 	            if (coordSys) {
 	                var dims = coordSys.dimensions;
@@ -21888,11 +21888,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var indexSampler = function (frame, value) {
 	        return Math.round(frame.length / 2);
 	    };
-	    module.exports = function (seriesType, ecModel, api) {
-	        ecModel.eachSeriesByType(seriesType, function (seriesModel) {
-	            var data = seriesModel.getData();
-	            var sampling = seriesModel.get('sampling');
-	            var coordSys = seriesModel.coordinateSystem;
+	    module.exports = function (seriesType, ecDto, api) {
+	        ecDto.eachSeriesByType(seriesType, function (seriesDto) {
+	            var data = seriesDto.getData();
+	            var sampling = seriesDto.get('sampling');
+	            var coordSys = seriesDto.coordinateSystem;
 	            // Only cartesian2d support down sampling
 	            if (coordSys.type === 'cartesian2d' && sampling) {
 	                var baseAxis = coordSys.getBaseAxis();
@@ -21913,7 +21913,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        data = data.downSample(
 	                            valueAxis.dim, 1 / rate, sampler, indexSampler
 	                        );
-	                        seriesModel.setData(data);
+	                        seriesDto.setData(data);
 	                    }
 	                }
 	            }
@@ -21940,14 +21940,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        type: 'grid',
 
-	        render: function (gridModel, ecModel) {
+	        render: function (gridDto, ecDto) {
 	            this.group.removeAll();
-	            if (gridModel.get('show')) {
+	            if (gridDto.get('show')) {
 	                this.group.add(new graphic.Rect({
-	                    shape:gridModel.coordinateSystem.getRect(),
+	                    shape:gridDto.coordinateSystem.getRect(),
 	                    style: zrUtil.defaults({
-	                        fill: gridModel.get('backgroundColor')
-	                    }, gridModel.getItemStyle()),
+	                        fill: gridDto.get('backgroundColor')
+	                    }, gridDto.getItemStyle()),
 	                    silent: true
 	                }));
 	            }
@@ -21978,20 +21978,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var ifAxisCrossZero = axisHelper.ifAxisCrossZero;
 	    var niceScaleExtent = axisHelper.niceScaleExtent;
 
-	    // 依赖 GridModel, AxisModel 做预处理
+	    // 依赖 GridDto, AxisDto 做预处理
 	    __webpack_require__(120);
 
 	    /**
 	     * Check if the axis is used in the specified grid
 	     * @inner
 	     */
-	    function isAxisUsedInTheGrid(axisModel, gridModel, ecModel) {
-	        return ecModel.getComponent('grid', axisModel.get('gridIndex')) === gridModel;
+	    function isAxisUsedInTheGrid(axisDto, gridDto, ecDto) {
+	        return ecDto.getComponent('grid', axisDto.get('gridIndex')) === gridDto;
 	    }
 
 	    function getLabelUnionRect(axis) {
-	        var axisModel = axis.model;
-	        var labels = axisModel.getFormattedLabels();
+	        var axisDto = axis.Dto;
+	        var labels = axisDto.getFormattedLabels();
 	        var rect;
 	        var step = 1;
 	        var labelCount = labels.length;
@@ -22001,7 +22001,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        for (var i = 0; i < labelCount; i += step) {
 	            if (!axis.isLabelIgnored(i)) {
-	                var singleRect = axisModel.getTextRect(labels[i]);
+	                var singleRect = axisDto.getTextRect(labels[i]);
 	                // FIXME consider label rotate
 	                rect ? rect.union(singleRect) : (rect = singleRect);
 	            }
@@ -22009,7 +22009,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return rect;
 	    }
 
-	    function Grid(gridModel, ecModel, api) {
+	    function Grid(gridDto, ecDto, api) {
 	        /**
 	         * @type {Object.<string, module:echarts/coord/cartesian/Cartesian2D>}
 	         * @private
@@ -22034,9 +22034,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	         */
 	        this._axesList = [];
 
-	        this._initCartesian(gridModel, ecModel, api);
+	        this._initCartesian(gridDto, ecDto, api);
 
-	        this._model = gridModel;
+	        this._Dto = gridDto;
 	    }
 
 	    var gridProto = Grid.prototype;
@@ -22047,11 +22047,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this._rect;
 	    };
 
-	    gridProto.update = function (ecModel, api) {
+	    gridProto.update = function (ecDto, api) {
 
 	        var axesMap = this._axesMap;
 
-	        this._updateScale(ecModel, this._model);
+	        this._updateScale(ecDto, this._Dto);
 
 	        function ifAxisCanNotOnZero(otherAxisDim) {
 	            var axes = axesMap[otherAxisDim];
@@ -22065,10 +22065,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        each(axesMap.x, function (xAxis) {
-	            niceScaleExtent(xAxis, xAxis.model);
+	            niceScaleExtent(xAxis, xAxis.Dto);
 	        });
 	        each(axesMap.y, function (yAxis) {
-	            niceScaleExtent(yAxis, yAxis.model);
+	            niceScaleExtent(yAxis, yAxis.Dto);
 	        });
 	        // Fix configuration
 	        each(axesMap.x, function (xAxis) {
@@ -22087,18 +22087,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // Resize again if containLabel is enabled
 	        // FIXME It may cause getting wrong grid size in data processing stage
-	        this.resize(this._model, api);
+	        this.resize(this._Dto, api);
 	    };
 
 	    /**
 	     * Resize the grid
-	     * @param {module:echarts/coord/cartesian/GridModel} gridModel
+	     * @param {module:echarts/coord/cartesian/GridDto} gridDto
 	     * @param {module:echarts/ExtensionAPI} api
 	     */
-	    gridProto.resize = function (gridModel, api) {
+	    gridProto.resize = function (gridDto, api) {
 
 	        var gridRect = layout.getLayoutRect(
-	            gridModel.getBoxLayoutParams(), {
+	            gridDto.getBoxLayoutParams(), {
 	                width: api.getWidth(),
 	                height: api.getHeight()
 	            });
@@ -22110,13 +22110,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        adjustAxes();
 
 	        // Minus label size
-	        if (gridModel.get('containLabel')) {
+	        if (gridDto.get('containLabel')) {
 	            each(axesList, function (axis) {
-	                if (!axis.model.get('axisLabel.inside')) {
+	                if (!axis.Dto.get('axisLabel.inside')) {
 	                    var labelUnionRect = getLabelUnionRect(axis);
 	                    if (labelUnionRect) {
 	                        var dim = axis.isHorizontal() ? 'height' : 'width';
-	                        var margin = axis.model.get('axisLabel.margin');
+	                        var margin = axis.Dto.get('axisLabel.margin');
 	                        gridRect[dim] -= labelUnionRect[dim] + margin;
 	                        if (axis.position === 'top') {
 	                            gridRect.y += labelUnionRect.height + margin;
@@ -22168,7 +22168,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Initialize cartesian coordinate systems
 	     * @private
 	     */
-	    gridProto._initCartesian = function (gridModel, ecModel, api) {
+	    gridProto._initCartesian = function (gridDto, ecDto, api) {
 	        var axisPositionUsed = {
 	            left: false,
 	            right: false,
@@ -22186,8 +22186,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        };
 
 	        /// Create axis
-	        ecModel.eachComponent('xAxis', createAxisCreator('x'), this);
-	        ecModel.eachComponent('yAxis', createAxisCreator('y'), this);
+	        ecDto.eachComponent('xAxis', createAxisCreator('x'), this);
+	        ecDto.eachComponent('yAxis', createAxisCreator('y'), this);
 
 	        if (!axesCount.x || !axesCount.y) {
 	            // Roll back when there no either x or y axis
@@ -22215,12 +22215,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }, this);
 
 	        function createAxisCreator(axisType) {
-	            return function (axisModel, idx) {
-	                if (!isAxisUsedInTheGrid(axisModel, gridModel, ecModel)) {
+	            return function (axisDto, idx) {
+	                if (!isAxisUsedInTheGrid(axisDto, gridDto, ecDto)) {
 	                    return;
 	                }
 
-	                var axisPosition = axisModel.get('position');
+	                var axisPosition = axisDto.get('position');
 	                if (axisType === 'x') {
 	                    // Fix position
 	                    if (axisPosition !== 'top' && axisPosition !== 'bottom') {
@@ -22244,23 +22244,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	                axisPositionUsed[axisPosition] = true;
 
 	                var axis = new Axis2D(
-	                    axisType, axisHelper.createScaleByModel(axisModel),
+	                    axisType, axisHelper.createScaleByDto(axisDto),
 	                    [0, 0],
-	                    axisModel.get('type'),
+	                    axisDto.get('type'),
 	                    axisPosition
 	                );
 
 	                var isCategory = axis.type === 'category';
-	                axis.onBand = isCategory && axisModel.get('boundaryGap');
-	                axis.inverse = axisModel.get('inverse');
+	                axis.onBand = isCategory && axisDto.get('boundaryGap');
+	                axis.inverse = axisDto.get('inverse');
 
-	                axis.onZero = axisModel.get('axisLine.onZero');
+	                axis.onZero = axisDto.get('axisLine.onZero');
 
-	                // Inject axis into axisModel
-	                axisModel.axis = axis;
+	                // Inject axis into axisDto
+	                axisDto.axis = axis;
 
-	                // Inject axisModel into axis
-	                axis.model = axisModel;
+	                // Inject axisDto into axis
+	                axis.Dto = axisDto;
 
 	                // Index of axis, can be used as key
 	                axis.index = idx;
@@ -22275,42 +22275,42 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    /**
 	     * Update cartesian properties from series
-	     * @param  {module:echarts/model/Option} option
+	     * @param  {module:echarts/Dto/Option} option
 	     * @private
 	     */
-	    gridProto._updateScale = function (ecModel, gridModel) {
+	    gridProto._updateScale = function (ecDto, gridDto) {
 	        // Reset scale
 	        zrUtil.each(this._axesList, function (axis) {
 	            axis.scale.setExtent(Infinity, -Infinity);
 	        });
-	        ecModel.eachSeries(function (seriesModel) {
-	            if (seriesModel.get('coordinateSystem') === 'cartesian2d') {
-	                var xAxisIndex = seriesModel.get('xAxisIndex');
-	                var yAxisIndex = seriesModel.get('yAxisIndex');
+	        ecDto.eachSeries(function (seriesDto) {
+	            if (seriesDto.get('coordinateSystem') === 'cartesian2d') {
+	                var xAxisIndex = seriesDto.get('xAxisIndex');
+	                var yAxisIndex = seriesDto.get('yAxisIndex');
 
-	                var xAxisModel = ecModel.getComponent('xAxis', xAxisIndex);
-	                var yAxisModel = ecModel.getComponent('yAxis', yAxisIndex);
+	                var xAxisDto = ecDto.getComponent('xAxis', xAxisIndex);
+	                var yAxisDto = ecDto.getComponent('yAxis', yAxisIndex);
 
-	                if (!isAxisUsedInTheGrid(xAxisModel, gridModel, ecModel)
-	                    || !isAxisUsedInTheGrid(yAxisModel, gridModel, ecModel)
+	                if (!isAxisUsedInTheGrid(xAxisDto, gridDto, ecDto)
+	                    || !isAxisUsedInTheGrid(yAxisDto, gridDto, ecDto)
 	                 ) {
 	                    return;
 	                }
 
 	                var cartesian = this.getCartesian(xAxisIndex, yAxisIndex);
-	                var data = seriesModel.getData();
+	                var data = seriesDto.getData();
 	                var xAxis = cartesian.getAxis('x');
 	                var yAxis = cartesian.getAxis('y');
 
 	                if (data.type === 'list') {
-	                    unionExtent(data, xAxis, seriesModel);
-	                    unionExtent(data, yAxis, seriesModel);
+	                    unionExtent(data, xAxis, seriesDto);
+	                    unionExtent(data, yAxis, seriesDto);
 	                }
 	            }
 	        }, this);
 
-	        function unionExtent(data, axis, seriesModel) {
-	            each(seriesModel.coordDimToDataDim(axis.dim), function (dim) {
+	        function unionExtent(data, axis, seriesDto) {
+	            each(seriesDto.coordDimToDataDim(axis.dim), function (dim) {
 	                axis.scale.unionExtent(data.getDataExtent(
 	                    dim, axis.scale.type !== 'ordinal'
 	                ));
@@ -22342,29 +22342,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	            };
 	    }
 
-	    Grid.create = function (ecModel, api) {
+	    Grid.create = function (ecDto, api) {
 	        var grids = [];
-	        ecModel.eachComponent('grid', function (gridModel, idx) {
-	            var grid = new Grid(gridModel, ecModel, api);
+	        ecDto.eachComponent('grid', function (gridDto, idx) {
+	            var grid = new Grid(gridDto, ecDto, api);
 	            grid.name = 'grid_' + idx;
-	            grid.resize(gridModel, api);
+	            grid.resize(gridDto, api);
 
-	            gridModel.coordinateSystem = grid;
+	            gridDto.coordinateSystem = grid;
 
 	            grids.push(grid);
 	        });
 
-	        // Inject the coordinateSystems into seriesModel
-	        ecModel.eachSeries(function (seriesModel) {
-	            if (seriesModel.get('coordinateSystem') !== 'cartesian2d') {
+	        // Inject the coordinateSystems into seriesDto
+	        ecDto.eachSeries(function (seriesDto) {
+	            if (seriesDto.get('coordinateSystem') !== 'cartesian2d') {
 	                return;
 	            }
-	            var xAxisIndex = seriesModel.get('xAxisIndex');
+	            var xAxisIndex = seriesDto.get('xAxisIndex');
 	            // TODO Validate
-	            var xAxisModel = ecModel.getComponent('xAxis', xAxisIndex);
-	            var grid = grids[xAxisModel.get('gridIndex')];
-	            seriesModel.coordinateSystem = grid.getCartesian(
-	                xAxisIndex, seriesModel.get('yAxisIndex')
+	            var xAxisDto = ecDto.getComponent('xAxis', xAxisIndex);
+	            var grid = grids[xAxisDto.get('gridIndex')];
+	            seriesDto.coordinateSystem = grid.getCartesian(
+	                xAxisIndex, seriesDto.get('yAxisIndex')
 	            );
 	        });
 
@@ -22399,7 +22399,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Get axis scale extent before niced.
 	     */
-	    axisHelper.getScaleExtent = function (axis, model) {
+	    axisHelper.getScaleExtent = function (axis, Dto) {
 	        var scale = axis.scale;
 	        var originalExtent = scale.getExtent();
 	        var span = originalExtent[1] - originalExtent[0];
@@ -22412,11 +22412,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return originalExtent;
 	            }
 	        }
-	        var min = model.getMin ? model.getMin() : model.get('min');
-	        var max = model.getMax ? model.getMax() : model.get('max');
-	        var crossZero = model.getNeedCrossZero
-	            ? model.getNeedCrossZero() : !model.get('scale');
-	        var boundaryGap = model.get('boundaryGap');
+	        var min = Dto.getMin ? Dto.getMin() : Dto.get('min');
+	        var max = Dto.getMax ? Dto.getMax() : Dto.get('max');
+	        var crossZero = Dto.getNeedCrossZero
+	            ? Dto.getNeedCrossZero() : !Dto.get('scale');
+	        var boundaryGap = Dto.get('boundaryGap');
 	        if (!zrUtil.isArray(boundaryGap)) {
 	            boundaryGap = [boundaryGap || 0, boundaryGap || 0];
 	        }
@@ -22453,12 +22453,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return [min, max];
 	    };
 
-	    axisHelper.niceScaleExtent = function (axis, model) {
+	    axisHelper.niceScaleExtent = function (axis, Dto) {
 	        var scale = axis.scale;
-	        var extent = axisHelper.getScaleExtent(axis, model);
-	        var fixMin = (model.getMin ? model.getMin() : model.get('min')) != null;
-	        var fixMax = (model.getMax ? model.getMax() : model.get('max')) != null;
-	        var splitNumber = model.get('splitNumber');
+	        var extent = axisHelper.getScaleExtent(axis, Dto);
+	        var fixMin = (Dto.getMin ? Dto.getMin() : Dto.get('min')) != null;
+	        var fixMax = (Dto.getMax ? Dto.getMax() : Dto.get('max')) != null;
+	        var splitNumber = Dto.get('splitNumber');
 	        scale.setExtent(extent[0], extent[1]);
 	        scale.niceExtent(splitNumber, fixMin, fixMax);
 
@@ -22468,7 +22468,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // For example:
 	        //  minInterval is 1, calculated interval is 0.2, so increase it to be 1. In this way we can get
 	        //  an integer axis.
-	        var minInterval = model.get('minInterval');
+	        var minInterval = Dto.get('minInterval');
 	        if (isFinite(minInterval) && !fixMin && !fixMax && scale.type === 'interval') {
 	            var interval = scale.getInterval();
 	            var intervalScale = Math.max(Math.abs(interval), minInterval) / interval;
@@ -22487,31 +22487,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // in angle axis with angle 0 - 360. Interval calculated in interval scale is hard
 	        // to be 60.
 	        // FIXME
-	        var interval = model.get('interval');
+	        var interval = Dto.get('interval');
 	        if (interval != null) {
 	            scale.setInterval && scale.setInterval(interval);
 	        }
 	    };
 
 	    /**
-	     * @param {module:echarts/model/Model} model
-	     * @param {string} [axisType] Default retrieve from model.type
+	     * @param {module:echarts/Dto/Dto} Dto
+	     * @param {string} [axisType] Default retrieve from Dto.type
 	     * @return {module:echarts/scale/*}
 	     */
-	    axisHelper.createScaleByModel = function(model, axisType) {
-	        axisType = axisType || model.get('type');
+	    axisHelper.createScaleByDto = function(Dto, axisType) {
+	        axisType = axisType || Dto.get('type');
 	        if (axisType) {
 	            switch (axisType) {
 	                // Buildin scale
 	                case 'category':
 	                    return new OrdinalScale(
-	                        model.getCategories(), [Infinity, -Infinity]
+	                        Dto.getCategories(), [Infinity, -Infinity]
 	                    );
 	                case 'value':
 	                    return new IntervalScale();
 	                // Extended scale, like time and log
 	                default:
-	                    return (Scale.getClass(axisType) || IntervalScale).create(model);
+	                    return (Scale.getClass(axisType) || IntervalScale).create(Dto);
 	            }
 	        }
 	    };
@@ -23633,10 +23633,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        onZero: false,
 
 	        /**
-	         * Axis model
-	         * @param {module:echarts/coord/cartesian/AxisModel}
+	         * Axis Dto
+	         * @param {module:echarts/coord/cartesian/AxisDto}
 	         */
-	        model: null,
+	        Dto: null,
 
 	        isHorizontal: function () {
 	            var position = this.position;
@@ -23950,17 +23950,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var axisHelper = __webpack_require__(109);
 
 	    module.exports = function (axis) {
-	        var axisModel = axis.model;
-	        var labelModel = axisModel.getModel('axisLabel');
-	        var labelInterval = labelModel.get('interval');
+	        var axisDto = axis.Dto;
+	        var labelDto = axisDto.getDto('axisLabel');
+	        var labelInterval = labelDto.get('interval');
 	        if (!(axis.type === 'category' && labelInterval === 'auto')) {
 	            return labelInterval === 'auto' ? 0 : labelInterval;
 	        }
 
 	        return axisHelper.getAxisLabelInterval(
 	            zrUtil.map(axis.scale.getTicks(), axis.dataToCoord, axis),
-	            axisModel.getFormattedLabels(),
-	            labelModel.getModel('textStyle').getFont(),
+	            axisDto.getFormattedLabels(),
+	            labelDto.getDto('textStyle').getFont(),
 	            axis.isHorizontal()
 	        );
 	    };
@@ -23976,9 +23976,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	    __webpack_require__(121);
-	    var ComponentModel = __webpack_require__(19);
+	    var ComponentDto = __webpack_require__(19);
 
-	    module.exports = ComponentModel.extend({
+	    module.exports = ComponentDto.extend({
 
 	        type: 'grid',
 
@@ -24017,11 +24017,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 
-	    var ComponentModel = __webpack_require__(19);
+	    var ComponentDto = __webpack_require__(19);
 	    var zrUtil = __webpack_require__(3);
-	    var axisModelCreator = __webpack_require__(122);
+	    var axisDtoCreator = __webpack_require__(122);
 
-	    var AxisModel = ComponentModel.extend({
+	    var AxisDto = ComponentDto.extend({
 
 	        type: 'cartesian2dAxis',
 
@@ -24034,7 +24034,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @override
 	         */
 	        init: function () {
-	            AxisModel.superApply(this, 'init', arguments);
+	            AxisDto.superApply(this, 'init', arguments);
 	            this._resetRange();
 	        },
 
@@ -24042,7 +24042,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @override
 	         */
 	        mergeOption: function () {
-	            AxisModel.superApply(this, 'mergeOption', arguments);
+	            AxisDto.superApply(this, 'mergeOption', arguments);
 	            this._resetRange();
 	        },
 
@@ -24050,7 +24050,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @override
 	         */
 	        restoreData: function () {
-	            AxisModel.superApply(this, 'restoreData', arguments);
+	            AxisDto.superApply(this, 'restoreData', arguments);
 	            this._resetRange();
 	        },
 
@@ -24107,16 +24107,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return option.type || (option.data ? 'category' : 'value');
 	    }
 
-	    zrUtil.merge(AxisModel.prototype, __webpack_require__(124));
+	    zrUtil.merge(AxisDto.prototype, __webpack_require__(124));
 
 	    var extraOption = {
 	        gridIndex: 0
 	    };
 
-	    axisModelCreator('x', AxisModel, getAxisType, extraOption);
-	    axisModelCreator('y', AxisModel, getAxisType, extraOption);
+	    axisDtoCreator('x', AxisDto, getAxisType, extraOption);
+	    axisDtoCreator('y', AxisDto, getAxisType, extraOption);
 
-	    module.exports = AxisModel;
+	    module.exports = AxisDto;
 
 
 /***/ },
@@ -24127,34 +24127,34 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var axisDefault = __webpack_require__(123);
 	    var zrUtil = __webpack_require__(3);
-	    var ComponentModel = __webpack_require__(19);
+	    var ComponentDto = __webpack_require__(19);
 	    var layout = __webpack_require__(21);
 
 	    // FIXME axisType is fixed ?
 	    var AXIS_TYPES = ['value', 'category', 'time', 'log'];
 
 	    /**
-	     * Generate sub axis model class
+	     * Generate sub axis Dto class
 	     * @param {string} axisName 'x' 'y' 'radius' 'angle' 'parallel'
-	     * @param {module:echarts/model/Component} BaseAxisModelClass
+	     * @param {module:echarts/Dto/Component} BaseAxisDtoClass
 	     * @param {Function} axisTypeDefaulter
 	     * @param {Object} [extraDefaultOption]
 	     */
-	    module.exports = function (axisName, BaseAxisModelClass, axisTypeDefaulter, extraDefaultOption) {
+	    module.exports = function (axisName, BaseAxisDtoClass, axisTypeDefaulter, extraDefaultOption) {
 
 	        zrUtil.each(AXIS_TYPES, function (axisType) {
 
-	            BaseAxisModelClass.extend({
+	            BaseAxisDtoClass.extend({
 
 	                type: axisName + 'Axis.' + axisType,
 
-	                mergeDefaultAndTheme: function (option, ecModel) {
+	                mergeDefaultAndTheme: function (option, ecDto) {
 	                    var layoutMode = this.layoutMode;
 	                    var inputPositionParams = layoutMode
 	                        ? layout.getLayoutParams(option) : {};
 
-	                    var themeModel = ecModel.getTheme();
-	                    zrUtil.merge(option, themeModel.get(axisType + 'Axis'));
+	                    var themeDto = ecDto.getTheme();
+	                    zrUtil.merge(option, themeDto.get(axisType + 'Axis'));
 	                    zrUtil.merge(option, this.getDefaultOption());
 
 	                    option.type = axisTypeDefaulter(axisName, option);
@@ -24175,7 +24175,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	        });
 
-	        ComponentModel.registerSubTypeDefaulter(
+	        ComponentDto.registerSubTypeDefaulter(
 	            axisName + 'Axis',
 	            zrUtil.curry(axisTypeDefaulter, axisName)
 	        );
@@ -24397,50 +24397,50 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        type: 'axis',
 
-	        render: function (axisModel, ecModel) {
+	        render: function (axisDto, ecDto) {
 
 	            this.group.removeAll();
 
-	            if (!axisModel.get('show')) {
+	            if (!axisDto.get('show')) {
 	                return;
 	            }
 
-	            var gridModel = ecModel.getComponent('grid', axisModel.get('gridIndex'));
+	            var gridDto = ecDto.getComponent('grid', axisDto.get('gridIndex'));
 
-	            var layout = layoutAxis(gridModel, axisModel);
+	            var layout = layoutAxis(gridDto, axisDto);
 
-	            var axisBuilder = new AxisBuilder(axisModel, layout);
+	            var axisBuilder = new AxisBuilder(axisDto, layout);
 
 	            zrUtil.each(axisBuilderAttrs, axisBuilder.add, axisBuilder);
 
 	            this.group.add(axisBuilder.getGroup());
 
 	            zrUtil.each(selfBuilderAttrs, function (name) {
-	                if (axisModel.get(name +'.show')) {
-	                    this['_' + name](axisModel, gridModel, layout.labelInterval);
+	                if (axisDto.get(name +'.show')) {
+	                    this['_' + name](axisDto, gridDto, layout.labelInterval);
 	                }
 	            }, this);
 	        },
 
 	        /**
-	         * @param {module:echarts/coord/cartesian/AxisModel} axisModel
-	         * @param {module:echarts/coord/cartesian/GridModel} gridModel
+	         * @param {module:echarts/coord/cartesian/AxisDto} axisDto
+	         * @param {module:echarts/coord/cartesian/GridDto} gridDto
 	         * @param {number|Function} labelInterval
 	         * @private
 	         */
-	        _splitLine: function (axisModel, gridModel, labelInterval) {
-	            var axis = axisModel.axis;
+	        _splitLine: function (axisDto, gridDto, labelInterval) {
+	            var axis = axisDto.axis;
 
-	            var splitLineModel = axisModel.getModel('splitLine');
-	            var lineStyleModel = splitLineModel.getModel('lineStyle');
-	            var lineWidth = lineStyleModel.get('width');
-	            var lineColors = lineStyleModel.get('color');
+	            var splitLineDto = axisDto.getDto('splitLine');
+	            var lineStyleDto = splitLineDto.getDto('lineStyle');
+	            var lineWidth = lineStyleDto.get('width');
+	            var lineColors = lineStyleDto.get('color');
 
-	            var lineInterval = getInterval(splitLineModel, labelInterval);
+	            var lineInterval = getInterval(splitLineDto, labelInterval);
 
 	            lineColors = zrUtil.isArray(lineColors) ? lineColors : [lineColors];
 
-	            var gridRect = gridModel.coordinateSystem.getRect();
+	            var gridRect = gridDto.coordinateSystem.getRect();
 	            var isHorizontal = axis.isHorizontal();
 
 	            var splitLines = [];
@@ -24488,7 +24488,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            // Simple optimization
 	            // Batching the lines if color are the same
-	            var lineStyle = lineStyleModel.getLineStyle();
+	            var lineStyle = lineStyleDto.getLineStyle();
 	            for (var i = 0; i < splitLines.length; i++) {
 	                this.group.add(graphic.mergePath(splitLines[i], {
 	                    style: zrUtil.defaults({
@@ -24500,19 +24500,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 
 	        /**
-	         * @param {module:echarts/coord/cartesian/AxisModel} axisModel
-	         * @param {module:echarts/coord/cartesian/GridModel} gridModel
+	         * @param {module:echarts/coord/cartesian/AxisDto} axisDto
+	         * @param {module:echarts/coord/cartesian/GridDto} gridDto
 	         * @param {number|Function} labelInterval
 	         * @private
 	         */
-	        _splitArea: function (axisModel, gridModel, labelInterval) {
-	            var axis = axisModel.axis;
+	        _splitArea: function (axisDto, gridDto, labelInterval) {
+	            var axis = axisDto.axis;
 
-	            var splitAreaModel = axisModel.getModel('splitArea');
-	            var areaStyleModel = splitAreaModel.getModel('areaStyle');
-	            var areaColors = areaStyleModel.get('color');
+	            var splitAreaDto = axisDto.getDto('splitArea');
+	            var areaStyleDto = splitAreaDto.getDto('areaStyle');
+	            var areaColors = areaStyleDto.get('color');
 
-	            var gridRect = gridModel.coordinateSystem.getRect();
+	            var gridRect = gridDto.coordinateSystem.getRect();
 	            var ticksCoords = axis.getTicksCoords();
 
 	            var prevX = axis.toGlobalCoord(ticksCoords[0]);
@@ -24521,7 +24521,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var splitAreaRects = [];
 	            var count = 0;
 
-	            var areaInterval = getInterval(splitAreaModel, labelInterval);
+	            var areaInterval = getInterval(splitAreaDto, labelInterval);
 
 	            areaColors = zrUtil.isArray(areaColors) ? areaColors : [areaColors];
 
@@ -24567,7 +24567,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            // Simple optimization
 	            // Batching the rects if color are the same
-	            var areaStyle = areaStyleModel.getAreaStyle();
+	            var areaStyle = areaStyleDto.getAreaStyle();
 	            for (var i = 0; i < splitAreaRects.length; i++) {
 	                this.group.add(graphic.mergePath(splitAreaRects[i], {
 	                    style: zrUtil.defaults({
@@ -24589,9 +24589,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * @inner
 	     */
-	    function layoutAxis(gridModel, axisModel) {
-	        var grid = gridModel.coordinateSystem;
-	        var axis = axisModel.axis;
+	    function layoutAxis(gridDto, axisDto) {
+	        var grid = gridDto.coordinateSystem;
+	        var axis = axisDto.axis;
 	        var layout = {};
 
 	        var rawAxisPosition = axis.position;
@@ -24632,15 +24632,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            layout.labelOffset = posMap[axisDim][rawAxisPosition] - posMap[axisDim].onZero;
 	        }
 
-	        if (axisModel.getModel('axisTick').get('inside')) {
+	        if (axisDto.getDto('axisTick').get('inside')) {
 	            layout.tickDirection = -layout.tickDirection;
 	        }
-	        if (axisModel.getModel('axisLabel').get('inside')) {
+	        if (axisDto.getDto('axisLabel').get('inside')) {
 	            layout.labelDirection = -layout.labelDirection;
 	        }
 
 	        // Special label rotation
-	        var labelRotation = axisModel.getModel('axisLabel').get('rotate');
+	        var labelRotation = axisDto.getDto('axisLabel').get('rotate');
 	        layout.labelRotation = axisPosition === 'top' ? -labelRotation : labelRotation;
 
 	        // label interval when auto mode.
@@ -24661,18 +24661,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var zrUtil = __webpack_require__(3);
 	    var graphic = __webpack_require__(42);
-	    var Model = __webpack_require__(8);
+	    var Dto = __webpack_require__(8);
 	    var numberUtil = __webpack_require__(7);
 	    var remRadian = numberUtil.remRadian;
 	    var isRadianAroundZero = numberUtil.isRadianAroundZero;
 
 	    var PI = Math.PI;
 
-	    function makeAxisEventDataBase(axisModel) {
+	    function makeAxisEventDataBase(axisDto) {
 	        var eventData = {
-	            componentType: axisModel.mainType
+	            componentType: axisDto.mainType
 	        };
-	        eventData[axisModel.mainType + 'Index'] = axisModel.componentIndex;
+	        eventData[axisDto.mainType + 'Index'] = axisDto.componentIndex;
 	        return eventData;
 	    }
 
@@ -24699,7 +24699,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * axis extent.
 	     *
 	     * @param {module:zrender/container/Group} group
-	     * @param {Object} axisModel
+	     * @param {Object} axisDto
 	     * @param {Object} opt Standard axis parameters.
 	     * @param {Array.<number>} opt.position [x, y]
 	     * @param {number} opt.rotation by radian
@@ -24707,14 +24707,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {number} [opt.tickDirection=1] 1 or -1
 	     * @param {number} [opt.labelDirection=1] 1 or -1
 	     * @param {number} [opt.labelOffset=0] Usefull when onZero.
-	     * @param {string} [opt.axisName] default get from axisModel.
-	     * @param {number} [opt.labelRotation] by degree, default get from axisModel.
+	     * @param {string} [opt.axisName] default get from axisDto.
+	     * @param {number} [opt.labelRotation] by degree, default get from axisDto.
 	     * @param {number} [opt.labelInterval] Default label interval when label
-	     *                                     interval from model is null or 'auto'.
+	     *                                     interval from Dto is null or 'auto'.
 	     * @param {number} [opt.strokeContainThreshold] Default label interval when label
 	     * @param {number} [opt.axisLineSilent=true] If axis line is silent
 	     */
-	    var AxisBuilder = function (axisModel, opt) {
+	    var AxisBuilder = function (axisDto, opt) {
 
 	        /**
 	         * @readOnly
@@ -24724,7 +24724,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @readOnly
 	         */
-	        this.axisModel = axisModel;
+	        this.axisDto = axisDto;
 
 	        // Default value
 	        zrUtil.defaults(
@@ -24772,13 +24772,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	         */
 	        axisLine: function () {
 	            var opt = this.opt;
-	            var axisModel = this.axisModel;
+	            var axisDto = this.axisDto;
 
-	            if (!axisModel.get('axisLine.show')) {
+	            if (!axisDto.get('axisLine.show')) {
 	                return;
 	            }
 
-	            var extent = this.axisModel.axis.getExtent();
+	            var extent = this.axisDto.axis.getExtent();
 
 	            this.group.add(new graphic.Line({
 	                shape: {
@@ -24789,7 +24789,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                },
 	                style: zrUtil.extend(
 	                    {lineCap: 'round'},
-	                    axisModel.getModel('axisLine.lineStyle').getLineStyle()
+	                    axisDto.getDto('axisLine.lineStyle').getLineStyle()
 	                ),
 	                strokeContainThreshold: opt.strokeContainThreshold,
 	                silent: !!opt.axisLineSilent,
@@ -24801,19 +24801,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @private
 	         */
 	        axisTick: function () {
-	            var axisModel = this.axisModel;
+	            var axisDto = this.axisDto;
 
-	            if (!axisModel.get('axisTick.show')) {
+	            if (!axisDto.get('axisTick.show')) {
 	                return;
 	            }
 
-	            var axis = axisModel.axis;
-	            var tickModel = axisModel.getModel('axisTick');
+	            var axis = axisDto.axis;
+	            var tickDto = axisDto.getDto('axisTick');
 	            var opt = this.opt;
 
-	            var lineStyleModel = tickModel.getModel('lineStyle');
-	            var tickLen = tickModel.get('length');
-	            var tickInterval = getInterval(tickModel, opt.labelInterval);
+	            var lineStyleDto = tickDto.getDto('lineStyle');
+	            var tickLen = tickDto.get('length');
+	            var tickInterval = getInterval(tickDto, opt.labelInterval);
 	            var ticksCoords = axis.getTicksCoords();
 	            var tickLines = [];
 
@@ -24834,64 +24834,64 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        y2: opt.tickDirection * tickLen
 	                    },
 	                    style: {
-	                        lineWidth: lineStyleModel.get('width')
+	                        lineWidth: lineStyleDto.get('width')
 	                    },
 	                    silent: true
 	                })));
 	            }
 
 	            this.group.add(graphic.mergePath(tickLines, {
-	                style: lineStyleModel.getLineStyle(),
+	                style: lineStyleDto.getLineStyle(),
 	                z2: 2,
 	                silent: true
 	            }));
 	        },
 
 	        /**
-	         * @param {module:echarts/coord/cartesian/AxisModel} axisModel
-	         * @param {module:echarts/coord/cartesian/GridModel} gridModel
+	         * @param {module:echarts/coord/cartesian/AxisDto} axisDto
+	         * @param {module:echarts/coord/cartesian/GridDto} gridDto
 	         * @private
 	         */
 	        axisLabel: function () {
-	            var axisModel = this.axisModel;
+	            var axisDto = this.axisDto;
 
-	            if (!axisModel.get('axisLabel.show')) {
+	            if (!axisDto.get('axisLabel.show')) {
 	                return;
 	            }
 
 	            var opt = this.opt;
-	            var axis = axisModel.axis;
-	            var labelModel = axisModel.getModel('axisLabel');
-	            var textStyleModel = labelModel.getModel('textStyle');
-	            var labelMargin = labelModel.get('margin');
+	            var axis = axisDto.axis;
+	            var labelDto = axisDto.getDto('axisLabel');
+	            var textStyleDto = labelDto.getDto('textStyle');
+	            var labelMargin = labelDto.get('margin');
 	            var ticks = axis.scale.getTicks();
-	            var labels = axisModel.getFormattedLabels();
+	            var labels = axisDto.getFormattedLabels();
 
 	            // Special label rotate.
 	            var labelRotation = opt.labelRotation;
 	            if (labelRotation == null) {
-	                labelRotation = labelModel.get('rotate') || 0;
+	                labelRotation = labelDto.get('rotate') || 0;
 	            }
 	            // To radian.
 	            labelRotation = labelRotation * PI / 180;
 
 	            var labelLayout = innerTextLayout(opt, labelRotation, opt.labelDirection);
-	            var categoryData = axisModel.get('data');
+	            var categoryData = axisDto.get('data');
 
 	            var textEls = [];
-	            var isSilent = axisModel.get('silent');
+	            var isSilent = axisDto.get('silent');
 	            for (var i = 0; i < ticks.length; i++) {
 	                if (ifIgnoreOnTick(axis, i, opt.labelInterval)) {
 	                     continue;
 	                }
 
-	                var itemTextStyleModel = textStyleModel;
+	                var itemTextStyleDto = textStyleDto;
 	                if (categoryData && categoryData[i] && categoryData[i].textStyle) {
-	                    itemTextStyleModel = new Model(
-	                        categoryData[i].textStyle, textStyleModel, axisModel.ecModel
+	                    itemTextStyleDto = new Dto(
+	                        categoryData[i].textStyle, textStyleDto, axisDto.ecDto
 	                    );
 	                }
-	                var textColor = itemTextStyleModel.getTextColor();
+	                var textColor = itemTextStyleDto.getTextColor();
 
 	                var tickCoord = axis.dataToCoord(ticks[i]);
 	                var pos = [
@@ -24903,9 +24903,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                var textEl = new graphic.Text({
 	                    style: {
 	                        text: labels[i],
-	                        textAlign: itemTextStyleModel.get('align', true) || labelLayout.textAlign,
-	                        textVerticalAlign: itemTextStyleModel.get('baseline', true) || labelLayout.verticalAlign,
-	                        textFont: itemTextStyleModel.getFont(),
+	                        textAlign: itemTextStyleDto.get('align', true) || labelLayout.textAlign,
+	                        textVerticalAlign: itemTextStyleDto.get('baseline', true) || labelLayout.verticalAlign,
+	                        textFont: itemTextStyleDto.getFont(),
 	                        fill: typeof textColor === 'function' ? textColor(labelBeforeFormat) : textColor
 	                    },
 	                    position: pos,
@@ -24914,7 +24914,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    z2: 10
 	                });
 	                // Pack data for mouse event
-	                textEl.eventData = makeAxisEventDataBase(axisModel);
+	                textEl.eventData = makeAxisEventDataBase(axisDto);
 	                textEl.eventData.targetType = 'axisLabel';
 	                textEl.eventData.value = labelBeforeFormat;
 
@@ -24935,14 +24935,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // If min or max are user set, we need to check
 	                // If the tick on min(max) are overlap on their neighbour tick
 	                // If they are overlapped, we need to hide the min(max) tick label
-	                if (axisModel.getMin ? axisModel.getMin() : axisModel.get('min')) {
+	                if (axisDto.getMin ? axisDto.getMin() : axisDto.get('min')) {
 	                    var firstLabel = textEls[0];
 	                    var nextLabel = textEls[1];
 	                    if (isTwoLabelOverlapped(firstLabel, nextLabel)) {
 	                        firstLabel.ignore = true;
 	                    }
 	                }
-	                if (axisModel.getMax ? axisModel.getMax() : axisModel.get('max')) {
+	                if (axisDto.getMax ? axisDto.getMax() : axisDto.get('max')) {
 	                    var lastLabel = textEls[textEls.length - 1];
 	                    var prevLabel = textEls[textEls.length - 2];
 	                    if (isTwoLabelOverlapped(prevLabel, lastLabel)) {
@@ -24957,24 +24957,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	         */
 	        axisName: function () {
 	            var opt = this.opt;
-	            var axisModel = this.axisModel;
+	            var axisDto = this.axisDto;
 
 	            var name = this.opt.axisName;
 	            // If name is '', do not get name from axisMode.
 	            if (name == null) {
-	                name = axisModel.get('name');
+	                name = axisDto.get('name');
 	            }
 
 	            if (!name) {
 	                return;
 	            }
 
-	            var nameLocation = axisModel.get('nameLocation');
+	            var nameLocation = axisDto.get('nameLocation');
 	            var nameDirection = opt.nameDirection;
-	            var textStyleModel = axisModel.getModel('nameTextStyle');
-	            var gap = axisModel.get('nameGap') || 0;
+	            var textStyleDto = axisDto.getDto('nameTextStyle');
+	            var gap = axisDto.get('nameGap') || 0;
 
-	            var extent = this.axisModel.axis.getExtent();
+	            var extent = this.axisDto.axis.getExtent();
 	            var gapSignal = extent[0] > extent[1] ? -1 : 1;
 	            var pos = [
 	                nameLocation === 'start'
@@ -24998,19 +24998,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var textEl = new graphic.Text({
 	                style: {
 	                    text: name,
-	                    textFont: textStyleModel.getFont(),
-	                    fill: textStyleModel.getTextColor()
-	                        || axisModel.get('axisLine.lineStyle.color'),
+	                    textFont: textStyleDto.getFont(),
+	                    fill: textStyleDto.getTextColor()
+	                        || axisDto.get('axisLine.lineStyle.color'),
 	                    textAlign: labelLayout.textAlign,
 	                    textVerticalAlign: labelLayout.verticalAlign
 	                },
 	                position: pos,
 	                rotation: labelLayout.rotation,
-	                silent: axisModel.get('silent'),
+	                silent: axisDto.get('silent'),
 	                z2: 1
 	            });
 
-	            textEl.eventData = makeAxisEventDataBase(axisModel);
+	            textEl.eventData = makeAxisEventDataBase(axisDto);
 	            textEl.eventData.targetType = 'axisName';
 	            textEl.eventData.name = name;
 
@@ -25109,8 +25109,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * @static
 	     */
-	    var getInterval = AxisBuilder.getInterval = function (model, labelInterval) {
-	        var interval = model.get('interval');
+	    var getInterval = AxisBuilder.getInterval = function (Dto, labelInterval) {
+	        var interval = Dto.get('interval');
 	        if (interval == null || interval == 'auto') {
 	            interval = labelInterval;
 	        }
@@ -25139,9 +25139,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    echarts.registerLayout(zrUtil.curry(barLayoutGrid, 'bar'));
 	    // Visual coding for legend
-	    echarts.registerVisualCoding('chart', function (ecModel) {
-	        ecModel.eachSeriesByType('bar', function (seriesModel) {
-	            var data = seriesModel.getData();
+	    echarts.registerVisualCoding('chart', function (ecDto) {
+	        ecDto.eachSeriesByType('bar', function (seriesDto) {
+	            var data = seriesDto.getData();
 	            data.setVisual('legendSymbol', 'roundRect');
 	        });
 	    });
@@ -25157,17 +25157,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 
-	    var SeriesModel = __webpack_require__(27);
+	    var SeriesDto = __webpack_require__(27);
 	    var createListFromArray = __webpack_require__(94);
 
-	    module.exports = SeriesModel.extend({
+	    module.exports = SeriesDto.extend({
 
 	        type: 'series.bar',
 
 	        dependencies: ['grid', 'polar'],
 
-	        getInitialData: function (option, ecModel) {
-	            return createListFromArray(option.data, this, ecModel);
+	        getInitialData: function (option, ecDto) {
+	            return createListFromArray(option.data, this, ecDto);
 	        },
 
 	        getMarkerPosition: function (value) {
@@ -25257,32 +25257,32 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        type: 'bar',
 
-	        render: function (seriesModel, ecModel, api) {
-	            var coordinateSystemType = seriesModel.get('coordinateSystem');
+	        render: function (seriesDto, ecDto, api) {
+	            var coordinateSystemType = seriesDto.get('coordinateSystem');
 
 	            if (coordinateSystemType === 'cartesian2d') {
-	                this._renderOnCartesian(seriesModel, ecModel, api);
+	                this._renderOnCartesian(seriesDto, ecDto, api);
 	            }
 
 	            return this.group;
 	        },
 
-	        _renderOnCartesian: function (seriesModel, ecModel, api) {
+	        _renderOnCartesian: function (seriesDto, ecDto, api) {
 	            var group = this.group;
-	            var data = seriesModel.getData();
+	            var data = seriesDto.getData();
 	            var oldData = this._data;
 
-	            var cartesian = seriesModel.coordinateSystem;
+	            var cartesian = seriesDto.coordinateSystem;
 	            var baseAxis = cartesian.getBaseAxis();
 	            var isHorizontal = baseAxis.isHorizontal();
 
-	            var enableAnimation = seriesModel.get('animation');
+	            var enableAnimation = seriesDto.get('animation');
 
 	            var barBorderWidthQuery = ['itemStyle', 'normal', 'barBorderWidth'];
 
 	            function createRect(dataIndex, isUpdate) {
 	                var layout = data.getItemLayout(dataIndex);
-	                var lineWidth = data.getItemModel(dataIndex).get(barBorderWidthQuery) || 0;
+	                var lineWidth = data.getItemDto(dataIndex).get(barBorderWidthQuery) || 0;
 	                fixLayoutWithLineWidth(layout, lineWidth);
 
 	                var rect = new graphic.Rect({
@@ -25297,7 +25297,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    animateTarget[animateProperty] = layout[animateProperty];
 	                    graphic[isUpdate? 'updateProps' : 'initProps'](rect, {
 	                        shape: animateTarget
-	                    }, seriesModel, dataIndex);
+	                    }, seriesDto, dataIndex);
 	                }
 	                return rect;
 	            }
@@ -25327,12 +25327,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    }
 
 	                    var layout = data.getItemLayout(newIndex);
-	                    var lineWidth = data.getItemModel(newIndex).get(barBorderWidthQuery) || 0;
+	                    var lineWidth = data.getItemDto(newIndex).get(barBorderWidthQuery) || 0;
 	                    fixLayoutWithLineWidth(layout, lineWidth);
 
 	                    graphic.updateProps(rect, {
 	                        shape: layout
-	                    }, seriesModel, newIndex);
+	                    }, seriesDto, newIndex);
 
 	                    data.setItemGraphicEl(newIndex, rect);
 
@@ -25348,21 +25348,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            shape: {
 	                                width: 0
 	                            }
-	                        }, seriesModel, idx, function () {
+	                        }, seriesDto, idx, function () {
 	                            group.remove(rect);
 	                        });
 	                    }
 	                })
 	                .execute();
 
-	            this._updateStyle(seriesModel, data, isHorizontal);
+	            this._updateStyle(seriesDto, data, isHorizontal);
 
 	            this._data = data;
 	        },
 
-	        _updateStyle: function (seriesModel, data, isHorizontal) {
-	            function setLabel(style, model, color, labelText, labelPositionOutside) {
-	                graphic.setText(style, model, color);
+	        _updateStyle: function (seriesDto, data, isHorizontal) {
+	            function setLabel(style, Dto, color, labelText, labelPositionOutside) {
+	                graphic.setText(style, Dto, color);
 	                style.text = labelText;
 	                if (style.textPosition === 'outside') {
 	                    style.textPosition = labelPositionOutside;
@@ -25370,37 +25370,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            data.eachItemGraphicEl(function (rect, idx) {
-	                var itemModel = data.getItemModel(idx);
+	                var itemDto = data.getItemDto(idx);
 	                var color = data.getItemVisual(idx, 'color');
 	                var opacity = data.getItemVisual(idx, 'opacity');
 	                var layout = data.getItemLayout(idx);
-	                var itemStyleModel = itemModel.getModel('itemStyle.normal');
+	                var itemStyleDto = itemDto.getDto('itemStyle.normal');
 
-	                var hoverStyle = itemModel.getModel('itemStyle.emphasis').getBarItemStyle();
+	                var hoverStyle = itemDto.getDto('itemStyle.emphasis').getBarItemStyle();
 
-	                rect.setShape('r', itemStyleModel.get('barBorderRadius') || 0);
+	                rect.setShape('r', itemStyleDto.get('barBorderRadius') || 0);
 
 	                rect.useStyle(zrUtil.defaults(
 	                    {
 	                        fill: color,
 	                        opacity: opacity
 	                    },
-	                    itemStyleModel.getBarItemStyle()
+	                    itemStyleDto.getBarItemStyle()
 	                ));
 
 	                var labelPositionOutside = isHorizontal
 	                    ? (layout.height > 0 ? 'bottom' : 'top')
 	                    : (layout.width > 0 ? 'left' : 'right');
 
-	                var labelModel = itemModel.getModel('label.normal');
-	                var hoverLabelModel = itemModel.getModel('label.emphasis');
+	                var labelDto = itemDto.getDto('label.normal');
+	                var hoverLabelDto = itemDto.getDto('label.emphasis');
 	                var rectStyle = rect.style;
-	                if (labelModel.get('show')) {
+	                if (labelDto.get('show')) {
 	                    setLabel(
-	                        rectStyle, labelModel, color,
+	                        rectStyle, labelDto, color,
 	                        zrUtil.retrieve(
-	                            seriesModel.getFormattedLabel(idx, 'normal'),
-	                            seriesModel.getRawValue(idx)
+	                            seriesDto.getFormattedLabel(idx, 'normal'),
+	                            seriesDto.getRawValue(idx)
 	                        ),
 	                        labelPositionOutside
 	                    );
@@ -25408,12 +25408,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                else {
 	                    rectStyle.text = '';
 	                }
-	                if (hoverLabelModel.get('show')) {
+	                if (hoverLabelDto.get('show')) {
 	                    setLabel(
-	                        hoverStyle, hoverLabelModel, color,
+	                        hoverStyle, hoverLabelDto, color,
 	                        zrUtil.retrieve(
-	                            seriesModel.getFormattedLabel(idx, 'emphasis'),
-	                            seriesModel.getRawValue(idx)
+	                            seriesDto.getFormattedLabel(idx, 'emphasis'),
+	                            seriesDto.getRawValue(idx)
 	                        ),
 	                        labelPositionOutside
 	                    );
@@ -25425,9 +25425,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	        },
 
-	        remove: function (ecModel, api) {
+	        remove: function (ecDto, api) {
 	            var group = this.group;
-	            if (ecModel.get('animation')) {
+	            if (ecDto.get('animation')) {
 	                if (this._data) {
 	                    this._data.eachItemGraphicEl(function (el) {
 	                        // Not show text when animating
@@ -25436,7 +25436,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            shape: {
 	                                width: 0
 	                            }
-	                        }, ecModel, el.dataIndex, function () {
+	                        }, ecDto, el.dataIndex, function () {
 	                            group.remove(el);
 	                        });
 	                    });
@@ -25484,16 +25484,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var numberUtil = __webpack_require__(7);
 	    var parsePercent = numberUtil.parsePercent;
 
-	    function getSeriesStackId(seriesModel) {
-	        return seriesModel.get('stack') || '__ec_stack_' + seriesModel.seriesIndex;
+	    function getSeriesStackId(seriesDto) {
+	        return seriesDto.get('stack') || '__ec_stack_' + seriesDto.seriesIndex;
 	    }
 
 	    function calBarWidthAndOffset(barSeries, api) {
 	        // Columns info on each category axis. Key is cartesian name
 	        var columnsMap = {};
 
-	        zrUtil.each(barSeries, function (seriesModel, idx) {
-	            var cartesian = seriesModel.coordinateSystem;
+	        zrUtil.each(barSeries, function (seriesDto, idx) {
+	            var cartesian = seriesDto.coordinateSystem;
 
 	            var baseAxis = cartesian.getBaseAxis();
 
@@ -25508,7 +25508,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var stacks = columnsOnAxis.stacks;
 	            columnsMap[baseAxis.index] = columnsOnAxis;
 
-	            var stackId = getSeriesStackId(seriesModel);
+	            var stackId = getSeriesStackId(seriesDto);
 
 	            if (!stacks[stackId]) {
 	                columnsOnAxis.autoWidthCount++;
@@ -25518,10 +25518,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                maxWidth: 0
 	            };
 
-	            var barWidth = seriesModel.get('barWidth');
-	            var barMaxWidth = seriesModel.get('barMaxWidth');
-	            var barGap = seriesModel.get('barGap');
-	            var barCategoryGap = seriesModel.get('barCategoryGap');
+	            var barWidth = seriesDto.get('barWidth');
+	            var barMaxWidth = seriesDto.get('barMaxWidth');
+	            var barGap = seriesDto.get('barGap');
+	            var barCategoryGap = seriesDto.get('barCategoryGap');
 	            // TODO
 	            if (barWidth && ! stacks[stackId].width) {
 	                barWidth = Math.min(columnsOnAxis.remainedWidth, barWidth);
@@ -25597,37 +25597,37 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    /**
 	     * @param {string} seriesType
-	     * @param {module:echarts/model/Global} ecModel
+	     * @param {module:echarts/Dto/Global} ecDto
 	     * @param {module:echarts/ExtensionAPI} api
 	     */
-	    function barLayoutGrid(seriesType, ecModel, api) {
+	    function barLayoutGrid(seriesType, ecDto, api) {
 
 	        var barWidthAndOffset = calBarWidthAndOffset(
 	            zrUtil.filter(
-	                ecModel.getSeriesByType(seriesType),
-	                function (seriesModel) {
-	                    return !ecModel.isSeriesFiltered(seriesModel)
-	                        && seriesModel.coordinateSystem
-	                        && seriesModel.coordinateSystem.type === 'cartesian2d';
+	                ecDto.getSeriesByType(seriesType),
+	                function (seriesDto) {
+	                    return !ecDto.isSeriesFiltered(seriesDto)
+	                        && seriesDto.coordinateSystem
+	                        && seriesDto.coordinateSystem.type === 'cartesian2d';
 	                }
 	            )
 	        );
 
 	        var lastStackCoords = {};
 
-	        ecModel.eachSeriesByType(seriesType, function (seriesModel) {
+	        ecDto.eachSeriesByType(seriesType, function (seriesDto) {
 
-	            var data = seriesModel.getData();
-	            var cartesian = seriesModel.coordinateSystem;
+	            var data = seriesDto.getData();
+	            var cartesian = seriesDto.coordinateSystem;
 	            var baseAxis = cartesian.getBaseAxis();
 
-	            var stackId = getSeriesStackId(seriesModel);
+	            var stackId = getSeriesStackId(seriesDto);
 	            var columnLayoutInfo = barWidthAndOffset[baseAxis.index][stackId];
 	            var columnOffset = columnLayoutInfo.offset;
 	            var columnWidth = columnLayoutInfo.width;
 	            var valueAxis = cartesian.getOtherAxis(baseAxis);
 
-	            var barMinHeight = seriesModel.get('barMinHeight') || 0;
+	            var barMinHeight = seriesDto.get('barMinHeight') || 0;
 
 	            var valueAxisStart = baseAxis.onZero
 	                ? valueAxis.toGlobalCoord(valueAxis.dataToCoord(0))
@@ -25742,12 +25742,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var List = __webpack_require__(95);
 	    var zrUtil = __webpack_require__(3);
-	    var modelUtil = __webpack_require__(5);
+	    var DtoUtil = __webpack_require__(5);
 	    var completeDimensions = __webpack_require__(97);
 
 	    var dataSelectableMixin = __webpack_require__(135);
 
-	    var PieSeries = __webpack_require__(1).extendSeriesModel({
+	    var PieSeries = __webpack_require__(1).extendSeriesDto({
 
 	        type: 'series.pie',
 
@@ -25772,7 +25772,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.updateSelectedMap(this.option.data);
 	        },
 
-	        getInitialData: function (option, ecModel) {
+	        getInitialData: function (option, ecDto) {
 	            var dimensions = completeDimensions(['value'], option.data);
 	            var list = new List(dimensions, this);
 	            list.initData(option.data);
@@ -25795,7 +25795,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        _defaultLabelLine: function (option) {
 	            // Extend labelLine emphasis
-	            modelUtil.defaultEmphasis(option.labelLine, ['show']);
+	            DtoUtil.defaultEmphasis(option.labelLine, ['show']);
 
 	            var labelLineNormalOpt = option.labelLine.normal;
 	            var labelLineEmphasisOpt = option.labelLine.emphasis;
@@ -25963,28 +25963,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var zrUtil = __webpack_require__(3);
 
 	    /**
-	     * @param {module:echarts/model/Series} seriesModel
+	     * @param {module:echarts/Dto/Series} seriesDto
 	     * @param {boolean} hasAnimation
 	     * @inner
 	     */
-	    function updateDataSelected(uid, seriesModel, hasAnimation, api) {
-	        var data = seriesModel.getData();
+	    function updateDataSelected(uid, seriesDto, hasAnimation, api) {
+	        var data = seriesDto.getData();
 	        var dataIndex = this.dataIndex;
 	        var name = data.getName(dataIndex);
-	        var selectedOffset = seriesModel.get('selectedOffset');
+	        var selectedOffset = seriesDto.get('selectedOffset');
 
 	        api.dispatchAction({
 	            type: 'pieToggleSelect',
 	            from: uid,
 	            name: name,
-	            seriesId: seriesModel.id
+	            seriesId: seriesDto.id
 	        });
 
 	        data.each(function (idx) {
 	            toggleItemSelected(
 	                data.getItemGraphicEl(idx),
 	                data.getItemLayout(idx),
-	                seriesModel.isSelected(data.getName(idx)),
+	                seriesDto.isSelected(data.getName(idx)),
 	                selectedOffset,
 	                hasAnimation
 	            );
@@ -26055,16 +26055,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var piePieceProto = PiePiece.prototype;
 
-	    function getLabelStyle(data, idx, state, labelModel, labelPosition) {
-	        var textStyleModel = labelModel.getModel('textStyle');
+	    function getLabelStyle(data, idx, state, labelDto, labelPosition) {
+	        var textStyleDto = labelDto.getDto('textStyle');
 	        var isLabelInside = labelPosition === 'inside' || labelPosition === 'inner';
 	        return {
-	            fill: textStyleModel.getTextColor()
+	            fill: textStyleDto.getTextColor()
 	                || (isLabelInside ? '#fff' : data.getItemVisual(idx, 'color')),
 	            opacity: data.getItemVisual(idx, 'opacity'),
-	            textFont: textStyleModel.getFont(),
+	            textFont: textStyleDto.getFont(),
 	            text: zrUtil.retrieve(
-	                data.hostModel.getFormattedLabel(idx, state), data.getName(idx)
+	                data.hostDto.getFormattedLabel(idx, state), data.getName(idx)
 	            )
 	        };
 	    }
@@ -26073,8 +26073,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var sector = this.childAt(0);
 
-	        var seriesModel = data.hostModel;
-	        var itemModel = data.getItemModel(idx);
+	        var seriesDto = data.hostDto;
+	        var itemDto = data.getItemDto(idx);
 	        var layout = data.getItemLayout(idx);
 	        var sectorShape = zrUtil.extend({}, layout);
 	        sectorShape.label = null;
@@ -26085,16 +26085,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	                shape: {
 	                    endAngle: layout.endAngle
 	                }
-	            }, seriesModel, idx);
+	            }, seriesDto, idx);
 	        }
 	        else {
 	            graphic.updateProps(sector, {
 	                shape: sectorShape
-	            }, seriesModel, idx);
+	            }, seriesDto, idx);
 	        }
 
 	        // Update common style
-	        var itemStyleModel = itemModel.getModel('itemStyle');
+	        var itemStyleDto = itemDto.getDto('itemStyle');
 	        var visualColor = data.getItemVisual(idx, 'color');
 
 	        sector.useStyle(
@@ -26102,18 +26102,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	                {
 	                    fill: visualColor
 	                },
-	                itemStyleModel.getModel('normal').getItemStyle()
+	                itemStyleDto.getDto('normal').getItemStyle()
 	            )
 	        );
-	        sector.hoverStyle = itemStyleModel.getModel('emphasis').getItemStyle();
+	        sector.hoverStyle = itemStyleDto.getDto('emphasis').getItemStyle();
 
 	        // Toggle selected
 	        toggleItemSelected(
 	            this,
 	            data.getItemLayout(idx),
-	            itemModel.get('selected'),
-	            seriesModel.get('selectedOffset'),
-	            seriesModel.get('animation')
+	            itemDto.get('selected'),
+	            seriesDto.get('selectedOffset'),
+	            seriesDto.get('animation')
 	        );
 
 	        function onEmphasis() {
@@ -26135,7 +26135,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }, 300, 'elasticOut');
 	        }
 	        sector.off('mouseover').off('mouseout').off('emphasis').off('normal');
-	        if (itemModel.get('hoverAnimation')) {
+	        if (itemDto.get('hoverAnimation')) {
 	            sector
 	                .on('mouseover', onEmphasis)
 	                .on('mouseout', onNormal)
@@ -26153,8 +26153,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var labelLine = this.childAt(1);
 	        var labelText = this.childAt(2);
 
-	        var seriesModel = data.hostModel;
-	        var itemModel = data.getItemModel(idx);
+	        var seriesDto = data.hostDto;
+	        var itemDto = data.getItemDto(idx);
 	        var layout = data.getItemLayout(idx);
 	        var labelLayout = layout.label;
 	        var visualColor = data.getItemVisual(idx, 'color');
@@ -26165,14 +26165,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    [labelLayout.x, labelLayout.y], [labelLayout.x, labelLayout.y], [labelLayout.x, labelLayout.y]
 	                ]
 	            }
-	        }, seriesModel, idx);
+	        }, seriesDto, idx);
 
 	        graphic.updateProps(labelText, {
 	            style: {
 	                x: labelLayout.x,
 	                y: labelLayout.y
 	            }
-	        }, seriesModel, idx);
+	        }, seriesDto, idx);
 	        labelText.attr({
 	            style: {
 	                textVerticalAlign: labelLayout.verticalAlign,
@@ -26184,31 +26184,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	            z2: 10
 	        });
 
-	        var labelModel = itemModel.getModel('label.normal');
-	        var labelHoverModel = itemModel.getModel('label.emphasis');
-	        var labelLineModel = itemModel.getModel('labelLine.normal');
-	        var labelLineHoverModel = itemModel.getModel('labelLine.emphasis');
-	        var labelPosition = labelModel.get('position') || labelHoverModel.get('position');
+	        var labelDto = itemDto.getDto('label.normal');
+	        var labelHoverDto = itemDto.getDto('label.emphasis');
+	        var labelLineDto = itemDto.getDto('labelLine.normal');
+	        var labelLineHoverDto = itemDto.getDto('labelLine.emphasis');
+	        var labelPosition = labelDto.get('position') || labelHoverDto.get('position');
 
-	        labelText.setStyle(getLabelStyle(data, idx, 'normal', labelModel, labelPosition));
+	        labelText.setStyle(getLabelStyle(data, idx, 'normal', labelDto, labelPosition));
 
-	        labelText.ignore = labelText.normalIgnore = !labelModel.get('show');
-	        labelText.hoverIgnore = !labelHoverModel.get('show');
+	        labelText.ignore = labelText.normalIgnore = !labelDto.get('show');
+	        labelText.hoverIgnore = !labelHoverDto.get('show');
 
-	        labelLine.ignore = labelLine.normalIgnore = !labelLineModel.get('show');
-	        labelLine.hoverIgnore = !labelLineHoverModel.get('show');
+	        labelLine.ignore = labelLine.normalIgnore = !labelLineDto.get('show');
+	        labelLine.hoverIgnore = !labelLineHoverDto.get('show');
 
 	        // Default use item visual color
 	        labelLine.setStyle({
 	            stroke: visualColor,
 	            opacity: data.getItemVisual(idx, 'opacity')
 	        });
-	        labelLine.setStyle(labelLineModel.getModel('lineStyle').getLineStyle());
+	        labelLine.setStyle(labelLineDto.getDto('lineStyle').getLineStyle());
 
-	        labelText.hoverStyle = getLabelStyle(data, idx, 'emphasis', labelHoverModel, labelPosition);
-	        labelLine.hoverStyle = labelLineHoverModel.getModel('lineStyle').getLineStyle();
+	        labelText.hoverStyle = getLabelStyle(data, idx, 'emphasis', labelHoverDto, labelPosition);
+	        labelLine.hoverStyle = labelLineHoverDto.getDto('lineStyle').getLineStyle();
 
-	        var smooth = labelLineModel.get('smooth');
+	        var smooth = labelLineDto.get('smooth');
 	        if (smooth && smooth === true) {
 	            smooth = 0.4;
 	        }
@@ -26230,23 +26230,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._sectorGroup = sectorGroup;
 	        },
 
-	        render: function (seriesModel, ecModel, api, payload) {
+	        render: function (seriesDto, ecDto, api, payload) {
 	            if (payload && (payload.from === this.uid)) {
 	                return;
 	            }
 
-	            var data = seriesModel.getData();
+	            var data = seriesDto.getData();
 	            var oldData = this._data;
 	            var group = this.group;
 
-	            var hasAnimation = ecModel.get('animation');
+	            var hasAnimation = ecDto.get('animation');
 	            var isFirstRender = !oldData;
 
 	            var onSectorClick = zrUtil.curry(
-	                updateDataSelected, this.uid, seriesModel, hasAnimation, api
+	                updateDataSelected, this.uid, seriesDto, hasAnimation, api
 	            );
 
-	            var selectedMode = seriesModel.get('selectedMode');
+	            var selectedMode = seriesDto.get('selectedMode');
 
 	            data.diff(oldData)
 	                .add(function (idx) {
@@ -26285,7 +26285,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                var removeClipPath = zrUtil.bind(group.removeClipPath, group);
 	                group.setClipPath(this._createClipPath(
-	                    shape.cx, shape.cy, r, shape.startAngle, shape.clockwise, removeClipPath, seriesModel
+	                    shape.cx, shape.cy, r, shape.startAngle, shape.clockwise, removeClipPath, seriesDto
 	                ));
 	            }
 
@@ -26293,7 +26293,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 
 	        _createClipPath: function (
-	            cx, cy, r, startAngle, clockwise, cb, seriesModel
+	            cx, cy, r, startAngle, clockwise, cb, seriesDto
 	        ) {
 	            var clipPath = new graphic.Sector({
 	                shape: {
@@ -26311,7 +26311,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                shape: {
 	                    endAngle: startAngle + (clockwise ? 1 : -1) * Math.PI * 2
 	                }
-	            }, seriesModel, cb);
+	            }, seriesDto, cb);
 
 	            return clipPath;
 	        }
@@ -26335,19 +26335,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	             * @property {string} seriesName
 	             * @property {string} name
 	             */
-	            echarts.registerAction(actionInfo, function (payload, ecModel) {
+	            echarts.registerAction(actionInfo, function (payload, ecDto) {
 	                var selected = {};
-	                ecModel.eachComponent(
+	                ecDto.eachComponent(
 	                    {mainType: 'series', subType: seriesType, query: payload},
-	                    function (seriesModel) {
-	                        if (seriesModel[actionInfo.method]) {
-	                            seriesModel[actionInfo.method](payload.name);
+	                    function (seriesDto) {
+	                        if (seriesDto[actionInfo.method]) {
+	                            seriesDto[actionInfo.method](payload.name);
 	                        }
-	                        var data = seriesModel.getData();
+	                        var data = seriesDto.getData();
 	                        // Create selected map
 	                        data.each(function (idx) {
 	                            var name = data.getName(idx);
-	                            selected[name] = seriesModel.isSelected(name) || false;
+	                            selected[name] = seriesDto.isSelected(name) || false;
 	                        });
 	                    }
 	                );
@@ -26367,23 +26367,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Pick color from palette for each data item
 
 
-	    module.exports = function (seriesType, ecModel) {
-	        var globalColorList = ecModel.get('color');
+	    module.exports = function (seriesType, ecDto) {
+	        var globalColorList = ecDto.get('color');
 	        var offset = 0;
-	        ecModel.eachRawSeriesByType(seriesType, function (seriesModel) {
-	            var colorList = seriesModel.get('color', true);
-	            var dataAll = seriesModel.getRawData();
-	            if (!ecModel.isSeriesFiltered(seriesModel)) {
-	                var data = seriesModel.getData();
+	        ecDto.eachRawSeriesByType(seriesType, function (seriesDto) {
+	            var colorList = seriesDto.get('color', true);
+	            var dataAll = seriesDto.getRawData();
+	            if (!ecDto.isSeriesFiltered(seriesDto)) {
+	                var data = seriesDto.getData();
 	                data.each(function (idx) {
-	                    var itemModel = data.getItemModel(idx);
+	                    var itemDto = data.getItemDto(idx);
 	                    var rawIdx = data.getRawIndex(idx);
 	                    // If series.itemStyle.normal.color is a function. itemVisual may be encoded
 	                    var singleDataColor = data.getItemVisual(idx, 'color', true);
 	                    if (!singleDataColor) {
 	                        var paletteColor = colorList ? colorList[rawIdx % colorList.length]
 	                            : globalColorList[(rawIdx + offset) % globalColorList.length];
-	                        var color = itemModel.get('itemStyle.normal.color') || paletteColor;
+	                        var color = itemDto.get('itemStyle.normal.color') || paletteColor;
 	                        // Legend may use the visual info in data before processed
 	                        dataAll.setItemVisual(rawIdx, 'color', color);
 	                        data.setItemVisual(idx, 'color', color);
@@ -26415,10 +26415,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var PI2 = Math.PI * 2;
 	    var RADIAN = Math.PI / 180;
 
-	    module.exports = function (seriesType, ecModel, api) {
-	        ecModel.eachSeriesByType(seriesType, function (seriesModel) {
-	            var center = seriesModel.get('center');
-	            var radius = seriesModel.get('radius');
+	    module.exports = function (seriesType, ecDto, api) {
+	        ecDto.eachSeriesByType(seriesType, function (seriesDto) {
+	            var center = seriesDto.get('center');
+	            var radius = seriesDto.get('radius');
 
 	            if (!zrUtil.isArray(radius)) {
 	                radius = [0, radius];
@@ -26435,19 +26435,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var r0 = parsePercent(radius[0], size / 2);
 	            var r = parsePercent(radius[1], size / 2);
 
-	            var data = seriesModel.getData();
+	            var data = seriesDto.getData();
 
-	            var startAngle = -seriesModel.get('startAngle') * RADIAN;
+	            var startAngle = -seriesDto.get('startAngle') * RADIAN;
 
-	            var minAngle = seriesModel.get('minAngle') * RADIAN;
+	            var minAngle = seriesDto.get('minAngle') * RADIAN;
 
 	            var sum = data.getSum('value');
 	            // Sum may be 0
 	            var unitRadian = Math.PI / (sum || data.count()) * 2;
 
-	            var clockwise = seriesModel.get('clockwise');
+	            var clockwise = seriesDto.get('clockwise');
 
-	            var roseType = seriesModel.get('roseType');
+	            var roseType = seriesDto.get('roseType');
 
 	            // [0...max]
 	            var extent = data.getDataExtent('value');
@@ -26522,7 +26522,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }
 
-	            labelLayout(seriesModel, r, width, height);
+	            labelLayout(seriesDto, r, width, height);
 	        });
 	    };
 
@@ -26665,8 +26665,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    module.exports = function (seriesModel, r, viewWidth, viewHeight) {
-	        var data = seriesModel.getData();
+	    module.exports = function (seriesDto, r, viewWidth, viewHeight) {
+	        var data = seriesDto.getData();
 	        var labelLayoutList = [];
 	        var cx;
 	        var cy;
@@ -26675,14 +26675,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        data.each(function (idx) {
 	            var layout = data.getItemLayout(idx);
 
-	            var itemModel = data.getItemModel(idx);
-	            var labelModel = itemModel.getModel('label.normal');
+	            var itemDto = data.getItemDto(idx);
+	            var labelDto = itemDto.getDto('label.normal');
 	            // Use position in normal or emphasis
-	            var labelPosition = labelModel.get('position') || itemModel.get('label.emphasis.position');
+	            var labelPosition = labelDto.get('position') || itemDto.get('label.emphasis.position');
 
-	            var labelLineModel = itemModel.getModel('labelLine.normal');
-	            var labelLineLen = labelLineModel.get('length');
-	            var labelLineLen2 = labelLineModel.get('length2');
+	            var labelLineDto = itemDto.getDto('labelLine.normal');
+	            var labelLineLen = labelLineDto.get('length');
+	            var labelLineLen2 = labelLineDto.get('length2');
 
 	            var midAngle = (layout.startAngle + layout.endAngle) / 2;
 	            var dx = Math.cos(midAngle);
@@ -26723,11 +26723,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                textAlign = isLabelInside ? 'center' : (dx > 0 ? 'left' : 'right');
 	            }
-	            var font = labelModel.getModel('textStyle').getFont();
+	            var font = labelDto.getDto('textStyle').getFont();
 
-	            var labelRotate = labelModel.get('rotate')
+	            var labelRotate = labelDto.get('rotate')
 	                ? (dx < 0 ? -midAngle + Math.PI : -midAngle) : 0;
-	            var text = seriesModel.getFormattedLabel(idx, 'normal')
+	            var text = seriesDto.getFormattedLabel(idx, 'normal')
 	                        || data.getName(idx);
 	            var textRect = textContain.getBoundingRect(
 	                text, font, textAlign, 'top'
@@ -26752,7 +26752,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                labelLayoutList.push(layout.label);
 	            }
 	        });
-	        if (!hasLabelRotate && seriesModel.get('avoidLabelOverlap')) {
+	        if (!hasLabelRotate && seriesDto.get('avoidLabelOverlap')) {
 	            avoidOverlap(labelLayoutList, cx, cy, r, viewWidth, viewHeight);
 	        }
 	    };
@@ -26763,20 +26763,20 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	
-	    module.exports = function (seriesType, ecModel) {
-	        var legendModels = ecModel.findComponents({
+	    module.exports = function (seriesType, ecDto) {
+	        var legendDtos = ecDto.findComponents({
 	            mainType: 'legend'
 	        });
-	        if (!legendModels || !legendModels.length) {
+	        if (!legendDtos || !legendDtos.length) {
 	            return;
 	        }
-	        ecModel.eachSeriesByType(seriesType, function (series) {
+	        ecDto.eachSeriesByType(seriesType, function (series) {
 	            var data = series.getData();
 	            data.filterSelf(function (idx) {
 	                var name = data.getName(idx);
 	                // If in any legend component the status is not selected.
-	                for (var i = 0; i < legendModels.length; i++) {
-	                    if (!legendModels[i].isSelected(name)) {
+	                for (var i = 0; i < legendDtos.length; i++) {
+	                    if (!legendDtos[i].isSelected(name)) {
 	                        return false;
 	                    }
 	                }
@@ -26817,16 +26817,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	    var createListFromArray = __webpack_require__(94);
-	    var SeriesModel = __webpack_require__(27);
+	    var SeriesDto = __webpack_require__(27);
 
-	    module.exports = SeriesModel.extend({
+	    module.exports = SeriesDto.extend({
 
 	        type: 'series.scatter',
 
 	        dependencies: ['grid', 'polar'],
 
-	        getInitialData: function (option, ecModel) {
-	            var list = createListFromArray(option.data, this, ecModel);
+	        getInitialData: function (option, ecDto) {
+	            var list = createListFromArray(option.data, this, ecDto);
 	            return list;
 	        },
 
@@ -26893,13 +26893,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._largeSymbolDraw = new LargeSymbolDraw();
 	        },
 
-	        render: function (seriesModel, ecModel, api) {
-	            var data = seriesModel.getData();
+	        render: function (seriesDto, ecDto, api) {
+	            var data = seriesDto.getData();
 	            var largeSymbolDraw = this._largeSymbolDraw;
 	            var normalSymbolDraw = this._normalSymbolDraw;
 	            var group = this.group;
 
-	            var symbolDraw = seriesModel.get('large') && data.count() > seriesModel.get('largeThreshold')
+	            var symbolDraw = seriesDto.get('large') && data.count() > seriesDto.get('largeThreshold')
 	                ? largeSymbolDraw : normalSymbolDraw;
 
 	            this._symbolDraw = symbolDraw;
@@ -26912,11 +26912,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            );
 	        },
 
-	        updateLayout: function (seriesModel) {
-	            this._symbolDraw.updateLayout(seriesModel);
+	        updateLayout: function (seriesDto) {
+	            this._symbolDraw.updateLayout(seriesDto);
 	        },
 
-	        remove: function (ecModel, api) {
+	        remove: function (ecDto, api) {
 	            this._symbolDraw && this._symbolDraw.remove(api, true);
 	        }
 	    });
@@ -26987,7 +26987,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var symbolEl = this._symbolEl;
 
-	        var seriesModel = data.hostModel;
+	        var seriesDto = data.hostDto;
 
 	        symbolEl.setShape({
 	            points: data.mapArray(data.getItemLayout),
@@ -27010,7 +27010,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        symbolEl.setColor = symbolEl.symbolProxy.setColor;
 
 	        symbolEl.useStyle(
-	            seriesModel.getModel('itemStyle.normal').getItemStyle(['color'])
+	            seriesDto.getDto('itemStyle.normal').getItemStyle(['color'])
 	        );
 
 	        var visualColor = data.getVisual('color');
@@ -27022,8 +27022,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.group.add(this._symbolEl);
 	    };
 
-	    largeSymbolProto.updateLayout = function (seriesModel) {
-	        var data = seriesModel.getData();
+	    largeSymbolProto.updateLayout = function (seriesDto) {
+	        var data = seriesDto.getData();
 	        this._symbolEl.setShape({
 	            points: data.mapArray(data.getItemLayout)
 	        });
@@ -27615,7 +27615,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    lineProto.beforeUpdate = updateSymbolAndLabelBeforeLineUpdate;
 
 	    lineProto._createLine = function (lineData, idx) {
-	        var seriesModel = lineData.hostModel;
+	        var seriesDto = lineData.hostDto;
 	        var linePoints = lineData.getItemLayout(idx);
 
 	        var line = createLine(linePoints);
@@ -27624,7 +27624,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            shape: {
 	                percent: 1
 	            }
-	        }, seriesModel, idx);
+	        }, seriesDto, idx);
 
 	        this.add(line);
 
@@ -27646,7 +27646,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    lineProto.updateData = function (lineData, idx) {
-	        var seriesModel = lineData.hostModel;
+	        var seriesDto = lineData.hostDto;
 
 	        var line = this.childOfName('line');
 	        var linePoints = lineData.getItemLayout(idx);
@@ -27654,7 +27654,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            shape: {}
 	        };
 	        setLinePoints(target.shape, linePoints);
-	        graphic.updateProps(line, target, seriesModel, idx);
+	        graphic.updateProps(line, target, seriesDto, idx);
 
 	        zrUtil.each(SYMBOL_CATEGORIES, function (symbolCategory) {
 	            var symbolType = lineData.getItemVisual(idx, symbolCategory);
@@ -27672,17 +27672,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    lineProto._updateCommonStl = function (lineData, idx) {
-	        var seriesModel = lineData.hostModel;
+	        var seriesDto = lineData.hostDto;
 
 	        var line = this.childOfName('line');
-	        var itemModel = lineData.getItemModel(idx);
+	        var itemDto = lineData.getItemDto(idx);
 
-	        var labelModel = itemModel.getModel('label.normal');
-	        var textStyleModel = labelModel.getModel('textStyle');
-	        var labelHoverModel = itemModel.getModel('label.emphasis');
-	        var textStyleHoverModel = labelHoverModel.getModel('textStyle');
+	        var labelDto = itemDto.getDto('label.normal');
+	        var textStyleDto = labelDto.getDto('textStyle');
+	        var labelHoverDto = itemDto.getDto('label.emphasis');
+	        var textStyleHoverDto = labelHoverDto.getDto('textStyle');
 
-	        var defaultText = numberUtil.round(seriesModel.getRawValue(idx));
+	        var defaultText = numberUtil.round(seriesDto.getRawValue(idx));
 	        if (isNaN(defaultText)) {
 	            // Use name
 	            defaultText = lineData.getName(idx);
@@ -27693,35 +27693,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	                fill: 'none',
 	                stroke: lineData.getItemVisual(idx, 'color')
 	            },
-	            itemModel.getModel('lineStyle.normal').getLineStyle()
+	            itemDto.getDto('lineStyle.normal').getLineStyle()
 	        ));
-	        line.hoverStyle = itemModel.getModel('lineStyle.emphasis').getLineStyle();
+	        line.hoverStyle = itemDto.getDto('lineStyle.emphasis').getLineStyle();
 	        var defaultColor = lineData.getItemVisual(idx, 'color') || '#000';
 	        var label = this.childOfName('label');
 	        // label.afterUpdate = lineAfterUpdate;
 	        label.setStyle({
-	            text: labelModel.get('show')
+	            text: labelDto.get('show')
 	                ? zrUtil.retrieve(
-	                    seriesModel.getFormattedLabel(idx, 'normal', lineData.dataType),
+	                    seriesDto.getFormattedLabel(idx, 'normal', lineData.dataType),
 	                    defaultText
 	                )
 	                : '',
-	            textFont: textStyleModel.getFont(),
-	            fill: textStyleModel.getTextColor() || defaultColor
+	            textFont: textStyleDto.getFont(),
+	            fill: textStyleDto.getTextColor() || defaultColor
 	        });
 	        label.hoverStyle = {
-	            text: labelHoverModel.get('show')
+	            text: labelHoverDto.get('show')
 	                ? zrUtil.retrieve(
-	                    seriesModel.getFormattedLabel(idx, 'emphasis', lineData.dataType),
+	                    seriesDto.getFormattedLabel(idx, 'emphasis', lineData.dataType),
 	                    defaultText
 	                )
 	                : '',
-	            textFont: textStyleHoverModel.getFont(),
-	            fill: textStyleHoverModel.getTextColor() || defaultColor
+	            textFont: textStyleHoverDto.getFont(),
+	            fill: textStyleHoverDto.getTextColor() || defaultColor
 	        };
-	        label.__textAlign = textStyleModel.get('align');
-	        label.__verticalAlign = textStyleModel.get('baseline');
-	        label.__position = labelModel.get('position');
+	        label.__textAlign = textStyleDto.get('align');
+	        label.__verticalAlign = textStyleDto.get('baseline');
+	        label.__position = labelDto.get('position');
 
 	        label.ignore = !label.style.text && !label.hoverStyle.text;
 
@@ -28274,9 +28274,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	    var zrUtil = __webpack_require__(3);
-	    var Model = __webpack_require__(8);
+	    var Dto = __webpack_require__(8);
 
-	    var LegendModel = __webpack_require__(1).extendComponentModel({
+	    var LegendDto = __webpack_require__(1).extendComponentDto({
 
 	        type: 'legend',
 
@@ -28287,12 +28287,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            ignoreSize: true
 	        },
 
-	        init: function (option, parentModel, ecModel) {
-	            this.mergeDefaultAndTheme(option, ecModel);
+	        init: function (option, parentDto, ecDto) {
+	            this.mergeDefaultAndTheme(option, ecDto);
 
 	            option.selected = option.selected || {};
 
-	            this._updateData(ecModel);
+	            this._updateData(ecDto);
 
 	            var legendData = this._data;
 	            // If has any selected in option.selected
@@ -28312,28 +28312,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 
 	        mergeOption: function (option) {
-	            LegendModel.superCall(this, 'mergeOption', option);
+	            LegendDto.superCall(this, 'mergeOption', option);
 
-	            this._updateData(this.ecModel);
+	            this._updateData(this.ecDto);
 	        },
 
-	        _updateData: function (ecModel) {
+	        _updateData: function (ecDto) {
 	            var legendData = zrUtil.map(this.get('data') || [], function (dataItem) {
 	                if (typeof dataItem === 'string') {
 	                    dataItem = {
 	                        name: dataItem
 	                    };
 	                }
-	                return new Model(dataItem, this, this.ecModel);
+	                return new Dto(dataItem, this, this.ecDto);
 	            }, this);
 	            this._data = legendData;
 
-	            var availableNames = zrUtil.map(ecModel.getSeries(), function (series) {
+	            var availableNames = zrUtil.map(ecDto.getSeries(), function (series) {
 	                return series.name;
 	            });
-	            ecModel.eachSeries(function (seriesModel) {
-	                if (seriesModel.legendDataProvider) {
-	                    var data = seriesModel.legendDataProvider();
+	            ecDto.eachSeries(function (seriesDto) {
+	                if (seriesDto.legendDataProvider) {
+	                    var data = seriesDto.legendDataProvider();
 	                    availableNames = availableNames.concat(data.mapArray(data.getName));
 	                }
 	            });
@@ -28345,7 +28345,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 
 	        /**
-	         * @return {Array.<module:echarts/model/Model>}
+	         * @return {Array.<module:echarts/Dto/Dto>}
 	         */
 	        getData: function () {
 	            return this._data;
@@ -28447,7 +28447,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    });
 
-	    module.exports = LegendModel;
+	    module.exports = LegendDto;
 
 
 /***/ },
@@ -28462,31 +28462,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var echarts = __webpack_require__(1);
 	    var zrUtil = __webpack_require__(3);
 
-	    function legendSelectActionHandler(methodName, payload, ecModel) {
+	    function legendSelectActionHandler(methodName, payload, ecDto) {
 	        var selectedMap = {};
 	        var isToggleSelect = methodName === 'toggleSelected';
 	        var isSelected;
 	        // Update all legend components
-	        ecModel.eachComponent('legend', function (legendModel) {
+	        ecDto.eachComponent('legend', function (legendDto) {
 	            if (isToggleSelect && isSelected != null) {
 	                // Force other legend has same selected status
 	                // Or the first is toggled to true and other are toggled to false
 	                // In the case one legend has some item unSelected in option. And if other legend
 	                // doesn't has the item, they will assume it is selected.
-	                legendModel[isSelected ? 'select' : 'unSelect'](payload.name);
+	                legendDto[isSelected ? 'select' : 'unSelect'](payload.name);
 	            }
 	            else {
-	                legendModel[methodName](payload.name);
-	                isSelected = legendModel.isSelected(payload.name);
+	                legendDto[methodName](payload.name);
+	                isSelected = legendDto.isSelected(payload.name);
 	            }
-	            var legendData = legendModel.getData();
-	            zrUtil.each(legendData, function (model) {
-	                var name = model.get('name');
+	            var legendData = legendDto.getData();
+	            zrUtil.each(legendData, function (Dto) {
+	                var name = Dto.get('name');
 	                // Wrap element
 	                if (name === '\n' || name === '') {
 	                    return;
 	                }
-	                var isItemSelected = legendModel.isSelected(name);
+	                var isItemSelected = legendDto.isSelected(name);
 	                if (name in selectedMap) {
 	                    // Unselected if any legend is unselected
 	                    selectedMap[name] = selectedMap[name] && isItemSelected;
@@ -28559,18 +28559,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	    }
 
-	    function dispatchHighlightAction(seriesModel, dataName, api) {
-	        seriesModel.get('legendHoverLink') && api.dispatchAction({
+	    function dispatchHighlightAction(seriesDto, dataName, api) {
+	        seriesDto.get('legendHoverLink') && api.dispatchAction({
 	            type: 'highlight',
-	            seriesName: seriesModel.name,
+	            seriesName: seriesDto.name,
 	            name: dataName
 	        });
 	    }
 
-	    function dispatchDownplayAction(seriesModel, dataName, api) {
-	        seriesModel.get('legendHoverLink') && api.dispatchAction({
+	    function dispatchDownplayAction(seriesDto, dataName, api) {
+	        seriesDto.get('legendHoverLink') && api.dispatchAction({
 	            type: 'downplay',
-	            seriesName: seriesModel.name,
+	            seriesName: seriesDto.name,
 	            name: dataName
 	        });
 	    }
@@ -28583,27 +28583,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._symbolTypeStore = {};
 	        },
 
-	        render: function (legendModel, ecModel, api) {
+	        render: function (legendDto, ecDto, api) {
 	            var group = this.group;
 	            group.removeAll();
 
-	            if (!legendModel.get('show')) {
+	            if (!legendDto.get('show')) {
 	                return;
 	            }
 
-	            var selectMode = legendModel.get('selectedMode');
-	            var itemAlign = legendModel.get('align');
+	            var selectMode = legendDto.get('selectedMode');
+	            var itemAlign = legendDto.get('align');
 
 	            if (itemAlign === 'auto') {
-	                itemAlign = (legendModel.get('left') === 'right'
-	                    && legendModel.get('orient') === 'vertical')
+	                itemAlign = (legendDto.get('left') === 'right'
+	                    && legendDto.get('orient') === 'vertical')
 	                    ? 'right' : 'left';
 	            }
 
 	            var legendDrawedMap = {};
 
-	            zrUtil.each(legendModel.getData(), function (itemModel) {
-	                var name = itemModel.get('name');
+	            zrUtil.each(legendDto.getData(), function (itemDto) {
+	                var name = itemDto.get('name');
 
 	                // Use empty string or \n as a newline string
 	                if (name === '' || name === '\n') {
@@ -28613,7 +28613,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    return;
 	                }
 
-	                var seriesModel = ecModel.getSeriesByName(name)[0];
+	                var seriesDto = ecDto.getSeriesByName(name)[0];
 
 	                if (legendDrawedMap[name]) {
 	                    // Series not exists
@@ -28621,14 +28621,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                // Series legend
-	                if (seriesModel) {
-	                    var data = seriesModel.getData();
+	                if (seriesDto) {
+	                    var data = seriesDto.getData();
 	                    var color = data.getVisual('color');
 
 	                    // If color is a callback function
 	                    if (typeof color === 'function') {
 	                        // Use the first data
-	                        color = color(seriesModel.getDataParams(0));
+	                        color = color(seriesDto.getDataParams(0));
 	                    }
 
 	                    // Using rect symbol defaultly
@@ -28636,27 +28636,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    var symbolType = data.getVisual('symbol');
 
 	                    var itemGroup = this._createItem(
-	                        name, itemModel, legendModel,
+	                        name, itemDto, legendDto,
 	                        legendSymbolType, symbolType,
 	                        itemAlign, color,
 	                        selectMode
 	                    );
 
 	                    itemGroup.on('click', curry(dispatchSelectAction, name, api))
-	                        .on('mouseover', curry(dispatchHighlightAction, seriesModel, '', api))
-	                        .on('mouseout', curry(dispatchDownplayAction, seriesModel, '', api));
+	                        .on('mouseover', curry(dispatchHighlightAction, seriesDto, '', api))
+	                        .on('mouseout', curry(dispatchDownplayAction, seriesDto, '', api));
 
 	                    legendDrawedMap[name] = true;
 	                }
 	                else {
 	                    // Data legend of pie, funnel
-	                    ecModel.eachRawSeries(function (seriesModel) {
+	                    ecDto.eachRawSeries(function (seriesDto) {
 	                        // In case multiple series has same data name
 	                        if (legendDrawedMap[name]) {
 	                            return;
 	                        }
-	                        if (seriesModel.legendDataProvider) {
-	                            var data = seriesModel.legendDataProvider();
+	                        if (seriesDto.legendDataProvider) {
+	                            var data = seriesDto.legendDataProvider();
 	                            var idx = data.indexOfName(name);
 	                            if (idx < 0) {
 	                                return;
@@ -28667,7 +28667,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            var legendSymbolType = 'roundRect';
 
 	                            var itemGroup = this._createItem(
-	                                name, itemModel, legendModel,
+	                                name, itemDto, legendDto,
 	                                legendSymbolType, null,
 	                                itemAlign, color,
 	                                selectMode
@@ -28675,8 +28675,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                            itemGroup.on('click', curry(dispatchSelectAction, name, api))
 	                                // FIXME Should not specify the series name
-	                                .on('mouseover', curry(dispatchHighlightAction, seriesModel, name, api))
-	                                .on('mouseout', curry(dispatchDownplayAction, seriesModel, name, api));
+	                                .on('mouseover', curry(dispatchHighlightAction, seriesDto, name, api))
+	                                .on('mouseout', curry(dispatchDownplayAction, seriesDto, name, api));
 
 	                            legendDrawedMap[name] = true;
 	                        }
@@ -28684,26 +28684,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }, this);
 
-	            listComponentHelper.layout(group, legendModel, api);
+	            listComponentHelper.layout(group, legendDto, api);
 	            // Render background after group is layout
 	            // FIXME
-	            listComponentHelper.addBackground(group, legendModel);
+	            listComponentHelper.addBackground(group, legendDto);
 	        },
 
 	        _createItem: function (
-	            name, itemModel, legendModel,
+	            name, itemDto, legendDto,
 	            legendSymbolType, symbolType,
 	            itemAlign, color, selectMode
 	        ) {
-	            var itemWidth = legendModel.get('itemWidth');
-	            var itemHeight = legendModel.get('itemHeight');
+	            var itemWidth = legendDto.get('itemWidth');
+	            var itemHeight = legendDto.get('itemHeight');
 
-	            var isSelected = legendModel.isSelected(name);
+	            var isSelected = legendDto.isSelected(name);
 	            var itemGroup = new graphic.Group();
 
-	            var textStyleModel = itemModel.getModel('textStyle');
+	            var textStyleDto = itemDto.getDto('textStyle');
 
-	            var itemIcon = itemModel.get('icon');
+	            var itemIcon = itemDto.get('icon');
 
 	            // Use user given icon first
 	            legendSymbolType = itemIcon || legendSymbolType;
@@ -28732,7 +28732,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var textX = itemAlign === 'left' ? itemWidth + 5 : -5;
 	            var textAlign = itemAlign;
 
-	            var formatter = legendModel.get('formatter');
+	            var formatter = legendDto.get('formatter');
 	            if (typeof formatter === 'string' && formatter) {
 	                name = formatter.replace('{name}', name);
 	            }
@@ -28745,8 +28745,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    text: name,
 	                    x: textX,
 	                    y: itemHeight / 2,
-	                    fill: isSelected ? textStyleModel.getTextColor() : LEGEND_DISABLE_COLOR,
-	                    textFont: textStyleModel.getFont(),
+	                    fill: isSelected ? textStyleDto.getTextColor() : LEGEND_DISABLE_COLOR,
+	                    textFont: textStyleDto.getFont(),
 	                    textAlign: textAlign,
 	                    textVerticalAlign: 'middle'
 	                }
@@ -28782,14 +28782,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var formatUtil = __webpack_require__(6);
 	    var graphic = __webpack_require__(42);
 
-	    function positionGroup(group, model, api) {
+	    function positionGroup(group, Dto, api) {
 	        layout.positionGroup(
-	            group, model.getBoxLayoutParams(),
+	            group, Dto.getBoxLayoutParams(),
 	            {
 	                width: api.getWidth(),
 	                height: api.getHeight()
 	            },
-	            model.get('padding')
+	            Dto.get('padding')
 	        );
 	    }
 
@@ -28798,32 +28798,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * Layout list like component.
 	         * It will box layout each items in group of component and then position the whole group in the viewport
 	         * @param {module:zrender/group/Group} group
-	         * @param {module:echarts/model/Component} componentModel
+	         * @param {module:echarts/Dto/Component} componentDto
 	         * @param {module:echarts/ExtensionAPI}
 	         */
-	        layout: function (group, componentModel, api) {
-	            var rect = layout.getLayoutRect(componentModel.getBoxLayoutParams(), {
+	        layout: function (group, componentDto, api) {
+	            var rect = layout.getLayoutRect(componentDto.getBoxLayoutParams(), {
 	                width: api.getWidth(),
 	                height: api.getHeight()
-	            }, componentModel.get('padding'));
+	            }, componentDto.get('padding'));
 	            layout.box(
-	                componentModel.get('orient'),
+	                componentDto.get('orient'),
 	                group,
-	                componentModel.get('itemGap'),
+	                componentDto.get('itemGap'),
 	                rect.width,
 	                rect.height
 	            );
 
-	            positionGroup(group, componentModel, api);
+	            positionGroup(group, componentDto, api);
 	        },
 
-	        addBackground: function (group, componentModel) {
+	        addBackground: function (group, componentDto) {
 	            var padding = formatUtil.normalizeCssArray(
-	                componentModel.get('padding')
+	                componentDto.get('padding')
 	            );
 	            var boundingRect = group.getBoundingRect();
-	            var style = componentModel.getItemStyle(['color', 'opacity']);
-	            style.fill = componentModel.get('backgroundColor');
+	            var style = componentDto.getItemStyle(['color', 'opacity']);
+	            style.fill = componentDto.get('backgroundColor');
 	            var rect = new graphic.Rect({
 	                shape: {
 	                    x: boundingRect.x - padding[3],
@@ -28847,16 +28847,16 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	
-	   module.exports = function (ecModel) {
-	        var legendModels = ecModel.findComponents({
+	   module.exports = function (ecDto) {
+	        var legendDtos = ecDto.findComponents({
 	            mainType: 'legend'
 	        });
-	        if (legendModels && legendModels.length) {
-	            ecModel.filterSeries(function (series) {
+	        if (legendDtos && legendDtos.length) {
+	            ecDto.filterSeries(function (series) {
 	                // If in any legend component the status is not selected.
 	                // Because in legend series is assumed selected when it is not in the legend data.
-	                for (var i = 0; i < legendModels.length; i++) {
-	                    if (!legendModels[i].isSelected(series.name)) {
+	                for (var i = 0; i < legendDtos.length; i++) {
+	                    if (!legendDtos[i].isSelected(series.name)) {
 	                        return false;
 	                    }
 	                }
@@ -28913,7 +28913,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	
 
-	    __webpack_require__(1).extendComponentModel({
+	    __webpack_require__(1).extendComponentDto({
 
 	        type: 'tooltip',
 
@@ -29173,9 +29173,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        content.moveTo(x, y);
 	    }
 
-	    function ifSeriesSupportAxisTrigger(seriesModel) {
-	        var coordSys = seriesModel.coordinateSystem;
-	        var trigger = seriesModel.get('tooltip.trigger', true);
+	    function ifSeriesSupportAxisTrigger(seriesDto) {
+	        var coordSys = seriesDto.coordinateSystem;
+	        var trigger = seriesDto.get('tooltip.trigger', true);
 	        // Ignore series use item tooltip trigger and series coordinate system is not cartesian or
 	        return !(!coordSys
 	            || (coordSys.type !== 'cartesian2d' && coordSys.type !== 'polar' && coordSys.type !== 'single')
@@ -29188,7 +29188,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        _axisPointers: {},
 
-	        init: function (ecModel, api) {
+	        init: function (ecDto, api) {
 	            if (env.node) {
 	                return;
 	            }
@@ -29199,7 +29199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            api.on('hideTip', this._manuallyHideTip, this);
 	        },
 
-	        render: function (tooltipModel, ecModel, api) {
+	        render: function (tooltipDto, ecDto, api) {
 	            if (env.node) {
 	                return;
 	            }
@@ -29215,15 +29215,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            /**
 	             * @private
-	             * @type {module:echarts/component/tooltip/TooltipModel}
+	             * @type {module:echarts/component/tooltip/TooltipDto}
 	             */
-	            this._tooltipModel = tooltipModel;
+	            this._tooltipDto = tooltipDto;
 
 	            /**
 	             * @private
-	             * @type {module:echarts/model/Global}
+	             * @type {module:echarts/Dto/Global}
 	             */
-	            this._ecModel = ecModel;
+	            this._ecDto = ecDto;
 
 	            /**
 	             * @private
@@ -29242,14 +29242,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            var tooltipContent = this._tooltipContent;
 	            tooltipContent.update();
-	            tooltipContent.enterable = tooltipModel.get('enterable');
-	            this._alwaysShowContent = tooltipModel.get('alwaysShowContent');
+	            tooltipContent.enterable = tooltipDto.get('enterable');
+	            this._alwaysShowContent = tooltipDto.get('alwaysShowContent');
 
 	            /**
 	             * @type {Object.<string, Array>}
 	             */
 	            this._seriesGroupByAxis = this._prepareAxisTriggerData(
-	                tooltipModel, ecModel
+	                tooltipDto, ecDto
 	            );
 
 	            var crossText = this._crossText;
@@ -29277,7 +29277,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            zr.off('mousemove', this._mousemove);
 	            zr.off('mouseout', this._hide);
 	            zr.off('globalout', this._hide);
-	            if (tooltipModel.get('triggerOn') === 'click') {
+	            if (tooltipDto.get('triggerOn') === 'click') {
 	                zr.on('click', this._tryShow, this);
 	            }
 	            else {
@@ -29288,7 +29288,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 
 	        _mousemove: function (e) {
-	            var showDelay = this._tooltipModel.get('showDelay');
+	            var showDelay = this._tooltipDto.get('showDelay');
 	            var self = this;
 	            clearTimeout(this._showTimeout);
 	            if (showDelay > 0) {
@@ -29323,35 +29323,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return;
 	            }
 
-	            var ecModel = this._ecModel;
+	            var ecDto = this._ecDto;
 	            var seriesIndex = event.seriesIndex;
 	            var dataIndex = event.dataIndex;
-	            var seriesModel = ecModel.getSeriesByIndex(seriesIndex);
+	            var seriesDto = ecDto.getSeriesByIndex(seriesIndex);
 	            var api = this._api;
 
 	            if (event.x == null || event.y == null) {
-	                if (!seriesModel) {
+	                if (!seriesDto) {
 	                    // Find the first series can use axis trigger
-	                    ecModel.eachSeries(function (_series) {
-	                        if (ifSeriesSupportAxisTrigger(_series) && !seriesModel) {
-	                            seriesModel = _series;
+	                    ecDto.eachSeries(function (_series) {
+	                        if (ifSeriesSupportAxisTrigger(_series) && !seriesDto) {
+	                            seriesDto = _series;
 	                        }
 	                    });
 	                }
-	                if (seriesModel) {
-	                    var data = seriesModel.getData();
+	                if (seriesDto) {
+	                    var data = seriesDto.getData();
 	                    if (dataIndex == null) {
 	                        dataIndex = data.indexOfName(event.name);
 	                    }
 	                    var el = data.getItemGraphicEl(dataIndex);
 	                    var cx, cy;
 	                    // Try to get the point in coordinate system
-	                    var coordSys = seriesModel.coordinateSystem;
+	                    var coordSys = seriesDto.coordinateSystem;
 	                    if (coordSys && coordSys.dataToPoint) {
 	                        var point = coordSys.dataToPoint(
 	                            data.getValues(
 	                                zrUtil.map(coordSys.dimensions, function (dim) {
-	                                    return seriesModel.coordDimToDataDim(dim)[0];
+	                                    return seriesDto.coordDimToDataDim(dim)[0];
 	                                }), dataIndex, true
 	                            )
 	                        );
@@ -29394,12 +29394,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._hide();
 	        },
 
-	        _prepareAxisTriggerData: function (tooltipModel, ecModel) {
+	        _prepareAxisTriggerData: function (tooltipDto, ecDto) {
 	            // Prepare data for axis trigger
 	            var seriesGroupByAxis = {};
-	            ecModel.eachSeries(function (seriesModel) {
-	                if (ifSeriesSupportAxisTrigger(seriesModel)) {
-	                    var coordSys = seriesModel.coordinateSystem;
+	            ecDto.eachSeries(function (seriesDto) {
+	                if (ifSeriesSupportAxisTrigger(seriesDto)) {
+	                    var coordSys = seriesDto.coordinateSystem;
 	                    var baseAxis;
 	                    var key;
 
@@ -29423,7 +29423,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        series: []
 	                    };
 	                    seriesGroupByAxis[key].coordSys.push(coordSys);
-	                    seriesGroupByAxis[key].series.push(seriesModel);
+	                    seriesGroupByAxis[key].series.push(seriesDto);
 	                }
 	            }, this);
 
@@ -29437,12 +29437,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	         */
 	        _tryShow: function (e) {
 	            var el = e.target;
-	            var tooltipModel = this._tooltipModel;
-	            var globalTrigger = tooltipModel.get('trigger');
-	            var ecModel = this._ecModel;
+	            var tooltipDto = this._tooltipDto;
+	            var globalTrigger = tooltipDto.get('trigger');
+	            var ecDto = this._ecDto;
 	            var api = this._api;
 
-	            if (!tooltipModel) {
+	            if (!tooltipDto) {
 	                return;
 	            }
 
@@ -29452,15 +29452,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            // Always show item tooltip if mouse is on the element with dataIndex
 	            if (el && el.dataIndex != null) {
-	                // Use dataModel in element if possible
+	                // Use dataDto in element if possible
 	                // Used when mouseover on a element like markPoint or edge
 	                // In which case, the data is not main data in series.
-	                var dataModel = el.dataModel || ecModel.getSeriesByIndex(el.seriesIndex);
+	                var dataDto = el.dataDto || ecDto.getSeriesByIndex(el.seriesIndex);
 	                var dataIndex = el.dataIndex;
-	                var itemModel = dataModel.getData().getItemModel(dataIndex);
+	                var itemDto = dataDto.getData().getItemDto(dataIndex);
 	                // Series or single data may use item trigger when global is axis trigger
-	                if ((itemModel.get('tooltip.trigger') || globalTrigger) === 'axis') {
-	                    this._showAxisTooltip(tooltipModel, ecModel, e);
+	                if ((itemDto.get('tooltip.trigger') || globalTrigger) === 'axis') {
+	                    this._showAxisTooltip(tooltipDto, ecDto, e);
 	                }
 	                else {
 	                    // Reset ticket
@@ -29470,7 +29470,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    // Reset last hover and dispatch downplay action
 	                    this._resetLastHover();
 
-	                    this._showItemTooltipContent(dataModel, dataIndex, el.dataType, e);
+	                    this._showItemTooltipContent(dataDto, dataIndex, el.dataType, e);
 	                }
 
 	                api.dispatchAction({
@@ -29486,12 +29486,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	                else {
 	                    // Try show axis tooltip
-	                    this._showAxisTooltip(tooltipModel, ecModel, e);
+	                    this._showAxisTooltip(tooltipDto, ecDto, e);
 	                }
 
 	                // Action of cross pointer
 	                // other pointer types will trigger action in _dispatchAndShowSeriesTooltipContent method
-	                if (tooltipModel.get('axisPointer.type') === 'cross') {
+	                if (tooltipDto.get('axisPointer.type') === 'cross') {
 	                    api.dispatchAction({
 	                        type: 'showTip',
 	                        from: this.uid,
@@ -29504,21 +29504,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * Show tooltip on axis
-	         * @param {module:echarts/component/tooltip/TooltipModel} tooltipModel
-	         * @param {module:echarts/model/Global} ecModel
+	         * @param {module:echarts/component/tooltip/TooltipDto} tooltipDto
+	         * @param {module:echarts/Dto/Global} ecDto
 	         * @param {Object} e
 	         * @private
 	         */
-	        _showAxisTooltip: function (tooltipModel, ecModel, e) {
-	            var axisPointerModel = tooltipModel.getModel('axisPointer');
-	            var axisPointerType = axisPointerModel.get('type');
+	        _showAxisTooltip: function (tooltipDto, ecDto, e) {
+	            var axisPointerDto = tooltipDto.getDto('axisPointer');
+	            var axisPointerType = axisPointerDto.get('type');
 
 	            if (axisPointerType === 'cross') {
 	                var el = e.target;
 	                if (el && el.dataIndex != null) {
-	                    var seriesModel = ecModel.getSeriesByIndex(el.seriesIndex);
+	                    var seriesDto = ecDto.getSeriesByIndex(el.seriesIndex);
 	                    var dataIndex = el.dataIndex;
-	                    this._showItemTooltipContent(seriesModel, dataIndex, el.dataType, e);
+	                    this._showItemTooltipContent(seriesDto, dataIndex, el.dataType, e);
 	                }
 	            }
 
@@ -29544,7 +29544,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                var value = coordSys.pointToData(point, true);
 	                point = coordSys.dataToPoint(value);
 	                var baseAxis = coordSys.getBaseAxis();
-	                var axisType = axisPointerModel.get('axis');
+	                var axisType = axisPointerDto.get('axis');
 	                if (axisType === 'auto') {
 	                    axisType = baseAxis.dim;
 	                }
@@ -29571,17 +29571,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                if (coordSys.type === 'cartesian2d' && !contentNotChange) {
 	                    this._showCartesianPointer(
-	                        axisPointerModel, coordSys, axisType, point
+	                        axisPointerDto, coordSys, axisType, point
 	                    );
 	                }
 	                else if (coordSys.type === 'polar' && !contentNotChange) {
 	                    this._showPolarPointer(
-	                        axisPointerModel, coordSys, axisType, point
+	                        axisPointerDto, coordSys, axisType, point
 	                    );
 	                }
 	                else if (coordSys.type === 'single' && !contentNotChange) {
 	                    this._showSinglePointer(
-	                        axisPointerModel, coordSys, axisType, point
+	                        axisPointerDto, coordSys, axisType, point
 	                    );
 	                }
 
@@ -29592,7 +29592,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }, this);
 
-	            if (!this._tooltipModel.get('show')) {
+	            if (!this._tooltipDto.get('show')) {
 	                this._hideAxisPointer();
 	            }
 
@@ -29603,23 +29603,23 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * Show tooltip on axis of cartesian coordinate
-	         * @param {module:echarts/model/Model} axisPointerModel
+	         * @param {module:echarts/Dto/Dto} axisPointerDto
 	         * @param {module:echarts/coord/cartesian/Cartesian2D} cartesians
 	         * @param {string} axisType
 	         * @param {Array.<number>} point
 	         * @private
 	         */
-	        _showCartesianPointer: function (axisPointerModel, cartesian, axisType, point) {
+	        _showCartesianPointer: function (axisPointerDto, cartesian, axisType, point) {
 	            var self = this;
 
-	            var axisPointerType = axisPointerModel.get('type');
+	            var axisPointerType = axisPointerDto.get('type');
 	            var moveAnimation = axisPointerType !== 'cross';
 
 	            if (axisPointerType === 'cross') {
 	                moveGridLine('x', point, cartesian.getAxis('y').getGlobalExtent());
 	                moveGridLine('y', point, cartesian.getAxis('x').getGlobalExtent());
 
-	                this._updateCrossText(cartesian, point, axisPointerModel);
+	                this._updateCrossText(cartesian, point, axisPointerDto);
 	            }
 	            else {
 	                var otherAxis = cartesian.getAxis(axisType === 'x' ? 'y' : 'x');
@@ -29641,12 +29641,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    : makeLineShape(otherExtent[0], point[1], otherExtent[1], point[1]);
 
 	                var pointerEl = self._getPointerElement(
-	                    cartesian, axisPointerModel, axisType, targetShape
+	                    cartesian, axisPointerDto, axisType, targetShape
 	                );
 	                moveAnimation
 	                    ? graphic.updateProps(pointerEl, {
 	                        shape: targetShape
-	                    }, axisPointerModel)
+	                    }, axisPointerDto)
 	                    :  pointerEl.attr({
 	                        shape: targetShape
 	                    });
@@ -29664,21 +29664,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    : makeRectShape(otherExtent[0], point[1] - bandWidth / 2, span, bandWidth);
 
 	                var pointerEl = self._getPointerElement(
-	                    cartesian, axisPointerModel, axisType, targetShape
+	                    cartesian, axisPointerDto, axisType, targetShape
 	                );
 	                moveAnimation
 	                    ? graphic.updateProps(pointerEl, {
 	                        shape: targetShape
-	                    }, axisPointerModel)
+	                    }, axisPointerDto)
 	                    :  pointerEl.attr({
 	                        shape: targetShape
 	                    });
 	            }
 	        },
 
-	        _showSinglePointer: function (axisPointerModel, single, axisType, point) {
+	        _showSinglePointer: function (axisPointerDto, single, axisType, point) {
 	            var self = this;
-	            var axisPointerType = axisPointerModel.get('type');
+	            var axisPointerType = axisPointerDto.get('type');
 	            var moveAnimation = axisPointerType !== 'cross';
 	            var rect = single.getRect();
 	            var otherExtent = [rect.y, rect.y + rect.height];
@@ -29697,12 +29697,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    : makeLineShape(otherExtent[0], point[1], otherExtent[1], point[1]);
 
 	                var pointerEl = self._getPointerElement(
-	                    single, axisPointerModel, axisType, targetShape
+	                    single, axisPointerDto, axisType, targetShape
 	                );
 	                moveAnimation
 	                    ? graphic.updateProps(pointerEl, {
 	                        shape: targetShape
-	                    }, axisPointerModel)
+	                    }, axisPointerDto)
 	                    :  pointerEl.attr({
 	                        shape: targetShape
 	                    });
@@ -29712,15 +29712,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * Show tooltip on axis of polar coordinate
-	         * @param {module:echarts/model/Model} axisPointerModel
+	         * @param {module:echarts/Dto/Dto} axisPointerDto
 	         * @param {Array.<module:echarts/coord/polar/Polar>} polar
 	         * @param {string} axisType
 	         * @param {Array.<number>} point
 	         */
-	        _showPolarPointer: function (axisPointerModel, polar, axisType, point) {
+	        _showPolarPointer: function (axisPointerDto, polar, axisType, point) {
 	            var self = this;
 
-	            var axisPointerType = axisPointerModel.get('type');
+	            var axisPointerType = axisPointerDto.get('type');
 
 	            var angleAxis = polar.getAngleAxis();
 	            var radiusAxis = polar.getRadiusAxis();
@@ -29731,7 +29731,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                movePolarLine('angle', point, radiusAxis.getExtent());
 	                movePolarLine('radius', point, angleAxis.getExtent());
 
-	                this._updateCrossText(polar, point, axisPointerModel);
+	                this._updateCrossText(polar, point, axisPointerDto);
 	            }
 	            else {
 	                var otherAxis = polar.getAxis(axisType === 'radius' ? 'angle' : 'radius');
@@ -29763,13 +29763,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                var pointerEl = self._getPointerElement(
-	                    polar, axisPointerModel, axisType, targetShape
+	                    polar, axisPointerDto, axisType, targetShape
 	                );
 
 	                moveAnimation
 	                    ? graphic.updateProps(pointerEl, {
 	                        shape: targetShape
-	                    }, axisPointerModel)
+	                    }, axisPointerDto)
 	                    :  pointerEl.attr({
 	                        shape: targetShape
 	                    });
@@ -29807,23 +29807,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                var pointerEl = self._getPointerElement(
-	                    polar, axisPointerModel, axisType, targetShape
+	                    polar, axisPointerDto, axisType, targetShape
 	                );
 	                moveAnimation
 	                    ? graphic.updateProps(pointerEl, {
 	                        shape: targetShape
-	                    }, axisPointerModel)
+	                    }, axisPointerDto)
 	                    :  pointerEl.attr({
 	                        shape: targetShape
 	                    });
 	            }
 	        },
 
-	        _updateCrossText: function (coordSys, point, axisPointerModel) {
-	            var crossStyleModel = axisPointerModel.getModel('crossStyle');
-	            var textStyleModel = crossStyleModel.getModel('textStyle');
+	        _updateCrossText: function (coordSys, point, axisPointerDto) {
+	            var crossStyleDto = axisPointerDto.getDto('crossStyle');
+	            var textStyleDto = crossStyleDto.getDto('textStyle');
 
-	            var tooltipModel = this._tooltipModel;
+	            var tooltipDto = this._tooltipDto;
 
 	            var text = this._crossText;
 	            if (!text) {
@@ -29853,20 +29853,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 
 	            text.setStyle({
-	                fill: textStyleModel.getTextColor() || crossStyleModel.get('color'),
-	                textFont: textStyleModel.getFont(),
+	                fill: textStyleDto.getTextColor() || crossStyleDto.get('color'),
+	                textFont: textStyleDto.getFont(),
 	                text: value.join(', '),
 	                x: point[0] + 5,
 	                y: point[1] - 5
 	            });
-	            text.z = tooltipModel.get('z');
-	            text.zlevel = tooltipModel.get('zlevel');
+	            text.z = tooltipDto.get('z');
+	            text.zlevel = tooltipDto.get('zlevel');
 	        },
 
-	        _getPointerElement: function (coordSys, pointerModel, axisType, initShape) {
-	            var tooltipModel = this._tooltipModel;
-	            var z = tooltipModel.get('z');
-	            var zlevel = tooltipModel.get('zlevel');
+	        _getPointerElement: function (coordSys, pointerDto, axisType, initShape) {
+	            var tooltipDto = this._tooltipDto;
+	            var z = tooltipDto.get('z');
+	            var zlevel = tooltipDto.get('zlevel');
 	            var axisPointers = this._axisPointers;
 	            var coordSysName = coordSys.name;
 	            axisPointers[coordSysName] = axisPointers[coordSysName] || {};
@@ -29875,10 +29875,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            // Create if not exists
-	            var pointerType = pointerModel.get('type');
-	            var styleModel = pointerModel.getModel(pointerType + 'Style');
+	            var pointerType = pointerDto.get('type');
+	            var styleDto = pointerDto.getDto(pointerType + 'Style');
 	            var isShadow = pointerType === 'shadow';
-	            var style = styleModel[isShadow ? 'getAreaStyle' : 'getLineStyle']();
+	            var style = styleDto[isShadow ? 'getAreaStyle' : 'getLineStyle']();
 
 	            var elementType = coordSys.type === 'polar'
 	                ? (isShadow ? 'Sector' : (axisType === 'radius' ? 'Circle' : 'Line'))
@@ -29900,7 +29900,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * Dispatch actions and show tooltip on series
-	         * @param {Array.<module:echarts/model/Series>} seriesList
+	         * @param {Array.<module:echarts/Dto/Series>} seriesList
 	         * @param {Array.<number>} point
 	         * @param {Array.<number>} value
 	         * @param {boolean} contentNotChange
@@ -29910,7 +29910,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            coordSys, seriesList, point, value, contentNotChange
 	        ) {
 
-	            var rootTooltipModel = this._tooltipModel;
+	            var rootTooltipDto = this._tooltipDto;
 	            var tooltipContent = this._tooltipContent;
 
 	            var baseAxis = coordSys.getBaseAxis();
@@ -29952,10 +29952,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                from: this.uid
 	            });
 
-	            if (baseAxis && rootTooltipModel.get('showContent') && rootTooltipModel.get('show')) {
+	            if (baseAxis && rootTooltipDto.get('showContent') && rootTooltipDto.get('show')) {
 
-	                var formatter = rootTooltipModel.get('formatter');
-	                var positionExpr = rootTooltipModel.get('position');
+	                var formatter = rootTooltipDto.get('formatter');
+	                var positionExpr = rootTooltipDto.get('position');
 	                var html;
 
 	                var paramsList = zrUtil.map(seriesList, function (series, index) {
@@ -29967,7 +29967,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                //     paramsList = paramsList[0];
 	                // }
 
-	                tooltipContent.show(rootTooltipModel);
+	                tooltipContent.show(rootTooltipDto);
 
 	                // Update html content
 	                var firstDataIndex = payloadBatch[0].dataIndex;
@@ -30019,38 +30019,38 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * Show tooltip on item
-	         * @param {module:echarts/model/Series} seriesModel
+	         * @param {module:echarts/Dto/Series} seriesDto
 	         * @param {number} dataIndex
 	         * @param {string} dataType
 	         * @param {Object} e
 	         */
-	        _showItemTooltipContent: function (seriesModel, dataIndex, dataType, e) {
+	        _showItemTooltipContent: function (seriesDto, dataIndex, dataType, e) {
 	            // FIXME Graph data
 	            var api = this._api;
-	            var data = seriesModel.getData(dataType);
-	            var itemModel = data.getItemModel(dataIndex);
+	            var data = seriesDto.getData(dataType);
+	            var itemDto = data.getItemDto(dataIndex);
 
-	            var rootTooltipModel = this._tooltipModel;
+	            var rootTooltipDto = this._tooltipDto;
 
 	            var tooltipContent = this._tooltipContent;
 
-	            var tooltipModel = itemModel.getModel('tooltip');
+	            var tooltipDto = itemDto.getDto('tooltip');
 
-	            // If series model
-	            if (tooltipModel.parentModel) {
-	                tooltipModel.parentModel.parentModel = rootTooltipModel;
+	            // If series Dto
+	            if (tooltipDto.parentDto) {
+	                tooltipDto.parentDto.parentDto = rootTooltipDto;
 	            }
 	            else {
-	                tooltipModel.parentModel = this._tooltipModel;
+	                tooltipDto.parentDto = this._tooltipDto;
 	            }
 
-	            if (tooltipModel.get('showContent') && tooltipModel.get('show')) {
-	                var formatter = tooltipModel.get('formatter');
-	                var positionExpr = tooltipModel.get('position');
-	                var params = seriesModel.getDataParams(dataIndex, dataType);
+	            if (tooltipDto.get('showContent') && tooltipDto.get('show')) {
+	                var formatter = tooltipDto.get('formatter');
+	                var positionExpr = tooltipDto.get('position');
+	                var params = seriesDto.getDataParams(dataIndex, dataType);
 	                var html;
 	                if (!formatter) {
-	                    html = seriesModel.formatTooltip(dataIndex, false, dataType);
+	                    html = seriesDto.formatTooltip(dataIndex, false, dataType);
 	                }
 	                else {
 	                    if (typeof formatter === 'string') {
@@ -30058,7 +30058,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    }
 	                    else if (typeof formatter === 'function') {
 	                        var self = this;
-	                        var ticket = 'item_' + seriesModel.name + '_' + dataIndex;
+	                        var ticket = 'item_' + seriesDto.name + '_' + dataIndex;
 	                        var callback = function (cbTicket, html) {
 	                            if (cbTicket === self._ticket) {
 	                                tooltipContent.setContent(html);
@@ -30074,7 +30074,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    }
 	                }
 
-	                tooltipContent.show(tooltipModel);
+	                tooltipContent.show(tooltipDto);
 	                tooltipContent.setContent(html);
 
 	                updatePosition(
@@ -30136,7 +30136,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._hideAxisPointer();
 	            this._resetLastHover();
 	            if (!this._alwaysShowContent) {
-	                this._tooltipContent.hideLater(this._tooltipModel.get('hideDelay'));
+	                this._tooltipContent.hideLater(this._tooltipDto.get('hideDelay'));
 	            }
 
 	            this._api.dispatchAction({
@@ -30147,7 +30147,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._lastX = this._lastY = null;
 	        },
 
-	        dispose: function (ecModel, api) {
+	        dispose: function (ecDto, api) {
 	            if (env.node) {
 	                return;
 	            }
@@ -30205,21 +30205,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @return {string}
 	     * @inner
 	     */
-	    function assembleFont(textStyleModel) {
+	    function assembleFont(textStyleDto) {
 	        var cssText = [];
 
-	        var fontSize = textStyleModel.get('fontSize');
-	        var color = textStyleModel.getTextColor();
+	        var fontSize = textStyleDto.get('fontSize');
+	        var color = textStyleDto.getTextColor();
 
 	        color && cssText.push('color:' + color);
 
-	        cssText.push('font:' + textStyleModel.getFont());
+	        cssText.push('font:' + textStyleDto.getFont());
 
 	        fontSize &&
 	            cssText.push('line-height:' + Math.round(fontSize * 3 / 2) + 'px');
 
 	        each(['decoration', 'align'], function (name) {
-	            var val = textStyleModel.get(name);
+	            var val = textStyleDto.get(name);
 	            val && cssText.push('text-' + name + ':' + val);
 	        });
 
@@ -30227,20 +30227,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    /**
-	     * @param {Object} tooltipModel
+	     * @param {Object} tooltipDto
 	     * @return {string}
 	     * @inner
 	     */
-	    function assembleCssText(tooltipModel) {
+	    function assembleCssText(tooltipDto) {
 
-	        tooltipModel = tooltipModel;
+	        tooltipDto = tooltipDto;
 
 	        var cssText = [];
 
-	        var transitionDuration = tooltipModel.get('transitionDuration');
-	        var backgroundColor = tooltipModel.get('backgroundColor');
-	        var textStyleModel = tooltipModel.getModel('textStyle');
-	        var padding = tooltipModel.get('padding');
+	        var transitionDuration = tooltipDto.get('transitionDuration');
+	        var backgroundColor = tooltipDto.get('backgroundColor');
+	        var textStyleDto = tooltipDto.getDto('textStyle');
+	        var padding = tooltipDto.get('padding');
 
 	        // Animation transition
 	        transitionDuration &&
@@ -30263,13 +30263,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        each(['width', 'color', 'radius'], function (name) {
 	            var borderName = 'border-' + name;
 	            var camelCase = toCamelCase(borderName);
-	            var val = tooltipModel.get(camelCase);
+	            var val = tooltipDto.get(camelCase);
 	            val != null &&
 	                cssText.push(borderName + ':' + val + (name === 'color' ? '' : 'px'));
 	        });
 
 	        // Text style
-	        cssText.push(assembleFont(textStyleModel));
+	        cssText.push(assembleFont(textStyleDto));
 
 	        // Padding
 	        if (padding != null) {
@@ -30380,13 +30380,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // this.hide();
 	        },
 
-	        show: function (tooltipModel) {
+	        show: function (tooltipDto) {
 	            clearTimeout(this._hideTimeout);
 
-	            this.el.style.cssText = gCssText + assembleCssText(tooltipModel)
+	            this.el.style.cssText = gCssText + assembleCssText(tooltipDto)
 	                // http://stackoverflow.com/questions/21125587/css3-transition-not-working-in-chrome-anymore
 	                + ';left:' + this._x + 'px;top:' + this._y + 'px;'
-	                + (tooltipModel.get('extraCssText') || '');
+	                + (tooltipDto.get('extraCssText') || '');
 
 	            this._show = true;
 	        },
@@ -30460,8 +30460,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var graphic = __webpack_require__(42);
 	    var layout = __webpack_require__(21);
 
-	    // Model
-	    echarts.extendComponentModel({
+	    // Dto
+	    echarts.extendComponentDto({
 
 	        type: 'title',
 
@@ -30530,25 +30530,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        type: 'title',
 
-	        render: function (titleModel, ecModel, api) {
+	        render: function (titleDto, ecDto, api) {
 	            this.group.removeAll();
 
-	            if (!titleModel.get('show')) {
+	            if (!titleDto.get('show')) {
 	                return;
 	            }
 
 	            var group = this.group;
 
-	            var textStyleModel = titleModel.getModel('textStyle');
-	            var subtextStyleModel = titleModel.getModel('subtextStyle');
+	            var textStyleDto = titleDto.getDto('textStyle');
+	            var subtextStyleDto = titleDto.getDto('subtextStyle');
 
-	            var textAlign = titleModel.get('textAlign');
+	            var textAlign = titleDto.get('textAlign');
 
 	            var textEl = new graphic.Text({
 	                style: {
-	                    text: titleModel.get('text'),
-	                    textFont: textStyleModel.getFont(),
-	                    fill: textStyleModel.getTextColor(),
+	                    text: titleDto.get('text'),
+	                    textFont: textStyleDto.getFont(),
+	                    fill: textStyleDto.getTextColor(),
 	                    textBaseline: 'top'
 	                },
 	                z2: 10
@@ -30556,32 +30556,32 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            var textRect = textEl.getBoundingRect();
 
-	            var subText = titleModel.get('subtext');
+	            var subText = titleDto.get('subtext');
 	            var subTextEl = new graphic.Text({
 	                style: {
 	                    text: subText,
-	                    textFont: subtextStyleModel.getFont(),
-	                    fill: subtextStyleModel.getTextColor(),
-	                    y: textRect.height + titleModel.get('itemGap'),
+	                    textFont: subtextStyleDto.getFont(),
+	                    fill: subtextStyleDto.getTextColor(),
+	                    y: textRect.height + titleDto.get('itemGap'),
 	                    textBaseline: 'top'
 	                },
 	                z2: 10
 	            });
 
-	            var link = titleModel.get('link');
-	            var sublink = titleModel.get('sublink');
+	            var link = titleDto.get('link');
+	            var sublink = titleDto.get('sublink');
 
 	            textEl.silent = !link;
 	            subTextEl.silent = !sublink;
 
 	            if (link) {
 	                textEl.on('click', function () {
-	                    window.open(link, '_' + titleModel.get('target'));
+	                    window.open(link, '_' + titleDto.get('target'));
 	                });
 	            }
 	            if (sublink) {
 	                subTextEl.on('click', function () {
-	                    window.open(sublink, '_' + titleModel.get('subtarget'));
+	                    window.open(sublink, '_' + titleDto.get('subtarget'));
 	                });
 	            }
 
@@ -30590,19 +30590,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // If no subText, but add subTextEl, there will be an empty line.
 
 	            var groupRect = group.getBoundingRect();
-	            var layoutOption = titleModel.getBoxLayoutParams();
+	            var layoutOption = titleDto.getBoxLayoutParams();
 	            layoutOption.width = groupRect.width;
 	            layoutOption.height = groupRect.height;
 	            var layoutRect = layout.getLayoutRect(
 	                layoutOption, {
 	                    width: api.getWidth(),
 	                    height: api.getHeight()
-	                }, titleModel.get('padding')
+	                }, titleDto.get('padding')
 	            );
 	            // Adjust text align based on position
 	            if (!textAlign) {
 	                // Align left if title is on the left. center and right is same
-	                textAlign = titleModel.get('left') || titleModel.get('right');
+	                textAlign = titleDto.get('left') || titleDto.get('right');
 	                if (textAlign === 'middle') {
 	                    textAlign = 'center';
 	                }
@@ -30622,8 +30622,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // Get groupRect again because textAlign has been changed
 	            groupRect = group.getBoundingRect();
 	            var padding = layoutRect.margin;
-	            var style = titleModel.getItemStyle(['color', 'opacity']);
-	            style.fill = titleModel.get('backgroundColor');
+	            var style = titleDto.getItemStyle(['color', 'opacity']);
+	            style.fill = titleDto.get('backgroundColor');
 	            var rect = new graphic.Rect({
 	                shape: {
 	                    x: groupRect.x - padding[3],
@@ -30684,19 +30684,19 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @file Data zoom model
+	 * @file Data zoom Dto
 	 */
 
 
 	    var zrUtil = __webpack_require__(3);
 	    var env = __webpack_require__(79);
 	    var echarts = __webpack_require__(1);
-	    var modelUtil = __webpack_require__(5);
+	    var DtoUtil = __webpack_require__(5);
 	    var AxisProxy = __webpack_require__(293);
 	    var each = zrUtil.each;
-	    var eachAxisDim = modelUtil.eachAxisDim;
+	    var eachAxisDim = DtoUtil.eachAxisDim;
 
-	    var DataZoomModel = echarts.extendComponentModel({
+	    var DataZoomDto = echarts.extendComponentDto({
 
 	        type: 'dataZoom',
 
@@ -30722,7 +30722,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                    //          This option is applicable when user should not neglect
 	                                    //          that there are some data items out of window.
 	                                    // Taking line chart as an example, line will be broken in
-	                                    // the filtered points when filterModel is set to 'empty', but
+	                                    // the filtered points when filterDto is set to 'empty', but
 	                                    // be connected when set to 'filter'.
 
 	            throttle: 100,          // Dispatch action by the fixed rate, avoid frequency.
@@ -30736,7 +30736,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @override
 	         */
-	        init: function (option, parentModel, ecModel) {
+	        init: function (option, parentDto, ecDto) {
 
 	            /**
 	             * key like x_0, y_1
@@ -30759,11 +30759,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            /**
 	             * @readOnly
 	             */
-	            this.textStyleModel;
+	            this.textStyleDto;
 
 	            var rawOption = retrieveRaw(option);
 
-	            this.mergeDefaultAndTheme(option, ecModel);
+	            this.mergeDefaultAndTheme(option, ecDto);
 
 	            this.doInit(rawOption);
 	        },
@@ -30794,7 +30794,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            processRangeProp('start', 'startValue', rawOption, thisOption);
 	            processRangeProp('end', 'endValue', rawOption, thisOption);
 
-	            this.textStyleModel = this.getModel('textStyle');
+	            this.textStyleDto = this.getDto('textStyle');
 
 	            this._resetTarget();
 
@@ -30807,14 +30807,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _giveAxisProxies: function () {
 	            var axisProxies = this._axisProxies;
 
-	            this.eachTargetAxis(function (dimNames, axisIndex, dataZoomModel, ecModel) {
-	                var axisModel = this.dependentModels[dimNames.axis][axisIndex];
+	            this.eachTargetAxis(function (dimNames, axisIndex, dataZoomDto, ecDto) {
+	                var axisDto = this.dependentDtos[dimNames.axis][axisIndex];
 
-	                // If exists, share axisProxy with other dataZoomModels.
-	                var axisProxy = axisModel.__dzAxisProxy || (
-	                    // Use the first dataZoomModel as the main model of axisProxy.
-	                    axisModel.__dzAxisProxy = new AxisProxy(
-	                        dimNames.name, axisIndex, this, ecModel
+	                // If exists, share axisProxy with other dataZoomDtos.
+	                var axisProxy = axisDto.__dzAxisProxy || (
+	                    // Use the first dataZoomDto as the main Dto of axisProxy.
+	                    axisDto.__dzAxisProxy = new AxisProxy(
+	                        dimNames.name, axisIndex, this, ecDto
 	                    )
 	                );
 	                // FIXME
@@ -30834,7 +30834,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            eachAxisDim(function (dimNames) {
 	                var axisIndexName = dimNames.axisIndex;
-	                thisOption[axisIndexName] = modelUtil.normalizeToArray(
+	                thisOption[axisIndexName] = DtoUtil.normalizeToArray(
 	                    thisOption[axisIndexName]
 	                );
 	            }, this);
@@ -30893,7 +30893,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    ? {dim: 'y', axisIndex: 'yAxisIndex', axis: 'yAxis'}
 	                    : {dim: 'x', axisIndex: 'xAxisIndex', axis: 'xAxis'};
 
-	                if (this.dependentModels[dimNames.axis].length) {
+	                if (this.dependentDtos[dimNames.axis].length) {
 	                    thisOption[dimNames.axisIndex] = [0];
 	                    autoAxisIndex = false;
 	                }
@@ -30906,10 +30906,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        return;
 	                    }
 	                    var axisIndices = [];
-	                    var axisModels = this.dependentModels[dimNames.axis];
-	                    if (axisModels.length && !axisIndices.length) {
-	                        for (var i = 0, len = axisModels.length; i < len; i++) {
-	                            if (axisModels[i].get('type') === 'category') {
+	                    var axisDtos = this.dependentDtos[dimNames.axis];
+	                    if (axisDtos.length && !axisIndices.length) {
+	                        for (var i = 0, len = axisDtos.length; i < len; i++) {
+	                            if (axisDtos[i].get('type') === 'category') {
 	                                axisIndices.push(i);
 	                            }
 	                        }
@@ -30929,11 +30929,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                // If both dataZoom.xAxisIndex and dataZoom.yAxisIndex is not specified,
 	                // dataZoom component auto adopts series that reference to
 	                // both xAxis and yAxis which type is 'value'.
-	                this.ecModel.eachSeries(function (seriesModel) {
-	                    if (this._isSeriesHasAllAxesTypeOf(seriesModel, 'value')) {
+	                this.ecDto.eachSeries(function (seriesDto) {
+	                    if (this._isSeriesHasAllAxesTypeOf(seriesDto, 'value')) {
 	                        eachAxisDim(function (dimNames) {
 	                            var axisIndices = thisOption[dimNames.axisIndex];
-	                            var axisIndex = seriesModel.get(dimNames.axisIndex);
+	                            var axisIndex = seriesDto.get(dimNames.axisIndex);
 	                            if (zrUtil.indexOf(axisIndices, axisIndex) < 0) {
 	                                axisIndices.push(axisIndex);
 	                            }
@@ -30960,17 +30960,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @private
 	         */
-	        _isSeriesHasAllAxesTypeOf: function (seriesModel, axisType) {
+	        _isSeriesHasAllAxesTypeOf: function (seriesDto, axisType) {
 	            // FIXME
 	            // 需要series的xAxisIndex和yAxisIndex都首先自动设置上。
 	            // 例如series.type === scatter时。
 
 	            var is = true;
 	            eachAxisDim(function (dimNames) {
-	                var seriesAxisIndex = seriesModel.get(dimNames.axisIndex);
-	                var axisModel = this.dependentModels[dimNames.axis][seriesAxisIndex];
+	                var seriesAxisIndex = seriesDto.get(dimNames.axisIndex);
+	                var axisDto = this.dependentDtos[dimNames.axis][seriesAxisIndex];
 
-	                if (!axisModel || axisModel.get('type') !== axisType) {
+	                if (!axisDto || axisDto.get('type') !== axisType) {
 	                    is = false;
 	                }
 	            }, this);
@@ -30980,31 +30980,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @public
 	         */
-	        getFirstTargetAxisModel: function () {
-	            var firstAxisModel;
+	        getFirstTargetAxisDto: function () {
+	            var firstAxisDto;
 	            eachAxisDim(function (dimNames) {
-	                if (firstAxisModel == null) {
+	                if (firstAxisDto == null) {
 	                    var indices = this.get(dimNames.axisIndex);
 	                    if (indices.length) {
-	                        firstAxisModel = this.dependentModels[dimNames.axis][indices[0]];
+	                        firstAxisDto = this.dependentDtos[dimNames.axis][indices[0]];
 	                    }
 	                }
 	            }, this);
 
-	            return firstAxisModel;
+	            return firstAxisDto;
 	        },
 
 	        /**
 	         * @public
-	         * @param {Function} callback param: axisModel, dimNames, axisIndex, dataZoomModel, ecModel
+	         * @param {Function} callback param: axisDto, dimNames, axisIndex, dataZoomDto, ecDto
 	         */
 	        eachTargetAxis: function (callback, context) {
-	            var ecModel = this.ecModel;
+	            var ecDto = this.ecDto;
 	            eachAxisDim(function (dimNames) {
 	                each(
 	                    this.get(dimNames.axisIndex),
 	                    function (axisIndex) {
-	                        callback.call(context, dimNames, axisIndex, this, ecModel);
+	                        callback.call(context, dimNames, axisIndex, this, ecDto);
 	                    },
 	                    this
 	                );
@@ -31047,7 +31047,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * @public
-	         * For example, chart.getModel().getComponent('dataZoom').getValueRange('y', 0);
+	         * For example, chart.getDto().getComponent('dataZoom').getValueRange('y', 0);
 	         *
 	         * @param {string} [axisDimName]
 	         * @param {number} [axisIndex]
@@ -31079,7 +31079,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            // If no hosted axis find not hosted axisProxy.
-	            // Consider this case: dataZoomModel1 and dataZoomModel2 control the same axis,
+	            // Consider this case: dataZoomDto1 and dataZoomDto2 control the same axis,
 	            // and the option.start or option.end settings are different. The percentRange
 	            // should follow axisProxy.
 	            // (We encounter this problem in toolbox data zoom.)
@@ -31113,7 +31113,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Otherwise do nothing and use the merge result.
 	    }
 
-	    module.exports = DataZoomModel;
+	    module.exports = DataZoomDto;
 
 
 
@@ -31134,13 +31134,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Operate single axis.
 	     * One axis can only operated by one axis operator.
-	     * Different dataZoomModels may be defined to operate the same axis.
+	     * Different dataZoomDtos may be defined to operate the same axis.
 	     * (i.e. 'inside' data zoom and 'slider' data zoom components)
-	     * So dataZoomModels share one axisProxy in that case.
+	     * So dataZoomDtos share one axisProxy in that case.
 	     *
 	     * @class
 	     */
-	    var AxisProxy = function (dimName, axisIndex, dataZoomModel, ecModel) {
+	    var AxisProxy = function (dimName, axisIndex, dataZoomDto, ecDto) {
 
 	        /**
 	         * @private
@@ -31173,15 +31173,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * @readOnly
-	         * @type {module: echarts/model/Global}
+	         * @type {module: echarts/Dto/Global}
 	         */
-	        this.ecModel = ecModel;
+	        this.ecDto = ecDto;
 
 	        /**
 	         * @private
-	         * @type {module: echarts/component/dataZoom/DataZoomModel}
+	         * @type {module: echarts/component/dataZoom/DataZoomDto}
 	         */
-	        this._dataZoomModel = dataZoomModel;
+	        this._dataZoomDto = dataZoomDto;
 	    };
 
 	    AxisProxy.prototype = {
@@ -31189,14 +31189,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        constructor: AxisProxy,
 
 	        /**
-	         * Whether the axisProxy is hosted by dataZoomModel.
+	         * Whether the axisProxy is hosted by dataZoomDto.
 	         *
 	         * @public
-	         * @param {module: echarts/component/dataZoom/DataZoomModel} dataZoomModel
+	         * @param {module: echarts/component/dataZoom/DataZoomDto} dataZoomDto
 	         * @return {boolean}
 	         */
-	        hostedBy: function (dataZoomModel) {
-	            return this._dataZoomModel === dataZoomModel;
+	        hostedBy: function (dataZoomDto) {
+	            return this._dataZoomDto === dataZoomDto;
 	        },
 
 	        /**
@@ -31223,28 +31223,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @public
 	         * @param {number} axisIndex
-	         * @return {Array} seriesModels
+	         * @return {Array} seriesDtos
 	         */
-	        getTargetSeriesModels: function () {
-	            var seriesModels = [];
+	        getTargetSeriesDtos: function () {
+	            var seriesDtos = [];
 
-	            this.ecModel.eachSeries(function (seriesModel) {
-	                if (this._axisIndex === seriesModel.get(this._dimName + 'AxisIndex')) {
-	                    seriesModels.push(seriesModel);
+	            this.ecDto.eachSeries(function (seriesDto) {
+	                if (this._axisIndex === seriesDto.get(this._dimName + 'AxisIndex')) {
+	                    seriesDtos.push(seriesDto);
 	                }
 	            }, this);
 
-	            return seriesModels;
+	            return seriesDtos;
 	        },
 
-	        getAxisModel: function () {
-	            return this.ecModel.getComponent(this._dimName + 'Axis', this._axisIndex);
+	        getAxisDto: function () {
+	            return this.ecDto.getComponent(this._dimName + 'Axis', this._axisIndex);
 	        },
 
-	        getOtherAxisModel: function () {
+	        getOtherAxisDto: function () {
 	            var axisDim = this._dimName;
-	            var ecModel = this.ecModel;
-	            var axisModel = this.getAxisModel();
+	            var ecDto = this.ecDto;
+	            var axisDto = this.getAxisDto();
 	            var isCartesian = axisDim === 'x' || axisDim === 'y';
 	            var otherAxisDim;
 	            var coordSysIndexName;
@@ -31256,66 +31256,66 @@ return /******/ (function(modules) { // webpackBootstrap
 	                coordSysIndexName = 'polarIndex';
 	                otherAxisDim = axisDim === 'angle' ? 'radius' : 'angle';
 	            }
-	            var foundOtherAxisModel;
-	            ecModel.eachComponent(otherAxisDim + 'Axis', function (otherAxisModel) {
-	                if ((otherAxisModel.get(coordSysIndexName) || 0)
-	                    === (axisModel.get(coordSysIndexName) || 0)
+	            var foundOtherAxisDto;
+	            ecDto.eachComponent(otherAxisDim + 'Axis', function (otherAxisDto) {
+	                if ((otherAxisDto.get(coordSysIndexName) || 0)
+	                    === (axisDto.get(coordSysIndexName) || 0)
 	                ) {
-	                    foundOtherAxisModel = otherAxisModel;
+	                    foundOtherAxisDto = otherAxisDto;
 	                }
 	            });
-	            return foundOtherAxisModel;
+	            return foundOtherAxisDto;
 	        },
 
 	        /**
 	         * Notice: reset should not be called before series.restoreData() called,
-	         * so it is recommanded to be called in "process stage" but not "model init
+	         * so it is recommanded to be called in "process stage" but not "Dto init
 	         * stage".
 	         *
-	         * @param {module: echarts/component/dataZoom/DataZoomModel} dataZoomModel
+	         * @param {module: echarts/component/dataZoom/DataZoomDto} dataZoomDto
 	         */
-	        reset: function (dataZoomModel) {
-	            if (dataZoomModel !== this._dataZoomModel) {
+	        reset: function (dataZoomDto) {
+	            if (dataZoomDto !== this._dataZoomDto) {
 	                return;
 	            }
 
 	            // Culculate data window and data extent, and record them.
 	            var dataExtent = this._dataExtent = calculateDataExtent(
-	                this._dimName, this.getTargetSeriesModels()
+	                this._dimName, this.getTargetSeriesDtos()
 	            );
 	            var dataWindow = calculateDataWindow(
-	                dataZoomModel.option, dataExtent, this
+	                dataZoomDto.option, dataExtent, this
 	            );
 	            this._valueWindow = dataWindow.valueWindow;
 	            this._percentWindow = dataWindow.percentWindow;
 
 	            // Update axis setting then.
-	            setAxisModel(this);
+	            setAxisDto(this);
 	        },
 
 	        /**
-	         * @param {module: echarts/component/dataZoom/DataZoomModel} dataZoomModel
+	         * @param {module: echarts/component/dataZoom/DataZoomDto} dataZoomDto
 	         */
-	        restore: function (dataZoomModel) {
-	            if (dataZoomModel !== this._dataZoomModel) {
+	        restore: function (dataZoomDto) {
+	            if (dataZoomDto !== this._dataZoomDto) {
 	                return;
 	            }
 
 	            this._valueWindow = this._percentWindow = null;
-	            setAxisModel(this, true);
+	            setAxisDto(this, true);
 	        },
 
 	        /**
-	         * @param {module: echarts/component/dataZoom/DataZoomModel} dataZoomModel
+	         * @param {module: echarts/component/dataZoom/DataZoomDto} dataZoomDto
 	         */
-	        filterData: function (dataZoomModel) {
-	            if (dataZoomModel !== this._dataZoomModel) {
+	        filterData: function (dataZoomDto) {
+	            if (dataZoomDto !== this._dataZoomDto) {
 	                return;
 	            }
 
 	            var axisDim = this._dimName;
-	            var seriesModels = this.getTargetSeriesModels();
-	            var filterMode = dataZoomModel.get('filterMode');
+	            var seriesDtos = this.getTargetSeriesDtos();
+	            var filterMode = dataZoomDto.get('filterMode');
 	            var valueWindow = this._valueWindow;
 
 	            // FIXME
@@ -31326,21 +31326,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // when using toolbox#dataZoom, utill tooltip#dataZoom support "single axis
 	            // selection" some day, which might need "adapt to data extent on the
 	            // otherAxis", which is disabled by filterMode-'empty'.
-	            var otherAxisModel = this.getOtherAxisModel();
-	            if (dataZoomModel.get('$fromToolbox')
-	                && otherAxisModel
-	                && otherAxisModel.get('type') === 'category'
+	            var otherAxisDto = this.getOtherAxisDto();
+	            if (dataZoomDto.get('$fromToolbox')
+	                && otherAxisDto
+	                && otherAxisDto.get('type') === 'category'
 	            ) {
 	                filterMode = 'empty';
 	            }
 
 	            // Process series data
-	            each(seriesModels, function (seriesModel) {
-	                var seriesData = seriesModel.getData();
+	            each(seriesDtos, function (seriesDto) {
+	                var seriesData = seriesDto.getData();
 
-	                seriesData && each(seriesModel.coordDimToDataDim(axisDim), function (dim) {
+	                seriesData && each(seriesDto.coordDimToDataDim(axisDim), function (dim) {
 	                    if (filterMode === 'empty') {
-	                        seriesModel.setData(
+	                        seriesDto.setData(
 	                            seriesData.map(dim, function (value) {
 	                                return !isInWindow(value) ? NaN : value;
 	                            })
@@ -31358,13 +31358,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 
-	    function calculateDataExtent(axisDim, seriesModels) {
+	    function calculateDataExtent(axisDim, seriesDtos) {
 	        var dataExtent = [Infinity, -Infinity];
 
-	        each(seriesModels, function (seriesModel) {
-	            var seriesData = seriesModel.getData();
+	        each(seriesDtos, function (seriesDto) {
+	            var seriesData = seriesDto.getData();
 	            if (seriesData) {
-	                each(seriesModel.coordDimToDataDim(axisDim), function (dim) {
+	                each(seriesDto.coordDimToDataDim(axisDim), function (dim) {
 	                    var seriesExtent = seriesData.getDataExtent(dim);
 	                    seriesExtent[0] < dataExtent[0] && (dataExtent[0] = seriesExtent[0]);
 	                    seriesExtent[1] > dataExtent[1] && (dataExtent[1] = seriesExtent[1]);
@@ -31376,8 +31376,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function calculateDataWindow(opt, dataExtent, axisProxy) {
-	        var axisModel = axisProxy.getAxisModel();
-	        var scale = axisModel.axis.scale;
+	        var axisDto = axisProxy.getAxisDto();
+	        var scale = axisDto.axis.scale;
 	        var percentExtent = [0, 100];
 	        var percentWindow = [
 	            opt.start,
@@ -31389,7 +31389,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // window should be based on min/max/0, but should not be
 	        // based on the extent of filtered data.
 	        dataExtent = dataExtent.slice();
-	        fixExtendByAxis(dataExtent, axisModel, scale);
+	        fixExtendByAxis(dataExtent, axisDto, scale);
 
 	        each(['startValue', 'endValue'], function (prop) {
 	            valueWindow.push(
@@ -31434,16 +31434,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        };
 	    }
 
-	    function fixExtendByAxis(dataExtent, axisModel, scale) {
+	    function fixExtendByAxis(dataExtent, axisDto, scale) {
 	        each(['min', 'max'], function (minMax, index) {
-	            var axisMax = axisModel.get(minMax, true);
+	            var axisMax = axisDto.get(minMax, true);
 	            // Consider 'dataMin', 'dataMax'
 	            if (axisMax != null && (axisMax + '').toLowerCase() !== 'data' + minMax) {
 	                dataExtent[index] = scale.parse(axisMax);
 	            }
 	        });
 
-	        if (!axisModel.get('scale', true)) {
+	        if (!axisDto.get('scale', true)) {
 	            dataExtent[0] > 0 && (dataExtent[0] = 0);
 	            dataExtent[1] < 0 && (dataExtent[1] = 0);
 	        }
@@ -31451,8 +31451,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return dataExtent;
 	    }
 
-	    function setAxisModel(axisProxy, isRestore) {
-	        var axisModel = axisProxy.getAxisModel();
+	    function setAxisDto(axisProxy, isRestore) {
+	        var axisDto = axisProxy.getAxisDto();
 
 	        var percentWindow = axisProxy._percentWindow;
 	        var valueWindow = axisProxy._valueWindow;
@@ -31469,7 +31469,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var useOrigin = isRestore || isFull || invalidPrecision;
 
-	        axisModel.setRange && axisModel.setRange(
+	        axisDto.setRange && axisDto.setRange(
 	            useOrigin ? null : +valueWindow[0].toFixed(precision),
 	            useOrigin ? null : +valueWindow[1].toFixed(precision)
 	        );
@@ -31491,9 +31491,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        type: 'dataZoom',
 
-	        render: function (dataZoomModel, ecModel, api, payload) {
-	            this.dataZoomModel = dataZoomModel;
-	            this.ecModel = ecModel;
+	        render: function (dataZoomDto, ecDto, api, payload) {
+	            this.dataZoomDto = dataZoomDto;
+	            this.ecDto = ecDto;
 	            this.api = api;
 	        },
 
@@ -31503,64 +31503,64 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @protected
 	         * @return {Object} {
 	         *                   cartesians: [
-	         *                       {model: coord0, axisModels: [axis1, axis3], coordIndex: 1},
-	         *                       {model: coord1, axisModels: [axis0, axis2], coordIndex: 0},
+	         *                       {Dto: coord0, axisDtos: [axis1, axis3], coordIndex: 1},
+	         *                       {Dto: coord1, axisDtos: [axis0, axis2], coordIndex: 0},
 	         *                       ...
 	         *                   ],  // cartesians must not be null/undefined.
 	         *                   polars: [
-	         *                       {model: coord0, axisModels: [axis4], coordIndex: 0},
+	         *                       {Dto: coord0, axisDtos: [axis4], coordIndex: 0},
 	         *                       ...
 	         *                   ],  // polars must not be null/undefined.
-	         *                   axisModels: [axis0, axis1, axis2, axis3, axis4]
-	         *                       // axisModels must not be null/undefined.
+	         *                   axisDtos: [axis0, axis1, axis2, axis3, axis4]
+	         *                       // axisDtos must not be null/undefined.
 	         *                  }
 	         */
 	        getTargetInfo: function () {
-	            var dataZoomModel = this.dataZoomModel;
-	            var ecModel = this.ecModel;
+	            var dataZoomDto = this.dataZoomDto;
+	            var ecDto = this.ecDto;
 	            var cartesians = [];
 	            var polars = [];
-	            var axisModels = [];
+	            var axisDtos = [];
 
-	            dataZoomModel.eachTargetAxis(function (dimNames, axisIndex) {
-	                var axisModel = ecModel.getComponent(dimNames.axis, axisIndex);
-	                if (axisModel) {
-	                    axisModels.push(axisModel);
+	            dataZoomDto.eachTargetAxis(function (dimNames, axisIndex) {
+	                var axisDto = ecDto.getComponent(dimNames.axis, axisIndex);
+	                if (axisDto) {
+	                    axisDtos.push(axisDto);
 
-	                    var gridIndex = axisModel.get('gridIndex');
-	                    var polarIndex = axisModel.get('polarIndex');
+	                    var gridIndex = axisDto.get('gridIndex');
+	                    var polarIndex = axisDto.get('polarIndex');
 
 	                    if (gridIndex != null) {
-	                        var coordModel = ecModel.getComponent('grid', gridIndex);
-	                        save(coordModel, axisModel, cartesians, gridIndex);
+	                        var coordDto = ecDto.getComponent('grid', gridIndex);
+	                        save(coordDto, axisDto, cartesians, gridIndex);
 	                    }
 	                    else if (polarIndex != null) {
-	                        var coordModel = ecModel.getComponent('polar', polarIndex);
-	                        save(coordModel, axisModel, polars, polarIndex);
+	                        var coordDto = ecDto.getComponent('polar', polarIndex);
+	                        save(coordDto, axisDto, polars, polarIndex);
 	                    }
 	                }
 	            }, this);
 
-	            function save(coordModel, axisModel, store, coordIndex) {
+	            function save(coordDto, axisDto, store, coordIndex) {
 	                var item;
 	                for (var i = 0; i < store.length; i++) {
-	                    if (store[i].model === coordModel) {
+	                    if (store[i].Dto === coordDto) {
 	                        item = store[i];
 	                        break;
 	                    }
 	                }
 	                if (!item) {
 	                    store.push(item = {
-	                        model: coordModel, axisModels: [], coordIndex: coordIndex
+	                        Dto: coordDto, axisDtos: [], coordIndex: coordIndex
 	                    });
 	                }
-	                item.axisModels.push(axisModel);
+	                item.axisDtos.push(axisDto);
 	            }
 
 	            return {
 	                cartesians: cartesians,
 	                polars: polars,
-	                axisModels: axisModels
+	                axisDtos: axisDtos
 	            };
 	        }
 
@@ -31573,13 +31573,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @file Data zoom model
+	 * @file Data zoom Dto
 	 */
 
 
-	    var DataZoomModel = __webpack_require__(292);
+	    var DataZoomDto = __webpack_require__(292);
 
-	    var SliderZoomModel = DataZoomModel.extend({
+	    var SliderZoomDto = DataZoomDto.extend({
 
 	        type: 'dataZoom.slider',
 
@@ -31621,12 +31621,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @override
 	         */
 	        mergeOption: function (option) {
-	            SliderZoomModel.superApply(this, 'mergeOption', arguments);
+	            SliderZoomDto.superApply(this, 'mergeOption', arguments);
 	        }
 
 	    });
 
-	    module.exports = SliderZoomModel;
+	    module.exports = SliderZoomDto;
 
 
 
@@ -31664,7 +31664,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        type: 'dataZoom.slider',
 
-	        init: function (ecModel, api) {
+	        init: function (ecDto, api) {
 
 	            /**
 	             * @private
@@ -31724,20 +31724,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @override
 	         */
-	        render: function (dataZoomModel, ecModel, api, payload) {
+	        render: function (dataZoomDto, ecDto, api, payload) {
 	            SliderZoomView.superApply(this, 'render', arguments);
 
 	            throttle.createOrUpdate(
 	                this,
 	                '_dispatchZoomAction',
-	                this.dataZoomModel.get('throttle'),
+	                this.dataZoomDto.get('throttle'),
 	                'fixRate'
 	            );
 
-	            this._orient = dataZoomModel.get('orient');
-	            this._halfHandleSize = mathRound(dataZoomModel.get('handleSize') / 2);
+	            this._orient = dataZoomDto.get('orient');
+	            this._halfHandleSize = mathRound(dataZoomDto.get('handleSize') / 2);
 
-	            if (this.dataZoomModel.get('show') === false) {
+	            if (this.dataZoomDto.get('show') === false) {
 	                this.group.removeAll();
 	                return;
 	            }
@@ -31791,7 +31791,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @private
 	         */
 	        _resetLocation: function () {
-	            var dataZoomModel = this.dataZoomModel;
+	            var dataZoomDto = this.dataZoomDto;
 	            var api = this.api;
 
 	            // If some of x/y/width/height are not specified,
@@ -31817,7 +31817,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            // Do not write back to option and replace value 'ph', because
 	            // the 'ph' value should be recalculated when resize.
-	            var layoutParams = layout.getLayoutParams(dataZoomModel.option);
+	            var layoutParams = layout.getLayoutParams(dataZoomDto.option);
 
 	            // Replace the placeholder value.
 	            zrUtil.each(['right', 'top', 'width', 'height'], function (name) {
@@ -31829,7 +31829,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var layoutRect = layout.getLayoutRect(
 	                layoutParams,
 	                ecSize,
-	                dataZoomModel.padding
+	                dataZoomDto.padding
 	            );
 
 	            this._location = {x: layoutRect.x, y: layoutRect.y};
@@ -31846,8 +31846,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var orient = this._orient;
 
 	            // Just use the first axis to determine mapping.
-	            var targetAxisModel = this.dataZoomModel.getFirstTargetAxisModel();
-	            var inverse = targetAxisModel && targetAxisModel.get('inverse');
+	            var targetAxisDto = this.dataZoomDto.getFirstTargetAxisDto();
+	            var inverse = targetAxisDto && targetAxisDto.get('inverse');
 
 	            var barGroup = this._displayables.barGroup;
 	            var otherAxisInverse = (this._dataShadowInfo || {}).otherAxisInverse;
@@ -31883,7 +31883,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 
 	        _renderBackground : function () {
-	            var dataZoomModel = this.dataZoomModel;
+	            var dataZoomDto = this.dataZoomDto;
 	            var size = this._size;
 
 	            this._displayables.barGroup.add(new Rect({
@@ -31892,7 +31892,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    x: 0, y: 0, width: size[0], height: size[1]
 	                },
 	                style: {
-	                    fill: dataZoomModel.get('backgroundColor')
+	                    fill: dataZoomDto.get('backgroundColor')
 	                }
 	            }));
 	        },
@@ -31905,10 +31905,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            var size = this._size;
-	            var seriesModel = info.series;
-	            var data = seriesModel.getRawData();
-	            var otherDim = seriesModel.getShadowDim
-	                ? seriesModel.getShadowDim() // @see candlestick
+	            var seriesDto = info.series;
+	            var data = seriesDto.getRawData();
+	            var otherDim = seriesDto.getShadowDim
+	                ? seriesDto.getShadowDim() // @see candlestick
 	                : info.otherDim;
 
 	            var otherDataExtent = data.getDataExtent(otherDim);
@@ -31945,15 +31945,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            this._displayables.barGroup.add(new graphic.Polyline({
 	                shape: {points: points},
-	                style: {fill: this.dataZoomModel.get('dataBackgroundColor'), lineWidth: 0},
+	                style: {fill: this.dataZoomDto.get('dataBackgroundColor'), lineWidth: 0},
 	                silent: true,
 	                z2: -20
 	            }));
 	        },
 
 	        _prepareDataShadowInfo: function () {
-	            var dataZoomModel = this.dataZoomModel;
-	            var showDataShadow = dataZoomModel.get('showDataShadow');
+	            var dataZoomDto = this.dataZoomDto;
+	            var showDataShadow = dataZoomDto.get('showDataShadow');
 
 	            if (showDataShadow === false) {
 	                return;
@@ -31961,20 +31961,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            // Find a representative series.
 	            var result;
-	            var ecModel = this.ecModel;
+	            var ecDto = this.ecDto;
 
-	            dataZoomModel.eachTargetAxis(function (dimNames, axisIndex) {
-	                var seriesModels = dataZoomModel
+	            dataZoomDto.eachTargetAxis(function (dimNames, axisIndex) {
+	                var seriesDtos = dataZoomDto
 	                    .getAxisProxy(dimNames.name, axisIndex)
-	                    .getTargetSeriesModels();
+	                    .getTargetSeriesDtos();
 
-	                zrUtil.each(seriesModels, function (seriesModel) {
+	                zrUtil.each(seriesDtos, function (seriesDto) {
 	                    if (result) {
 	                        return;
 	                    }
 
 	                    if (showDataShadow !== true && zrUtil.indexOf(
-	                            SHOW_DATA_SHADOW_SERIES_TYPE, seriesModel.get('type')
+	                            SHOW_DATA_SHADOW_SERIES_TYPE, seriesDto.get('type')
 	                        ) < 0
 	                    ) {
 	                        return;
@@ -31982,14 +31982,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                    var otherDim = getOtherDim(dimNames.name);
 
-	                    var thisAxis = ecModel.getComponent(dimNames.axis, axisIndex).axis;
+	                    var thisAxis = ecDto.getComponent(dimNames.axis, axisIndex).axis;
 
 	                    result = {
 	                        thisAxis: thisAxis,
-	                        series: seriesModel,
+	                        series: seriesDto,
 	                        thisDim: dimNames.name,
 	                        otherDim: otherDim,
-	                        otherAxisInverse: seriesModel
+	                        otherAxisInverse: seriesDto
 	                            .coordinateSystem.getOtherAxis(thisAxis).inverse
 	                    };
 
@@ -32015,7 +32015,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                onmouseover: bind(this._showDataInfo, this, true),
 	                onmouseout: bind(this._showDataInfo, this, false),
 	                style: {
-	                    fill: this.dataZoomModel.get('fillerColor'),
+	                    fill: this.dataZoomDto.get('fillerColor'),
 	                    // text: ':::',
 	                    textPosition : 'inside'
 	                }
@@ -32031,7 +32031,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    height: size[1]
 	                },
 	                style: {
-	                    stroke: this.dataZoomModel.get('dataBackgroundColor'),
+	                    stroke: this.dataZoomDto.get('dataBackgroundColor'),
 	                    lineWidth: DEFAULT_FRAME_BORDER_WIDTH,
 	                    fill: 'rgba(0,0,0,0)'
 	                }
@@ -32041,7 +32041,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                barGroup.add(handles[handleIndex] = new Rect({
 	                    style: {
-	                        fill: this.dataZoomModel.get('handleColor')
+	                        fill: this.dataZoomDto.get('handleColor')
 	                    },
 	                    cursor: 'move',
 	                    draggable: true,
@@ -32051,7 +32051,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    onmouseout: bind(this._showDataInfo, this, false)
 	                }));
 
-	                var textStyleModel = this.dataZoomModel.textStyleModel;
+	                var textStyleDto = this.dataZoomDto.textStyleDto;
 
 	                this.group.add(
 	                    handleLabels[handleIndex] = new graphic.Text({
@@ -32061,8 +32061,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        x: 0, y: 0, text: '',
 	                        textVerticalAlign: 'middle',
 	                        textAlign: 'center',
-	                        fill: textStyleModel.getTextColor(),
-	                        textFont: textStyleModel.getFont()
+	                        fill: textStyleDto.getTextColor(),
+	                        textFont: textStyleDto.getFont()
 	                    }
 	                }));
 
@@ -32073,7 +32073,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @private
 	         */
 	        _resetInterval: function () {
-	            var range = this._range = this.dataZoomModel.getPercentRange();
+	            var range = this._range = this.dataZoomDto.getPercentRange();
 	            var viewExtent = this._getViewExtent();
 
 	            this._handleEnds = [
@@ -32096,7 +32096,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                delta,
 	                handleEnds,
 	                viewExtend,
-	                (handleIndex === 'all' || this.dataZoomModel.get('zoomLock'))
+	                (handleIndex === 'all' || this.dataZoomDto.get('zoomLock'))
 	                    ? 'rigid' : 'cross',
 	                handleIndex
 	            );
@@ -32146,7 +32146,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @private
 	         */
 	        _updateDataInfo: function () {
-	            var dataZoomModel = this.dataZoomModel;
+	            var dataZoomDto = this.dataZoomDto;
 	            var displaybles = this._displayables;
 	            var handleLabels = displaybles.handleLabels;
 	            var orient = this._orient;
@@ -32154,16 +32154,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            // FIXME
 	            // date型，支持formatter，autoformatter（ec2 date.getAutoFormatter）
-	            if (dataZoomModel.get('showDetail')) {
+	            if (dataZoomDto.get('showDetail')) {
 	                var dataInterval;
 	                var axis;
-	                dataZoomModel.eachTargetAxis(function (dimNames, axisIndex) {
+	                dataZoomDto.eachTargetAxis(function (dimNames, axisIndex) {
 	                    // Using dataInterval of the first axis.
 	                    if (!dataInterval) {
-	                        dataInterval = dataZoomModel
+	                        dataInterval = dataZoomDto
 	                            .getAxisProxy(dimNames.name, axisIndex)
 	                            .getDataValueWindow();
-	                        axis = this.ecModel.getComponent(dimNames.axis, axisIndex).axis;
+	                        axis = this.ecDto.getComponent(dimNames.axis, axisIndex).axis;
 	                    }
 	                }, this);
 
@@ -32211,13 +32211,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @private
 	         */
 	        _formatLabel: function (value, axis) {
-	            var dataZoomModel = this.dataZoomModel;
-	            var labelFormatter = dataZoomModel.get('labelFormatter');
+	            var dataZoomDto = this.dataZoomDto;
+	            var labelFormatter = dataZoomDto.get('labelFormatter');
 	            if (zrUtil.isFunction(labelFormatter)) {
 	                return labelFormatter(value);
 	            }
 
-	            var labelPrecision = dataZoomModel.get('labelPrecision');
+	            var labelPrecision = dataZoomDto.get('labelPrecision');
 	            if (labelPrecision == null || labelPrecision === 'auto') {
 	                labelPrecision = axis.getPixelPrecision();
 	            }
@@ -32259,7 +32259,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._updateInterval(handleIndex, vertex[0]);
 	            this._updateView();
 
-	            if (this.dataZoomModel.get('realtime')) {
+	            if (this.dataZoomDto.get('realtime')) {
 	                this._dispatchZoomAction();
 	            }
 	        },
@@ -32280,7 +32280,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.api.dispatchAction({
 	                type: 'dataZoom',
 	                from: this.uid,
-	                dataZoomId: this.dataZoomModel.id,
+	                dataZoomId: this.dataZoomDto.id,
 	                start: range[0],
 	                end: range[1]
 	            });
@@ -32305,7 +32305,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // 判断是catesian还是polar
 	            var rect;
 	            if (targetInfo.cartesians.length) {
-	                rect = targetInfo.cartesians[0].model.coordinateSystem.getRect();
+	                rect = targetInfo.cartesians[0].Dto.coordinateSystem.getRect();
 	            }
 	            else { // Polar
 	                // FIXME
@@ -32356,9 +32356,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *      频繁调用时，按规律心跳执行
 	     *      配成：trailing：true；debounce：false 即可
 	     * 注意：
-	     *     根据model更新view的时候，可以使用throttle，
-	     *     但是根据view更新model的时候，避免使用这种延迟更新的方式。
-	     *     因为这可能导致model和server同步出现问题。
+	     *     根据Dto更新view的时候，可以使用throttle，
+	     *     但是根据view更新Dto的时候，避免使用这种延迟更新的方式。
+	     *     因为这可能导致Dto和server同步出现问题。
 	     *
 	     * @public
 	     * @param {(Function|Array.<Function>)} fn 需要调用的函数
@@ -32483,7 +32483,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *     throttle.createOrUpdate(
 	     *         this,
 	     *         '_dispatchAction',
-	     *         this.model.get('throttle'),
+	     *         this.Dto.get('throttle'),
 	     *         'fixRate'
 	     *     );
 	     * };
@@ -32599,7 +32599,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @file Data zoom model
+	 * @file Data zoom Dto
 	 */
 
 
@@ -32635,7 +32635,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @override
 	         */
-	        init: function (ecModel, api) {
+	        init: function (ecDto, api) {
 	            /**
 	             * 'throttle' is used in this.dispatchAction, so we save range
 	             * to avoid missing some 'pan' info.
@@ -32648,31 +32648,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @override
 	         */
-	        render: function (dataZoomModel, ecModel, api, payload) {
+	        render: function (dataZoomDto, ecDto, api, payload) {
 	            InsideZoomView.superApply(this, 'render', arguments);
 
 	            // Notice: origin this._range should be maintained, and should not be re-fetched
-	            // from dataZoomModel when payload.type is 'dataZoom', otherwise 'pan' or 'zoom'
+	            // from dataZoomDto when payload.type is 'dataZoom', otherwise 'pan' or 'zoom'
 	            // info will be missed because of 'throttle' of this.dispatchAction.
-	            if (roams.shouldRecordRange(payload, dataZoomModel.id)) {
-	                this._range = dataZoomModel.getPercentRange();
+	            if (roams.shouldRecordRange(payload, dataZoomDto.id)) {
+	                this._range = dataZoomDto.getPercentRange();
 	            }
 
 	            // Reset controllers.
 	            var coordInfoList = this.getTargetInfo().cartesians;
 	            var allCoordIds = zrUtil.map(coordInfoList, function (coordInfo) {
-	                return roams.generateCoordId(coordInfo.model);
+	                return roams.generateCoordId(coordInfo.Dto);
 	            });
 	            zrUtil.each(coordInfoList, function (coordInfo) {
-	                var coordModel = coordInfo.model;
+	                var coordDto = coordInfo.Dto;
 	                roams.register(
 	                    api,
 	                    {
-	                        coordId: roams.generateCoordId(coordModel),
+	                        coordId: roams.generateCoordId(coordDto),
 	                        allCoordIds: allCoordIds,
-	                        coordinateSystem: coordModel.coordinateSystem,
-	                        dataZoomId: dataZoomModel.id,
-	                        throttleRage: dataZoomModel.get('throttle', true),
+	                        coordinateSystem: coordDto.coordinateSystem,
+	                        dataZoomId: dataZoomDto.id,
+	                        throttleRage: dataZoomDto.get('throttle', true),
 	                        panGetRange: bind(this._onPan, this, coordInfo),
 	                        zoomGetRange: bind(this._onZoom, this, coordInfo)
 	                    }
@@ -32687,7 +32687,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @override
 	         */
 	        remove: function () {
-	            roams.unregister(this.api, this.dataZoomModel.id);
+	            roams.unregister(this.api, this.dataZoomDto.id);
 	            InsideZoomView.superApply(this, 'remove', arguments);
 	            this._range = null;
 	        },
@@ -32696,7 +32696,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @override
 	         */
 	        dispose: function () {
-	            roams.unregister(this.api, this.dataZoomModel.id);
+	            roams.unregister(this.api, this.dataZoomDto.id);
 	            InsideZoomView.superApply(this, 'dispose', arguments);
 	            this._range = null;
 	        },
@@ -32716,16 +32716,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @private
 	         */
 	        _onZoom: function (coordInfo, controller, scale, mouseX, mouseY) {
-	            var dataZoomModel = this.dataZoomModel;
+	            var dataZoomDto = this.dataZoomDto;
 
-	            if (dataZoomModel.option.zoomLock) {
+	            if (dataZoomDto.option.zoomLock) {
 	                return this._range;
 	            }
 
 	            return (
 	                this._range = scaleCartesian(
 	                    1 / scale, [mouseX, mouseY], this._range,
-	                    controller, coordInfo, dataZoomModel
+	                    controller, coordInfo, dataZoomDto
 	                )
 	            );
 	        }
@@ -32736,12 +32736,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        range = range.slice();
 
 	        // Calculate transform by the first axis.
-	        var axisModel = coordInfo.axisModels[0];
-	        if (!axisModel) {
+	        var axisDto = coordInfo.axisDtos[0];
+	        if (!axisDto) {
 	            return;
 	        }
 
-	        var directionInfo = getDirectionInfo(pixelDeltas, axisModel, controller);
+	        var directionInfo = getDirectionInfo(pixelDeltas, axisDto, controller);
 
 	        var percentDelta = directionInfo.signal
 	            * (range[1] - range[0])
@@ -32757,16 +32757,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return range;
 	    }
 
-	    function scaleCartesian(scale, mousePoint, range, controller, coordInfo, dataZoomModel) {
+	    function scaleCartesian(scale, mousePoint, range, controller, coordInfo, dataZoomDto) {
 	        range = range.slice();
 
 	        // Calculate transform by the first axis.
-	        var axisModel = coordInfo.axisModels[0];
-	        if (!axisModel) {
+	        var axisDto = coordInfo.axisDtos[0];
+	        if (!axisDto) {
 	            return;
 	        }
 
-	        var directionInfo = getDirectionInfo(mousePoint, axisModel, controller);
+	        var directionInfo = getDirectionInfo(mousePoint, axisDto, controller);
 
 	        var mouse = directionInfo.pixel - directionInfo.pixelStart;
 	        var percentPoint = mouse / directionInfo.pixelLength * (range[1] - range[0]) + range[0];
@@ -32778,8 +32778,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return fixRange(range);
 	    }
 
-	    function getDirectionInfo(xy, axisModel, controller) {
-	        var axis = axisModel.axis;
+	    function getDirectionInfo(xy, axisDto, controller) {
+	        var axis = axisDto.axis;
 	        var rect = controller.rectProvider();
 	        var ret = {};
 
@@ -32937,8 +32937,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @public
 	         */
-	        generateCoordId: function (coordModel) {
-	            return coordModel.type + '\0_' + coordModel.id;
+	        generateCoordId: function (coordDto) {
+	            return coordDto.type + '\0_' + coordDto.id;
 	        }
 	    };
 
@@ -33023,13 +33023,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var echarts = __webpack_require__(1);
 
-	    echarts.registerProcessor('filter', function (ecModel, api) {
+	    echarts.registerProcessor('filter', function (ecDto, api) {
 
-	        ecModel.eachComponent('dataZoom', function (dataZoomModel) {
-	            // We calculate window and reset axis here but not in model
+	        ecDto.eachComponent('dataZoom', function (dataZoomDto) {
+	            // We calculate window and reset axis here but not in Dto
 	            // init stage and not after action dispatch handler, because
 	            // reset should be called after seriesData.restoreData.
-	            dataZoomModel.eachTargetAxis(resetSingleAxis);
+	            dataZoomDto.eachTargetAxis(resetSingleAxis);
 
 	            // Caution: data zoom filtering is order sensitive when using
 	            // percent range and no min/max/scale set on axis.
@@ -33045,17 +33045,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // while sliding y-dataZoom will only change the range of yAxis.
 	            // So we should filter x-axis after reset x-axis immediately,
 	            // and then reset y-axis and filter y-axis.
-	            dataZoomModel.eachTargetAxis(filterSingleAxis);
+	            dataZoomDto.eachTargetAxis(filterSingleAxis);
 	        });
 
-	        ecModel.eachComponent('dataZoom', function (dataZoomModel) {
+	        ecDto.eachComponent('dataZoom', function (dataZoomDto) {
 	            // Fullfill all of the range props so that user
 	            // is able to get them from chart.getOption().
-	            var axisProxy = dataZoomModel.findRepresentativeAxisProxy();
+	            var axisProxy = dataZoomDto.findRepresentativeAxisProxy();
 	            var percentRange = axisProxy.getDataPercentWindow();
 	            var valueRange = axisProxy.getDataValueWindow();
 
-	            dataZoomModel.setRawRange({
+	            dataZoomDto.setRawRange({
 	                start: percentRange[0],
 	                end: percentRange[1],
 	                startValue: valueRange[0],
@@ -33064,12 +33064,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	    });
 
-	    function resetSingleAxis(dimNames, axisIndex, dataZoomModel) {
-	        dataZoomModel.getAxisProxy(dimNames.name, axisIndex).reset(dataZoomModel);
+	    function resetSingleAxis(dimNames, axisIndex, dataZoomDto) {
+	        dataZoomDto.getAxisProxy(dimNames.name, axisIndex).reset(dataZoomDto);
 	    }
 
-	    function filterSingleAxis(dimNames, axisIndex, dataZoomModel) {
-	        dataZoomModel.getAxisProxy(dimNames.name, axisIndex).filterData(dataZoomModel);
+	    function filterSingleAxis(dimNames, axisIndex, dataZoomDto) {
+	        dataZoomDto.getAxisProxy(dimNames.name, axisIndex).filterData(dataZoomDto);
 	    }
 
 
@@ -33085,33 +33085,33 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	    var zrUtil = __webpack_require__(3);
-	    var modelUtil = __webpack_require__(5);
+	    var DtoUtil = __webpack_require__(5);
 	    var echarts = __webpack_require__(1);
 
 
-	    echarts.registerAction('dataZoom', function (payload, ecModel) {
+	    echarts.registerAction('dataZoom', function (payload, ecDto) {
 
-	        var linkedNodesFinder = modelUtil.createLinkedNodesFinder(
-	            zrUtil.bind(ecModel.eachComponent, ecModel, 'dataZoom'),
-	            modelUtil.eachAxisDim,
-	            function (model, dimNames) {
-	                return model.get(dimNames.axisIndex);
+	        var linkedNodesFinder = DtoUtil.createLinkedNodesFinder(
+	            zrUtil.bind(ecDto.eachComponent, ecDto, 'dataZoom'),
+	            DtoUtil.eachAxisDim,
+	            function (Dto, dimNames) {
+	                return Dto.get(dimNames.axisIndex);
 	            }
 	        );
 
-	        var effectedModels = [];
+	        var effectedDtos = [];
 
-	        ecModel.eachComponent(
+	        ecDto.eachComponent(
 	            {mainType: 'dataZoom', query: payload},
-	            function (model, index) {
-	                effectedModels.push.apply(
-	                    effectedModels, linkedNodesFinder(model).nodes
+	            function (Dto, index) {
+	                effectedDtos.push.apply(
+	                    effectedDtos, linkedNodesFinder(Dto).nodes
 	                );
 	            }
 	        );
 
-	        zrUtil.each(effectedModels, function (dataZoomModel, index) {
-	            dataZoomModel.setRawRange({
+	        zrUtil.each(effectedDtos, function (dataZoomDto, index) {
+	            dataZoomDto.setRawRange({
 	                start: payload.start,
 	                end: payload.end,
 	                startValue: payload.startValue,
@@ -33160,16 +33160,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	
 
-	    var modelUtil = __webpack_require__(5);
+	    var DtoUtil = __webpack_require__(5);
 	    var zrUtil = __webpack_require__(3);
 
 	    function fillLabel(opt) {
-	        modelUtil.defaultEmphasis(
+	        DtoUtil.defaultEmphasis(
 	            opt.label,
-	            modelUtil.LABEL_OPTIONS
+	            DtoUtil.LABEL_OPTIONS
 	        );
 	    }
-	    var MarkPointModel = __webpack_require__(1).extendComponentModel({
+	    var MarkPointDto = __webpack_require__(1).extendComponentDto({
 
 	        type: 'markPoint',
 
@@ -33177,21 +33177,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @overrite
 	         */
-	        init: function (option, parentModel, ecModel, extraOpt) {
-	            this.mergeDefaultAndTheme(option, ecModel);
-	            this.mergeOption(option, ecModel, extraOpt.createdBySelf, true);
+	        init: function (option, parentDto, ecDto, extraOpt) {
+	            this.mergeDefaultAndTheme(option, ecDto);
+	            this.mergeOption(option, ecDto, extraOpt.createdBySelf, true);
 	        },
 
-	        mergeOption: function (newOpt, ecModel, createdBySelf, isInit) {
+	        mergeOption: function (newOpt, ecDto, createdBySelf, isInit) {
 	            if (!createdBySelf) {
-	                ecModel.eachSeries(function (seriesModel) {
-	                    var markPointOpt = seriesModel.get('markPoint');
-	                    var mpModel = seriesModel.markPointModel;
+	                ecDto.eachSeries(function (seriesDto) {
+	                    var markPointOpt = seriesDto.get('markPoint');
+	                    var mpDto = seriesDto.markPointDto;
 	                    if (!markPointOpt || !markPointOpt.data) {
-	                        seriesModel.markPointModel = null;
+	                        seriesDto.markPointDto = null;
 	                        return;
 	                    }
-	                    if (!mpModel) {
+	                    if (!mpDto) {
 	                        if (isInit) {
 	                            // Default label emphasis `position` and `show`
 	                            fillLabel(markPointOpt);
@@ -33200,18 +33200,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        var opt = {
 	                            mainType: 'markPoint',
 	                            // Use the same series index and name
-	                            seriesIndex: seriesModel.seriesIndex,
-	                            name: seriesModel.name,
+	                            seriesIndex: seriesDto.seriesIndex,
+	                            name: seriesDto.name,
 	                            createdBySelf: true
 	                        };
-	                        mpModel = new MarkPointModel(
-	                            markPointOpt, this, ecModel, opt
+	                        mpDto = new MarkPointDto(
+	                            markPointOpt, this, ecDto, opt
 	                        );
 	                    }
 	                    else {
-	                        mpModel.mergeOption(markPointOpt, ecModel, true);
+	                        mpDto.mergeOption(markPointOpt, ecDto, true);
 	                    }
-	                    seriesModel.markPointModel = mpModel;
+	                    seriesDto.markPointDto = mpDto;
 	                }, this);
 	            }
 	        },
@@ -33243,7 +33243,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    });
 
-	    module.exports = MarkPointModel;
+	    module.exports = MarkPointDto;
 
 
 /***/ },
@@ -33255,7 +33255,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var SymbolDraw = __webpack_require__(99);
 	    var zrUtil = __webpack_require__(3);
 	    var formatUtil = __webpack_require__(6);
-	    var modelUtil = __webpack_require__(5);
+	    var DtoUtil = __webpack_require__(5);
 	    var numberUtil = __webpack_require__(7);
 
 	    var addCommas = formatUtil.addCommas;
@@ -33265,13 +33265,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var markerHelper = __webpack_require__(322);
 
-	    function updateMarkerLayout(mpData, seriesModel, api) {
-	        var coordSys = seriesModel.coordinateSystem;
+	    function updateMarkerLayout(mpData, seriesDto, api) {
+	        var coordSys = seriesDto.coordinateSystem;
 	        mpData.each(function (idx) {
-	            var itemModel = mpData.getItemModel(idx);
+	            var itemDto = mpData.getItemDto(idx);
 	            var point;
-	            var xPx = itemModel.getShallow('x');
-	            var yPx = itemModel.getShallow('y');
+	            var xPx = itemDto.getShallow('x');
+	            var yPx = itemDto.getShallow('y');
 	            if (xPx != null && yPx != null) {
 	                point = [
 	                    numberUtil.parsePercent(xPx, api.getWidth()),
@@ -33279,9 +33279,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                ];
 	            }
 	            // Chart like bar may have there own marker positioning logic
-	            else if (seriesModel.getMarkerPosition) {
+	            else if (seriesDto.getMarkerPosition) {
 	                // Use the getMarkerPoisition
-	                point = seriesModel.getMarkerPosition(
+	                point = seriesDto.getMarkerPosition(
 	                    mpData.getValues(mpData.dimensions, idx)
 	                );
 	            }
@@ -33316,7 +33316,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 
-	    zrUtil.defaults(markPointFormatMixin, modelUtil.dataFormatMixin);
+	    zrUtil.defaults(markPointFormatMixin, DtoUtil.dataFormatMixin);
 
 	    __webpack_require__(1).extendComponentView({
 
@@ -33326,15 +33326,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._symbolDrawMap = {};
 	        },
 
-	        render: function (markPointModel, ecModel, api) {
+	        render: function (markPointDto, ecDto, api) {
 	            var symbolDrawMap = this._symbolDrawMap;
 	            for (var name in symbolDrawMap) {
 	                symbolDrawMap[name].__keep = false;
 	            }
 
-	            ecModel.eachSeries(function (seriesModel) {
-	                var mpModel = seriesModel.markPointModel;
-	                mpModel && this._renderSeriesMP(seriesModel, mpModel, api);
+	            ecDto.eachSeries(function (seriesDto) {
+	                var mpDto = seriesDto.markPointDto;
+	                mpDto && this._renderSeriesMP(seriesDto, mpDto, api);
 	            }, this);
 
 	            for (var name in symbolDrawMap) {
@@ -33345,20 +33345,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        },
 
-	        updateLayout: function (markPointModel, ecModel, api) {
-	            ecModel.eachSeries(function (seriesModel) {
-	                var mpModel = seriesModel.markPointModel;
-	                if (mpModel) {
-	                    updateMarkerLayout(mpModel.getData(), seriesModel, api);
-	                    this._symbolDrawMap[seriesModel.name].updateLayout(mpModel);
+	        updateLayout: function (markPointDto, ecDto, api) {
+	            ecDto.eachSeries(function (seriesDto) {
+	                var mpDto = seriesDto.markPointDto;
+	                if (mpDto) {
+	                    updateMarkerLayout(mpDto.getData(), seriesDto, api);
+	                    this._symbolDrawMap[seriesDto.name].updateLayout(mpDto);
 	                }
 	            }, this);
 	        },
 
-	        _renderSeriesMP: function (seriesModel, mpModel, api) {
-	            var coordSys = seriesModel.coordinateSystem;
-	            var seriesName = seriesModel.name;
-	            var seriesData = seriesModel.getData();
+	        _renderSeriesMP: function (seriesDto, mpDto, api) {
+	            var coordSys = seriesDto.coordinateSystem;
+	            var seriesName = seriesDto.name;
+	            var seriesData = seriesDto.getData();
 
 	            var symbolDrawMap = this._symbolDrawMap;
 	            var symbolDraw = symbolDrawMap[seriesName];
@@ -33366,28 +33366,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	                symbolDraw = symbolDrawMap[seriesName] = new SymbolDraw();
 	            }
 
-	            var mpData = createList(coordSys, seriesModel, mpModel);
+	            var mpData = createList(coordSys, seriesDto, mpDto);
 
 	            // FIXME
-	            zrUtil.mixin(mpModel, markPointFormatMixin);
-	            mpModel.setData(mpData);
+	            zrUtil.mixin(mpDto, markPointFormatMixin);
+	            mpDto.setData(mpData);
 
-	            updateMarkerLayout(mpModel.getData(), seriesModel, api);
+	            updateMarkerLayout(mpDto.getData(), seriesDto, api);
 
 	            mpData.each(function (idx) {
-	                var itemModel = mpData.getItemModel(idx);
-	                var symbolSize = itemModel.getShallow('symbolSize');
+	                var itemDto = mpData.getItemDto(idx);
+	                var symbolSize = itemDto.getShallow('symbolSize');
 	                if (typeof symbolSize === 'function') {
 	                    // FIXME 这里不兼容 ECharts 2.x，2.x 貌似参数是整个数据？
 	                    symbolSize = symbolSize(
-	                        mpModel.getRawValue(idx), mpModel.getDataParams(idx)
+	                        mpDto.getRawValue(idx), mpDto.getDataParams(idx)
 	                    );
 	                }
 	                mpData.setItemVisual(idx, {
 	                    symbolSize: symbolSize,
-	                    color: itemModel.get('itemStyle.normal.color')
+	                    color: itemDto.get('itemStyle.normal.color')
 	                        || seriesData.getVisual('color'),
-	                    symbol: itemModel.getShallow('symbol')
+	                    symbol: itemDto.getShallow('symbol')
 	                });
 	            });
 
@@ -33395,11 +33395,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            symbolDraw.updateData(mpData);
 	            this.group.add(symbolDraw.group);
 
-	            // Set host model for tooltip
+	            // Set host Dto for tooltip
 	            // FIXME
 	            mpData.eachItemGraphicEl(function (el) {
 	                el.traverse(function (child) {
-	                    child.dataModel = mpModel;
+	                    child.dataDto = mpDto;
 	                });
 	            });
 
@@ -33410,15 +33410,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * @inner
 	     * @param {module:echarts/coord/*} [coordSys]
-	     * @param {module:echarts/model/Series} seriesModel
-	     * @param {module:echarts/model/Model} mpModel
+	     * @param {module:echarts/Dto/Series} seriesDto
+	     * @param {module:echarts/Dto/Dto} mpDto
 	     */
-	    function createList(coordSys, seriesModel, mpModel) {
+	    function createList(coordSys, seriesDto, mpDto) {
 	        var coordDimsInfos;
 	        if (coordSys) {
 	            coordDimsInfos = zrUtil.map(coordSys && coordSys.dimensions, function (coordDim) {
-	                var info = seriesModel.getData().getDimensionInfo(
-	                    seriesModel.coordDimToDataDim(coordDim)[0]
+	                var info = seriesDto.getData().getDimensionInfo(
+	                    seriesDto.coordDimToDataDim(coordDim)[0]
 	                ) || {}; // In map series data don't have lng and lat dimension. Fallback to same with coordSys
 	                info.name = coordDim;
 	                return info;
@@ -33431,9 +33431,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }];
 	        }
 
-	        var mpData = new List(coordDimsInfos, mpModel);
-	        var dataOpt = zrUtil.map(mpModel.get('data'), zrUtil.curry(
-	                markerHelper.dataTransform, seriesModel
+	        var mpData = new List(coordDimsInfos, mpDto);
+	        var dataOpt = zrUtil.map(mpDto.get('data'), zrUtil.curry(
+	                markerHelper.dataTransform, seriesDto
 	            ));
 	        if (coordSys) {
 	            dataOpt = zrUtil.filter(
@@ -33524,14 +33524,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Transform markPoint data item to format used in List by do the following
 	     * 1. Calculate statistic like `max`, `min`, `average`
 	     * 2. Convert `item.xAxis`, `item.yAxis` to `item.coord` array
-	     * @param  {module:echarts/model/Series} seriesModel
+	     * @param  {module:echarts/Dto/Series} seriesDto
 	     * @param  {module:echarts/coord/*} [coordSys]
 	     * @param  {Object} item
 	     * @return {Object}
 	     */
-	    var dataTransform = function (seriesModel, item) {
-	        var data = seriesModel.getData();
-	        var coordSys = seriesModel.coordinateSystem;
+	    var dataTransform = function (seriesDto, item) {
+	        var data = seriesDto.getData();
+	        var coordSys = seriesDto.coordinateSystem;
 
 	        // 1. If not specify the position with pixel directly
 	        // 2. If `coord` is not a data array. Which uses `xAxis`,
@@ -33542,7 +33542,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            && !zrUtil.isArray(item.coord)
 	            && coordSys
 	        ) {
-	            var axisInfo = getAxisInfo(item, data, coordSys, seriesModel);
+	            var axisInfo = getAxisInfo(item, data, coordSys, seriesDto);
 
 	            // Clone the option
 	            // Transform the properties xAxis, yAxis, radiusAxis, angleAxis, geoCoord to value
@@ -33574,21 +33574,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return item;
 	    };
 
-	    var getAxisInfo = function (item, data, coordSys, seriesModel) {
+	    var getAxisInfo = function (item, data, coordSys, seriesDto) {
 	        var ret = {};
 
 	        if (item.valueIndex != null || item.valueDim != null) {
 	            ret.valueDataDim = item.valueIndex != null
 	                ? data.getDimension(item.valueIndex) : item.valueDim;
-	            ret.valueAxis = coordSys.getAxis(seriesModel.dataDimToCoordDim(ret.valueDataDim));
+	            ret.valueAxis = coordSys.getAxis(seriesDto.dataDimToCoordDim(ret.valueDataDim));
 	            ret.baseAxis = coordSys.getOtherAxis(ret.valueAxis);
-	            ret.baseDataDim = seriesModel.coordDimToDataDim(ret.baseAxis.dim)[0];
+	            ret.baseDataDim = seriesDto.coordDimToDataDim(ret.baseAxis.dim)[0];
 	        }
 	        else {
-	            ret.baseAxis = seriesModel.getBaseAxis();
+	            ret.baseAxis = seriesDto.getBaseAxis();
 	            ret.valueAxis = coordSys.getOtherAxis(ret.baseAxis);
-	            ret.baseDataDim = seriesModel.coordDimToDataDim(ret.baseAxis.dim)[0];
-	            ret.valueDataDim = seriesModel.coordDimToDataDim(ret.valueAxis.dim)[0];
+	            ret.baseDataDim = seriesDto.coordDimToDataDim(ret.baseAxis.dim)[0];
+	            ret.valueDataDim = seriesDto.coordDimToDataDim(ret.valueAxis.dim)[0];
 	        }
 
 	        return ret;
@@ -33651,17 +33651,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	
 
-	    var modelUtil = __webpack_require__(5);
+	    var DtoUtil = __webpack_require__(5);
 	    var zrUtil = __webpack_require__(3);
 
 	    function fillLabel(opt) {
-	        modelUtil.defaultEmphasis(
+	        DtoUtil.defaultEmphasis(
 	            opt.label,
-	            modelUtil.LABEL_OPTIONS
+	            DtoUtil.LABEL_OPTIONS
 	        );
 	    }
 
-	    var MarkLineModel = __webpack_require__(1).extendComponentModel({
+	    var MarkLineDto = __webpack_require__(1).extendComponentDto({
 
 	        type: 'markLine',
 
@@ -33669,21 +33669,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @overrite
 	         */
-	        init: function (option, parentModel, ecModel, extraOpt) {
-	            this.mergeDefaultAndTheme(option, ecModel);
-	            this.mergeOption(option, ecModel, extraOpt.createdBySelf, true);
+	        init: function (option, parentDto, ecDto, extraOpt) {
+	            this.mergeDefaultAndTheme(option, ecDto);
+	            this.mergeOption(option, ecDto, extraOpt.createdBySelf, true);
 	        },
 
-	        mergeOption: function (newOpt, ecModel, createdBySelf, isInit) {
+	        mergeOption: function (newOpt, ecDto, createdBySelf, isInit) {
 	            if (!createdBySelf) {
-	                ecModel.eachSeries(function (seriesModel) {
-	                    var markLineOpt = seriesModel.get('markLine');
-	                    var mlModel = seriesModel.markLineModel;
+	                ecDto.eachSeries(function (seriesDto) {
+	                    var markLineOpt = seriesDto.get('markLine');
+	                    var mlDto = seriesDto.markLineDto;
 	                    if (!markLineOpt || !markLineOpt.data) {
-	                        seriesModel.markLineModel = null;
+	                        seriesDto.markLineDto = null;
 	                        return;
 	                    }
-	                    if (!mlModel) {
+	                    if (!mlDto) {
 	                        if (isInit) {
 	                            // Default label emphasis `position` and `show`
 	                            fillLabel(markLineOpt);
@@ -33700,18 +33700,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        var opt = {
 	                            mainType: 'markLine',
 	                            // Use the same series index and name
-	                            seriesIndex: seriesModel.seriesIndex,
-	                            name: seriesModel.name,
+	                            seriesIndex: seriesDto.seriesIndex,
+	                            name: seriesDto.name,
 	                            createdBySelf: true
 	                        };
-	                        mlModel = new MarkLineModel(
-	                            markLineOpt, this, ecModel, opt
+	                        mlDto = new MarkLineDto(
+	                            markLineOpt, this, ecDto, opt
 	                        );
 	                    }
 	                    else {
-	                        mlModel.mergeOption(markLineOpt, ecModel, true);
+	                        mlDto.mergeOption(markLineOpt, ecDto, true);
 	                    }
-	                    seriesModel.markLineModel = mlModel;
+	                    seriesDto.markLineDto = mlDto;
 	                }, this);
 	            }
 	        },
@@ -33750,7 +33750,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    });
 
-	    module.exports = MarkLineModel;
+	    module.exports = MarkLineDto;
 
 
 /***/ },
@@ -33762,7 +33762,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var zrUtil = __webpack_require__(3);
 	    var List = __webpack_require__(95);
 	    var formatUtil = __webpack_require__(6);
-	    var modelUtil = __webpack_require__(5);
+	    var DtoUtil = __webpack_require__(5);
 	    var numberUtil = __webpack_require__(7);
 
 	    var addCommas = formatUtil.addCommas;
@@ -33772,8 +33772,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var LineDraw = __webpack_require__(194);
 
-	    var markLineTransform = function (seriesModel, coordSys, mlModel, item) {
-	        var data = seriesModel.getData();
+	    var markLineTransform = function (seriesDto, coordSys, mlDto, item) {
+	        var data = seriesDto.getData();
 	        // Special type markLine like 'min', 'max', 'average'
 	        var mlType = item.type;
 
@@ -33798,7 +33798,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                value = zrUtil.retrieve(item.yAxis, item.xAxis);
 	            }
 	            else {
-	                var axisInfo = markerHelper.getAxisInfo(item, data, coordSys, seriesModel);
+	                var axisInfo = markerHelper.getAxisInfo(item, data, coordSys, seriesDto);
 	                valueDataDim = axisInfo.valueDataDim;
 	                valueAxis = axisInfo.valueAxis;
 	                value = markerHelper.numCalculate(data, valueDataDim, mlType);
@@ -33816,7 +33816,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            mlFrom.coord[baseIndex] = -Infinity;
 	            mlTo.coord[baseIndex] = Infinity;
 
-	            var precision = mlModel.get('precision');
+	            var precision = mlDto.get('precision');
 	            if (precision >= 0) {
 	                value = +value.toFixed(precision);
 	            }
@@ -33832,8 +33832,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        item = [
-	            markerHelper.dataTransform(seriesModel, item[0]),
-	            markerHelper.dataTransform(seriesModel, item[1]),
+	            markerHelper.dataTransform(seriesDto, item[0]),
+	            markerHelper.dataTransform(seriesDto, item[1]),
 	            zrUtil.extend({}, item[2])
 	        ];
 
@@ -33882,14 +33882,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    function updateSingleMarkerEndLayout(
-	        data, idx, isFrom, mlType, valueIndex, seriesModel, api
+	        data, idx, isFrom, mlType, valueIndex, seriesDto, api
 	    ) {
-	        var coordSys = seriesModel.coordinateSystem;
-	        var itemModel = data.getItemModel(idx);
+	        var coordSys = seriesDto.coordinateSystem;
+	        var itemDto = data.getItemDto(idx);
 
 	        var point;
-	        var xPx = itemModel.get('x');
-	        var yPx = itemModel.get('y');
+	        var xPx = itemDto.get('x');
+	        var yPx = itemDto.get('y');
 	        if (xPx != null && yPx != null) {
 	            point = [
 	                numberUtil.parsePercent(xPx, api.getWidth()),
@@ -33898,9 +33898,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        else {
 	            // Chart like bar may have there own marker positioning logic
-	            if (seriesModel.getMarkerPosition) {
+	            if (seriesDto.getMarkerPosition) {
 	                // Use the getMarkerPoisition
-	                point = seriesModel.getMarkerPosition(
+	                point = seriesDto.getMarkerPosition(
 	                    data.getValues(data.dimensions, idx)
 	                );
 	            }
@@ -33955,7 +33955,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 
-	    zrUtil.defaults(markLineFormatMixin, modelUtil.dataFormatMixin);
+	    zrUtil.defaults(markLineFormatMixin, DtoUtil.dataFormatMixin);
 
 	    __webpack_require__(1).extendComponentView({
 
@@ -33970,15 +33970,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._markLineMap = {};
 	        },
 
-	        render: function (markLineModel, ecModel, api) {
+	        render: function (markLineDto, ecDto, api) {
 	            var lineDrawMap = this._markLineMap;
 	            for (var name in lineDrawMap) {
 	                lineDrawMap[name].__keep = false;
 	            }
 
-	            ecModel.eachSeries(function (seriesModel) {
-	                var mlModel = seriesModel.markLineModel;
-	                mlModel && this._renderSeriesML(seriesModel, mlModel, ecModel, api);
+	            ecDto.eachSeries(function (seriesDto) {
+	                var mlDto = seriesDto.markLineDto;
+	                mlDto && this._renderSeriesML(seriesDto, mlDto, ecDto, api);
 	            }, this);
 
 	            for (var name in lineDrawMap) {
@@ -33988,20 +33988,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        },
 
-	        updateLayout: function (markLineModel, ecModel, api) {
-	            ecModel.eachSeries(function (seriesModel) {
-	                var mlModel = seriesModel.markLineModel;
-	                if (mlModel) {
-	                    var mlData = mlModel.getData();
-	                    var fromData = mlModel.__from;
-	                    var toData = mlModel.__to;
+	        updateLayout: function (markLineDto, ecDto, api) {
+	            ecDto.eachSeries(function (seriesDto) {
+	                var mlDto = seriesDto.markLineDto;
+	                if (mlDto) {
+	                    var mlData = mlDto.getData();
+	                    var fromData = mlDto.__from;
+	                    var toData = mlDto.__to;
 	                    // Update visual and layout of from symbol and to symbol
 	                    fromData.each(function (idx) {
-	                        var lineModel = mlData.getItemModel(idx);
-	                        var mlType = lineModel.get('type');
-	                        var valueIndex = lineModel.get('valueIndex');
-	                        updateSingleMarkerEndLayout(fromData, idx, true, mlType, valueIndex, seriesModel, api);
-	                        updateSingleMarkerEndLayout(toData, idx, false, mlType, valueIndex, seriesModel, api);
+	                        var lineDto = mlData.getItemDto(idx);
+	                        var mlType = lineDto.get('type');
+	                        var valueIndex = lineDto.get('valueIndex');
+	                        updateSingleMarkerEndLayout(fromData, idx, true, mlType, valueIndex, seriesDto, api);
+	                        updateSingleMarkerEndLayout(toData, idx, false, mlType, valueIndex, seriesDto, api);
 	                    });
 	                    // Update layout of line
 	                    mlData.each(function (idx) {
@@ -34011,15 +34011,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        ]);
 	                    });
 
-	                    this._markLineMap[seriesModel.name].updateLayout();
+	                    this._markLineMap[seriesDto.name].updateLayout();
 	                }
 	            }, this);
 	        },
 
-	        _renderSeriesML: function (seriesModel, mlModel, ecModel, api) {
-	            var coordSys = seriesModel.coordinateSystem;
-	            var seriesName = seriesModel.name;
-	            var seriesData = seriesModel.getData();
+	        _renderSeriesML: function (seriesDto, mlDto, ecDto, api) {
+	            var coordSys = seriesDto.coordinateSystem;
+	            var seriesName = seriesDto.name;
+	            var seriesData = seriesDto.getData();
 
 	            var lineDrawMap = this._markLineMap;
 	            var lineDraw = lineDrawMap[seriesName];
@@ -34028,20 +34028,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            this.group.add(lineDraw.group);
 
-	            var mlData = createList(coordSys, seriesModel, mlModel);
+	            var mlData = createList(coordSys, seriesDto, mlDto);
 
 	            var fromData = mlData.from;
 	            var toData = mlData.to;
 	            var lineData = mlData.line;
 
-	            mlModel.__from = fromData;
-	            mlModel.__to = toData;
+	            mlDto.__from = fromData;
+	            mlDto.__to = toData;
 	            // Line data for tooltip and formatter
-	            zrUtil.extend(mlModel, markLineFormatMixin);
-	            mlModel.setData(lineData);
+	            zrUtil.extend(mlDto, markLineFormatMixin);
+	            mlDto.setData(lineData);
 
-	            var symbolType = mlModel.get('symbol');
-	            var symbolSize = mlModel.get('symbolSize');
+	            var symbolType = mlDto.get('symbol');
+	            var symbolSize = mlDto.get('symbolSize');
 	            if (!zrUtil.isArray(symbolType)) {
 	                symbolType = [symbolType, symbolType];
 	            }
@@ -34051,16 +34051,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            // Update visual and layout of from symbol and to symbol
 	            mlData.from.each(function (idx) {
-	                var lineModel = lineData.getItemModel(idx);
-	                var mlType = lineModel.get('type');
-	                var valueIndex = lineModel.get('valueIndex');
+	                var lineDto = lineData.getItemDto(idx);
+	                var mlType = lineDto.get('type');
+	                var valueIndex = lineDto.get('valueIndex');
 	                updateDataVisualAndLayout(fromData, idx, true, mlType, valueIndex);
 	                updateDataVisualAndLayout(toData, idx, false, mlType, valueIndex);
 	            });
 
 	            // Update visual and layout of line
 	            lineData.each(function (idx) {
-	                var lineColor = lineData.getItemModel(idx).get('lineStyle.normal.color');
+	                var lineColor = lineData.getItemDto(idx).get('lineStyle.normal.color');
 	                lineData.setItemVisual(idx, {
 	                    color: lineColor || fromData.getItemVisual(idx, 'color')
 	                });
@@ -34079,25 +34079,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            lineDraw.updateData(lineData);
 
-	            // Set host model for tooltip
+	            // Set host Dto for tooltip
 	            // FIXME
 	            mlData.line.eachItemGraphicEl(function (el, idx) {
 	                el.traverse(function (child) {
-	                    child.dataModel = mlModel;
+	                    child.dataDto = mlDto;
 	                });
 	            });
 
 	            function updateDataVisualAndLayout(data, idx, isFrom, mlType, valueIndex) {
-	                var itemModel = data.getItemModel(idx);
+	                var itemDto = data.getItemDto(idx);
 
 	                updateSingleMarkerEndLayout(
-	                    data, idx, isFrom, mlType, valueIndex, seriesModel, api
+	                    data, idx, isFrom, mlType, valueIndex, seriesDto, api
 	                );
 
 	                data.setItemVisual(idx, {
-	                    symbolSize: itemModel.get('symbolSize') || symbolSize[isFrom ? 0 : 1],
-	                    symbol: itemModel.get('symbol', true) || symbolType[isFrom ? 0 : 1],
-	                    color: itemModel.get('itemStyle.normal.color') || seriesData.getVisual('color')
+	                    symbolSize: itemDto.get('symbolSize') || symbolSize[isFrom ? 0 : 1],
+	                    symbol: itemDto.get('symbol', true) || symbolType[isFrom ? 0 : 1],
+	                    color: itemDto.get('itemStyle.normal.color') || seriesData.getVisual('color')
 	                });
 	            }
 
@@ -34108,16 +34108,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * @inner
 	     * @param {module:echarts/coord/*} coordSys
-	     * @param {module:echarts/model/Series} seriesModel
-	     * @param {module:echarts/model/Model} mpModel
+	     * @param {module:echarts/Dto/Series} seriesDto
+	     * @param {module:echarts/Dto/Dto} mpDto
 	     */
-	    function createList(coordSys, seriesModel, mlModel) {
+	    function createList(coordSys, seriesDto, mlDto) {
 
 	        var coordDimsInfos;
 	        if (coordSys) {
 	            coordDimsInfos = zrUtil.map(coordSys && coordSys.dimensions, function (coordDim) {
-	                var info = seriesModel.getData().getDimensionInfo(
-	                    seriesModel.coordDimToDataDim(coordDim)[0]
+	                var info = seriesDto.getData().getDimensionInfo(
+	                    seriesDto.coordDimToDataDim(coordDim)[0]
 	                ) || {}; // In map series data don't have lng and lat dimension. Fallback to same with coordSys
 	                info.name = coordDim;
 	                return info;
@@ -34130,13 +34130,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }];
 	        }
 
-	        var fromData = new List(coordDimsInfos, mlModel);
-	        var toData = new List(coordDimsInfos, mlModel);
+	        var fromData = new List(coordDimsInfos, mlDto);
+	        var toData = new List(coordDimsInfos, mlDto);
 	        // No dimensions
-	        var lineData = new List([], mlModel);
+	        var lineData = new List([], mlDto);
 
-	        var optData = zrUtil.map(mlModel.get('data'), zrUtil.curry(
-	            markLineTransform, seriesModel, coordSys, mlModel
+	        var optData = zrUtil.map(mlDto.get('data'), zrUtil.curry(
+	            markLineTransform, seriesDto, coordSys, mlDto
 	        ));
 	        if (coordSys) {
 	            optData = zrUtil.filter(
@@ -34199,7 +34199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var featureManager = __webpack_require__(337);
 	    var zrUtil = __webpack_require__(3);
 
-	    var ToolboxModel = __webpack_require__(1).extendComponentModel({
+	    var ToolboxDto = __webpack_require__(1).extendComponentDto({
 
 	        type: 'toolbox',
 
@@ -34209,7 +34209,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 
 	        mergeDefaultAndTheme: function (option) {
-	            ToolboxModel.superApply(this, 'mergeDefaultAndTheme', arguments);
+	            ToolboxDto.superApply(this, 'mergeDefaultAndTheme', arguments);
 
 	            zrUtil.each(this.option.feature, function (featureOpt, featureName) {
 	                var Feature = featureManager.get(featureName);
@@ -34263,7 +34263,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    });
 
-	    module.exports = ToolboxModel;
+	    module.exports = ToolboxDto;
 
 
 /***/ },
@@ -34295,7 +34295,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var featureManager = __webpack_require__(337);
 	    var zrUtil = __webpack_require__(3);
 	    var graphic = __webpack_require__(42);
-	    var Model = __webpack_require__(8);
+	    var Dto = __webpack_require__(8);
 	    var DataDiffer = __webpack_require__(96);
 	    var listComponentHelper = __webpack_require__(269);
 	    var textContain = __webpack_require__(14);
@@ -34304,16 +34304,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        type: 'toolbox',
 
-	        render: function (toolboxModel, ecModel, api) {
+	        render: function (toolboxDto, ecDto, api) {
 	            var group = this.group;
 	            group.removeAll();
 
-	            if (!toolboxModel.get('show')) {
+	            if (!toolboxDto.get('show')) {
 	                return;
 	            }
 
-	            var itemSize = +toolboxModel.get('itemSize');
-	            var featureOpts = toolboxModel.get('feature') || {};
+	            var itemSize = +toolboxDto.get('itemSize');
+	            var featureOpts = toolboxDto.get('feature') || {};
 	            var features = this._features || (this._features = {});
 
 	            var featureNames = [];
@@ -34334,14 +34334,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	                var featureName = featureNames[newIndex];
 	                var oldName = featureNames[oldIndex];
 	                var featureOpt = featureOpts[featureName];
-	                var featureModel = new Model(featureOpt, toolboxModel, toolboxModel.ecModel);
+	                var featureDto = new Dto(featureOpt, toolboxDto, toolboxDto.ecDto);
 	                var feature;
 
 	                if (featureName && !oldName) { // Create
 	                    if (isUserFeatureName(featureName)) {
 	                        feature = {
-	                            model: featureModel,
-	                            onclick: featureModel.option.onclick,
+	                            Dto: featureDto,
+	                            onclick: featureDto.option.onclick,
 	                            featureName: featureName
 	                        };
 	                    }
@@ -34350,7 +34350,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        if (!Feature) {
 	                            return;
 	                        }
-	                        feature = new Feature(featureModel);
+	                        feature = new Feature(featureDto);
 	                    }
 	                    features[featureName] = feature;
 	                }
@@ -34360,22 +34360,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    if (!feature) {
 	                        return;
 	                    }
-	                    feature.model = featureModel;
+	                    feature.Dto = featureDto;
 	                }
 
 	                if (!featureName && oldName) {
-	                    feature.dispose && feature.dispose(ecModel, api);
+	                    feature.dispose && feature.dispose(ecDto, api);
 	                    return;
 	                }
 
-	                if (!featureModel.get('show') || feature.unusable) {
-	                    feature.remove && feature.remove(ecModel, api);
+	                if (!featureDto.get('show') || feature.unusable) {
+	                    feature.remove && feature.remove(ecDto, api);
 	                    return;
 	                }
 
-	                createIconPaths(featureModel, feature, featureName);
+	                createIconPaths(featureDto, feature, featureName);
 
-	                featureModel.setIconStatus = function (iconName, status) {
+	                featureDto.setIconStatus = function (iconName, status) {
 	                    var option = this.option;
 	                    var iconPaths = this.iconPaths;
 	                    option.iconStatus = option.iconStatus || {};
@@ -34385,12 +34385,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                };
 
 	                if (feature.render) {
-	                    feature.render(featureModel, ecModel, api);
+	                    feature.render(featureDto, ecDto, api);
 	                }
 	            }
 
-	            function createIconPaths(featureModel, feature, featureName) {
-	                var iconStyleModel = featureModel.getModel('iconStyle');
+	            function createIconPaths(featureDto, feature, featureName) {
+	                var iconStyleDto = featureDto.getDto('iconStyle');
 
 	                // If one feature has mutiple icon. they are orginaized as
 	                // {
@@ -34403,8 +34403,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                //         bar: ''
 	                //     }
 	                // }
-	                var icons = feature.getIcons ? feature.getIcons() : featureModel.get('icon');
-	                var titles = featureModel.get('title') || {};
+	                var icons = feature.getIcons ? feature.getIcons() : featureDto.get('icon');
+	                var titles = featureDto.get('title') || {};
 	                if (typeof icons === 'string') {
 	                    var icon = icons;
 	                    var title = titles;
@@ -34413,10 +34413,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    icons[featureName] = icon;
 	                    titles[featureName] = title;
 	                }
-	                var iconPaths = featureModel.iconPaths = {};
+	                var iconPaths = featureDto.iconPaths = {};
 	                zrUtil.each(icons, function (icon, iconName) {
-	                    var normalStyle = iconStyleModel.getModel('normal').getItemStyle();
-	                    var hoverStyle = iconStyleModel.getModel('emphasis').getItemStyle();
+	                    var normalStyle = iconStyleDto.getDto('normal').getItemStyle();
+	                    var hoverStyle = iconStyleDto.getDto('emphasis').getItemStyle();
 
 	                    var style = {
 	                        x: -itemSize / 2,
@@ -34442,7 +34442,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                    graphic.setHoverStyle(path);
 
-	                    if (toolboxModel.get('showTitle')) {
+	                    if (toolboxDto.get('showTitle')) {
 	                        path.__title = titles[iconName];
 	                        path.on('mouseover', function () {
 	                                path.setStyle({
@@ -34458,21 +34458,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                });
 	                            });
 	                    }
-	                    path.trigger(featureModel.get('iconStatus.' + iconName) || 'normal');
+	                    path.trigger(featureDto.get('iconStatus.' + iconName) || 'normal');
 
 	                    group.add(path);
 	                    path.on('click', zrUtil.bind(
-	                        feature.onclick, feature, ecModel, api, iconName
+	                        feature.onclick, feature, ecDto, api, iconName
 	                    ));
 
 	                    iconPaths[iconName] = path;
 	                });
 	            }
 
-	            listComponentHelper.layout(group, toolboxModel, api);
+	            listComponentHelper.layout(group, toolboxDto, api);
 	            // Render background after group is layout
 	            // FIXME
-	            listComponentHelper.addBackground(group, toolboxModel);
+	            listComponentHelper.addBackground(group, toolboxDto);
 
 	            // Adjust icon title positions to avoid them out of screen
 	            group.eachChild(function (icon) {
@@ -34504,16 +34504,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	        },
 
-	        remove: function (ecModel, api) {
+	        remove: function (ecDto, api) {
 	            zrUtil.each(this._features, function (feature) {
-	                feature.remove && feature.remove(ecModel, api);
+	                feature.remove && feature.remove(ecDto, api);
 	            });
 	            this.group.removeAll();
 	        },
 
-	        dispose: function (ecModel, api) {
+	        dispose: function (ecDto, api) {
 	            zrUtil.each(this._features, function (feature) {
-	                feature.dispose && feature.dispose(ecModel, api);
+	                feature.dispose && feature.dispose(ecDto, api);
 	            });
 	        }
 	    });
@@ -34630,8 +34630,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var env = __webpack_require__(79);
 
-	    function SaveAsImage (model) {
-	        this.model = model;
+	    function SaveAsImage (Dto) {
+	        this.Dto = Dto;
 	    }
 
 	    SaveAsImage.defaultOption = {
@@ -34651,19 +34651,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var proto = SaveAsImage.prototype;
 
-	    proto.onclick = function (ecModel, api) {
-	        var model = this.model;
-	        var title = model.get('name') || ecModel.get('title.0.text') || 'echarts';
+	    proto.onclick = function (ecDto, api) {
+	        var Dto = this.Dto;
+	        var title = Dto.get('name') || ecDto.get('title.0.text') || 'echarts';
 	        var $a = document.createElement('a');
-	        var type = model.get('type', true) || 'png';
+	        var type = Dto.get('type', true) || 'png';
 	        $a.download = title + '.' + type;
 	        $a.target = '_blank';
 	        var url = api.getConnectedDataURL({
 	            type: type,
-	            backgroundColor: model.get('backgroundColor', true)
-	                || ecModel.get('backgroundColor') || '#fff',
-	            excludeComponents: model.get('excludeComponents'),
-	            pixelRatio: model.get('pixelRatio')
+	            backgroundColor: Dto.get('backgroundColor', true)
+	                || ecDto.get('backgroundColor') || '#fff',
+	            excludeComponents: Dto.get('excludeComponents'),
+	            pixelRatio: Dto.get('pixelRatio')
 	        });
 	        $a.href = url;
 	        // Chrome and Firefox
@@ -34677,7 +34677,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        // IE
 	        else {
-	            var lang = model.get('lang');
+	            var lang = Dto.get('lang');
 	            var html = ''
 	                + '<body style="margin:0;">'
 	                + '<img src="' + url + '" style="max-width:100%;" title="' + ((lang && lang[0]) || '') + '" />'
@@ -34703,8 +34703,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var zrUtil = __webpack_require__(3);
 
-	    function MagicType(model) {
-	        this.model = model;
+	    function MagicType(Dto) {
+	        this.Dto = Dto;
 	    }
 
 	    MagicType.defaultOption = {
@@ -34730,10 +34730,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var proto = MagicType.prototype;
 
 	    proto.getIcons = function () {
-	        var model = this.model;
-	        var availableIcons = model.get('icon');
+	        var Dto = this.Dto;
+	        var availableIcons = Dto.get('icon');
 	        var icons = {};
-	        zrUtil.each(model.get('type'), function (type) {
+	        zrUtil.each(Dto.get('type'), function (type) {
 	            if (availableIcons[type]) {
 	                icons[type] = availableIcons[type];
 	            }
@@ -34742,46 +34742,46 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    var seriesOptGenreator = {
-	        'line': function (seriesType, seriesId, seriesModel, model) {
+	        'line': function (seriesType, seriesId, seriesDto, Dto) {
 	            if (seriesType === 'bar') {
 	                return zrUtil.merge({
 	                    id: seriesId,
 	                    type: 'line',
 	                    // Preserve data related option
-	                    data: seriesModel.get('data'),
-	                    stack: seriesModel.get('stack'),
-	                    markPoint: seriesModel.get('markPoint'),
-	                    markLine: seriesModel.get('markLine')
-	                }, model.get('option.line') || {}, true);
+	                    data: seriesDto.get('data'),
+	                    stack: seriesDto.get('stack'),
+	                    markPoint: seriesDto.get('markPoint'),
+	                    markLine: seriesDto.get('markLine')
+	                }, Dto.get('option.line') || {}, true);
 	            }
 	        },
-	        'bar': function (seriesType, seriesId, seriesModel, model) {
+	        'bar': function (seriesType, seriesId, seriesDto, Dto) {
 	            if (seriesType === 'line') {
 	                return zrUtil.merge({
 	                    id: seriesId,
 	                    type: 'bar',
 	                    // Preserve data related option
-	                    data: seriesModel.get('data'),
-	                    stack: seriesModel.get('stack'),
-	                    markPoint: seriesModel.get('markPoint'),
-	                    markLine: seriesModel.get('markLine')
-	                }, model.get('option.bar') || {}, true);
+	                    data: seriesDto.get('data'),
+	                    stack: seriesDto.get('stack'),
+	                    markPoint: seriesDto.get('markPoint'),
+	                    markLine: seriesDto.get('markLine')
+	                }, Dto.get('option.bar') || {}, true);
 	            }
 	        },
-	        'stack': function (seriesType, seriesId, seriesModel, model) {
+	        'stack': function (seriesType, seriesId, seriesDto, Dto) {
 	            if (seriesType === 'line' || seriesType === 'bar') {
 	                return zrUtil.merge({
 	                    id: seriesId,
 	                    stack: '__ec_magicType_stack__'
-	                }, model.get('option.stack') || {}, true);
+	                }, Dto.get('option.stack') || {}, true);
 	            }
 	        },
-	        'tiled': function (seriesType, seriesId, seriesModel, model) {
+	        'tiled': function (seriesType, seriesId, seriesDto, Dto) {
 	            if (seriesType === 'line' || seriesType === 'bar') {
 	                return zrUtil.merge({
 	                    id: seriesId,
 	                    stack: ''
-	                }, model.get('option.tiled') || {}, true);
+	                }, Dto.get('option.tiled') || {}, true);
 	            }
 	        }
 	    };
@@ -34791,9 +34791,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        ['stack', 'tiled']
 	    ];
 
-	    proto.onclick = function (ecModel, api, type) {
-	        var model = this.model;
-	        var seriesIndex = model.get('seriesIndex.' + type);
+	    proto.onclick = function (ecDto, api, type) {
+	        var Dto = this.Dto;
+	        var seriesIndex = Dto.get('seriesIndex.' + type);
 	        // Not supported magicType
 	        if (!seriesOptGenreator[type]) {
 	            return;
@@ -34801,24 +34801,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var newOption = {
 	            series: []
 	        };
-	        var generateNewSeriesTypes = function (seriesModel) {
-	            var seriesType = seriesModel.subType;
-	            var seriesId = seriesModel.id;
+	        var generateNewSeriesTypes = function (seriesDto) {
+	            var seriesType = seriesDto.subType;
+	            var seriesId = seriesDto.id;
 	            var newSeriesOpt = seriesOptGenreator[type](
-	                seriesType, seriesId, seriesModel, model
+	                seriesType, seriesId, seriesDto, Dto
 	            );
 	            if (newSeriesOpt) {
 	                // PENDING If merge original option?
-	                zrUtil.defaults(newSeriesOpt, seriesModel.option);
+	                zrUtil.defaults(newSeriesOpt, seriesDto.option);
 	                newOption.series.push(newSeriesOpt);
 	            }
 	            // Modify boundaryGap
-	            var coordSys = seriesModel.coordinateSystem;
+	            var coordSys = seriesDto.coordinateSystem;
 	            if (coordSys && coordSys.type === 'cartesian2d' && (type === 'line' || type === 'bar')) {
 	                var categoryAxis = coordSys.getAxesByScale('ordinal')[0];
 	                if (categoryAxis) {
 	                    var axisDim = categoryAxis.dim;
-	                    var axisIndex = seriesModel.get(axisDim + 'AxisIndex');
+	                    var axisIndex = seriesDto.get(axisDim + 'AxisIndex');
 	                    var axisKey = axisDim + 'Axis';
 	                    newOption[axisKey] = newOption[axisKey] || [];
 	                    for (var i = 0; i <= axisIndex; i++) {
@@ -34832,14 +34832,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        zrUtil.each(radioTypes, function (radio) {
 	            if (zrUtil.indexOf(radio, type) >= 0) {
 	                zrUtil.each(radio, function (item) {
-	                    model.setIconStatus(item, 'normal');
+	                    Dto.setIconStatus(item, 'normal');
 	                });
 	            }
 	        });
 
-	        model.setIconStatus(type, 'emphasis');
+	        Dto.setIconStatus(type, 'emphasis');
 
-	        ecModel.eachComponent(
+	        ecDto.eachComponent(
 	            {
 	                mainType: 'series',
 	                query: seriesIndex == null ? null : {
@@ -34859,8 +34859,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        type: 'changeMagicType',
 	        event: 'magicTypeChanged',
 	        update: 'prepareAndUpdate'
-	    }, function (payload, ecModel) {
-	        ecModel.mergeOption(payload.newOption);
+	    }, function (payload, ecDto) {
+	        ecDto.mergeOption(payload.newOption);
 	    });
 
 	    __webpack_require__(337).register('magicType', MagicType);
@@ -34888,16 +34888,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Group series into two types
 	     *  1. on category axis, like line, bar
 	     *  2. others, like scatter, pie
-	     * @param {module:echarts/model/Global} ecModel
+	     * @param {module:echarts/Dto/Global} ecDto
 	     * @return {Object}
 	     * @inner
 	     */
-	    function groupSeries(ecModel) {
+	    function groupSeries(ecDto) {
 	        var seriesGroupByCategoryAxis = {};
 	        var otherSeries = [];
 	        var meta = [];
-	        ecModel.eachRawSeries(function (seriesModel) {
-	            var coordSys = seriesModel.coordinateSystem;
+	        ecDto.eachRawSeries(function (seriesDto) {
+	            var coordSys = seriesDto.coordinateSystem;
 
 	            if (coordSys && (coordSys.type === 'cartesian2d' || coordSys.type === 'polar')) {
 	                var baseAxis = coordSys.getBaseAxis();
@@ -34914,14 +34914,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            axisIndex: baseAxis.index
 	                        });
 	                    }
-	                    seriesGroupByCategoryAxis[key].series.push(seriesModel);
+	                    seriesGroupByCategoryAxis[key].series.push(seriesDto);
 	                }
 	                else {
-	                    otherSeries.push(seriesModel);
+	                    otherSeries.push(seriesDto);
 	                }
 	            }
 	            else {
-	                otherSeries.push(seriesModel);
+	                otherSeries.push(seriesDto);
 	            }
 	        });
 
@@ -34934,7 +34934,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    /**
 	     * Assemble content of series on cateogory axis
-	     * @param {Array.<module:echarts/model/Series>} series
+	     * @param {Array.<module:echarts/Dto/Series>} series
 	     * @return {string}
 	     * @inner
 	     */
@@ -34948,7 +34948,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var headers = [' '].concat(zrUtil.map(group.series, function (series) {
 	                return series.name;
 	            }));
-	            var columns = [categoryAxis.model.getCategories()];
+	            var columns = [categoryAxis.Dto.getCategories()];
 	            zrUtil.each(group.series, function (series) {
 	                columns.push(series.getRawData().mapArray(valueAxisDim, function (val) {
 	                    return val;
@@ -34970,7 +34970,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    /**
 	     * Assemble content of other series
-	     * @param {Array.<module:echarts/model/Series>} series
+	     * @param {Array.<module:echarts/Dto/Series>} series
 	     * @return {string}
 	     * @inner
 	     */
@@ -34993,13 +34993,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    /**
-	     * @param {module:echarts/model/Global}
+	     * @param {module:echarts/Dto/Global}
 	     * @return {string}
 	     * @inner
 	     */
-	    function getContentFromModel(ecModel) {
+	    function getContentFromDto(ecDto) {
 
-	        var result = groupSeries(ecModel);
+	        var result = groupSeries(ecDto);
 
 	        return {
 	            value: zrUtil.filter([
@@ -35135,13 +35135,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * @alias {module:echarts/component/toolbox/feature/DataView}
 	     * @constructor
-	     * @param {module:echarts/model/Model} model
+	     * @param {module:echarts/Dto/Dto} Dto
 	     */
-	    function DataView(model) {
+	    function DataView(Dto) {
 
 	        this._dom = null;
 
-	        this.model = model;
+	        this.Dto = Dto;
 	    }
 
 	    DataView.defaultOption = {
@@ -35161,30 +35161,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	        buttonTextColor: '#fff'
 	    };
 
-	    DataView.prototype.onclick = function (ecModel, api) {
+	    DataView.prototype.onclick = function (ecDto, api) {
 	        var container = api.getDom();
-	        var model = this.model;
+	        var Dto = this.Dto;
 	        if (this._dom) {
 	            container.removeChild(this._dom);
 	        }
 	        var root = document.createElement('div');
 	        root.style.cssText = 'position:absolute;left:5px;top:5px;bottom:5px;right:5px;';
-	        root.style.backgroundColor = model.get('backgroundColor') || '#fff';
+	        root.style.backgroundColor = Dto.get('backgroundColor') || '#fff';
 
 	        // Create elements
 	        var header = document.createElement('h4');
-	        var lang = model.get('lang') || [];
-	        header.innerHTML = lang[0] || model.get('title');
+	        var lang = Dto.get('lang') || [];
+	        header.innerHTML = lang[0] || Dto.get('title');
 	        header.style.cssText = 'margin: 10px 20px;';
-	        header.style.color = model.get('textColor');
+	        header.style.color = Dto.get('textColor');
 
 	        var viewMain = document.createElement('div');
 	        var textarea = document.createElement('textarea');
 	        viewMain.style.cssText = 'display:block;width:100%;overflow:hidden;';
 
-	        var optionToContent = model.get('optionToContent');
-	        var contentToOption = model.get('contentToOption');
-	        var result = getContentFromModel(ecModel);
+	        var optionToContent = Dto.get('optionToContent');
+	        var contentToOption = Dto.get('contentToOption');
+	        var result = getContentFromDto(ecDto);
 	        if (typeof optionToContent === 'function') {
 	            var htmlOrDom = optionToContent(api.getOption());
 	            if (typeof htmlOrDom === 'string') {
@@ -35197,11 +35197,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else {
 	            // Use default textarea
 	            viewMain.appendChild(textarea);
-	            textarea.readOnly = model.get('readOnly');
+	            textarea.readOnly = Dto.get('readOnly');
 	            textarea.style.cssText = 'width:100%;height:100%;font-family:monospace;font-size:14px;line-height:1.6rem;';
-	            textarea.style.color = model.get('textColor');
-	            textarea.style.borderColor = model.get('textareaBorderColor');
-	            textarea.style.backgroundColor = model.get('textareaColor');
+	            textarea.style.color = Dto.get('textColor');
+	            textarea.style.borderColor = Dto.get('textareaBorderColor');
+	            textarea.style.backgroundColor = Dto.get('textareaColor');
 	            textarea.value = result.value;
 	        }
 
@@ -35215,8 +35215,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var closeButton = document.createElement('div');
 	        var refreshButton = document.createElement('div');
 
-	        buttonStyle += ';background-color:' + model.get('buttonColor');
-	        buttonStyle += ';color:' + model.get('buttonTextColor');
+	        buttonStyle += ';background-color:' + Dto.get('buttonColor');
+	        buttonStyle += ';color:' + Dto.get('buttonTextColor');
 
 	        var self = this;
 
@@ -35255,7 +35255,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        refreshButton.style.cssText = buttonStyle;
 	        closeButton.style.cssText = buttonStyle;
 
-	        !model.get('readOnly') && buttonContainer.appendChild(refreshButton);
+	        !Dto.get('readOnly') && buttonContainer.appendChild(refreshButton);
 	        buttonContainer.appendChild(closeButton);
 
 	        // http://stackoverflow.com/questions/6637341/use-tab-to-indent-in-textarea
@@ -35287,12 +35287,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._dom = root;
 	    };
 
-	    DataView.prototype.remove = function (ecModel, api) {
+	    DataView.prototype.remove = function (ecDto, api) {
 	        this._dom && api.getDom().removeChild(this._dom);
 	    };
 
-	    DataView.prototype.dispose = function (ecModel, api) {
-	        this.remove(ecModel, api);
+	    DataView.prototype.dispose = function (ecDto, api) {
+	        this.remove(ecDto, api);
 	    };
 
 	    /**
@@ -35322,11 +35322,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        type: 'changeDataView',
 	        event: 'dataViewChanged',
 	        update: 'prepareAndUpdate'
-	    }, function (payload, ecModel) {
+	    }, function (payload, ecDto) {
 	        var newSeriesOptList = [];
 	        zrUtil.each(payload.newOption.series, function (seriesOpt) {
-	            var seriesModel = ecModel.getSeriesByName(seriesOpt.name)[0];
-	            if (!seriesModel) {
+	            var seriesDto = ecDto.getSeriesByName(seriesOpt.name)[0];
+	            if (!seriesDto) {
 	                // New created series
 	                // Geuss the series type
 	                newSeriesOptList.push(zrUtil.extend({
@@ -35335,7 +35335,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }, seriesOpt));
 	            }
 	            else {
-	                var originalData = seriesModel.get('data');
+	                var originalData = seriesDto.get('data');
 	                newSeriesOptList.push({
 	                    name: seriesOpt.name,
 	                    data: tryMergeDataOption(seriesOpt.data, originalData)
@@ -35343,7 +35343,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        });
 
-	        ecModel.mergeOption(zrUtil.defaults({
+	        ecDto.mergeOption(zrUtil.defaults({
 	            series: newSeriesOptList
 	        }, payload.newOption));
 	    });
@@ -35372,11 +35372,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // Use dataZoomSelect
 	    __webpack_require__(345);
 
-	    // Spectial component id start with \0ec\0, see echarts/model/Global.js~hasInnerId
+	    // Spectial component id start with \0ec\0, see echarts/Dto/Global.js~hasInnerId
 	    var DATA_ZOOM_ID_BASE = '\0_ec_\0toolbox-dataZoom_';
 
-	    function DataZoom(model) {
-	        this.model = model;
+	    function DataZoom(Dto) {
+	        this.Dto = Dto;
 
 	        /**
 	         * @private
@@ -35413,26 +35413,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var proto = DataZoom.prototype;
 
-	    proto.render = function (featureModel, ecModel, api) {
-	        updateBackBtnStatus(featureModel, ecModel);
+	    proto.render = function (featureDto, ecDto, api) {
+	        updateBackBtnStatus(featureDto, ecDto);
 	    };
 
-	    proto.onclick = function (ecModel, api, type) {
+	    proto.onclick = function (ecDto, api, type) {
 	        var controllerGroup = this._controllerGroup;
 	        if (!this._controllerGroup) {
 	            controllerGroup = this._controllerGroup = new Group();
 	            api.getZr().add(controllerGroup);
 	        }
 
-	        handlers[type].call(this, controllerGroup, this.model, ecModel, api);
+	        handlers[type].call(this, controllerGroup, this.Dto, ecDto, api);
 	    };
 
-	    proto.remove = function (ecModel, api) {
+	    proto.remove = function (ecDto, api) {
 	        this._disposeController();
 	        interactionMutex.release('globalPan', api.getZr());
 	    };
 
-	    proto.dispose = function (ecModel, api) {
+	    proto.dispose = function (ecDto, api) {
 	        var zr = api.getZr();
 	        interactionMutex.release('globalPan', zr);
 	        this._disposeController();
@@ -35444,19 +35444,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    var handlers = {
 
-	        zoom: function (controllerGroup, featureModel, ecModel, api) {
+	        zoom: function (controllerGroup, featureDto, ecDto, api) {
 	            var isZoomActive = this._isZoomActive = !this._isZoomActive;
 	            var zr = api.getZr();
 
 	            interactionMutex[isZoomActive ? 'take' : 'release']('globalPan', zr);
 
-	            featureModel.setIconStatus('zoom', isZoomActive ? 'emphasis' : 'normal');
+	            featureDto.setIconStatus('zoom', isZoomActive ? 'emphasis' : 'normal');
 
 	            if (isZoomActive) {
 	                zr.setDefaultCursorStyle('crosshair');
 
 	                this._createController(
-	                    controllerGroup, featureModel, ecModel, api
+	                    controllerGroup, featureDto, ecDto, api
 	                );
 	            }
 	            else {
@@ -35465,8 +35465,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        },
 
-	        back: function (controllerGroup, featureModel, ecModel, api) {
-	            this._dispatchAction(history.pop(ecModel), api);
+	        back: function (controllerGroup, featureDto, ecDto, api) {
+	            this._dispatchAction(history.pop(ecDto), api);
 	        }
 	    };
 
@@ -35474,7 +35474,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    proto._createController = function (
-	        controllerGroup, featureModel, ecModel, api
+	        controllerGroup, featureDto, ecDto, api
 	    ) {
 	        var controller = this._controller = new SelectController(
 	            'rect',
@@ -35490,7 +35490,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            'selectEnd',
 	            zrUtil.bind(
 	                this._onSelected, this, controller,
-	                featureModel, ecModel, api
+	                featureDto, ecDto, api
 	            )
 	        );
 	        controller.enable(controllerGroup, false);
@@ -35504,23 +35504,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 
-	    function prepareCoordInfo(grid, ecModel) {
+	    function prepareCoordInfo(grid, ecDto) {
 	        // Default use the first axis.
 	        // FIXME
 	        var coordInfo = [
-	            {axisModel: grid.getAxis('x').model, axisIndex: 0}, // x
-	            {axisModel: grid.getAxis('y').model, axisIndex: 0}  // y
+	            {axisDto: grid.getAxis('x').Dto, axisIndex: 0}, // x
+	            {axisDto: grid.getAxis('y').Dto, axisIndex: 0}  // y
 	        ];
 	        coordInfo.grid = grid;
 
-	        ecModel.eachComponent(
+	        ecDto.eachComponent(
 	            {mainType: 'dataZoom', subType: 'select'},
-	            function (dzModel, dataZoomIndex) {
-	                if (isTheAxis('xAxis', coordInfo[0].axisModel, dzModel, ecModel)) {
-	                    coordInfo[0].dataZoomModel = dzModel;
+	            function (dzDto, dataZoomIndex) {
+	                if (isTheAxis('xAxis', coordInfo[0].axisDto, dzDto, ecDto)) {
+	                    coordInfo[0].dataZoomDto = dzDto;
 	                }
-	                if (isTheAxis('yAxis', coordInfo[1].axisModel, dzModel, ecModel)) {
-	                    coordInfo[1].dataZoomModel = dzModel;
+	                if (isTheAxis('yAxis', coordInfo[1].axisDto, dzDto, ecDto)) {
+	                    coordInfo[1].dataZoomDto = dzDto;
 	                }
 	            }
 	        );
@@ -35528,16 +35528,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return coordInfo;
 	    }
 
-	    function isTheAxis(axisName, axisModel, dataZoomModel, ecModel) {
-	        var axisIndex = dataZoomModel.get(axisName + 'Index');
+	    function isTheAxis(axisName, axisDto, dataZoomDto, ecDto) {
+	        var axisIndex = dataZoomDto.get(axisName + 'Index');
 	        return axisIndex != null
-	            && ecModel.getComponent(axisName, axisIndex) === axisModel;
+	            && ecDto.getComponent(axisName, axisIndex) === axisDto;
 	    }
 
 	    /**
 	     * @private
 	     */
-	    proto._onSelected = function (controller, featureModel, ecModel, api, selRanges) {
+	    proto._onSelected = function (controller, featureDto, ecDto, api, selRanges) {
 	        if (!selRanges.length) {
 	            return;
 	        }
@@ -35550,9 +35550,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // FIXME
 	        // polar
 
-	        ecModel.eachComponent('grid', function (gridModel, gridIndex) {
-	            var grid = gridModel.coordinateSystem;
-	            var coordInfo = prepareCoordInfo(grid, ecModel);
+	        ecDto.eachComponent('grid', function (gridDto, gridIndex) {
+	            var grid = gridDto.coordinateSystem;
+	            var coordInfo = prepareCoordInfo(grid, ecDto);
 	            var selDataRange = pointToDataInCartesian(selRange, coordInfo);
 
 	            if (selDataRange) {
@@ -35564,7 +35564,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }, this);
 
-	        history.push(ecModel, snapshot);
+	        history.push(ecDto, snapshot);
 
 	        this._dispatchAction(snapshot, api);
 	    };
@@ -35593,11 +35593,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    function scaleCartesianAxis(selDataRange, coordInfo, dimIdx, dimName) {
 	        var dimCoordInfo = coordInfo[dimIdx];
-	        var dataZoomModel = dimCoordInfo.dataZoomModel;
+	        var dataZoomDto = dimCoordInfo.dataZoomDto;
 
-	        if (dataZoomModel) {
+	        if (dataZoomDto) {
 	            return {
-	                dataZoomId: dataZoomModel.id,
+	                dataZoomId: dataZoomDto.id,
 	                startValue: selDataRange[dimIdx][0],
 	                endValue: selDataRange[dimIdx][1]
 	            };
@@ -35621,10 +35621,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	    };
 
-	    function updateBackBtnStatus(featureModel, ecModel) {
-	        featureModel.setIconStatus(
+	    function updateBackBtnStatus(featureDto, ecDto) {
+	        featureDto.setIconStatus(
 	            'back',
-	            history.count(ecModel) > 1 ? 'emphasis' : 'normal'
+	            history.count(ecDto) > 1 ? 'emphasis' : 'normal'
 	        );
 	    }
 
@@ -35717,11 +35717,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * @public
-	         * @param {module:echarts/model/Global} ecModel
+	         * @param {module:echarts/Dto/Global} ecDto
 	         * @param {Object} newSnapshot {dataZoomId, batch: [payloadInfo, ...]}
 	         */
-	        push: function (ecModel, newSnapshot) {
-	            var store = giveStore(ecModel);
+	        push: function (ecDto, newSnapshot) {
+	            var store = giveStore(ecDto);
 
 	            // If previous dataZoom can not be found,
 	            // complete an range with current range.
@@ -35735,11 +35735,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	                if (i < 0) {
 	                    // No origin range set, create one by current range.
-	                    var dataZoomModel = ecModel.queryComponents(
+	                    var dataZoomDto = ecDto.queryComponents(
 	                        {mainType: 'dataZoom', subType: 'select', id: dataZoomId}
 	                    )[0];
-	                    if (dataZoomModel) {
-	                        var percentRange = dataZoomModel.getPercentRange();
+	                    if (dataZoomDto) {
+	                        var percentRange = dataZoomDto.getPercentRange();
 	                        store[0][dataZoomId] = {
 	                            dataZoomId: dataZoomId,
 	                            start: percentRange[0],
@@ -35754,11 +35754,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        /**
 	         * @public
-	         * @param {module:echarts/model/Global} ecModel
+	         * @param {module:echarts/Dto/Global} ecDto
 	         * @return {Object} snapshot
 	         */
-	        pop: function (ecModel) {
-	            var store = giveStore(ecModel);
+	        pop: function (ecDto) {
+	            var store = giveStore(ecDto);
 	            var head = store[store.length - 1];
 	            store.length > 1 && store.pop();
 
@@ -35780,17 +35780,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	         * @public
 	         */
-	        clear: function (ecModel) {
-	            ecModel[ATTR] = null;
+	        clear: function (ecDto) {
+	            ecDto[ATTR] = null;
 	        },
 
 	        /**
 	         * @public
-	         * @param {module:echarts/model/Global} ecModel
+	         * @param {module:echarts/Dto/Global} ecDto
 	         * @return {number} records. always >= 1.
 	         */
-	        count: function (ecModel) {
-	            return giveStore(ecModel).length;
+	        count: function (ecDto) {
+	            return giveStore(ecDto).length;
 	        }
 
 	    };
@@ -35801,10 +35801,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * this._history[0] is used to store origin range.
 	     * @type {Array.<Object>}
 	     */
-	    function giveStore(ecModel) {
-	        var store = ecModel[ATTR];
+	    function giveStore(ecDto) {
+	        var store = ecDto[ATTR];
 	        if (!store) {
-	            store = ecModel[ATTR] = [{}];
+	            store = ecDto[ATTR] = [{}];
 	        }
 	        return store;
 	    }
@@ -35840,13 +35840,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @file Data zoom model
+	 * @file Data zoom Dto
 	 */
 
 
-	    var DataZoomModel = __webpack_require__(292);
+	    var DataZoomDto = __webpack_require__(292);
 
-	    module.exports = DataZoomModel.extend({
+	    module.exports = DataZoomDto.extend({
 
 	        type: 'dataZoom.select'
 
@@ -35877,8 +35877,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var history = __webpack_require__(344);
 
-	    function Restore(model) {
-	        this.model = model;
+	    function Restore(Dto) {
+	        this.Dto = Dto;
 	    }
 
 	    Restore.defaultOption = {
@@ -35889,8 +35889,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    var proto = Restore.prototype;
 
-	    proto.onclick = function (ecModel, api, type) {
-	        history.clear(ecModel);
+	    proto.onclick = function (ecDto, api, type) {
+	        history.clear(ecDto);
 
 	        api.dispatchAction({
 	            type: 'restore',
@@ -35904,8 +35904,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    __webpack_require__(1).registerAction(
 	        {type: 'restore', event: 'restore', update: 'prepareAndUpdate'},
-	        function (payload, ecModel) {
-	            ecModel.resetOption('recreate');
+	        function (payload, ecDto) {
+	            ecDto.resetOption('recreate');
 	        }
 	    );
 

@@ -2131,26 +2131,26 @@ Parameters needed to control the algorithm are stored in the two
 bytes immediately preceding the compressed data.  These bytes are
 used to store the following fields:
 
-Model order - sets the maximum model order, default is 8, possible
+Dto order - sets the maximum Dto order, default is 8, possible
               values are from 2 to 16 inclusive
 
 Sub-allocator size - sets the size of sub-allocator in MB, default is 50,
             possible values are from 1MB to 256MB inclusive
 
-Model restoration method - sets the method used to restart context
-            model at memory insufficiency, values are:
+Dto restoration method - sets the method used to restart context
+            Dto at memory insufficiency, values are:
 
-            0 - restarts model from scratch - default
-            1 - cut off model - decreases performance by as much as 2x
+            0 - restarts Dto from scratch - default
+            1 - cut off Dto - decreases performance by as much as 2x
             2 - freeze context tree - not recommended
 
 An example for packing these fields into the 2 byte storage field is
 illustrated below.  These values are stored in Intel low-byte/high-byte
 order.
 
-wPPMd = (Model order - 1) + 
+wPPMd = (Dto order - 1) + 
         ((Sub-allocator size - 1) << 4) + 
-        (Model restoration method << 12)
+        (Dto restoration method << 12)
 
 
 VII. Traditional PKWARE Encryption

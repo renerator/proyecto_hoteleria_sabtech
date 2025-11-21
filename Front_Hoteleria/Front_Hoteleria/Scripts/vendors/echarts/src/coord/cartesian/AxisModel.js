@@ -2,11 +2,11 @@ define(function(require) {
 
     'use strict';
 
-    var ComponentModel = require('../../model/Component');
+    var ComponentDto = require('../../Dto/Component');
     var zrUtil = require('zrender/core/util');
-    var axisModelCreator = require('../axisModelCreator');
+    var axisDtoCreator = require('../axisDtoCreator');
 
-    var AxisModel = ComponentModel.extend({
+    var AxisDto = ComponentDto.extend({
 
         type: 'cartesian2dAxis',
 
@@ -19,7 +19,7 @@ define(function(require) {
          * @override
          */
         init: function () {
-            AxisModel.superApply(this, 'init', arguments);
+            AxisDto.superApply(this, 'init', arguments);
             this._resetRange();
         },
 
@@ -27,7 +27,7 @@ define(function(require) {
          * @override
          */
         mergeOption: function () {
-            AxisModel.superApply(this, 'mergeOption', arguments);
+            AxisDto.superApply(this, 'mergeOption', arguments);
             this._resetRange();
         },
 
@@ -35,7 +35,7 @@ define(function(require) {
          * @override
          */
         restoreData: function () {
-            AxisModel.superApply(this, 'restoreData', arguments);
+            AxisDto.superApply(this, 'restoreData', arguments);
             this._resetRange();
         },
 
@@ -92,14 +92,14 @@ define(function(require) {
         return option.type || (option.data ? 'category' : 'value');
     }
 
-    zrUtil.merge(AxisModel.prototype, require('../axisModelCommonMixin'));
+    zrUtil.merge(AxisDto.prototype, require('../axisDtoCommonMixin'));
 
     var extraOption = {
         gridIndex: 0
     };
 
-    axisModelCreator('x', AxisModel, getAxisType, extraOption);
-    axisModelCreator('y', AxisModel, getAxisType, extraOption);
+    axisDtoCreator('x', AxisDto, getAxisType, extraOption);
+    axisDtoCreator('y', AxisDto, getAxisType, extraOption);
 
-    return AxisModel;
+    return AxisDto;
 });

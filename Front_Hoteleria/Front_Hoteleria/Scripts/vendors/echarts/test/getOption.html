@@ -11,7 +11,7 @@
         </style>
         <div>
             <input type="button" value="exchangeXY" onclick="go.exchangeXY();">
-            <input type="button" value="illegal use getModel.option" onclick="go.illegal();">
+            <input type="button" value="illegal use getDto.option" onclick="go.illegal();">
             <input type="button" value="dataZoom restore (error if view changed)" onclick="go.dataZoomRestore();">
         </div>
         <div id="main"></div>
@@ -116,7 +116,7 @@
 
                     illegal: function () {
                         try {
-                            var option = myChart.getModel.option;
+                            var option = myChart.getDto.option;
                             var temp;
                             temp = option.xAxis;
                             option.xAxis = option.yAxis;

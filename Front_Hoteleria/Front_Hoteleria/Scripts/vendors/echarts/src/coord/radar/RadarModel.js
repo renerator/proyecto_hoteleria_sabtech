@@ -3,10 +3,10 @@ define(function (require) {
 
     var axisDefault = require('../axisDefault');
     var valueAxisDefault = axisDefault.valueAxis;
-    var Model = require('../../model/Model');
+    var Dto = require('../../Dto/Dto');
     var zrUtil = require('zrender/core/util');
 
-    var axisModelCommonMixin = require('../axisModelCommonMixin');
+    var axisDtoCommonMixin = require('../axisDtoCommonMixin');
 
     function defaultsShow(opt, show) {
         return zrUtil.defaults({
@@ -14,7 +14,7 @@ define(function (require) {
         }, opt);
     }
 
-    var RadarModel = require('../../echarts').extendComponentModel({
+    var RadarDto = require('../../echarts').extendComponentDto({
 
         type: 'radar',
 
@@ -29,7 +29,7 @@ define(function (require) {
             var showName = this.get('name.show');
             var nameFormatter = this.get('name.formatter');
             var nameGap = this.get('nameGap');
-            var indicatorModels = zrUtil.map(this.get('indicator') || [], function (indicatorOpt) {
+            var indicatorDtos = zrUtil.map(this.get('indicator') || [], function (indicatorOpt) {
                 // PENDING
                 if (indicatorOpt.max != null && indicatorOpt.max > 0) {
                     indicatorOpt.min = 0;
@@ -64,12 +64,12 @@ define(function (require) {
                     );
                 }
                 return zrUtil.extend(
-                    new Model(indicatorOpt, null, this.ecModel),
-                    axisModelCommonMixin
+                    new Dto(indicatorOpt, null, this.ecDto),
+                    axisDtoCommonMixin
                 );
             }, this);
-            this.getIndicatorModels = function () {
-                return indicatorModels;
+            this.getIndicatorDtos = function () {
+                return indicatorDtos;
             };
         },
 
@@ -120,5 +120,5 @@ define(function (require) {
         }
     });
 
-    return RadarModel;
+    return RadarDto;
 });

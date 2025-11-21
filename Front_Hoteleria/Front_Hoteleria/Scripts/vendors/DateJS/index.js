@@ -15,5 +15,5 @@ require("./src/core/extras.js");
 require("./src/core/time_period.js");
 require("./src/core/time_span.js");
 /*
- * Notice that there is no model.export or exports. This is not required as it modifies the Date object and it's prototypes.
+ * Notice that there is no Dto.export or exports. This is not required as it modifies the Date object and it's prototypes.
  */

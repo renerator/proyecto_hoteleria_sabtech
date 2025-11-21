@@ -1,7 +1,7 @@
 define(function (require) {
 
     var List = require('../../data/List');
-    var SeriesModel = require('../../model/Series');
+    var SeriesDto = require('../../Dto/Series');
     var zrUtil = require('zrender/core/util');
     var completeDimensions = require('../../data/helper/completeDimensions');
 
@@ -13,7 +13,7 @@ define(function (require) {
 
     var geoCreator = require('../../coord/geo/geoCreator');
 
-    var MapSeries = SeriesModel.extend({
+    var MapSeries = SeriesDto.extend({
 
         type: 'series.map',
 
@@ -75,13 +75,13 @@ define(function (require) {
         },
 
         /**
-         * Get model of region
+         * Get Dto of region
          * @param  {string} name
-         * @return {module:echarts/model/Model}
+         * @return {module:echarts/Dto/Dto}
          */
-        getRegionModel: function (regionName) {
+        getRegionDto: function (regionName) {
             var data = this.getData();
-            return data.getItemModel(data.indexOfName(regionName));
+            return data.getItemDto(data.indexOfName(regionName));
         },
 
         /**

@@ -4,16 +4,16 @@ define(function (require) {
     var CANDLE_MIN_NICE_WIDTH = 5;
     var GPA_MIN = 4;
 
-    return function (ecModel, api) {
+    return function (ecDto, api) {
 
-        ecModel.eachSeriesByType('candlestick', function (seriesModel) {
+        ecDto.eachSeriesByType('candlestick', function (seriesDto) {
 
-            var coordSys = seriesModel.coordinateSystem;
-            var data = seriesModel.getData();
-            var dimensions = seriesModel.dimensions;
-            var chartLayout = seriesModel.get('layout');
+            var coordSys = seriesDto.coordinateSystem;
+            var data = seriesDto.getData();
+            var dimensions = seriesDto.dimensions;
+            var chartLayout = seriesDto.get('layout');
 
-            var candleWidth = calculateCandleWidth(seriesModel, data);
+            var candleWidth = calculateCandleWidth(seriesDto, data);
 
             data.each(dimensions, function () {
                 var args = arguments;
@@ -77,8 +77,8 @@ define(function (require) {
         });
     };
 
-    function calculateCandleWidth(seriesModel, data) {
-        var baseAxis = seriesModel.getBaseAxis();
+    function calculateCandleWidth(seriesDto, data) {
+        var baseAxis = seriesDto.getBaseAxis();
         var extent;
 
         var bandWidth = baseAxis.type === 'category'

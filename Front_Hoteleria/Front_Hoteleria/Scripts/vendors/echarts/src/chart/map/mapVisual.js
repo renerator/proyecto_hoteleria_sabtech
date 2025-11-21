@@ -1,14 +1,14 @@
 define(function (require) {
-    return function (ecModel) {
-        ecModel.eachSeriesByType('map', function (seriesModel) {
-            var colorList = seriesModel.get('color');
-            var itemStyleModel = seriesModel.getModel('itemStyle.normal');
+    return function (ecDto) {
+        ecDto.eachSeriesByType('map', function (seriesDto) {
+            var colorList = seriesDto.get('color');
+            var itemStyleDto = seriesDto.getDto('itemStyle.normal');
 
-            var areaColor = itemStyleModel.get('areaColor');
-            var color = itemStyleModel.get('color')
-                || colorList[seriesModel.seriesIndex % colorList.length];
+            var areaColor = itemStyleDto.get('areaColor');
+            var color = itemStyleDto.get('color')
+                || colorList[seriesDto.seriesIndex % colorList.length];
 
-            seriesModel.getData().setVisual({
+            seriesDto.getData().setVisual({
                 'areaColor': areaColor,
                 'color': color
             });

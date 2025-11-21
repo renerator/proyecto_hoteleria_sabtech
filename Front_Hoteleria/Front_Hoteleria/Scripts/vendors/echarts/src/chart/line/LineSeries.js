@@ -3,16 +3,16 @@ define(function(require) {
     'use strict';
 
     var createListFromArray = require('../helper/createListFromArray');
-    var SeriesModel = require('../../model/Series');
+    var SeriesDto = require('../../Dto/Series');
 
-    return SeriesModel.extend({
+    return SeriesDto.extend({
 
         type: 'series.line',
 
         dependencies: ['grid', 'polar'],
 
-        getInitialData: function (option, ecModel) {
-            return createListFromArray(option.data, this, ecModel);
+        getInitialData: function (option, ecDto) {
+            return createListFromArray(option.data, this, ecDto);
         },
 
         defaultOption: {

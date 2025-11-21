@@ -14,7 +14,7 @@ define(function (require) {
     /**
      * Get axis scale extent before niced.
      */
-    axisHelper.getScaleExtent = function (axis, model) {
+    axisHelper.getScaleExtent = function (axis, Dto) {
         var scale = axis.scale;
         var originalExtent = scale.getExtent();
         var span = originalExtent[1] - originalExtent[0];
@@ -27,11 +27,11 @@ define(function (require) {
                 return originalExtent;
             }
         }
-        var min = model.getMin ? model.getMin() : model.get('min');
-        var max = model.getMax ? model.getMax() : model.get('max');
-        var crossZero = model.getNeedCrossZero
-            ? model.getNeedCrossZero() : !model.get('scale');
-        var boundaryGap = model.get('boundaryGap');
+        var min = Dto.getMin ? Dto.getMin() : Dto.get('min');
+        var max = Dto.getMax ? Dto.getMax() : Dto.get('max');
+        var crossZero = Dto.getNeedCrossZero
+            ? Dto.getNeedCrossZero() : !Dto.get('scale');
+        var boundaryGap = Dto.get('boundaryGap');
         if (!zrUtil.isArray(boundaryGap)) {
             boundaryGap = [boundaryGap || 0, boundaryGap || 0];
         }
@@ -68,12 +68,12 @@ define(function (require) {
         return [min, max];
     };
 
-    axisHelper.niceScaleExtent = function (axis, model) {
+    axisHelper.niceScaleExtent = function (axis, Dto) {
         var scale = axis.scale;
-        var extent = axisHelper.getScaleExtent(axis, model);
-        var fixMin = (model.getMin ? model.getMin() : model.get('min')) != null;
-        var fixMax = (model.getMax ? model.getMax() : model.get('max')) != null;
-        var splitNumber = model.get('splitNumber');
+        var extent = axisHelper.getScaleExtent(axis, Dto);
+        var fixMin = (Dto.getMin ? Dto.getMin() : Dto.get('min')) != null;
+        var fixMax = (Dto.getMax ? Dto.getMax() : Dto.get('max')) != null;
+        var splitNumber = Dto.get('splitNumber');
         scale.setExtent(extent[0], extent[1]);
         scale.niceExtent(splitNumber, fixMin, fixMax);
 
@@ -83,7 +83,7 @@ define(function (require) {
         // For example:
         //  minInterval is 1, calculated interval is 0.2, so increase it to be 1. In this way we can get
         //  an integer axis.
-        var minInterval = model.get('minInterval');
+        var minInterval = Dto.get('minInterval');
         if (isFinite(minInterval) && !fixMin && !fixMax && scale.type === 'interval') {
             var interval = scale.getInterval();
             var intervalScale = Math.max(Math.abs(interval), minInterval) / interval;
@@ -102,31 +102,31 @@ define(function (require) {
         // in angle axis with angle 0 - 360. Interval calculated in interval scale is hard
         // to be 60.
         // FIXME
-        var interval = model.get('interval');
+        var interval = Dto.get('interval');
         if (interval != null) {
             scale.setInterval && scale.setInterval(interval);
         }
     };
 
     /**
-     * @param {module:echarts/model/Model} model
-     * @param {string} [axisType] Default retrieve from model.type
+     * @param {module:echarts/Dto/Dto} Dto
+     * @param {string} [axisType] Default retrieve from Dto.type
      * @return {module:echarts/scale/*}
      */
-    axisHelper.createScaleByModel = function(model, axisType) {
-        axisType = axisType || model.get('type');
+    axisHelper.createScaleByDto = function(Dto, axisType) {
+        axisType = axisType || Dto.get('type');
         if (axisType) {
             switch (axisType) {
                 // Buildin scale
                 case 'category':
                     return new OrdinalScale(
-                        model.getCategories(), [Infinity, -Infinity]
+                        Dto.getCategories(), [Infinity, -Infinity]
                     );
                 case 'value':
                     return new IntervalScale();
                 // Extended scale, like time and log
                 default:
-                    return (Scale.getClass(axisType) || IntervalScale).create(model);
+                    return (Scale.getClass(axisType) || IntervalScale).create(Dto);
             }
         }
     };

@@ -1,10 +1,10 @@
 define(function (require) {
 
-    return function (ecModel, api) {
-        ecModel.eachSeriesByType('radar', function (seriesModel) {
-            var data = seriesModel.getData();
+    return function (ecDto, api) {
+        ecDto.eachSeriesByType('radar', function (seriesDto) {
+            var data = seriesDto.getData();
             var points = [];
-            var coordSys = seriesModel.coordinateSystem;
+            var coordSys = seriesDto.coordinateSystem;
             if (!coordSys) {
                 return;
             }

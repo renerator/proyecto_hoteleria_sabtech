@@ -15,9 +15,9 @@ define(function () {
      *      频繁调用时，按规律心跳执行
      *      配成：trailing：true；debounce：false 即可
      * 注意：
-     *     根据model更新view的时候，可以使用throttle，
-     *     但是根据view更新model的时候，避免使用这种延迟更新的方式。
-     *     因为这可能导致model和server同步出现问题。
+     *     根据Dto更新view的时候，可以使用throttle，
+     *     但是根据view更新Dto的时候，避免使用这种延迟更新的方式。
+     *     因为这可能导致Dto和server同步出现问题。
      *
      * @public
      * @param {(Function|Array.<Function>)} fn 需要调用的函数
@@ -142,7 +142,7 @@ define(function () {
      *     throttle.createOrUpdate(
      *         this,
      *         '_dispatchAction',
-     *         this.model.get('throttle'),
+     *         this.Dto.get('throttle'),
      *         'fixRate'
      *     );
      * };

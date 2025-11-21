@@ -147,10 +147,10 @@ describe('Bubble controller tests', function() {
 			{ r: 2, x: 341, y: 461 },
 			{ r: 1, x: 492, y:  32 }
 		].forEach(function(expected, i) {
-			expect(meta.data[i]._model.radius).toBe(expected.r);
-			expect(meta.data[i]._model.x).toBeCloseToPixel(expected.x);
-			expect(meta.data[i]._model.y).toBeCloseToPixel(expected.y);
-			expect(meta.data[i]._model).toEqual(jasmine.objectContaining({
+			expect(meta.data[i]._Dto.radius).toBe(expected.r);
+			expect(meta.data[i]._Dto.x).toBeCloseToPixel(expected.x);
+			expect(meta.data[i]._Dto.y).toBeCloseToPixel(expected.y);
+			expect(meta.data[i]._Dto).toEqual(jasmine.objectContaining({
 				backgroundColor: Chart.defaults.global.defaultColor,
 				borderColor: Chart.defaults.global.defaultColor,
 				borderWidth: 1,
@@ -171,7 +171,7 @@ describe('Bubble controller tests', function() {
 		chart.update();
 
 		for (var i=0; i<4; ++i) {
-			expect(meta.data[i]._model).toEqual(jasmine.objectContaining({
+			expect(meta.data[i]._Dto).toEqual(jasmine.objectContaining({
 				backgroundColor: 'rgb(98, 98, 98)',
 				borderColor: 'rgb(8, 8, 8)',
 				borderWidth: 0.55,
@@ -193,7 +193,7 @@ describe('Bubble controller tests', function() {
 
 		chart.update();
 
-		expect(meta.data[0]._model).toEqual(jasmine.objectContaining({
+		expect(meta.data[0]._Dto).toEqual(jasmine.objectContaining({
 			backgroundColor: 'rgb(0, 1, 3)',
 			borderColor: 'rgb(4, 6, 8)',
 			borderWidth: 0.787,
@@ -325,10 +325,10 @@ describe('Bubble controller tests', function() {
 		var point = meta.data[0];
 
 		meta.controller.setHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(229, 230, 0)');
-		expect(point._model.borderColor).toBe('rgb(230, 230, 230)');
-		expect(point._model.borderWidth).toBe(1);
-		expect(point._model.radius).toBe(9);
+		expect(point._Dto.backgroundColor).toBe('rgb(229, 230, 0)');
+		expect(point._Dto.borderColor).toBe('rgb(230, 230, 230)');
+		expect(point._Dto.borderWidth).toBe(1);
+		expect(point._Dto.radius).toBe(9);
 
 		// Can set hover style per dataset
 		chart.data.datasets[0].hoverRadius = 3.3;
@@ -337,10 +337,10 @@ describe('Bubble controller tests', function() {
 		chart.data.datasets[0].hoverBorderWidth = 2.1;
 
 		meta.controller.setHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(77, 79, 81)');
-		expect(point._model.borderColor).toBe('rgb(123, 125, 127)');
-		expect(point._model.borderWidth).toBe(2.1);
-		expect(point._model.radius).toBe(8.3);
+		expect(point._Dto.backgroundColor).toBe('rgb(77, 79, 81)');
+		expect(point._Dto.borderColor).toBe('rgb(123, 125, 127)');
+		expect(point._Dto.borderWidth).toBe(2.1);
+		expect(point._Dto.radius).toBe(8.3);
 
 		// Custom style
 		point.custom = {
@@ -351,10 +351,10 @@ describe('Bubble controller tests', function() {
 		};
 
 		meta.controller.setHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(0, 0, 0)');
-		expect(point._model.borderColor).toBe('rgb(10, 10, 10)');
-		expect(point._model.borderWidth).toBe(5.5);
-		expect(point._model.radius).toBe(4.4);
+		expect(point._Dto.backgroundColor).toBe('rgb(0, 0, 0)');
+		expect(point._Dto.borderColor).toBe('rgb(10, 10, 10)');
+		expect(point._Dto.borderWidth).toBe(5.5);
+		expect(point._Dto.radius).toBe(4.4);
 	});
 
 	it('should remove hover styles', function() {
@@ -406,10 +406,10 @@ describe('Bubble controller tests', function() {
 		chart.options.elements.point.radius = 1.01;
 
 		meta.controller.removeHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(45, 46, 47)');
-		expect(point._model.borderColor).toBe('rgb(50, 51, 52)');
-		expect(point._model.borderWidth).toBe(10.1);
-		expect(point._model.radius).toBe(5);
+		expect(point._Dto.backgroundColor).toBe('rgb(45, 46, 47)');
+		expect(point._Dto.borderColor).toBe('rgb(50, 51, 52)');
+		expect(point._Dto.borderWidth).toBe(10.1);
+		expect(point._Dto.radius).toBe(5);
 
 		// Can set hover style per dataset
 		chart.data.datasets[0].radius = 3.3;
@@ -418,10 +418,10 @@ describe('Bubble controller tests', function() {
 		chart.data.datasets[0].borderWidth = 2.1;
 
 		meta.controller.removeHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(77, 79, 81)');
-		expect(point._model.borderColor).toBe('rgb(123, 125, 127)');
-		expect(point._model.borderWidth).toBe(2.1);
-		expect(point._model.radius).toBe(5);
+		expect(point._Dto.backgroundColor).toBe('rgb(77, 79, 81)');
+		expect(point._Dto.borderColor).toBe('rgb(123, 125, 127)');
+		expect(point._Dto.borderWidth).toBe(2.1);
+		expect(point._Dto.radius).toBe(5);
 
 		// Custom style
 		point.custom = {
@@ -432,9 +432,9 @@ describe('Bubble controller tests', function() {
 		};
 
 		meta.controller.removeHoverStyle(point);
-		expect(point._model.backgroundColor).toBe('rgb(0, 0, 0)');
-		expect(point._model.borderColor).toBe('rgb(10, 10, 10)');
-		expect(point._model.borderWidth).toBe(5.5);
-		expect(point._model.radius).toBe(4.4);
+		expect(point._Dto.backgroundColor).toBe('rgb(0, 0, 0)');
+		expect(point._Dto.borderColor).toBe('rgb(10, 10, 10)');
+		expect(point._Dto.borderWidth).toBe(5.5);
+		expect(point._Dto.radius).toBe(4.4);
 	});
 });

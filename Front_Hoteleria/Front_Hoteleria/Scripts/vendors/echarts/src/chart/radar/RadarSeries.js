@@ -2,12 +2,12 @@ define(function(require) {
 
     'use strict';
 
-    var SeriesModel = require('../../model/Series');
+    var SeriesDto = require('../../Dto/Series');
     var List = require('../../data/List');
     var completeDimensions = require('../../data/helper/completeDimensions');
     var zrUtil = require('zrender/core/util');
 
-    var RadarSeries = SeriesModel.extend({
+    var RadarSeries = SeriesDto.extend({
 
         type: 'series.radar',
 
@@ -25,7 +25,7 @@ define(function(require) {
             };
         },
 
-        getInitialData: function (option, ecModel) {
+        getInitialData: function (option, ecDto) {
             var data = option.data || [];
             var dimensions = completeDimensions(
                 [], data, [], 'indicator_'

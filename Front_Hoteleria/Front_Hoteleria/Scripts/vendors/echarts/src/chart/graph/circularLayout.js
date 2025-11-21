@@ -1,9 +1,9 @@
 define(function (require) {
     var circularLayoutHelper = require('./circularLayoutHelper');
-    return function (ecModel, api) {
-        ecModel.eachSeriesByType('graph', function (seriesModel) {
-            if (seriesModel.get('layout') === 'circular') {
-                circularLayoutHelper(seriesModel);
+    return function (ecDto, api) {
+        ecDto.eachSeriesByType('graph', function (seriesDto) {
+            if (seriesDto.get('layout') === 'circular') {
+                circularLayoutHelper(seriesDto);
             }
         });
     };

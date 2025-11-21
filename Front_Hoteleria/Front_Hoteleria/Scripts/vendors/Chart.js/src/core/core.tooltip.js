@@ -89,7 +89,7 @@ module.exports = function(Chart) {
 			var tooltips = options.tooltips;
 
 			helpers.extend(this, {
-				_model: {
+				_Dto: {
 					// Positioning
 					xPadding: tooltips.xPadding,
 					yPadding: tooltips.yPadding,
@@ -220,7 +220,7 @@ module.exports = function(Chart) {
 
 		update: function(changed) {
 			if (this._active.length) {
-				this._model.opacity = 1;
+				this._Dto.opacity = 1;
 
 				var element = this._active[0],
 					labelColors = [],
@@ -270,7 +270,7 @@ module.exports = function(Chart) {
 				}
 
 				// Build the Text Lines
-				helpers.extend(this._model, {
+				helpers.extend(this._Dto, {
 					title: this.getTitle(tooltipItems, this._data),
 					beforeBody: this.getBeforeBody(tooltipItems, this._data),
 					body: this.getBody(tooltipItems, this._data),
@@ -278,7 +278,7 @@ module.exports = function(Chart) {
 					footer: this.getFooter(tooltipItems, this._data)
 				});
 
-				helpers.extend(this._model, {
+				helpers.extend(this._Dto, {
 					x: Math.round(tooltipPosition.x),
 					y: Math.round(tooltipPosition.y),
 					caretPadding: helpers.getValueOrDefault(tooltipPosition.padding, 2),
@@ -286,16 +286,16 @@ module.exports = function(Chart) {
 				});
 
 				// We need to determine alignment of
-				var tooltipSize = this.getTooltipSize(this._model);
+				var tooltipSize = this.getTooltipSize(this._Dto);
 				this.determineAlignment(tooltipSize); // Smart Tooltip placement to stay on the canvas
 
-				helpers.extend(this._model, this.getBackgroundPoint(this._model, tooltipSize));
+				helpers.extend(this._Dto, this.getBackgroundPoint(this._Dto, tooltipSize));
 			} else {
-				this._model.opacity = 0;
+				this._Dto.opacity = 0;
 			}
 
 			if (changed && this._options.tooltips.custom) {
-				this._options.tooltips.custom.call(this, this._model);
+				this._options.tooltips.custom.call(this, this._Dto);
 			}
 
 			return this;
@@ -341,10 +341,10 @@ module.exports = function(Chart) {
 			return size;
 		},
 		determineAlignment: function determineAlignment(size) {
-			if (this._model.y < size.height) {
-				this._model.yAlign = 'top';
-			} else if (this._model.y > (this._chart.height - size.height)) {
-				this._model.yAlign = 'bottom';
+			if (this._Dto.y < size.height) {
+				this._Dto.yAlign = 'top';
+			} else if (this._Dto.y > (this._chart.height - size.height)) {
+				this._Dto.yAlign = 'bottom';
 			}
 
 			var lf, rf; // functions to determine left, right alignment
@@ -354,7 +354,7 @@ module.exports = function(Chart) {
 			var midX = (this._chartInstance.chartArea.left + this._chartInstance.chartArea.right) / 2;
 			var midY = (this._chartInstance.chartArea.top + this._chartInstance.chartArea.bottom) / 2;
 
-			if (this._model.yAlign === 'center') {
+			if (this._Dto.yAlign === 'center') {
 				lf = function(x) {
 					return x <= midX;
 				};
@@ -380,21 +380,21 @@ module.exports = function(Chart) {
 				return y <= midY ? 'top' : 'bottom';
 			};
 
-			if (lf(this._model.x)) {
-				this._model.xAlign = 'left';
+			if (lf(this._Dto.x)) {
+				this._Dto.xAlign = 'left';
 
 				// Is tooltip too wide and goes over the right side of the chart.?
-				if (olf(this._model.x)) {
-					this._model.xAlign = 'center';
-					this._model.yAlign = yf(this._model.y);
+				if (olf(this._Dto.x)) {
+					this._Dto.xAlign = 'center';
+					this._Dto.yAlign = yf(this._Dto.y);
 				}
-			} else if (rf(this._model.x)) {
-				this._model.xAlign = 'right';
+			} else if (rf(this._Dto.x)) {
+				this._Dto.xAlign = 'right';
 
 				// Is tooltip too wide and goes outside left edge of canvas?
-				if (orf(this._model.x)) {
-					this._model.xAlign = 'center';
-					this._model.yAlign = yf(this._model.y);
+				if (orf(this._Dto.x)) {
+					this._Dto.xAlign = 'center';
+					this._Dto.yAlign = yf(this._Dto.y);
 				}
 			}
 		},

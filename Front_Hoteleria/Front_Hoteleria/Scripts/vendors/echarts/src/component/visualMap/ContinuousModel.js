@@ -1,16 +1,16 @@
 /**
- * @file Data zoom model
+ * @file Data zoom Dto
  */
 define(function(require) {
 
-    var VisualMapModel = require('./VisualMapModel');
+    var VisualMapDto = require('./VisualMapDto');
     var zrUtil = require('zrender/core/util');
     var numberUtil = require('../../util/number');
 
     // Constant
     var DEFAULT_BAR_BOUND = [20, 140];
 
-    var ContinuousModel = VisualMapModel.extend({
+    var ContinuousDto = VisualMapDto.extend({
 
         type: 'visualMap.continuous',
 
@@ -34,7 +34,7 @@ define(function(require) {
          * @override
          */
         doMergeOption: function (newOption, isInit) {
-            ContinuousModel.superApply(this, 'doMergeOption', arguments);
+            ContinuousDto.superApply(this, 'doMergeOption', arguments);
 
             this.resetTargetSeries(newOption, isInit);
             this.resetExtent();
@@ -51,7 +51,7 @@ define(function(require) {
          * @override
          */
         resetItemSize: function () {
-            VisualMapModel.prototype.resetItemSize.apply(this, arguments);
+            VisualMapDto.prototype.resetItemSize.apply(this, arguments);
 
             var itemSize = this.itemSize;
 
@@ -88,7 +88,7 @@ define(function(require) {
          * @override
          */
         completeVisualOption: function () {
-            VisualMapModel.prototype.completeVisualOption.apply(this, arguments);
+            VisualMapDto.prototype.completeVisualOption.apply(this, arguments);
 
             zrUtil.each(this.stateList, function (state) {
                 var symbolSize = this.option.controller[state].symbolSize;
@@ -150,15 +150,15 @@ define(function(require) {
         findTargetDataIndices: function (range) {
             var result = [];
 
-            this.eachTargetSeries(function (seriesModel) {
+            this.eachTargetSeries(function (seriesDto) {
                 var dataIndices = [];
-                var data = seriesModel.getData();
+                var data = seriesDto.getData();
 
                 data.each(this.getDataDimension(data), function (value, dataIndex) {
                     range[0] <= value && value <= range[1] && dataIndices.push(dataIndex);
                 }, true, this);
 
-                result.push({seriesId: seriesModel.id, dataIndices: dataIndices});
+                result.push({seriesId: seriesDto.id, dataIndices: dataIndices});
             }, this);
 
             return result;
@@ -166,6 +166,6 @@ define(function(require) {
 
     });
 
-    return ContinuousModel;
+    return ContinuousDto;
 
 });

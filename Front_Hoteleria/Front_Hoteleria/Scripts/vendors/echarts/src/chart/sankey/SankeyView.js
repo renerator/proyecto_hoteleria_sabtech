@@ -39,16 +39,16 @@ define(function (require) {
          * @private
          * @type {module:echarts/chart/sankey/SankeySeries}
          */
-        _model: null,
+        _Dto: null,
 
-        render: function(seriesModel, ecModel, api) {
-            var graph = seriesModel.getGraph();
+        render: function(seriesDto, ecDto, api) {
+            var graph = seriesDto.getGraph();
             var group = this.group;
-            var layoutInfo = seriesModel.layoutInfo;
-            var nodeData = seriesModel.getData();
-            var edgeData = seriesModel.getData('edge');
+            var layoutInfo = seriesDto.layoutInfo;
+            var nodeData = seriesDto.getData();
+            var edgeData = seriesDto.getData('edge');
 
-            this._model = seriesModel;
+            this._Dto = seriesDto;
 
             group.removeAll();
 
@@ -57,11 +57,11 @@ define(function (require) {
             // generate a rect  for each node
             graph.eachNode(function (node) {
                 var layout = node.getLayout();
-                var itemModel = node.getModel();
-                var labelModel = itemModel.getModel('label.normal');
-                var textStyleModel = labelModel.getModel('textStyle');
-                var labelHoverModel = itemModel.getModel('label.emphasis');
-                var textStyleHoverModel = labelHoverModel.getModel('textStyle');
+                var itemDto = node.getDto();
+                var labelDto = itemDto.getDto('label.normal');
+                var textStyleDto = labelDto.getDto('textStyle');
+                var labelHoverDto = itemDto.getDto('label.emphasis');
+                var textStyleHoverDto = labelHoverDto.getDto('textStyle');
 
                 var rect = new graphic.Rect({
                     shape: {
@@ -72,13 +72,13 @@ define(function (require) {
                     },
                     style: {
                         // Get formatted label in label.normal option. Use node id if it is not specified
-                        text: labelModel.get('show')
-                            ? seriesModel.getFormattedLabel(node.dataIndex, 'normal') || node.id
+                        text: labelDto.get('show')
+                            ? seriesDto.getFormattedLabel(node.dataIndex, 'normal') || node.id
                             // Use empty string to hide the label
                             : '',
-                        textFont: textStyleModel.getFont(),
-                        textFill: textStyleModel.getTextColor(),
-                        textPosition: labelModel.get('position')
+                        textFont: textStyleDto.getFont(),
+                        textFill: textStyleDto.getTextColor(),
+                        textPosition: labelDto.get('position')
                     }
                 });
 
@@ -86,18 +86,18 @@ define(function (require) {
                     {
                         fill: node.getVisual('color')
                     },
-                    itemModel.getModel('itemStyle.normal').getItemStyle()
+                    itemDto.getDto('itemStyle.normal').getItemStyle()
                 ));
 
                 graphic.setHoverStyle(rect, zrUtil.extend(
-                    node.getModel('itemStyle.emphasis'),
+                    node.getDto('itemStyle.emphasis'),
                     {
-                        text: labelHoverModel.get('show')
-                            ? seriesModel.getFormattedLabel(node.dataIndex, 'emphasis') || node.id
+                        text: labelHoverDto.get('show')
+                            ? seriesDto.getFormattedLabel(node.dataIndex, 'emphasis') || node.id
                             : '',
-                        textFont: textStyleHoverModel.getFont(),
-                        textFill: textStyleHoverModel.getTextColor(),
-                        textPosition: labelHoverModel.get('position')
+                        textFont: textStyleHoverDto.getFont(),
+                        textFill: textStyleHoverDto.getTextColor(),
+                        textPosition: labelHoverDto.get('position')
                     }
                 ));
 
@@ -113,11 +113,11 @@ define(function (require) {
                 var curve = new SankeyShape();
 
                 curve.dataIndex = edge.dataIndex;
-                curve.seriesIndex = seriesModel.seriesIndex;
+                curve.seriesIndex = seriesDto.seriesIndex;
                 curve.dataType = 'edge';
 
-                var lineStyleModel = edge.getModel('lineStyle.normal');
-                var curvature = lineStyleModel.get('curveness');
+                var lineStyleDto = edge.getDto('lineStyle.normal');
+                var curvature = lineStyleDto.get('curveness');
                 var n1Layout = edge.node1.getLayout();
                 var n2Layout = edge.node2.getLayout();
                 var edgeLayout = edge.getLayout();
@@ -144,24 +144,24 @@ define(function (require) {
                     cpy2: cpy2
                 });
 
-                curve.setStyle(lineStyleModel.getItemStyle());
-                graphic.setHoverStyle(curve, edge.getModel('lineStyle.emphasis').getItemStyle());
+                curve.setStyle(lineStyleDto.getItemStyle());
+                graphic.setHoverStyle(curve, edge.getDto('lineStyle.emphasis').getItemStyle());
 
                 group.add(curve);
 
                 edgeData.setItemGraphicEl(edge.dataIndex, curve);
             });
-            if (!this._data && seriesModel.get('animation')) {
-                group.setClipPath(createGridClipShape(group.getBoundingRect(), seriesModel, function () {
+            if (!this._data && seriesDto.get('animation')) {
+                group.setClipPath(createGridClipShape(group.getBoundingRect(), seriesDto, function () {
                     group.removeClipPath();
                 }));
             }
-            this._data = seriesModel.getData();
+            this._data = seriesDto.getData();
         }
     });
 
     //add animation to the view
-    function createGridClipShape(rect, seriesModel, cb) {
+    function createGridClipShape(rect, seriesDto, cb) {
         var rectEl = new graphic.Rect({
             shape: {
                 x: rect.x - 10,
@@ -175,7 +175,7 @@ define(function (require) {
                 width: rect.width + 20,
                 height: rect.height + 20
             }
-        }, seriesModel, cb);
+        }, seriesDto, cb);
 
         return rectEl;
     }

@@ -6,8 +6,8 @@ define(function (require) {
     var circularLayoutHelper = require('./circularLayoutHelper');
     var vec2 = require('zrender/core/vector');
 
-    return function (ecModel, api) {
-        ecModel.eachSeriesByType('graph', function (graphSeries) {
+    return function (ecDto, api) {
+        ecDto.eachSeriesByType('graph', function (graphSeries) {
             var coordSys = graphSeries.coordinateSystem;
             if (coordSys && coordSys.type !== 'view') {
                 return;
@@ -17,8 +17,8 @@ define(function (require) {
                 var graph = graphSeries.getGraph();
                 var nodeData = graph.data;
                 var edgeData = graph.edgeData;
-                var forceModel = graphSeries.getModel('force');
-                var initLayout = forceModel.get('initLayout');
+                var forceDto = graphSeries.getDto('force');
+                var initLayout = forceDto.get('initLayout');
                 if (graphSeries.preservedPoints) {
                     nodeData.each(function (idx) {
                         var id = nodeData.getId(idx);
@@ -34,8 +34,8 @@ define(function (require) {
 
                 var nodeDataExtent = nodeData.getDataExtent('value');
                 // var edgeDataExtent = edgeData.getDataExtent('value');
-                var repulsion = forceModel.get('repulsion');
-                var edgeLength = forceModel.get('edgeLength');
+                var repulsion = forceDto.get('repulsion');
+                var edgeLength = forceDto.get('edgeLength');
                 var nodes = nodeData.mapArray('value', function (value, idx) {
                     var point = nodeData.getItemLayout(idx);
                     // var w = numberUtil.linearMap(value, nodeDataExtent, [0, 50]);
@@ -53,7 +53,7 @@ define(function (require) {
                         n1: nodes[edge.node1.dataIndex],
                         n2: nodes[edge.node2.dataIndex],
                         d: edgeLength,
-                        curveness: edge.getModel().get('lineStyle.normal.curveness') || 0
+                        curveness: edge.getDto().get('lineStyle.normal.curveness') || 0
                     };
                 });
 
@@ -61,7 +61,7 @@ define(function (require) {
                 var rect = coordSys.getBoundingRect();
                 var forceInstance = forceHelper(nodes, edges, {
                     rect: rect,
-                    gravity: forceModel.get('gravity')
+                    gravity: forceDto.get('gravity')
                 });
                 var oldStep = forceInstance.step;
                 forceInstance.step = function (cb) {
