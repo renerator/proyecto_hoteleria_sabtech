@@ -325,7 +325,7 @@
                                             <input type="date" class="form-control" id="fechaFin">
                                             </div>
                                         </div>
-                                    <div class="col-md-2">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                             <label>Estado</label>
                                             <select class="form-control" id="filtroEstado">
@@ -536,7 +536,7 @@
                         </div>
                         <div class="panel-body">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                         <label>Empresa <span class="text-danger">*</span></label>
                                         <select class="form-control" id="asignarEmpresa" required>
@@ -546,10 +546,10 @@
                                             <option value="servicios_tech">Servicios Tech SpA</option>
                                             <option value="transportes_sur">Transportes del Sur</option>
                                             <option value="ingenieria_norte">Ingeniería Norte</option>
-                                        </select>
+                                    </select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                         <label>Tipo de Empresa <span class="text-danger">*</span></label>
                                         <select class="form-control" id="asignarTipoEmpresa" required>
@@ -558,11 +558,79 @@
                                             <option value="subcontratista">Subcontratista</option>
                                             <option value="proveedor">Proveedor de Servicios</option>
                                             <option value="mandante">Empresa Mandante</option>
-                                        </select>
+                                    </select>
                                 </div>
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Observaciones</label>
+                                    <textarea class="form-control" id="nuevasObservaciones" rows="3" placeholder="Notas adicionales..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <i class="fa fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="guardarNuevaReserva()">
+                        <i class="fa fa-save"></i> Guardar Reserva
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Asignar Habitación con Asignación Detallada -->
+    <div class="modal fade" id="asignarModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #2a3f54; color: white;">
+                    <button type="button" class="close" data-dismiss="modal" style="color: white;"><span>&times;</span></button>
+                    <h4 class="modal-title"><i class="fa fa-check-circle"></i> Asignación Detallada de Habitación</h4>
+                </div>
+                <div class="modal-body" style="max-height: 600px; overflow-y: auto;">
+                    <!-- Detalle de la Reserva -->
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h5><strong><i class="fa fa-info-circle"></i> Información de la Reserva</strong></h5>
+                        </div>
+                        <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                    <div class="detail-label">ID Reserva:</div>
+                                    <div class="detail-value" id="asignarReservaId"></div>
+                                    
+                                    <div class="detail-label">Huésped:</div>
+                                    <div class="detail-value" id="asignarHuesped"></div>
+                                    
+                                    <div class="detail-label">Email:</div>
+                                    <div class="detail-value" id="asignarEmail"></div>
+                            </div>
+                            <div class="col-md-6">
+                                    <div class="detail-label">Fecha Check-In:</div>
+                                    <div class="detail-value" id="asignarCheckin"></div>
+                                    
+                                    <div class="detail-label">Fecha Check-Out:</div>
+                                    <div class="detail-value" id="asignarCheckout"></div>
+                                    
+                                    <div class="detail-label">Número de Personas:</div>
+                                    <div class="detail-value" id="asignarNumHuespedes"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Asignación Detallada -->
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h5><strong><i class="fa fa-building"></i> Datos de Asignación Detallada</strong></h5>
+                        </div>
+                        <div class="panel-body">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -997,7 +1065,7 @@
                     type: 'success',
                 styling: 'bootstrap3',
                 delay: 2000
-            });
+                });
         }
 
         function abrirAsignacion(reservaId) {
@@ -1021,7 +1089,7 @@
             $('#asignarSupervisores').val('0');
             $('#asignarTrabajadores').val('0');
             $('#asignarObservaciones').val('');
-
+                
             // Cargar habitaciones disponibles según tipo solicitado
             var habitaciones = habitacionesDisponiblesPorTipo[reservaActual.tipoHabitacion] || [];
             var habitacionesHtml = '';
@@ -1040,8 +1108,8 @@
                     } else {
                         estadoBadge = '<span class="label label-warning"><i class="fa fa-building"></i> Asignada</span>';
                         empresaInfo = '<br><small class="text-info"><strong>Empresa:</strong> ' + hab.empresaAsignada + '</small>';
-                    }
-                    
+                }
+                
                     var clickEvent = habilitado ? 'onclick="seleccionarHabitacion(\'' + hab.numero + '\')"' : '';
                     var cursorStyle = habilitado ? 'cursor: pointer;' : 'cursor: not-allowed;';
                     
@@ -1347,12 +1415,12 @@
             
             // Validar fechas
             if (new Date(fechaSalida) <= new Date(fechaEntrada)) {
-                new PNotify({
+                    new PNotify({
                     title: 'Fechas Inválidas',
                     text: 'La fecha de salida debe ser posterior a la fecha de entrada',
-                    type: 'warning',
-                    styling: 'bootstrap3'
-                });
+                        type: 'warning',
+                        styling: 'bootstrap3'
+                    });
                 return;
             }
             

@@ -454,62 +454,144 @@
         var reservaActual = null;
         var reservasSeleccionadas = [];
 
-        // Datos de ejemplo
+        // Datos de ejemplo - Conectados con el sistema de reservas
+        // Fecha de hoy: 23 de noviembre de 2025
         var reservas = [
+            // Reservas para check-in HOY (23/11/2025)
             {
                 id: 'RES-001',
                 huesped: 'Juan Pérez',
                 habitacion: '301',
-                fechaEntrada: '2025-11-04',
-                fechaSalida: '2025-11-08',
+                fechaEntrada: '2025-11-23',
+                fechaSalida: '2025-11-27',
                 estado: 'confirmada',
                 checkinHora: null,
                 checkoutHora: null,
-                observaciones: ''
+                observaciones: '',
+                email: 'juan.perez@email.com',
+                telefono: '+56 9 1234 5678'
             },
             {
                 id: 'RES-002',
                 huesped: 'María González',
                 habitacion: '205',
-                fechaEntrada: '2025-11-04',
-                fechaSalida: '2025-11-10',
+                fechaEntrada: '2025-11-23',
+                fechaSalida: '2025-11-29',
                 estado: 'confirmada',
                 checkinHora: null,
                 checkoutHora: null,
-                observaciones: ''
+                observaciones: '',
+                email: 'maria.gonzalez@email.com',
+                telefono: '+56 9 2345 6789'
             },
             {
                 id: 'RES-003',
                 huesped: 'Carlos Rodríguez',
                 habitacion: '102',
-                fechaEntrada: '2025-11-04',
-                fechaSalida: '2025-11-09',
+                fechaEntrada: '2025-11-23',
+                fechaSalida: '2025-11-28',
                 estado: 'confirmada',
                 checkinHora: null,
                 checkoutHora: null,
-                observaciones: ''
+                observaciones: '',
+                email: 'carlos.rodriguez@email.com',
+                telefono: '+56 9 3456 7890'
             },
+            // Reservas con check-in realizado (hoy o anteriores)
             {
                 id: 'RES-004',
                 huesped: 'Ana Martínez',
                 habitacion: '401',
-                fechaEntrada: '2025-11-04',
-                fechaSalida: '2025-11-12',
-                estado: 'confirmada',
-                checkinHora: null,
+                fechaEntrada: '2025-11-21',
+                fechaSalida: '2025-11-23',
+                estado: 'checkin',
+                checkinHora: '14:30',
                 checkoutHora: null,
-                observaciones: ''
+                observaciones: 'Check-in realizado el 21/11/2025',
+                email: 'ana.martinez@email.com',
+                telefono: '+56 9 4567 8901'
             },
             {
                 id: 'RES-005',
                 huesped: 'Luis Fernández',
                 habitacion: '302',
-                fechaEntrada: '2025-11-04',
-                fechaSalida: '2025-11-11',
-                estado: 'confirmada',
+                fechaEntrada: '2025-11-20',
+                fechaSalida: '2025-11-23',
+                estado: 'checkin',
+                checkinHora: '15:00',
+                checkoutHora: null,
+                observaciones: 'Check-in realizado el 20/11/2025',
+                email: 'luis.fernandez@email.com',
+                telefono: '+56 9 5678 9012'
+            },
+            // Reservas con check-out HOY (23/11/2025)
+            {
+                id: 'RES-006',
+                huesped: 'Pedro Sánchez',
+                habitacion: '403',
+                fechaEntrada: '2025-11-18',
+                fechaSalida: '2025-11-23',
+                estado: 'checkin',
+                checkinHora: '12:00',
+                checkoutHora: null,
+                observaciones: 'Check-in realizado el 18/11/2025',
+                email: 'pedro.sanchez@email.com',
+                telefono: '+56 9 6789 0123'
+            },
+            {
+                id: 'RES-007',
+                huesped: 'Laura Torres',
+                habitacion: '208',
+                fechaEntrada: '2025-11-19',
+                fechaSalida: '2025-11-23',
+                estado: 'checkin',
+                checkinHora: '13:15',
+                checkoutHora: null,
+                observaciones: 'Check-in realizado el 19/11/2025',
+                email: 'laura.torres@email.com',
+                telefono: '+56 9 7890 1234'
+            },
+            // Reservas ya con check-out realizado
+            {
+                id: 'RES-008',
+                huesped: 'Roberto Silva',
+                habitacion: '105',
+                fechaEntrada: '2025-11-15',
+                fechaSalida: '2025-11-22',
+                estado: 'checkout',
+                checkinHora: '14:00',
+                checkoutHora: '11:30',
+                observaciones: 'Check-out realizado el 22/11/2025',
+                email: 'roberto.silva@email.com',
+                telefono: '+56 9 8901 2345'
+            },
+            // No Show
+            {
+                id: 'RES-009',
+                huesped: 'Mónica Vega',
+                habitacion: '306',
+                fechaEntrada: '2025-11-22',
+                fechaSalida: '2025-11-26',
+                estado: 'noshow',
                 checkinHora: null,
                 checkoutHora: null,
-                observaciones: ''
+                observaciones: 'No Show: No se presentó en la fecha programada',
+                email: 'monica.vega@email.com',
+                telefono: '+56 9 9012 3456'
+            },
+            // Reserva extendida
+            {
+                id: 'RES-010',
+                huesped: 'Diego Morales',
+                habitacion: '407',
+                fechaEntrada: '2025-11-10',
+                fechaSalida: '2025-11-24',
+                estado: 'extendida',
+                checkinHora: '16:00',
+                checkoutHora: null,
+                observaciones: 'Extensión: 2 días adicionales - Cliente solicitó extender estadía',
+                email: 'diego.morales@email.com',
+                telefono: '+56 9 0123 4567'
             }
         ];
 
