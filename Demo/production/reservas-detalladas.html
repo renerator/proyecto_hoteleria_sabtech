@@ -325,7 +325,7 @@
                                             <input type="date" class="form-control" id="fechaFin">
                                             </div>
                                         </div>
-                                    <div class="col-md-2">
+                                        <div class="col-md-2">
                                             <div class="form-group">
                                             <label>Estado</label>
                                             <select class="form-control" id="filtroEstado">
@@ -546,7 +546,7 @@
                                             <option value="servicios_tech">Servicios Tech SpA</option>
                                             <option value="transportes_sur">Transportes del Sur</option>
                                             <option value="ingenieria_norte">Ingeniería Norte</option>
-                                        </select>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -558,7 +558,7 @@
                                             <option value="subcontratista">Subcontratista</option>
                                             <option value="proveedor">Proveedor de Servicios</option>
                                             <option value="mandante">Empresa Mandante</option>
-                                        </select>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -997,7 +997,7 @@
                     type: 'success',
                 styling: 'bootstrap3',
                 delay: 2000
-            });
+                });
         }
 
         function abrirAsignacion(reservaId) {
@@ -1021,7 +1021,7 @@
             $('#asignarSupervisores').val('0');
             $('#asignarTrabajadores').val('0');
             $('#asignarObservaciones').val('');
-
+                
             // Cargar habitaciones disponibles según tipo solicitado
             var habitaciones = habitacionesDisponiblesPorTipo[reservaActual.tipoHabitacion] || [];
             var habitacionesHtml = '';
@@ -1040,8 +1040,8 @@
                     } else {
                         estadoBadge = '<span class="label label-warning"><i class="fa fa-building"></i> Asignada</span>';
                         empresaInfo = '<br><small class="text-info"><strong>Empresa:</strong> ' + hab.empresaAsignada + '</small>';
-                    }
-                    
+                }
+                
                     var clickEvent = habilitado ? 'onclick="seleccionarHabitacion(\'' + hab.numero + '\')"' : '';
                     var cursorStyle = habilitado ? 'cursor: pointer;' : 'cursor: not-allowed;';
                     
@@ -1347,12 +1347,12 @@
             
             // Validar fechas
             if (new Date(fechaSalida) <= new Date(fechaEntrada)) {
-                new PNotify({
+                    new PNotify({
                     title: 'Fechas Inválidas',
                     text: 'La fecha de salida debe ser posterior a la fecha de entrada',
-                    type: 'warning',
-                    styling: 'bootstrap3'
-                });
+                        type: 'warning',
+                        styling: 'bootstrap3'
+                    });
                 return;
             }
             

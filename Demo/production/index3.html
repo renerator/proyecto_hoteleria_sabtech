@@ -241,14 +241,6 @@
             overflow-x: hidden;
         }
         
-        .left_col {
-            width: 200px;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-        
         /* Permitir scroll horizontal en tablas cuando sea necesario */
         .table-responsive {
             width: 100%;
@@ -482,7 +474,39 @@
             opacity: 1 !important;
         }
         
-        /* CSS adicional para estabilizar el menú */
+        /* CSS adicional para estabilizar el menú SOLO PARA USUARIO HUÉSPED */
+        /* Asegurar que el contenedor padre left_col permanezca fijo */
+        body.huesped-user .col-md-3.left_col,
+        body.huesped-user .left_col {
+            position: fixed !important;
+            height: 100vh !important;
+            z-index: 1000 !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 230px !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            background-color: #2A3F54 !important;
+        }
+        
+        /* Ajustar el contenedor interno del menú para huésped */
+        body.huesped-user .left_col.scroll-view {
+            position: relative !important;
+            height: 100% !important;
+            width: 100% !important;
+        }
+        
+        /* Asegurar que el main_container no interfiera */
+        body.huesped-user .main_container {
+            position: relative !important;
+        }
+        
+        /* Ajustar el contenido principal cuando el menú está fijo para huésped */
+        body.huesped-user .right_col {
+            width: calc(100% - 230px) !important;
+            margin-left: 230px !important;
+        }
+        
         body.huesped-user .nav.side-menu {
             position: relative !important;
         }
@@ -500,13 +524,14 @@
         
         /* MOSTRAR MENÚ DEL HUÉSPED SOLO PARA USUARIO HUÉSPED */
         body.huesped-user .huesped-menu-reservas,
-        body.huesped-user .huesped-menu-servicios {
+        body.huesped-user .huesped-menu-servicios,
+        body.huesped-user .huesped-menu-reclamos {
             display: block !important;
             visibility: visible !important;
         }
         
         /* OCULTAR MENÚS ORIGINALES PARA HUÉSPED */
-        body.huesped-user .nav.side-menu > li:not(.huesped-menu-reservas):not(.huesped-menu-servicios) {
+        body.huesped-user .nav.side-menu > li:not(.huesped-menu-reservas):not(.huesped-menu-servicios):not(.huesped-menu-reclamos) {
             display: none !important;
             visibility: hidden !important;
         }
@@ -989,6 +1014,23 @@
               <div class="menu_section">
                 <h3>Menú Administrador</h3>
                 <ul class="nav side-menu">
+                  <!-- Menú específico para huésped - OCULTO POR DEFECTO -->
+                  <li class="huesped-menu-reservas" style="display: none !important;">
+                    <a href="index2.html" style="color: #fff !important; padding: 12px 15px !important; display: block !important; text-decoration: none !important;">
+                      <i class="fa fa-calendar" style="margin-right: 10px !important; color: #2ecc71 !important;"></i> Reservas
+                    </a>
+                  </li>
+                  <li class="huesped-menu-servicios" style="display: none !important;">
+                    <a href="index3.html" style="color: #fff !important; padding: 12px 15px !important; display: block !important; text-decoration: none !important;">
+                      <i class="fa fa-cogs" style="margin-right: 10px !important; color: #2ecc71 !important;"></i> Servicios
+                    </a>
+                  </li>
+                  <li class="huesped-menu-reclamos" style="display: none !important;">
+                    <a href="reclamos.html" style="color: #fff !important; padding: 12px 15px !important; display: block !important; text-decoration: none !important;">
+                      <i class="fa fa-comments" style="margin-right: 10px !important; color: #f39c12 !important;"></i> Reclamos
+                    </a>
+                  </li>
+                  
                   <li><a><i class="fa fa-dashboard"></i> Dashboard <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="admin-dashboard.html">Panel Principal</a></li>
@@ -2486,6 +2528,126 @@
 
     <!-- Custom Theme Scripts -->
     <script src="../build/js/custom.min.js"></script>
+    
+    <!-- Script para mantener menús visibles SOLO para usuario huésped -->
+    <script>
+        (function() {
+            function mostrarMenusHuesped() {
+                var currentUser = localStorage.getItem('currentUser');
+                if (currentUser === 'huesped' || document.body.classList.contains('huesped-user')) {
+                    // Agregar clase al body
+                    document.body.classList.add('huesped-user');
+                    
+                    // Mostrar menús del huésped con !important
+                    var reservasMenu = document.querySelector('.huesped-menu-reservas');
+                    var serviciosMenu = document.querySelector('.huesped-menu-servicios');
+                    var reclamosMenu = document.querySelector('.huesped-menu-reclamos');
+                    
+                    if (reservasMenu) {
+                        reservasMenu.style.setProperty('display', 'block', 'important');
+                        reservasMenu.style.setProperty('visibility', 'visible', 'important');
+                    }
+                    
+                    if (serviciosMenu) {
+                        serviciosMenu.style.setProperty('display', 'block', 'important');
+                        serviciosMenu.style.setProperty('visibility', 'visible', 'important');
+                    }
+                    
+                    if (reclamosMenu) {
+                        reclamosMenu.style.setProperty('display', 'block', 'important');
+                        reclamosMenu.style.setProperty('visibility', 'visible', 'important');
+                    }
+                    
+                    // Ocultar otros menús
+                    var allMenus = document.querySelectorAll('.nav.side-menu > li');
+                    allMenus.forEach(function(menu) {
+                        if (!menu.classList.contains('huesped-menu-reservas') && 
+                            !menu.classList.contains('huesped-menu-servicios') &&
+                            !menu.classList.contains('huesped-menu-reclamos')) {
+                            menu.style.setProperty('display', 'none', 'important');
+                        }
+                    });
+                }
+            }
+            
+            // Ejecutar cuando el DOM esté listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', mostrarMenusHuesped);
+            } else {
+                mostrarMenusHuesped();
+            }
+            
+            // Ejecutar después de un delay para asegurar que custom.min.js haya terminado
+            setTimeout(mostrarMenusHuesped, 100);
+            setTimeout(mostrarMenusHuesped, 500);
+            
+            // Interceptar clicks en los enlaces del menú ANTES de que naveguen
+            document.addEventListener('click', function(e) {
+                var target = e.target.closest('a');
+                if (target && (target.closest('.huesped-menu-reservas') || 
+                               target.closest('.huesped-menu-servicios') ||
+                               target.closest('.huesped-menu-reclamos'))) {
+                    // Mantener menús visibles antes de navegar
+                    mostrarMenusHuesped();
+                }
+            }, true); // CAPTURE phase
+            
+            // Ejecutar periódicamente para mantener los menús visibles
+            setInterval(mostrarMenusHuesped, 300);
+        })();
+    </script>
+    
+    <!-- Script para mantener el menú fijo SOLO para usuario huésped -->
+    <script>
+        (function() {
+            function forceHuespedMenuFixed() {
+                // Verificar si es usuario huésped
+                var currentUser = localStorage.getItem('currentUser');
+                if (currentUser === 'huesped' || document.body.classList.contains('huesped-user')) {
+                    // Aplicar estilos inline para forzar que el menú permanezca fijo
+                    var leftCols = document.querySelectorAll('.left_col, .col-md-3.left_col');
+                    leftCols.forEach(function(el) {
+                        if (el) {
+                            el.style.position = 'fixed';
+                            el.style.height = '100vh';
+                            el.style.zIndex = '1000';
+                            el.style.top = '0';
+                            el.style.left = '0';
+                            el.style.width = '230px';
+                            el.style.overflowY = 'auto';
+                            el.style.overflowX = 'hidden';
+                        }
+                    });
+                    
+                    // Ajustar el contenido principal
+                    var rightCol = document.querySelector('.right_col');
+                    if (rightCol) {
+                        rightCol.style.marginLeft = '230px';
+                        rightCol.style.width = 'calc(100% - 230px)';
+                    }
+                }
+            }
+            
+            // Ejecutar después de que se cargue custom.min.js
+            setTimeout(forceHuespedMenuFixed, 100);
+            
+            // Ejecutar en eventos de scroll para mantener el menú fijo
+            window.addEventListener('scroll', forceHuespedMenuFixed, true);
+            
+            // Ejecutar cuando se redimensione la ventana
+            window.addEventListener('resize', forceHuespedMenuFixed);
+            
+            // Ejecutar cuando el DOM esté listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', forceHuespedMenuFixed);
+            } else {
+                forceHuespedMenuFixed();
+            }
+            
+            // Ejecutar periódicamente para asegurar que el menú permanezca fijo
+            setInterval(forceHuespedMenuFixed, 500);
+        })();
+    </script>
     
     <!-- SISTEMA DE AUTENTICACIÓN SIMPLE -->
     <script src="auth-simple.js"></script>
@@ -6301,93 +6463,76 @@
             console.log('Menús del huesped recreados en servicios:', $('.huesped-direct-menu').length);
         }
         
-        // Script ULTRA SIMPLE para mostrar menú del huesped
+        // Script para mostrar y mantener menús del huesped
+        function mantenerMenusHuesped() {
+            if (getCurrentUser() === 'huesped') {
+                console.log('=== MANTENIENDO MENÚS HUÉSPED ===');
+                
+                // Agregar clase al body
+                $('body').addClass('huesped-user');
+                
+                // Forzar mostrar menús del huesped con !important
+                $('.huesped-menu-reservas').each(function() {
+                    this.style.setProperty('display', 'block', 'important');
+                    this.style.setProperty('visibility', 'visible', 'important');
+                });
+                
+                $('.huesped-menu-servicios').each(function() {
+                    this.style.setProperty('display', 'block', 'important');
+                    this.style.setProperty('visibility', 'visible', 'important');
+                });
+                
+                $('.huesped-menu-reclamos').each(function() {
+                    this.style.setProperty('display', 'block', 'important');
+                    this.style.setProperty('visibility', 'visible', 'important');
+                });
+                
+                $('.huesped-menu-reclamos').each(function() {
+                    this.style.setProperty('display', 'block', 'important');
+                    this.style.setProperty('visibility', 'visible', 'important');
+                });
+                
+                // Ocultar todos los otros menús
+                $('.nav.side-menu > li').not('.huesped-menu-reservas').not('.huesped-menu-servicios').not('.huesped-menu-reclamos').each(function() {
+                    this.style.setProperty('display', 'none', 'important');
+                });
+                
+                console.log('Menús del huesped mantenidos:', $('.huesped-menu-reservas').length, $('.huesped-menu-servicios').length, $('.huesped-menu-reclamos').length);
+            }
+        }
+        
         $(document).ready(function() {
             // Verificar si es huesped
             if (getCurrentUser() === 'huesped') {
                 console.log('=== HUÉSPED DETECTADO EN SERVICIOS - MOSTRANDO MENÚ ===');
                 
-                // Agregar clase al body
-                $('body').addClass('huesped-user');
+                // Ejecutar inmediatamente
+                mantenerMenusHuesped();
                 
-                // Mostrar menús del huesped
-                $('.huesped-menu-reservas').show();
-                $('.huesped-menu-servicios').show();
-                $('.huesped-menu-reservas').css('display', 'block');
-                $('.huesped-menu-servicios').css('display', 'block');
+                // Ejecutar múltiples veces para asegurar
+                setTimeout(mantenerMenusHuesped, 50);
+                setTimeout(mantenerMenusHuesped, 100);
+                setTimeout(mantenerMenusHuesped, 200);
+                setTimeout(mantenerMenusHuesped, 500);
                 
-                // Ocultar todos los otros menús
-                $('.nav.side-menu > li').not('.huesped-menu-reservas').not('.huesped-menu-servicios').hide();
-                
-                console.log('Menús del huesped mostrados:', $('.huesped-menu-reservas').length, $('.huesped-menu-servicios').length);
+                // Ejecutar cada 500ms para mantener visibles
+                setInterval(mantenerMenusHuesped, 500);
             }
             
-            // Ejecutar inmediatamente
-            if (getCurrentUser() === 'huesped') {
-                configurarHuesped();
-            }
-            
-            // Ejecutar después de 100ms
-            setTimeout(function() {
-                if (getCurrentUser() === 'huesped') {
-                    configurarHuesped();
-                }
-            }, 100);
-            
-            // Ejecutar después de 500ms
-            setTimeout(function() {
-                if (getCurrentUser() === 'huesped') {
-                    configurarHuesped();
-                }
-            }, 500);
-            
-            // Ejecutar después de 1 segundo
-            setTimeout(function() {
-                if (getCurrentUser() === 'huesped') {
-                    configurarHuesped();
-                }
-            }, 1000);
-            
-            // Ejecutar cada 2 segundos para mantener
-            setInterval(function() {
-                if (getCurrentUser() === 'huesped') {
-                    configurarHuesped();
-                }
-            }, 2000);
-            
-            // Ejecutar cuando se hace clic en los enlaces del menú
-            $(document).on('click', '.huesped-direct-menu a', function() {
-                console.log('Click en menú huesped detectado en servicios');
-                setTimeout(function() {
-                    if (getCurrentUser() === 'huesped') {
-                        configurarHuesped();
-                    }
-                }, 100);
+            // Ejecutar cuando se hace clic en cualquier enlace del menú del huésped
+            $(document).on('click', '.huesped-menu-reservas a, .huesped-menu-servicios a, .huesped-menu-reclamos a', function(e) {
+                console.log('Click en menú huesped detectado');
+                // Mantener menús visibles antes de navegar
+                mantenerMenusHuesped();
+                
+                // Restaurar después de un breve delay
+                setTimeout(mantenerMenusHuesped, 50);
+                setTimeout(mantenerMenusHuesped, 200);
             });
             
-            // Ejecutar cuando se carga una nueva página
+            // Ejecutar cuando se carga la página completamente
             $(window).on('load', function() {
-                if (getCurrentUser() === 'huesped') {
-                    configurarHuesped();
-                }
-            });
-            
-            // Ejecutar cuando se cambia de página (para navegación SPA)
-            $(document).on('DOMNodeInserted', function() {
-                if (getCurrentUser() === 'huesped') {
-                    setTimeout(function() {
-                        configurarHuesped();
-                    }, 200);
-                }
-            });
-            
-            // Ejecutar cuando se hace clic en cualquier enlace
-            $(document).on('click', 'a', function() {
-                if (getCurrentUser() === 'huesped') {
-                    setTimeout(function() {
-                        configurarHuesped();
-                    }, 300);
-                }
+                mantenerMenusHuesped();
             });
         });
         
