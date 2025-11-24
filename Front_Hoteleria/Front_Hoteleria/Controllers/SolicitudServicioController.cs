@@ -1,17 +1,19 @@
-﻿using Front_Hoteleria.Dto.SolicitudServicio;
-using Front_Hoteleria.Dto.Empresa;      // ajusta al namespace real
+﻿using Front_Hoteleria.Dto.Empresa;      // ajusta al namespace real
 using Front_Hoteleria.Dto.Habitacion;   // ajusta al namespace real
-
-using Front_Hoteleria.Services.SolicitudServicio;
+using Front_Hoteleria.Dto.SolicitudServicio;
+using Front_Hoteleria.Dto.Servicio;
 using Front_Hoteleria.Services.Empresa;
 using Front_Hoteleria.Services.Habitacion;
-
+using Front_Hoteleria.Services.SolicitudServicio;
+using Front_Hoteleria.Services.Trabajadores;
+using Front_Hoteleria.Services.Servicio;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Linq;
 
 namespace Front_Hoteleria.Controllers
 {
@@ -20,22 +22,26 @@ namespace Front_Hoteleria.Controllers
         private readonly ISolicitudServicioService _api;
         private readonly IEmpresaService _empService;
         private readonly IHabitacionService _habService;
+        private readonly ITrabajadoresService _trabService;
+        private readonly IServicioService _serService;
 
         public SolicitudServicioController()
             : this(new SolicitudServicioService(),
                    new EmpresaService(),
-                   new HabitacionService())
+                   new HabitacionService(), new TrabajadoresService(), new ServicioService())
         {
         }
 
         public SolicitudServicioController(
             ISolicitudServicioService api,
             IEmpresaService empService,
-            IHabitacionService habService)
+            IHabitacionService habService, ITrabajadoresService trabService, IServicioService serService)
         {
             _api = api;
             _empService = empService;
             _habService = habService;
+            _trabService = trabService;
+            _serService=serService;
         }
 
         // =============== TOKEN ===============
@@ -147,6 +153,21 @@ namespace Front_Hoteleria.Controllers
 
         private async Task CargarCombosAsync(SolicitudServicioDto model, string token)
         {
+
+
+            // ---------- Servicios ----------
+            var servicios = await _serService.ListarServiciosAsync(1, token);
+
+            var listServicios = new List<SelectListItem>();
+            foreach (var e in servicios)
+            {
+                listServicios.Add(new SelectListItem
+                {
+                    Value = e.IdServicio.ToString(),
+                    Text = e.NombreServicio  // ajusta al nombre real
+                });
+            }
+            ViewBag.Servicios = listServicios;
             // ---------- EMPRESAS ----------
             var empresas = await _empService.ListarComboAsync(true, null, token)
                            ?? new List<EmpresaDto>();
@@ -220,9 +241,25 @@ namespace Front_Hoteleria.Controllers
             if (string.IsNullOrWhiteSpace(token))
                 return Json(new { ok = false, message = "Sesión expirada." });
 
+            
+            var Trabajadores = await _trabService.BuscarTrabajadorAsync(dto.RutSolicitante, token);
+            var trabajador = Trabajadores.FirstOrDefault();
+            if (trabajador == null )
+            {
+                return Json(new { ok = false, message = "No se encontró el trabajador para el RUT ingresado." });
+            }
+
+            dto.IdSolicitante = trabajador.IdUsuario;   // o solo idTrabajador si es int
+            dto.idEstado = true;
+            dto.IdEstadoSolicitud = 1; // por ejemplo Pendiente
+                                       // dto.IdOrdenTrabajo = ... si corresponde
+            dto.IdPersonalAsignado = 1;
+            dto.IdOrdenTrabajo = 1;
+
             var ok = await _api.CrearSolicitudAsync(dto, token);
             return Json(new { ok, message = ok ? "Solicitud creada." : "No se pudo crear la solicitud." });
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -231,6 +268,20 @@ namespace Front_Hoteleria.Controllers
             var token = GetBearer();
             if (string.IsNullOrWhiteSpace(token))
                 return Json(new { ok = false, message = "Sesión expirada." });
+
+            var Trabajadores = await _trabService.BuscarTrabajadorAsync(dto.RutSolicitante, token);
+            var trabajador = Trabajadores.FirstOrDefault();
+            if (trabajador == null)
+            {
+                return Json(new { ok = false, message = "No se encontró el trabajador para el RUT ingresado." });
+            }
+
+            dto.IdSolicitante = trabajador.IdUsuario;   // o solo idTrabajador si es int
+            dto.idEstado = true;
+            dto.IdEstadoSolicitud = 1; // por ejemplo Pendiente
+                                       // dto.IdOrdenTrabajo = ... si corresponde
+            dto.IdPersonalAsignado = 1;
+            dto.IdOrdenTrabajo = 1;
 
             var ok = await _api.ModificarSolicitudAsync(dto, token);
             return Json(new { ok, message = ok ? "Solicitud actualizada." : "No se pudo actualizar la solicitud." });

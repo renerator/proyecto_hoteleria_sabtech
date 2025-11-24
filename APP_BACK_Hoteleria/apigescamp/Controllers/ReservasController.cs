@@ -62,6 +62,29 @@ namespace DemoBackend.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+        [HttpPost("AsignarReserva")]
+        
+        public IActionResult AsignarReserva([FromBody] ReservaAsignacionDto dto)
+        {
+            try
+            {
+                if (dto == null || dto.IdReserva <= 0 || dto.IdHabitacion <= 0)
+                    return BadRequest("Datos incompletos para asignación.");
+
+                var ok = _reservaService.CrearReservaAsignacion(dto);
+                if (!ok)
+                    return StatusCode(500, "No se pudo guardar la asignación.");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+
+                _logger.LogError($"AsignarReserva : Error --> {e.Message}");
+                _logger.LogTrace(e.StackTrace);
+                return StatusCode(500, e.Message);
+            }
+        }
 
         /// <summary>
         /// Servicio para crear una reserva

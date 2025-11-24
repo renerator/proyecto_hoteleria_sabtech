@@ -22,6 +22,7 @@ namespace DemoBackend.Services
         private readonly IGenericRepositoryEntity<ReservaDashboardPanelPrincipalModel> _listaReservaDashboardPanelPrincipal;
         private readonly IGenericRepositoryEntity<ReservaTrabajadorModels> _listaReservaTrabajador;
         private readonly IGenericRepositoryEntity<EstadoReservaModels> _listaEstadoReserva;
+        private readonly IGenericRepositoryEntity<ReservaAsignacionModels> _repoReservaAsignacion;
         private readonly IMapper _mapper;
 
         public ReservaService(
@@ -30,6 +31,7 @@ namespace DemoBackend.Services
             IGenericRepositoryEntity<ReservaTrabajadorModels> listaReservaTrabajador,
              IGenericRepositoryEntity<ReservaDashboardPanelPrincipalModel> listaReservaDashboardPanelPrincipal,
             IGenericRepositoryEntity<EstadoReservaModels> listaEstadoReserva,
+            IGenericRepositoryEntity<ReservaAsignacionModels> repoReservaAsignacion,
         IMapper mapper)
         {
             _listaReserva = listaReserva;
@@ -37,9 +39,47 @@ namespace DemoBackend.Services
             _listaReservaTrabajador = listaReservaTrabajador;
             _listaReservaDashboardPanelPrincipal = listaReservaDashboardPanelPrincipal;
              _listaEstadoReserva = listaEstadoReserva;
+            _repoReservaAsignacion = repoReservaAsignacion;
 
             _mapper = mapper;
         }
+
+        public bool CrearReservaAsignacion(ReservaAsignacionDto dto)
+        {
+            if (dto == null || dto.IdReserva <= 0 || dto.IdHabitacion <= 0)
+                return false;
+
+            const string sql = "HOT_CRE_ReservaAsignacion " +
+                               "@IdReserva,@IdHabitacion,@IdEmpresa,@IdTipoEmpresa," +
+                               "@IdJornada,@IdHorario,@IdGenero," +
+                               "@CantidadSupervisores,@CantidadTrabajadores,@Observaciones";
+
+            var p = new[]
+            {
+        new SqlParameter("@IdReserva", dto.IdReserva),
+        new SqlParameter("@IdHabitacion", dto.IdHabitacion),
+        new SqlParameter("@IdEmpresa", (object?)dto.IdEmpresa ?? DBNull.Value),
+        new SqlParameter("@IdTipoEmpresa", (object?)dto.IdTipoEmpresa ?? DBNull.Value),
+        new SqlParameter("@IdJornada", (object?)dto.IdJornada ?? DBNull.Value),
+        new SqlParameter("@IdHorario", (object?)dto.IdHorario ?? DBNull.Value),
+        new SqlParameter("@IdGenero", (object?)dto.IdGenero ?? DBNull.Value),
+        new SqlParameter("@CantidadSupervisores", (object?)dto.CantidadSupervisores ?? DBNull.Value),
+        new SqlParameter("@CantidadTrabajadores", (object?)dto.CantidadTrabajadores ?? DBNull.Value),
+        new SqlParameter("@Observaciones", (object?)dto.Observaciones ?? DBNull.Value)
+    };
+
+            try
+            {
+                _repoReservaAsignacion.InsertProcedure(sql, p);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+        }
+
         public bool CrearBitacoraReserva(BitacoraReservaDto dto)
         {
             if (dto == null) return false;

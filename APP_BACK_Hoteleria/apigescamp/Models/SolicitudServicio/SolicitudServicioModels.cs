@@ -49,5 +49,23 @@ namespace DemoBackend.Models.SolicitudServicio
         public string PersonalAsignado { get; set; }
         [Column("EstadoSolicitud")]
         public string EstadoSolicitud { get; set; }
+        [Column("idPrioridad")]
+        public int idPrioridad { get; set; }
+        
+        [Column("idEstado")]
+        public bool idEstado { get; set; }
+
+        [Column("Descripcion")]
+        public string Descripcion { get; set; }
+
+        [Column("idEmpresa")]
+        public int idEmpresa { get; set; }
+
+        [Column("Empresa")]
+        public string Empresa { get; set; }
+
+        [Column("Servicio")]
+        public string Servicio { get; set; }
+
     }
 }

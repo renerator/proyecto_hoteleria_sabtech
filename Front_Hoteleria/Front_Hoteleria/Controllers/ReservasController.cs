@@ -426,14 +426,32 @@ namespace Front_Hoteleria.Controllers
 
             return Json(new { ok = true, data = resp }, JsonRequestBehavior.AllowGet);
         }
-       
-      
 
-[HttpGet]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> GuardarAsignacion(ReservaAsignacionPostDto dto)
+        {
+            if (dto == null || dto.IdReserva <= 0 || dto.IdHabitacion <= 0)
+                return Json(new { ok = false, msg = "Debe seleccionar una reserva y una habitación." });
+
+            var token = GetBearer();
+            var ok = await _api.GuardarAsignacionAsync(dto, token);
+
+            if (!ok)
+                return Json(new { ok = false, msg = "No se pudo guardar la asignación en la API." });
+
+            return Json(new { ok = true, msg = "Asignación guardada correctamente." });
+        }
+
+
+        [HttpGet]
     public async Task<ActionResult> Asignar(int idReserva)
     {
         var token = GetBearer();
         ReservaDto dto = null;
+
+
+
 
         // 1) Obtener reserva
         if (idReserva > 0)
@@ -478,6 +496,7 @@ namespace Front_Hoteleria.Controllers
 
                     return new HabitacionDisponibleDto
                     {
+                        IdHabitacion = h.IdHabitacion,
                         Numero = h.NombreHabitacion,              // o h.IdHabitacion.ToString("000")
                         Tipo = h.IdTipoHabitacion.ToString(),
                         Capacidad = h.Capacidad,

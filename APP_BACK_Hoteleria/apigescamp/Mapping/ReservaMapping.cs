@@ -12,8 +12,9 @@ namespace DemoBackend.Mapping
             CreateMap<ReservaDto, ReservaModels>();
             CreateMap<ReservaModels, ReservaDto>();
 
-          
-            
+            CreateMap<ReservaAsignacionModels, ReservaAsignacionDto>().ReverseMap();
+
+
         }
     }
 }

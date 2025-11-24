@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DemoBackend.Dto.SolicitudServicio
 {
@@ -23,5 +24,19 @@ namespace DemoBackend.Dto.SolicitudServicio
         public string NombreSolicitante { get; set; }     // ej: "Juan Pérez"
         public string PersonalAsignado { get; set; }      // ej: "Sin asignar" / "Luis Soto"
         public string EstadoSolicitud { get; set; }       // ej: "Pendiente"
+
+        public int idPrioridad { get; set; }
+        public string Servicio { get; set; }
+        public string Prioridad { get; set; }
+        public bool idEstado { get; set; }
+
+        
+        public string Descripcion { get; set; }
+
+        
+        public int idEmpresa { get; set; }
+
+        public string Empresa { get; set; }
+        public string RutSolicitante { get; set; }
     }
 }
