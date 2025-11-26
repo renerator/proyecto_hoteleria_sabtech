@@ -27,5 +27,7 @@ namespace Front_Hoteleria.Services.Reservas
         Task<List<ComboItemDto>> EstadosAsync(string bearer = null);
         Task<List<ComboItemDto>> HabitacionesAsync(string bearer = null);
         Task<List<ComboItemDto>> TiposHabitacionAsync(string bearer = null);
+        Task<bool> GuardarAsignacionAsync(ReservaAsignacionPostDto dto, string bearer = null);
+
     }
 }

@@ -2,6 +2,7 @@
     ViewData["Title"] = "Habitaciones";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 <link rel="stylesheet" href="~/vendors/bootstrap/dist/css/bootstrap.min.css" />
 <link rel="stylesheet" href="~/vendors/font-awesome/css/font-awesome.min.css" />
 <link rel="stylesheet" href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" />
@@ -82,14 +83,12 @@
         margin: 6px 2px 14px;
     }
 
-    /* Banda translúcida detrás de KPIs */
     .inv-band, .rep-band {
         background: rgba(255,255,255,.10);
         border-radius: 12px;
         padding: 14px;
     }
 
-    /* KPI card */
     .kpi {
         background: rgba(255,255,255,.10);
         border-radius: 12px;
@@ -126,40 +125,35 @@
         margin: 4px 0 12px;
     }
 
-    /* Filtros en una sola línea */
     .rep-filters {
         display: flex;
-        flex-wrap: nowrap; /* no permitir salto de línea */
+        flex-wrap: nowrap;
         gap: 10px;
         align-items: center;
-        overflow-x: auto; /* si no entra, aparece scroll horizontal */
+        overflow-x: auto;
         white-space: nowrap;
     }
 
         .rep-filters > * {
-            flex: 0 0 auto; /* que ninguno se estire/encoga */
+            flex: 0 0 auto;
         }
 
-        /* Anchos homogéneos */
-.rep-filters .form-control{   /* selects */
-  min-width: 200px;
-  width: 200px;
-}
-.rep-filters .input-group{    /* fecha */
-  min-width: 190px;
-  width: 190px;
-}
+        .rep-filters .form-control {
+            min-width: 200px;
+            width: 200px;
+        }
 
-/* Altura consistente con Bootstrap 3 */
-.rep-filters .btn{
-  height: 34px;
-  line-height: 20px;
-  padding-top: 6px;
-  padding-bottom: 6px;
-}
+        .rep-filters .input-group {
+            min-width: 190px;
+            width: 190px;
+        }
 
-/* (Opcional) En pantallas chicas, permitir que bajen a 2 líneas */
-
+        .rep-filters .btn {
+            height: 34px;
+            line-height: 20px;
+            padding-top: 6px;
+            padding-bottom: 6px;
+        }
 
     .rep-actions-right {
         display: flex;
@@ -172,7 +166,6 @@
         opacity: .25;
     }
 
-    /* Chips/etiquetas (si tu parcial las usa) */
     .tag {
         display: inline-block;
         padding: 4px 10px;
@@ -214,10 +207,9 @@
 <div class="right_col" role="main">
     <div class="x_panel">
 
-        <!-- DASHBOARD HABITACIONES (sin fechas) -->
+        <!-- DASHBOARD HABITACIONES -->
         <div class="x_panel">
             <div class="x_title">
-                @*<h2>Dashboard Habitaciones</h2>*@
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
@@ -227,27 +219,28 @@
             </div>
         </div>
 
+        <!-- LISTADO HABITACIONES -->
         <div class="x_title">
-            <h2>Listado de Habitaciones <small>Todos los Estados</small></h2>
+            <h2>Listado de Habitaciones <small>Todos los estados</small></h2>
             <div class="clearfix"></div>
         </div>
 
         <div class="x_content">
-            <!-- Texto izquierda + botones derecha -->
             <form id="frmFiltros" method="post" class="row g-2">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="vigencia" value="1" />
 
                 <div class="col-sm-7 col-xs-12" style="display:flex; align-items:center">
                     <p class="text-muted" style="margin:0">
-                        Listado de las habitaciones del hotel, puedes revisar las habitaciones, editarlas, eliminarlas o crear nuevas
+                        Listado de las habitaciones del hotel, puedes revisar las habitaciones, editarlas,
+                        eliminarlas o crear nuevas.
                     </p>
                 </div>
 
                 <div class="col-sm-5 col-xs-12 text-right"
                      style="display:flex; gap:8px; justify-content:flex-end; align-items:center; margin-top:6px">
                     <button type="button" id="btnNuevo" class="btn btn-primary" data-toggle="modal" data-target="#modalUpsert">
-                        <i class="fa fa-plus"></i> Crear Nueva Habitacion
+                        <i class="fa fa-plus"></i> Crear Nueva Habitación
                     </button>
                     <button type="submit" class="btn btn-success">
                         <i class="fa fa-search"></i> Buscar
@@ -265,7 +258,7 @@
             <div class="row" style="margin-bottom:12px">
                 <div class="col-md-8 col-sm-12" style="display:flex;align-items:center">
                     <p class="text-muted" style="margin:0">
-                        Control detallado del inventario de cada habitación.<br>
+                        Control detallado del inventario de cada habitación.<br />
                         Rastrea colchones, televisores, lockers y otros materiales para prevenir pérdida.
                     </p>
                 </div>
@@ -310,7 +303,6 @@
                     </div>
                     <div class="inv-actions">
                         <button type="button" id="btnInvRefresh" class="btn btn-default"><i class="fa fa-refresh"></i> Actualizar Inventario</button>
-                        <!-- ID distinto para evitar duplicados con el botón verde superior -->
                         <button type="button" id="btnInvNuevo2" class="btn btn-primary"><i class="fa fa-plus"></i> Agregar Material</button>
                         <button type="button" id="btnInvReporte" class="btn btn-warning"><i class="fa fa-file-text-o"></i> Reporte</button>
                     </div>
@@ -320,10 +312,30 @@
 
                 <div class="inv-band">
                     <div class="row inv-kpis">
-                        <div class="col-md-3 col-sm-6"><div class="kpi"><div class="kpi-label"><i class="fa fa-check-circle text-success"></i> Materiales Completos</div><div id="kpiCompletos" class="kpi-value">0</div></div></div>
-                        <div class="col-md-3 col-sm-6"><div class="kpi"><div class="kpi-label"><i class="fa fa-exclamation-triangle" style="color:#B6861D"></i> Faltantes</div><div id="kpiFaltantes" class="kpi-value">0</div></div></div>
-                        <div class="col-md-3 col-sm-6"><div class="kpi"><div class="kpi-label"><i class="fa fa-times-circle text-danger"></i> Dañados</div><div id="kpiDanados" class="kpi-value">0</div></div></div>
-                        <div class="col-md-3 col-sm-6"><div class="kpi"><div class="kpi-label"><i class="fa fa-refresh"></i> En Reparación</div><div id="kpiReparacion" class="kpi-value">0</div></div></div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="kpi">
+                                <div class="kpi-label"><i class="fa fa-check-circle text-success"></i> Materiales Completos</div>
+                                <div id="kpiCompletos" class="kpi-value">0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="kpi">
+                                <div class="kpi-label"><i class="fa fa-exclamation-triangle" style="color:#B6861D"></i> Faltantes</div>
+                                <div id="kpiFaltantes" class="kpi-value">0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="kpi">
+                                <div class="kpi-label"><i class="fa fa-times-circle text-danger"></i> Dañados</div>
+                                <div id="kpiDanados" class="kpi-value">0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="kpi">
+                                <div class="kpi-label"><i class="fa fa-refresh"></i> En Reparación</div>
+                                <div id="kpiReparacion" class="kpi-value">0</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -343,26 +355,30 @@
                     </div>
                 </div>
 
-                <div class="rep-sub">Control completo de requerimientos de reparación para mantener el estándar del campamento</div>
+                <div class="rep-sub">
+                    Control completo de requerimientos de reparación para mantener el estándar del campamento
+                </div>
 
                 <div class="rep-band">
                     <div class="row rep-kpis">
-                        <div class="col-md-2 col-sm-4"><div class="kpi"><div class="kpi-label"><i class="fa fa-clock-o" style="opacity:.85"></i> Pendientes</div><div id="repPendientes" class="kpi-value">0</div></div></div>
-                        <div class="col-md-2 col-sm-4"><div class="kpi"><div class="kpi-label"><i class="fa fa-play" style="opacity:.85"></i> En Progreso</div><div id="repEnProgreso" class="kpi-value">0</div></div></div>
-                        <div class="col-md-2 col-sm-4"><div class="kpi"><div class="kpi-label"><i class="fa fa-check" style="color:#2ecc71"></i> Completadas</div><div id="repCompletadas" class="kpi-value">0</div></div></div>
-                        <div class="col-md-2 col-sm-4"><div class="kpi"><div class="kpi-label"><i class="fa fa-exclamation-triangle" style="color:#c0392b"></i> Urgentes</div><div id="repUrgentes" class="kpi-value">0</div></div></div>
-                        <div class="col-md-2 col-sm-4"><div class="kpi"><div class="kpi-label"><i class="fa fa-calendar" style="opacity:.85"></i> Hoy</div><div id="repHoy" class="kpi-value">0</div></div></div>
-                        <div class="col-md-2 col-sm-4"><div class="kpi"><div class="kpi-label"><i class="fa fa-clock-o" style="opacity:.85"></i> SLA Vencido</div><div id="repSlaVencido" class="kpi-value">0</div></div></div>
+                        <div class="col-md-2 col-sm-4"><div class="kpi"><div class="kpi-label"><i class="fa fa-clock-o" style="opacity:.85"></i> Pendientes</div><div id="repPendientes" class="kpi-value">@ViewBag.RepPendientes</div></div></div>
+                        <div class="col-md-2 col-sm-4"><div class="kpi"><div class="kpi-label"><i class="fa fa-play" style="opacity:.85"></i> En Progreso</div><div id="repEnProgreso" class="kpi-value">@ViewBag.RepEnProgreso</div></div></div>
+                        <div class="col-md-2 col-sm-4"><div class="kpi"><div class="kpi-label"><i class="fa fa-check" style="color:#2ecc71"></i> Completadas</div><div id="repCompletadas" class="kpi-value">@ViewBag.RepCompletadas</div></div></div>
+                        <div class="col-md-2 col-sm-4"><div class="kpi"><div class="kpi-label"><i class="fa fa-exclamation-triangle" style="color:#c0392b"></i> Urgentes</div><div id="repUrgentes" class="kpi-value">@ViewBag.RepUrgentes</div></div></div>
+                        <div class="col-md-2 col-sm-4"><div class="kpi"><div class="kpi-label"><i class="fa fa-calendar" style="opacity:.85"></i> Hoy</div><div id="repHoy" class="kpi-value">@ViewBag.RepHoy</div></div></div>
+                        <div class="col-md-2 col-sm-4"><div class="kpi"><div class="kpi-label"><i class="fa fa-clock-o" style="opacity:.85"></i> SLA Vencido</div><div id="repSlaVencido" class="kpi-value">@ViewBag.RepSlaVencido</div></div></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Órdenes de Trabajo y Reparaciones (todo DENTRO de este panel) -->
+            <!-- Órdenes de Trabajo y Reparaciones -->
             <div id="repOrdenesPanel" style="margin-top:18px;">
                 <div class="rep-grid-head">
                     <h3 class="rep-grid-title">
                         Órdenes de Trabajo y Reparaciones
-                        <small style="font-weight:400; color:#9aa8b6"> Control detallado de requerimientos de reparación</small>
+                        <small style="font-weight:400; color:#9aa8b6">
+                            Control detallado de requerimientos de reparación
+                        </small>
                     </h3>
                     <div class="rep-actions-right">
                         <button type="button" id="btnRepNueva" class="btn btn-success"><i class="fa fa-plus"></i> Nueva Orden</button>
@@ -377,7 +393,6 @@
                     Gestión completa de órdenes de trabajo, desde el reporte inicial hasta la finalización y control de calidad.
                 </div>
 
-                <!-- Filtros -->
                 <form id="frmRepFiltros" class="rep-filters" method="post">
                     @Html.AntiForgeryToken()
                     <select name="habitacion" class="form-control"><option value="">Todas las habitaciones</option></select>
@@ -385,13 +400,12 @@
                     <select name="estado" class="form-control"><option value="">Todos los estados</option></select>
                     <select name="prioridad" class="form-control"><option value="">Todas las prioridades</option></select>
                     <div class="input-group" style="min-width:190px">
-                        <input type="text" name="fecha" class="form-control" placeholder="dd-mm-aaaa">
+                        <input type="text" name="fecha" class="form-control" placeholder="dd-mm-aaaa" />
                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                     </div>
                     <button type="button" id="btnRepLimpiar" class="btn btn-default"><i class="fa fa-times"></i> Limpiar</button>
                 </form>
 
-                <!-- Contenedor de la tabla -->
                 <div id="repTablaContainer" class="table-responsive" style="margin-top:10px;">
                     <div class="text-muted">Cargando órdenes…</div>
                 </div>
@@ -423,203 +437,259 @@
     <script src="~/vendors/pnotify/dist/pnotify.buttons.js"></script>
 
     <script>
-// -------- Dashboard --------
-const urlDashboard = '@Url.Action("Dashboard","Habitaciones")';
-function token(){ return $('input[name="__RequestVerificationToken"]').first().val(); }
-function cargarDashboard(){
-  $('#dashContainer').load(urlDashboard, function (_resp, status) {
-    if (status === 'error') $('#dashContainer').html('<div class="text-danger">No se pudo cargar el dashboard.</div>');
-  });
-}
+        // -------- Dashboard --------
+        const urlDashboard = '@Url.Action("Dashboard","Habitaciones")';
 
-// -------- Tabla Habitaciones --------
-const urlTabla = '@Url.Action("TablaPartial","Habitaciones")';
-const urlUpsertGet = '@Url.Action("Upsert","Habitaciones")';
-const urlEliminar = '@Url.Action("Eliminar","Habitaciones")';
+        function token() {
+            return $('input[name="__RequestVerificationToken"]').first().val();
+        }
 
-function cargarTabla(){
-  $('#tablaContainer').html('<div class="text-muted">Cargando…</div>');
-  $.ajax({
-    url: urlTabla, type: 'POST',
-    data: $('#frmFiltros').serialize(),
-    headers: { 'RequestVerificationToken': token() },
-    success: function(html){
-      $('#tablaContainer').html(html);
-      $('#tablaHabitaciones').DataTable({
-        destroy: true, responsive: true,
-        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
-      });
-    },
-    error: function(){
-      $('#tablaContainer').html('<div class="text-danger">Error al cargar.</div>');
-    }
-  });
-}
+        function cargarDashboard() {
+            $('#dashContainer').load(urlDashboard, function (_resp, status) {
+                if (status === 'error')
+                    $('#dashContainer').html('<div class="text-danger">No se pudo cargar el dashboard.</div>');
+            });
+        }
 
-// Nuevo
-$('#btnNuevo').on('click', function(){
-  $('#upsertBody').html('<div class="text-muted">Cargando…</div>');
-  $('#upsertBody').load(urlUpsertGet);
-});
+        // -------- Tabla Habitaciones --------
+        const urlTabla = '@Url.Action("TablaPartial","Habitaciones")';
+        const urlUpsertGet = '@Url.Action("Upsert","Habitaciones")';
+        const urlEliminar = '@Url.Action("Eliminar","Habitaciones")';
 
-// Buscar
-$('#frmFiltros').on('submit', function(e){ e.preventDefault(); cargarTabla(); });
+        function cargarTabla() {
+            $('#tablaContainer').html('<div class="text-muted">Cargando…</div>');
+            $.ajax({
+                url: urlTabla,
+                type: 'POST',
+                data: $('#frmFiltros').serialize(),
+                headers: { 'RequestVerificationToken': token() },
+                success: function (html) {
+                    $('#tablaContainer').html(html);
+                    $('#tablaHabitaciones').DataTable({
+                        destroy: true,
+                        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
+                    });
+                },
+                error: function () {
+                    $('#tablaContainer').html('<div class="text-danger">Error al cargar.</div>');
+                }
+            });
+        }
 
-// Delegados editar/eliminar
-$('#tablaContainer').on('click', '.btn-editar', function () {
-  const id = $(this).data('id');
-  $('#upsertBody').html('<div class="text-muted">Cargando…</div>');
-  $('#modalUpsert').modal('show');
-  $('#upsertBody').load(urlUpsertGet + '?id=' + id);
-});
-$('#tablaContainer').on('click', '.btn-eliminar', function () {
-  const id = $(this).data('id');
-  if (!confirm('¿Eliminar la habitación?')) return;
-  $.ajax({
-    url: urlEliminar, type: 'POST',
-    headers: { 'RequestVerificationToken': token() },
-    data: { idHabitacion: id },
-    success: function(){ new PNotify({title:'Eliminar', text:'OK', type:'success', styling:'bootstrap3'}); cargarTabla(); },
-    error: function(xhr){ new PNotify({title:'Error', text:xhr.responseText||'Error', type:'error', styling:'bootstrap3'}); }
-  });
-});
+        // NUEVA HABITACIÓN
+        $('#btnNuevo').on('click', function () {
+            $('#upsertBody').html('<div class="text-muted">Cargando…</div>');
+            $('#upsertBody').load(urlUpsertGet);
+        });
 
-// Carga inicial
-$(function(){
-  cargarDashboard();
-  cargarTabla();
-});
+        $('#frmFiltros').on('submit', function (e) {
+            e.preventDefault();
+            cargarTabla();
+        });
+
+        // EDITAR HABITACIÓN
+        $('#tablaContainer').on('click', '.btn-editar', function () {
+            const id = $(this).data('id');
+            $('#upsertBody').html('<div class="text-muted">Cargando…</div>');
+            $('#modalUpsert').modal('show');
+            $('#upsertBody').load(urlUpsertGet + '?id=' + id);
+        });
+
+        // VER HABITACIÓN (usa el mismo modal)
+        $('#tablaContainer').on('click', '.btn-ver', function () {
+            const id = $(this).data('id');
+            $('#upsertBody').html('<div class="text-muted">Cargando…</div>');
+            $('#modalUpsert').modal('show');
+            // si quieres solo lectura puedes agregar &soloLectura=true y tratarlo en el parcial
+            $('#upsertBody').load(urlUpsertGet + '?id=' + id /* + '&soloLectura=true' */);
+        });
+
+        // ELIMINAR HABITACIÓN
+        $('#tablaContainer').on('click', '.btn-eliminar', function () {
+            const id = $(this).data('id');
+            if (!confirm('¿Eliminar la habitación?')) return;
+            $.ajax({
+                url: urlEliminar,
+                type: 'POST',
+                headers: { 'RequestVerificationToken': token() },
+                data: { idHabitacion: id },
+                success: function () {
+                    new PNotify({ title: 'Eliminar', text: 'OK', type: 'success', styling: 'bootstrap3' });
+                    cargarTabla();
+                },
+                error: function (xhr) {
+                    new PNotify({ title: 'Error', text: xhr.responseText || 'Error', type: 'error', styling: 'bootstrap3' });
+                }
+            });
+        });
+
+        $(function () {
+            cargarDashboard();
+            cargarTabla();
+        });
     </script>
 
     <script>
-// ------- Inventario -------
-const urlInvTabla   = '@Url.Action("TablaInventario","Habitaciones")';
-const urlInvFiltros = '@Url.Action("FiltrosInventario","Habitaciones")';
-const urlInvDelete  = '@Url.Action("EliminarInventario","Habitaciones")';
+        // ------- Inventario & Reparaciones -------
+        const urlInvTabla   = '@Url.Action("TablaInventario","Habitaciones")';
+        const urlInvFiltros = '@Url.Action("FiltrosInventario","Habitaciones")';
+        const urlInvDelete  = '@Url.Action("EliminarInventario","Habitaciones")';
+        const urlRepTabla   = '@Url.Action("TablaReparaciones","Habitaciones")';
 
-// Cargar combos filtros
-function cargarInvFiltros(){
-  $.getJSON(urlInvFiltros, function(f){
-    const $hab = $('#invHabitacion'), $ins = $('#invInsumo');
-    $hab.find('option:not(:first)').remove();
-    $ins.find('option:not(:first)').remove();
-    (f.habitaciones||[]).forEach(x => $hab.append($('<option/>',{value:x.value,text:x.text})));
-    (f.insumos||[]).forEach(x => $ins.append($('<option/>',{value:x.value,text:x.text})));
-  });
-}
+        // Cargar combos filtros inventario
+        function cargarInvFiltros() {
+            $.getJSON(urlInvFiltros, function (f) {
+                const $hab = $('#invHabitacion'), $ins = $('#invInsumo');
+                $hab.find('option:not(:first)').remove();
+                $ins.find('option:not(:first)').remove();
+                (f.habitaciones || []).forEach(x => $hab.append($('<option/>', { value: x.value, text: x.text })));
+                (f.insumos || []).forEach(x => $ins.append($('<option/>', { value: x.value, text: x.text })));
+            });
+        }
 
-// Acciones informativas
-$('#btnInvBulk').on('click', function () { new PNotify({ title: 'Inventario', text: 'Acción: Actualización masiva', type: 'info', styling: 'bootstrap3' }); });
-$('#btnInvAudit').on('click', function () { new PNotify({ title: 'Inventario', text: 'Acción: Auditoría', type: 'info', styling: 'bootstrap3' }); });
-
-// Tabla inventario
-function cargarInvTabla(){
-  $('#invTablaContainer').html('<div class="text-muted">Cargando…</div>');
-  $.ajax({
-    url: urlInvTabla, type:'POST',
-    headers:{ 'RequestVerificationToken': token() },
-    data: { idHabitacion: $('#invHabitacion').val(), idInsumo: $('#invInsumo').val() },
-    success: function(html){
-      $('#invTablaContainer').html(html);
-      var dt = $('#tablaInventario').DataTable({
-        destroy:true, responsive:true,
-        language:{ url:'//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
-      });
-      refrescarResumenInventario();
-      dt.on('draw', function(){ refrescarResumenInventario(); });
-    },
-    error: function(){
-      $('#invTablaContainer').html('<div class="text-danger">No se pudo cargar el inventario.</div>');
-    }
-  });
-}
-
-// Eventos filtros inventario
-$('#invHabitacion, #invInsumo').on('change', cargarInvTabla);
-$('#btnInvLimpiar').on('click', function(){ $('#invHabitacion').val(''); $('#invInsumo').val(''); cargarInvTabla(); });
-
-// Delegados eliminar
-$('#invTablaContainer').on('click', '.btn-inv-eliminar', function(){
-  const id = $(this).data('id');
-  if(!confirm('¿Eliminar material de la habitación?')) return;
-  $.ajax({
-    url: urlInvDelete, type:'POST',
-    headers:{ 'RequestVerificationToken': token() },
-    data:{ idHabitacionInsumo: id },
-    success: function(){ new PNotify({title:'Inventario', text:'Eliminado', type:'success', styling:'bootstrap3'}); cargarInvTabla(); },
-    error: function(xhr){ new PNotify({title:'Error', text:xhr.responseText||'Error', type:'error', styling:'bootstrap3'}); }
-  });
-});
-
-// KPI Inventario
-function normalizar(t){ return (t||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
-function refrescarResumenInventario(){
-  var $tbl = $('#tablaInventario');
-  if (!$tbl.length) { $('#kpiCompletos,#kpiFaltantes,#kpiDanados,#kpiReparacion,#kpiTotal').text('0'); return; }
-
-  var idxEstado = -1;
-  $tbl.find('thead th').each(function(i){ if (normalizar($(this).text()).includes('estado')) idxEstado = i; });
-
-  var tot=0, comp=0, falt=0, dan=0, rep=0;
-  $tbl.find('tbody tr').each(function(){
-    var $tr=$(this);
-    if ($tr.find('td').length===0) return;
-    tot++;
-
-    var estado = $tr.data('estado');
-    if (!estado && idxEstado>=0) { estado = $tr.find('td').eq(idxEstado).text(); }
-    estado = normalizar(estado);
-
-    if (estado.includes('complet')) comp++;
-    else if (estado.includes('falt')) falt++;
-    else if (estado.includes('dana') || estado.includes('danad') || estado.includes('dañado')) dan++;
-    else if (estado.includes('repar')) rep++;
-  });
-
-  $('#kpiCompletos').text(comp);
-  $('#kpiFaltantes').text(falt);
-  $('#kpiDanados').text(dan);
-  $('#kpiReparacion').text(rep);
-  $('#kpiTotal').text(tot);
-}
-
-// Init inventario
-$(function(){ cargarInvFiltros(); cargarInvTabla(); });
-
-// ------- Órdenes de trabajo & reparaciones -------
-const urlRepTabla = '@Url.Action("TablaReparaciones","Habitaciones")'; // ajusta si usas otro controller/action
-
-function cargarRepTabla(){
-  $('#repTablaContainer').html('<div class="text-muted">Cargando órdenes…</div>');
-  $.ajax({
-    url: urlRepTabla, type:'POST',
-    headers:{ 'RequestVerificationToken': token() },
-    data: $('#frmRepFiltros').serialize(),
-    success: function(html){
-      $('#repTablaContainer').html(html);
-      var $t = $('#tablaReparaciones');
-      if ($t.length){
-        $t.DataTable({
-          destroy:true, responsive:true,
-          language:{ url:'//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
-          order:[[1,'desc']]
+        // Acciones informativas
+        $('#btnInvBulk').on('click', function () {
+            new PNotify({ title: 'Inventario', text: 'Acción: Actualización masiva', type: 'info', styling: 'bootstrap3' });
         });
-      }
-    },
-    error: function(){
-      $('#repTablaContainer').html('<div class="text-danger">No se pudo cargar la tabla de órdenes.</div>');
-    }
-  });
-}
+        $('#btnInvAudit').on('click', function () {
+            new PNotify({ title: 'Inventario', text: 'Acción: Auditoría', type: 'info', styling: 'bootstrap3' });
+        });
 
-// Eventos filtros/acciones órdenes
-$('#frmRepFiltros').on('change', 'select,input', cargarRepTabla);
-$('#btnRepLimpiar').on('click', function(){ $('#frmRepFiltros')[0].reset(); cargarRepTabla(); });
-$('#btnRepNueva').on('click',   () => new PNotify({title:'Órdenes', text:'Nueva Orden', type:'info',  styling:'bootstrap3'}));
-$('#btnRepAsignar').on('click', () => new PNotify({title:'Órdenes', text:'Asignar Técnico', type:'info', styling:'bootstrap3'}));
-$('#btnRepCalidad').on('click', () => new PNotify({title:'Órdenes', text:'Control Calidad', type:'info', styling:'bootstrap3'}));
+        // Tabla inventario
+        function cargarInvTabla() {
+            $('#invTablaContainer').html('<div class="text-muted">Cargando…</div>');
 
-// Init órdenes
-$(function(){ cargarRepTabla(); });
+            $.ajax({
+                url: urlInvTabla,
+                type: 'GET',
+                data: {
+                    habitacion: $('#invHabitacion').val(),
+                    material: $('#invInsumo').val()
+                },
+                success: function (html) {
+                    $('#invTablaContainer').html(html);
+
+                    var dt = $('#tablaInventario').DataTable({
+                        destroy: true,
+                        language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
+                    });
+
+                    refrescarResumenInventario();
+                    dt.on('draw', function () { refrescarResumenInventario(); });
+                },
+                error: function (xhr) {
+                    var msg = xhr.responseText || 'No se pudo cargar el inventario.';
+                    $('#invTablaContainer').html('<div class="text-danger">' + msg + '</div>');
+                }
+            });
+        }
+
+        // Eventos filtros inventario
+        $('#invHabitacion, #invInsumo').on('change', cargarInvTabla);
+        $('#btnInvLimpiar').on('click', function () {
+            $('#invHabitacion').val('');
+            $('#invInsumo').val('');
+            cargarInvTabla();
+        });
+
+        // Delegados eliminar inventario
+        $('#invTablaContainer').on('click', '.btn-inv-eliminar', function () {
+            const id = $(this).data('id');
+            if (!confirm('¿Eliminar material de la habitación?')) return;
+            $.ajax({
+                url: urlInvDelete,
+                type: 'POST',
+                headers: { 'RequestVerificationToken': token() },
+                data: { idHabitacionInsumo: id },
+                success: function () {
+                    new PNotify({ title: 'Inventario', text: 'Eliminado', type: 'success', styling: 'bootstrap3' });
+                    cargarInvTabla();
+                },
+                error: function (xhr) {
+                    new PNotify({ title: 'Error', text: xhr.responseText || 'Error', type: 'error', styling: 'bootstrap3' });
+                }
+            });
+        });
+
+        // KPI Inventario
+        function normalizar(t) {
+            return (t || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+
+        function refrescarResumenInventario() {
+            var $tbl = $('#tablaInventario');
+            if (!$tbl.length) {
+                $('#kpiCompletos,#kpiFaltantes,#kpiDanados,#kpiReparacion,#kpiTotal').text('0');
+                return;
+            }
+
+            var idxEstado = -1;
+            $tbl.find('thead th').each(function (i) {
+                if (normalizar($(this).text()).includes('estado')) idxEstado = i;
+            });
+
+            var tot = 0, comp = 0, falt = 0, dan = 0, rep = 0;
+            $tbl.find('tbody tr').each(function () {
+                var $tr = $(this);
+                if ($tr.find('td').length === 0) return;
+                tot++;
+
+                var estado = $tr.data('estado');
+                if (!estado && idxEstado >= 0) {
+                    estado = $tr.find('td').eq(idxEstado).text();
+                }
+                estado = normalizar(estado);
+
+                if (estado.includes('complet')) comp++;
+                else if (estado.includes('falt')) falt++;
+                else if (estado.includes('dana') || estado.includes('danad') || estado.includes('dañado')) dan++;
+                else if (estado.includes('repar')) rep++;
+            });
+
+            $('#kpiCompletos').text(comp);
+            $('#kpiFaltantes').text(falt);
+            $('#kpiDanados').text(dan);
+            $('#kpiReparacion').text(rep);
+            $('#kpiTotal').text(tot);
+        }
+
+        // ------- Órdenes de trabajo & reparaciones -------
+        function cargarRepTabla() {
+            $('#repTablaContainer').html('<div class="text-muted">Cargando órdenes…</div>');
+            $.ajax({
+                url: urlRepTabla,
+                type: 'GET',
+                data: $('#frmRepFiltros').serialize(),
+                success: function (html) {
+                    $('#repTablaContainer').html(html);
+                    var $t = $('#tablaReparaciones');
+                    if ($t.length) {
+                        $t.DataTable({
+                            destroy: true,
+                            language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
+                            order: [[1, 'desc']]
+                        });
+                    }
+                },
+                error: function () {
+                    $('#repTablaContainer').html('<div class="text-danger">No se pudo cargar la tabla de órdenes.</div>');
+                }
+            });
+        }
+
+        $('#frmRepFiltros').on('change', 'select,input', cargarRepTabla);
+        $('#btnRepLimpiar').on('click', function () {
+            $('#frmRepFiltros')[0].reset();
+            cargarRepTabla();
+        });
+        $('#btnRepNueva').on('click',   () => new PNotify({ title: 'Órdenes', text: 'Nueva Orden',       type: 'info', styling: 'bootstrap3' }));
+        $('#btnRepAsignar').on('click', () => new PNotify({ title: 'Órdenes', text: 'Asignar Técnico',  type: 'info', styling: 'bootstrap3' }));
+        $('#btnRepCalidad').on('click', () => new PNotify({ title: 'Órdenes', text: 'Control Calidad',  type: 'info', styling: 'bootstrap3' }));
+
+        $(function () {
+            cargarInvFiltros();
+            cargarInvTabla();
+            cargarRepTabla();
+        });
     </script>
 }

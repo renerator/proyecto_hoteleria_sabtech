@@ -13,6 +13,8 @@
         : (Model?.IdHabitacion > 0 ? Model.IdHabitacion.ToString() : "");
 
     var solicitante = Model?.NombreSolicitante ?? "";
+
+    var servicio = Model?.Servicio?? "";
     var empresa = Model?.Empresa ?? "";
     var personal = string.IsNullOrWhiteSpace(Model?.PersonalAsignado)
         ? "Sin asignar"
@@ -113,7 +115,7 @@
             </p>
             <p>
                 <span class="detalle-label">Tipo de Servicio:</span>
-                <span class="detalle-valor">@Model?.TipoServicio</span>
+                <span class="detalle-valor">@servicio</span>
             </p>
             <p>
                 <span class="detalle-label">Habitación:</span>

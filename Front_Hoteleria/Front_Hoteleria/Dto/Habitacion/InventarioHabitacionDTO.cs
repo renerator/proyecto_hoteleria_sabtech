@@ -1,8 +1,11 @@
-using System;
+Ôªøusing System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 
-namespace DemoBackend.Dto.HabitacionInventario
+namespace Front_Hoteleria.Dto.Habitacion
 {
-    public class HabitacionInventarioDto
+    public class InventarioHabitacionDTO
     {
         public int IdHabitacionInventario { get; set; }
 
@@ -16,7 +19,7 @@ namespace DemoBackend.Dto.HabitacionInventario
 
         public int? IdResponsable { get; set; }
 
-        // Campos ìde apoyoî que vienen del SP / joins
+        // Campos ‚Äúde apoyo‚Äù que vienen del SP / joins
 
         public string TipoMaterial { get; set; }
 

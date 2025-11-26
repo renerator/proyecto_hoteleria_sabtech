@@ -105,7 +105,7 @@
                                 ? s.FechaSolicitud.Value.ToString("dd/MM/yyyy HH:mm")
                                 : "";
 
-                            var tipoServicio = s.TipoServicio;
+                            var tipoServicio = s.Servicio;
                             var habitacion = !string.IsNullOrWhiteSpace(s.NombreHabitacion)
                                 ? s.NombreHabitacion
                                 : s.IdHabitacion.ToString();

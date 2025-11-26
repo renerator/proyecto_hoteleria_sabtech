@@ -14,6 +14,15 @@ namespace DemoBackend.Models.Habitacion
         [Column("idArea")]
         public int IdArea { get; set; }
 
+        [Column("NombreArea")]
+        public string NombreArea { get; set; }
+
+        [Column("Ala")]
+        public string Ala { get; set; }
+
+        [Column("Pasillo")]
+        public string Pasillo { get; set; }
+
         [Column("NombreHabitacion")]
         public string NombreHabitacion { get; set; }
 

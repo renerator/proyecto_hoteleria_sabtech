@@ -10,7 +10,7 @@ using DemoBackend.Models.Check;
 using DemoBackend.Models.Huesped;
 using DemoBackend.Models.EstadoReserva;
 using DemoBackend.Models.Habitacion;
-using DemoBackend.Models.HabitacionInsumo;
+using DemoBackend.Models.HabitacionInventario;
 using DemoBackend.Models.Insumos;
 using DemoBackend.Models.Inventario;
 using DemoBackend.Models.Mantenedores;
@@ -45,7 +45,7 @@ namespace DemoBackend.Models
         public virtual DbSet<AreasModels> ListaAreas { get; set; }
         public virtual DbSet<HabitacionModels> ListaHabitaciones { get; set; }
         public virtual DbSet<ReservaModels> ListaReservas { get; set; }
-        public virtual DbSet<HabitacionInsumoModels> ListaHabitacionInsumo { get; set; }
+        public virtual DbSet<HabitacionInventarioModels> ListaHabitacionInsumo { get; set; }
         public virtual DbSet<ReservaDashboardKPI> Dashboard { get; set; }
 
         public virtual DbSet<ReservaHuespedModels> ReservaHuesped { get; set; }

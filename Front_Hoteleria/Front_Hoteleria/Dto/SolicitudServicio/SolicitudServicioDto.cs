@@ -6,7 +6,7 @@ namespace Front_Hoteleria.Dto.SolicitudServicio {
         public int IdSolicitud { get; set; }
         public int IdHabitacion { get; set; }
         public int IdServicio { get; set; }
-
+        public string Servicio { get; set; }
         // En BD es DATETIME
         public DateTime? FechaSolicitud { get; set; }
 
@@ -22,12 +22,18 @@ namespace Front_Hoteleria.Dto.SolicitudServicio {
         public string NombreSolicitante { get; set; }     // ej: "Juan Pérez"
         public string PersonalAsignado { get; set; }      // ej: "Sin asignar" / "Luis Soto"
         public string EstadoSolicitud { get; set; }
-        public string Empresa { get; set; } // ej: "Pendiente"
+        public int idPrioridad { get; set; }
 
-        public int IdEmpresa { get; set; }
         public string Prioridad { get; set; }
+        public bool idEstado { get; set; }
 
-        public int  IdPrioridad { get; set; }
+
+        
+
+
+        public int idEmpresa { get; set; }
+
+        public string Empresa { get; set; }
 
         public string RutSolicitante { get; set; }
     }

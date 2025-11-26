@@ -1,38 +1,296 @@
-﻿@@Model IEnumerable<Front_Hoteleria.ViewDtos.InventarioFilaVm>
+﻿@model IEnumerable<Front_Hoteleria.Dto.OrdenTrabajo.OrdenTrabajoDto>
 
-    <table id="tablaReparaciones" class="table table-striped table-bordered">
+@using System.Globalization
+
+<style>
+    /* Que la tabla ocupe todo el ancho y reparta columnas según width */
+    #tablaReparaciones {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+        #tablaReparaciones th,
+        #tablaReparaciones td {
+            vertical-align: middle;
+        }
+
+            /* Ajustes de ancho de columnas */
+            #tablaReparaciones th.col-id,
+            #tablaReparaciones td.col-id {
+                width: 50px;
+                white-space: nowrap;
+            }
+
+            #tablaReparaciones th.col-fecha,
+            #tablaReparaciones td.col-fecha {
+                width: 70px;
+                white-space: nowrap;
+            }
+
+            #tablaReparaciones th.col-hab,
+            #tablaReparaciones td.col-hab {
+                width: 55px;
+                white-space: nowrap;
+                text-align: center;
+            }
+
+            #tablaReparaciones th.col-tipo,
+            #tablaReparaciones td.col-tipo {
+                width: 80px;
+                white-space: nowrap;
+            }
+
+            #tablaReparaciones th.col-prio,
+            #tablaReparaciones td.col-prio {
+                width: 80px;
+                white-space: nowrap;
+            }
+
+            #tablaReparaciones th.col-estado,
+            #tablaReparaciones td.col-estado {
+                width: 90px;
+                white-space: nowrap;
+            }
+
+            #tablaReparaciones th.col-tec,
+            #tablaReparaciones td.col-tec {
+                width: 150px;
+                white-space: nowrap;
+            }
+
+            #tablaReparaciones th.col-tiempo,
+            #tablaReparaciones td.col-tiempo {
+                width: 60px;
+                white-space: nowrap;
+                text-align: center;
+            }
+
+            /* Descripción: que no se coma toda la fila */
+            #tablaReparaciones th.col-desc,
+            #tablaReparaciones td.col-desc {
+                max-width: 200px;
+            }
+
+            #tablaReparaciones td.col-desc {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            /* Botonera compacta a la derecha (última columna) */
+            #tablaReparaciones th.col-opc,
+            #tablaReparaciones td.col-opc {
+                width: 130px;
+                white-space: nowrap;
+                text-align: right; /* botones a la DERECHA */
+            }
+
+                #tablaReparaciones td.col-opc .btn {
+                    margin-left: 3px;
+                }
+
+            /* Por si DataTables mete algo de alineación, forzamos */
+            #tablaReparaciones td.table-actions {
+                text-align: right !important;
+            }
+
+    /* Pills de colores */
+    .tag {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 14px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #fff;
+        background: transparent; /* que no ponga color por defecto */
+    }
+
+    .tag-blue {
+        background: #3498db !important;
+    }
+
+    .tag-green {
+        background: #2ecc71 !important;
+    }
+
+    .tag-grey {
+        background: #7f8c8d !important;
+    }
+
+    .tag-red {
+        background: #e74c3c !important;
+    }
+
+    .tag-orange {
+        background: #f39c12 !important;
+    }
+
+    .tag-cyan {
+        background: #17a2b8 !important;
+    }
+</style>
+
+@{
+    var data = Model ?? Enumerable.Empty<Front_Hoteleria.Dto.OrdenTrabajo.OrdenTrabajoDto>();
+
+    Func<int?, string> TextoPrioridad = p =>
+    {
+        switch (p)
+        {
+            case 1: return "Urgente";
+            case 2: return "Media";
+            case 3: return "Baja";
+            default: return "Sin prioridad";
+        }
+    };
+
+    Func<int?, string> CssPrioridad = p =>
+    {
+        switch (p)
+        {
+            case 1: return "tag tag-red";     // Urgente
+            case 2: return "tag tag-orange";  // Media
+            case 3: return "tag tag-green";   // Baja
+            default: return "tag tag-grey";   // Sin prioridad
+        }
+    };
+
+    // ===== COLORES POR TIPO (según tabla: Plomería, Electricidad, HVAC, Mobiliario, Emergencia) =====
+    Func<string, string> CssTipo = tipo =>
+    {
+        var t = (tipo ?? "").Trim().ToLowerInvariant();
+
+        switch (t)
+        {
+            case "plomería":
+            case "plomeria":
+                return "tag tag-blue";    // agua / cañerías
+
+            case "electricidad":
+                return "tag tag-orange";  // eléctrico
+
+            case "hvac":
+                return "tag tag-cyan";    // clima
+
+            case "mobiliario":
+                return "tag tag-green";   // muebles
+
+            case "emergencia":
+                return "tag tag-red";     // crítico
+
+            default:
+                return "tag tag-grey";    // otros
+        }
+    };
+
+    // ===== COLORES POR ESTADO (Pendiente, En Progreso, Completada) =====
+    Func<string, string> CssEstado = estado =>
+    {
+        var e = (estado ?? "").Trim().ToLowerInvariant();
+
+        switch (e)
+        {
+            case "pendiente":
+                return "tag tag-grey";
+
+            case "en progreso":
+                return "tag tag-orange";
+
+            case "completada":
+                return "tag tag-green";
+
+            default:
+                return "tag tag-blue";
+        }
+    };
+
+    Func<int?, string> FormatearTiempo = minutos =>
+    {
+        if (!minutos.HasValue || minutos.Value <= 0) return "-";
+        var total = minutos.Value;
+        var h = total / 60;
+        var m = total % 60;
+
+        if (h > 0 && m > 0) return $"{h}h {m}m";
+        if (h > 0) return $"{h}h";
+        return $"{m}m";
+    };
+}
+
+<div class="table-responsive">
+    <table id="tablaReparaciones" class="table table-striped table-bordered table-condensed">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Fecha</th>
-                <th>Habitación</th>
-                <th>Tipo</th>
-                <th>Descripción</th>
-                <th>Prioridad</th>
-                <th>Estado</th>
-                <th>Técnico</th>
-                <th>Tiempo</th>
-                <th>Opciones</th>
+                <th class="col-id">ID</th>
+                <th class="col-fecha">Fecha</th>
+                <th class="col-hab">Hab.</th>
+                <th class="col-tipo">Tipo</th>
+                <th class="col-desc">Descripción</th>
+                <th class="col-prio">Prioridad</th>
+                <th class="col-estado">Estado</th>
+                <th class="col-tec">Técnico</th>
+                <th class="col-tiempo">Tiempo</th>
+                <th class="col-opc">Opciones</th>
             </tr>
         </thead>
         <tbody>
-            @* filas *@
-            <tr data-estado="en-progreso">
-                <td>REP-001</td>
-                <td>2024-01-15</td>
-                <td>101</td>
-                <td><span class="tag tag-blue">Plomería</span></td>
-                <td>Fuga en grifo del baño</td>
-                <td><span class="tag tag-red">Urgente</span></td>
-                <td><span class="tag tag-orange">En Progreso</span></td>
-                <td>Carlos Rodríguez</td>
-                <td>2h 30m</td>
-                <td class="table-actions">
-                    <button class="btn btn-info btn-xs"><i class="fa fa-eye"></i></button>
-                    <button class="btn btn-success btn-xs"><i class="fa fa-pencil"></i></button>
-                    <button class="btn btn-warning btn-xs"><i class="fa fa-user"></i></button>
-                </td>
-            </tr>
+            @if (!data.Any())
+            {
+                <tr>
+                    <td colspan="10" class="text-muted text-center">
+                        No hay órdenes de trabajo registradas.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                foreach (var ot in data)
+                {
+                    <tr data-estado="@ot.Estado">
+                        <td class="col-id">@ot.NumeroOT</td>
+                        <td class="col-fecha">@ot.FechaIngresoOT.ToString("yyyy-MM-dd")</td>
+                        <td class="col-hab">@ot.IdHabitacion</td>
+
+                        <td class="col-tipo">
+                            <span class="@CssTipo(ot.NombreTipo)">
+                                @ot.NombreTipo
+                            </span>
+                        </td>
+
+                        <td class="col-desc" title="@ot.Descripcion">
+                            @ot.Descripcion
+                        </td>
+
+                        <td class="col-prio">
+                            <span class="@CssPrioridad(ot.IdPrioridad)">
+                                @TextoPrioridad(ot.IdPrioridad)
+                            </span>
+                        </td>
+
+                        <td class="col-estado">
+                            <span class="@CssEstado(ot.Estado)">
+                                @ot.Estado
+                            </span>
+                        </td>
+
+                        <td class="col-tec">@ot.Tecnico</td>
+
+                        <td class="col-tiempo">@FormatearTiempo(ot.TiempoMinutos)</td>
+
+                        <td class="col-opc table-actions">
+                            <button class="btn btn-info btn-xs" title="Ver" data-id="@ot.IdOrdenTrabajo">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                            <button class="btn btn-success btn-xs" title="Editar" data-id="@ot.IdOrdenTrabajo">
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                            <button class="btn btn-warning btn-xs" title="Asignar técnico" data-id="@ot.IdOrdenTrabajo">
+                                <i class="fa fa-user"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
         </tbody>
     </table>
-
+</div>

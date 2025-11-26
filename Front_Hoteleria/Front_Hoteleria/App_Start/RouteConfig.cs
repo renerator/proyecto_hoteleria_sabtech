@@ -64,11 +64,7 @@ namespace Front_Hoteleria
          url: "ServiciosHuesped",
          defaults: new { controller = "ServiciosHuesped", action = "Index" }
           );
-                   routes.MapRoute(
-         name: "HabitacionesPlataformaRoot",
-         url: "HabitacionesPlataforma",
-         defaults: new { controller = "HabitacionesPlataforma", action = "Index" }
-          );
+
             // Ruta por defecto (si no hay login, manda a Account/Login)
             routes.MapRoute(
                 name: "Default",

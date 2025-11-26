@@ -16,31 +16,26 @@
         font-weight: 600;
     }
 
-    /* Pendiente (amarillo tipo ejemplo) */
     .st-pendiente {
         background: #fff3cd;
         color: #856404;
     }
 
-    /* Confirmada (amarillo) */
     .st-confirmada {
         background: #ffeeba;
         color: #8a6d3b;
     }
 
-    /* Rechazada (rojo) */
     .st-rechazada {
         background: #f8d7da;
         color: #721c24;
     }
 
-    /* Realizada (celeste) */
     .st-realizada {
         background: #cce5ff;
         color: #004085;
     }
 
-    /* columna acciones más ancha y sin saltos de línea */
     th.col-acciones,
     td.col-acciones {
         width: 200px;
@@ -71,15 +66,19 @@
             {
                 foreach (var r in Model)
                 {
+                    var esPendiente = string.Equals(r.EstadoReserva, "Pendiente", System.StringComparison.OrdinalIgnoreCase);
+                    var esRechazada = string.Equals(r.EstadoReserva, "Rechazada", System.StringComparison.OrdinalIgnoreCase);
+                    var esConfirmada = string.Equals(r.EstadoReserva, "Confirmada", System.StringComparison.OrdinalIgnoreCase);
+                    var esRealizada = string.Equals(r.EstadoReserva, "Realizada", System.StringComparison.OrdinalIgnoreCase);
+
                     var cls =
-                        string.Equals(r.EstadoReserva, "Pendiente", System.StringComparison.OrdinalIgnoreCase) ? "st-pendiente" :
-                        string.Equals(r.EstadoReserva, "Rechazada", System.StringComparison.OrdinalIgnoreCase) ? "st-rechazada" :
-                        string.Equals(r.EstadoReserva, "Confirmada", System.StringComparison.OrdinalIgnoreCase) ? "st-confirmada" :
-                        string.Equals(r.EstadoReserva, "Realizada", System.StringComparison.OrdinalIgnoreCase) ? "st-realizada" :
-                        "st-pendiente";
+                        esPendiente ? "st-pendiente" :
+                        esRechazada ? "st-rechazada" :
+                        esConfirmada ? "st-confirmada" :
+                        esRealizada ? "st-realizada" :
+                                       "st-pendiente";
 
                     var codigo = $"RES-{@r.IdReserva:000}";
-                   // var codigo = !string.IsNullOrWhiteSpace(r.Codigo) ? r.Codigo : r.IdReserva.ToString();
                     var nombreHuesped = !string.IsNullOrWhiteSpace(r.NombreHuesped) ? r.NombreHuesped : r.HuespedNombre;
                     var tipoHab = !string.IsNullOrWhiteSpace(r.TipoHabitacion) ? r.TipoHabitacion : r.TipoHabitacionNombre;
 
@@ -87,15 +86,13 @@
                         <td>@codigo</td>
                         <td>@(r.FechaDesde.HasValue ? r.FechaDesde.Value.ToString("dd/MM/yyyy") : "")</td>
                         <td>@(r.FechaHasta.HasValue ? r.FechaHasta.Value.ToString("dd/MM/yyyy") : "")</td>
-
                         <td>@nombreHuesped</td>
                         <td>@tipoHab</td>
-                        <td>@r.Huespedes</td>
+                        <td>@r.CantidadPersonas</td>
 
                         <td>
                             <span class="status-pill @cls">
-                                @* icono solo si está pendiente *@
-                                @if (string.Equals(r.EstadoReserva, "Pendiente", System.StringComparison.OrdinalIgnoreCase))
+                                @if (esPendiente)
                                 {
                                     <i class="fa fa-clock-o" style="margin-right:4px;"></i>
                                 }
@@ -104,18 +101,32 @@
                         </td>
 
                         <td class="col-acciones">
-                            <button class="btn btn-success btn-xs btn-asignar-reserva" data-id="@r.IdReserva">
-                                <i class="fa fa-check"></i> Asignar
-                            </button>
-
-                            @if (string.Equals(r.EstadoReserva, "Rechazada", System.StringComparison.OrdinalIgnoreCase))
+                            @* 1) CONFIRMADA: ambos botones deshabilitados *@
+                            @if (esConfirmada)
                             {
-                                <button class="btn btn-danger btn-xs btn-rechazar-reserva" disabled="disabled" title="La reserva ya fue rechazada">
-                                    <i class="fa fa-ban"></i> Rechazada
+                                <button class="btn btn-success btn-xs btn-asignar-reserva" disabled="disabled" title="La reserva ya está confirmada">
+                                    <i class="fa fa-check"></i> Asignar
+                                </button>
+                                <button class="btn btn-danger btn-xs btn-rechazar-reserva" disabled="disabled" title="La reserva ya está confirmada">
+                                    <i class="fa fa-ban"></i> Rechazar
                                 </button>
                             }
+                            @* 2) RECHAZADA: Asignar habilitado, Rechazar deshabilitado *@
+                            else if (esRechazada)
+                            {
+                                <button class="btn btn-success btn-xs btn-asignar-reserva" disabled="disabled" data-id="@r.IdReserva">
+                                    <i class="fa fa-check"></i> Asignar
+                                </button>
+                                <button class="btn btn-danger btn-xs btn-rechazar-reserva" disabled="disabled" title="La reserva ya fue rechazada">
+                                    <i class="fa fa-times"></i> Rechazada
+                                </button>
+                            }
+                            @* 3) Cualquier otro estado: ambos habilitados *@
                             else
                             {
+                                <button class="btn btn-success btn-xs btn-asignar-reserva" data-id="@r.IdReserva">
+                                    <i class="fa fa-check"></i> Asignar
+                                </button>
                                 <button class="btn btn-danger btn-xs btn-rechazar-reserva" data-id="@r.IdReserva">
                                     <i class="fa fa-times"></i> Rechazar
                                 </button>

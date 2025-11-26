@@ -1,6 +1,6 @@
 using System;
 
-namespace DemoBackend.Dto.OrdenTrabajo
+namespace Front_Hoteleria.Dto.OrdenTrabajo
 {
     public class OrdenTrabajoDto
     {
@@ -19,8 +19,10 @@ namespace DemoBackend.Dto.OrdenTrabajo
         public int? IdTipo { get; set; }
 
         public string NombreTipo { get; set; }
-        public string Prioridad { get; set; }
+
         public string Descripcion { get; set; }
+
+        public string Prioridad { get; set; }
 
         public int? IdPrioridad { get; set; }
 

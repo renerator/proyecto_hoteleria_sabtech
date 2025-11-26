@@ -1,22 +1,22 @@
 using AutoMapper;
 using DemoBackend.Dto.Habitacion;
-using DemoBackend.Dto.HabitacionInsumo;
-using DemoBackend.Models.HabitacionInsumo;
+using DemoBackend.Dto.HabitacionInventario;
+using DemoBackend.Models.HabitacionInventario;
 using DemoBackend.RepositoryGes;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DemoBackend.Services.HabitacionInsumo
+namespace DemoBackend.Services.HabitacionInventario
 {
-    public class HabitacionInsumoService : IHabitacionInsumoService
+    public class HabitacionInventarioService : IHabitacionInventarioService
     {
-        private readonly IGenericRepositoryEntity<HabitacionInsumoModels> _repo;
+        private readonly IGenericRepositoryEntity<HabitacionInventarioModels> _repo;
         private readonly IMapper _mapper;
 
-        public HabitacionInsumoService(
-            IGenericRepositoryEntity<HabitacionInsumoModels> repo,
+        public HabitacionInventarioService(
+            IGenericRepositoryEntity<HabitacionInventarioModels> repo,
             IMapper mapper)
         {
             _repo = repo;
@@ -25,16 +25,16 @@ namespace DemoBackend.Services.HabitacionInsumo
 
               
 
-        public bool CrearHabitacionInsumo(HabitacionInsumoDto dto)
+        public bool CrearHabitacionInsumo(HabitacionInventarioDto dto)
         {
             if (dto == null) return false;
-            if (dto.idHabitacion <= 0 || dto.idInsumo <= 0) return false;
+            if (dto.IdHabitacion <= 0 || dto.IdInventario <= 0) return false;
 
             string sql = "INS_CRE_HabitacionInsumo @idHabitacion,@idInsumo";
             var p = new SqlParameter[]
             {
-                new SqlParameter("@idHabitacion", dto.idHabitacion),
-                new SqlParameter("@idInsumo", dto.idInsumo)
+                new SqlParameter("@idHabitacion", dto.IdHabitacion),
+                new SqlParameter("@idInsumo", dto.IdInventario)
                 
             };
 
@@ -49,7 +49,7 @@ namespace DemoBackend.Services.HabitacionInsumo
                 return false;
             }
         }
-        public List<HabitacionInsumoDto> GetListaHabitacionInsumoEstado(int Vigente)
+        public List<HabitacionInventarioDto> GetListaHabitacionInsumoEstado(int Vigente)
         {
             string sql = "LISTADO_HabitacionInsumo_Estado @Vigencia";
             var parametros = new SqlParameter[1];
@@ -58,19 +58,19 @@ namespace DemoBackend.Services.HabitacionInsumo
             var listagrupos = _repo.GetStoreProcedure(sql, parametros);
 
 
-            return _mapper.Map<List<HabitacionInsumoDto>>(listagrupos);
+            return _mapper.Map<List<HabitacionInventarioDto>>(listagrupos);
         }
 
-        public bool ModificarHabitacionInsumo(HabitacionInsumoDto dto)
+        public bool ModificarHabitacionInsumo(HabitacionInventarioDto dto)
         {
-            if (dto == null || dto.idHabitacionInsumo <= 0) return false;
+            if (dto == null || dto.IdHabitacionInventario <= 0) return false;
 
             string sql = "INS_UPD_HabitacionInsumo @idHabitacionInsumo,@idHabitacion,@idInsumo";
             var p = new SqlParameter[]
             {
-                new SqlParameter("@idHabitacionInsumo", dto.idHabitacionInsumo),
-                new SqlParameter("@idHabitacion", dto.idHabitacion),
-                new SqlParameter("@idInsumo", dto.idInsumo)
+                new SqlParameter("@idHabitacionInsumo", dto.IdHabitacionInventario),
+                new SqlParameter("@idHabitacion", dto.IdHabitacion),
+                new SqlParameter("@idInsumo", dto.IdInventario)
               
             };
 

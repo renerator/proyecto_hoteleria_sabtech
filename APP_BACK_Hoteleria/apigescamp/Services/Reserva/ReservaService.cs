@@ -111,7 +111,7 @@ namespace DemoBackend.Services
             // IMPORTANTE: mismo nombre que el SP y mismos parámetros en el texto
             string sql = "HOT_CRE_Reserva " +
                          "@idHabitacion," +
-                         "@IdReservaTipoHabitacion," +   // 🔹 nuevo en la cadena
+                         "@IdReservaTipoHabitacion," +
                          "@FechaDesde," +
                          "@FechaHasta," +
                          "@QuiereTransporte," +
@@ -122,10 +122,11 @@ namespace DemoBackend.Services
                          "@NombreHuesped," +
                          "@RutHuesped," +
                          "@CorreoHuespedReserva," +
-                         "@TelefonoHuespedReserva";
+                         "@TelefonoHuespedReserva," +   // 👈 primero Teléfono
+                         "@CantidadPersonas";           // 👈 después Cantidad
 
-            // 13 parámetros (0..12) EXACTAMENTE los del SP
-            var parametros = new SqlParameter[13];
+            // 14 parámetros (0..13) EXACTAMENTE los del SP que vamos a enviar
+            var parametros = new SqlParameter[14];
 
             parametros[0] = new SqlParameter("@idHabitacion", reserva.IdHabitacion);
             parametros[1] = new SqlParameter("@IdReservaTipoHabitacion", reserva.IdReservaTipoHabitacion);
@@ -156,8 +157,12 @@ namespace DemoBackend.Services
             parametros[11] = new SqlParameter("@CorreoHuespedReserva",
                                               (object?)reserva.CorreoHuespedReserva ?? DBNull.Value);
 
+            // 👇 OJO: ahora el orden coincide con el texto del SQL
             parametros[12] = new SqlParameter("@TelefonoHuespedReserva",
                                               (object?)reserva.TelefonoHuespedReserva ?? DBNull.Value);
+
+            parametros[13] = new SqlParameter("@CantidadPersonas",
+                                              reserva.CantidadPersonas);
 
             try
             {
@@ -170,6 +175,7 @@ namespace DemoBackend.Services
                 return false;
             }
         }
+
 
 
 

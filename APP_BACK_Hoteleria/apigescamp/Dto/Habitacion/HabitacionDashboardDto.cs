@@ -18,5 +18,8 @@ namespace DemoBackend.Dto.Habitacion
         public DateTime? FechaHasta { get; set; }
 
         public int? ServiciosPrevPeriodo { get; set; }
+
+        public int? HuespedesRegistrados { get; set; }
+        
     }
 }

@@ -49,6 +49,9 @@ namespace DemoBackend.Models.Reserva
         [Column("TipoHabitacion")]
         public string TipoHabitacion { get; set; }
 
+        [Column("CantidadPersonas")]
+        public int? CantidadPersonas { get; set; }
+
         [Column("Huespedes")]
         public int Huespedes { get; set; }
         [Column("EstadoReserva")]

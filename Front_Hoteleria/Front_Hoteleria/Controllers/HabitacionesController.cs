@@ -1,13 +1,18 @@
 ﻿using Front_Hoteleria.Dto.Habitacion;
-using Front_Hoteleria.Services.Habitacion;
-using Front_Hoteleria.Services.HabitacionInsumo;
+using Front_Hoteleria.Dto.Inventario;
+using Front_Hoteleria.Dto.OrdenTrabajo;
+
 using Front_Hoteleria.Dtos.Habitacion;
+using Front_Hoteleria.Services.Habitacion;
+using Front_Hoteleria.Services.HabitacionInventario;
+using Front_Hoteleria.Services.OrdenTrabajo;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -16,19 +21,23 @@ namespace Front_Hoteleria.Controllers
     public class HabitacionesController : Controller
     {
         private readonly IHabitacionService _api;
-        private readonly IHabitacionInsumoService _habInsumoApi;
+        private readonly IHabitacionInventarioService _habInsumoApi;
+        private readonly IOrdenTrabajoService _OrdenApi;
 
-        // ----- DI (recomendado) -----
-        public HabitacionesController(IHabitacionService api, IHabitacionInsumoService habInsumoApi)
+        public HabitacionesController(
+            IHabitacionService api,
+            IHabitacionInventarioService habInsumoApi,
+            IOrdenTrabajoService OrdenApi)
         {
             _api = api ?? throw new ArgumentNullException(nameof(api));
             _habInsumoApi = habInsumoApi ?? throw new ArgumentNullException(nameof(habInsumoApi));
+            _OrdenApi = OrdenApi ?? throw new ArgumentNullException(nameof(OrdenApi));
         }
 
-        // ----- Fallback sin contenedor de DI (opcional) -----
-        public HabitacionesController() : this(new HabitacionService(), new HabitacionInsumoService()) { }
+        public HabitacionesController()
+            : this(new HabitacionService(), new HabitacionInventarioService(), new OrdenTrabajoService())
+        { }
 
-        // ----- Helper para obtener el Bearer -----
         private string GetBearer()
         {
             try
@@ -43,47 +52,131 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
+        // ===================== INDEX + KPIs REPARACIONES =====================
         [HttpGet]
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            // Verifica si existe token válido en sesión
             if (!(Session["Token"] is string tok) || string.IsNullOrWhiteSpace(tok))
-            {
                 return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-            }
 
             try
             {
                 var perfil = Session["IdPerfil"];
                 if (perfil == null)
-                {
                     return RedirectToAction("Login", "Account", new { returnUrl = Request.RawUrl });
-                }
 
-                // Suponiendo que Usuario tiene una propiedad IdPerfil o Rol
-                // Ejemplo: Rol = "Administrador", "Huesped", "Personal"
+                // Inicializamos KPIs en cero por si algo falla
+                ViewBag.RepPendientes = 0;
+                ViewBag.RepEnProgreso = 0;
+                ViewBag.RepCompletadas = 0;
+                ViewBag.RepUrgentes = 0;
+                ViewBag.RepHoy = 0;
+                ViewBag.RepSlaVencido = 0;
+                ViewBag.RepTotal = 0;
+
+                // Solo para el perfil que ve esta vista
                 switch (perfil)
                 {
-                    case 1:
-                        // Redirige a la vista de administrador
+                    case 4:
+                        await CargarKpisReparacionesAsync();
                         return View("~/Views/Habitaciones/Index.cshtml");
 
-                    case 2:
-                        // Redirige a la vista específica del huésped
-                        return View("~/Views/Huesped/Reservas/Index.cshtml");
-
-
-
                     default:
-                        // Cualquier otro caso no autorizado
                         return RedirectToAction("Login", "Account");
                 }
             }
             catch (Exception ex)
             {
-                // Log opcional
-                System.Diagnostics.Trace.TraceError($"Error en Index: {ex}");
+                Trace.TraceError($"Error en Index: {ex}");
                 return RedirectToAction("Login", "Account");
+            }
+        }
+
+        /// <summary>
+        /// Calcula las estadísticas de reparaciones (pendientes, en progreso, etc.)
+        /// usando LINQ sobre el listado que entrega el servicio de órdenes.
+        /// </summary>
+        private async Task CargarKpisReparacionesAsync()
+        {
+            try
+            {
+                var bearer = GetBearer();
+                if (string.IsNullOrWhiteSpace(bearer))
+                    return;
+
+                // IMPORTANTE:
+                // Si GetListaOrdenTrabajoEstadoAsync filtra por estado,
+                // usa el valor que te traiga TODAS las órdenes vigentes.
+                // Aquí dejo 1 como en TablaReparaciones; ajusta si tu API espera otro valor.
+                var ordenes = await _OrdenApi.GetListaOrdenTrabajoEstadoAsync(1, bearer)
+                                             .ConfigureAwait(false);
+
+                if (ordenes == null)
+                    ordenes = new List<OrdenTrabajoDto>();
+
+                Func<string, string> norm = s =>
+                    (s ?? string.Empty)
+                        .ToLowerInvariant()
+                        .Normalize(NormalizationForm.FormD)
+                        .Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark)
+                        .Aggregate(string.Empty, (acc, c) => acc + c);
+
+                var hoy = DateTime.Today;
+
+                // ---- ESTADO ----
+                int pendientes = ordenes.Count(o =>
+                {
+                    var e = norm(o.Estado);
+                    return e.Contains("pend");
+                });
+
+                int enProgreso = ordenes.Count(o =>
+                {
+                    var e = norm(o.Estado);
+                    return e.Contains("progres") || e.Contains("curso");
+                });
+
+                int completadas = ordenes.Count(o =>
+                {
+                    var e = norm(o.Estado);
+                    return e.Contains("complet") || e.Contains("cerrad") || e.Contains("terminad");
+                });
+
+                // ---- PRIORIDAD / URGENTES ----
+                int urgentes = ordenes.Count(o =>
+                {
+                    var p = norm(o.Prioridad);
+                    return p.Contains("urgente") || p.Contains("alto");
+                });
+
+                // ---- HOY (por fecha de creación / solicitud) ----
+                int hoyCnt = ordenes.Count(o => o.FechaIngresoOT.Date == hoy);
+
+                // ---- SLA VENCIDO ----
+                // Regla: solo cuenta órdenes NO completadas con fecha SLA < hoy
+                int slaVencido = ordenes.Count(o =>
+                {
+                    var e = norm(o.Estado);
+                    bool esCompleta = e.Contains("complet") || e.Contains("cerrad") || e.Contains("terminad");
+
+                    if (esCompleta) return false;
+                    if (!o.FechaCierreOT.HasValue) return false;   // 👈 aquí sí uso HasValue
+
+                    return o.FechaCierreOT.Value.Date < hoy;
+                });
+
+                ViewBag.RepPendientes = pendientes;
+                ViewBag.RepEnProgreso = enProgreso;
+                ViewBag.RepCompletadas = completadas;
+                ViewBag.RepUrgentes = urgentes;
+                ViewBag.RepHoy = hoyCnt;
+                ViewBag.RepSlaVencido = slaVencido;
+                ViewBag.RepTotal = ordenes.Count;
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[CargarKpisReparacionesAsync] Error calculando KPIs: {ex}");
+                // Si falla, dejamos los ViewBag en cero (ya inicializados en Index)
             }
         }
 
@@ -102,7 +195,7 @@ namespace Front_Hoteleria.Controllers
 
                 if (!string.IsNullOrWhiteSpace(nombre))
                     data = data.Where(x => (x.NombreHabitacion ?? string.Empty)
-                                .IndexOf(nombre, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                                    .IndexOf(nombre, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
 
                 if (vip.HasValue)
                     data = data.Where(x => x.VIP == vip.Value).ToList();
@@ -129,7 +222,7 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
-        // ===================== DASHBOARD (SIN FECHAS) =====================
+        // ===================== DASHBOARD =====================
         [HttpGet]
         public async Task<ActionResult> Dashboard()
         {
@@ -140,8 +233,6 @@ namespace Front_Hoteleria.Controllers
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
 
                 var dto = await _api.DashboardHabitacionAsync(token) ?? new HabitacionDashboardDto();
-
-                // Usamos ruta absoluta para evitar problemas de resolución del partial
                 return PartialView("~/Views/Habitaciones/_DashboardHabitacion.cshtml", dto);
             }
             catch (HttpRequestException ex)
@@ -161,6 +252,7 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
+        // ===================== FILTROS INVENTARIO =====================
         [HttpGet]
         public async Task<JsonResult> FiltrosInventario()
         {
@@ -169,16 +261,21 @@ namespace Front_Hoteleria.Controllers
                 var bearer = GetBearer();
                 var data = await _habInsumoApi.ListarAsync(1, bearer).ConfigureAwait(false);
 
-                var habs = data.Select(x => x.IdHabitacion).Distinct()
-                               .OrderBy(x => x)
-                               .Select(x => new { value = x, text = x.ToString() })
-                               .ToList();
+                var habs = data
+                    .Select(x => x.NombreHabitacion)
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Distinct()
+                    .OrderBy(x => x)
+                    .Select(x => new { value = x, text = x })
+                    .ToList();
 
-                var ins = data.Select(x => new { x.IdInsumo, x.NombreInsumo })
-                              .Distinct()
-                              .OrderBy(x => x.NombreInsumo)
-                              .Select(x => new { value = x.IdInsumo, text = x.NombreInsumo })
-                              .ToList();
+                var ins = data
+                    .Select(x => x.Descripcion)
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Distinct()
+                    .OrderBy(x => x)
+                    .Select(x => new { value = x, text = x })
+                    .ToList();
 
                 return Json(new { habitaciones = habs, insumos = ins }, JsonRequestBehavior.AllowGet);
             }
@@ -189,25 +286,63 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
-        // Tabla inventario
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<PartialViewResult> TablaInventario(FiltroInventarioVm f)
+        // ===================== TABLA INVENTARIO =====================
+        [HttpGet]
+        public async Task<ActionResult> TablaInventario(string habitacion, string material)
         {
             try
             {
                 var bearer = GetBearer();
                 var data = await _habInsumoApi.ListarAsync(1, bearer).ConfigureAwait(false);
 
-                if (f?.IdHabitacion != null) data = data.Where(d => d.IdHabitacion == f.IdHabitacion.Value).ToList();
-                if (f?.IdInsumo != null) data = data.Where(d => d.IdInsumo == f.IdInsumo.Value).ToList();
+                if (!string.IsNullOrWhiteSpace(habitacion))
+                    data = data
+                        .Where(d => string.Equals(d.NombreHabitacion, habitacion, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+
+                if (!string.IsNullOrWhiteSpace(material))
+                    data = data
+                        .Where(d => (d.Descripcion ?? string.Empty)
+                            .IndexOf(material, StringComparison.OrdinalIgnoreCase) >= 0)
+                        .ToList();
 
                 return PartialView("_TablaInventario", data);
             }
             catch (Exception ex)
             {
                 Trace.TraceError($"[TablaInventario] Error: {ex}");
-                return PartialView("_TablaInventario", new List<InventarioFilaVm>());
+                return PartialView("_TablaInventario", new List<InventarioHabitacionDTO>());
+            }
+        }
+
+        // ===================== TABLA REPARACIONES =====================
+        [HttpGet]
+        public async Task<ActionResult> TablaReparaciones()
+        {
+            try
+            {
+                var bearer = GetBearer();
+                if (string.IsNullOrWhiteSpace(bearer))
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
+
+                var data = await _OrdenApi.GetListaOrdenTrabajoEstadoAsync(1, bearer).ConfigureAwait(false);
+
+                return PartialView("_TablaReparaciones", data);
+            }
+            catch (HttpRequestException ex)
+            {
+                Trace.TraceError($"[TablaReparaciones] Error HTTP al consultar API: {ex}");
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadGateway, "No se pudo comunicar con la API de órdenes de trabajo.");
+            }
+            catch (TaskCanceledException ex)
+            {
+                Trace.TraceError($"[TablaReparaciones] Timeout al consultar API: {ex}");
+                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta de órdenes excedió el tiempo de espera.");
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[TablaReparaciones] Error inesperado: {ex}");
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al cargar las órdenes de trabajo.");
             }
         }
 

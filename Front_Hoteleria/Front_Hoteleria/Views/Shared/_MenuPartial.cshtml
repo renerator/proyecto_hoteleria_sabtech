@@ -2,16 +2,68 @@
 @model List<Front_Hoteleria.Dto.MenuDTO>
 
 @{
-    // 1) Opción A: detectar si existe un menú raíz llamado "Huésped"
-    var menuHuesped = (Model ?? new List<Front_Hoteleria.Dto.MenuDTO>())
-                      .FirstOrDefault(x => x.Titulo == "Huésped");
+    var menuModel = Model ?? new List<Front_Hoteleria.Dto.MenuDTO>();
 
-    // 2) Opción B: si desde el controller te mandas un flag, esto manda más:
-    bool esHuesped = ViewBag.EsHuesped != null
-                     ? (bool)ViewBag.EsHuesped
-                     : menuHuesped != null; // fallback
+    // Normaliza texto: minúsculas, sin espacios y sin tildes
+    System.Func<string, string> Norm = s =>
+    {
+        s = (s ?? "").Trim().ToLowerInvariant();
+        s = s.Replace("á", "a").Replace("à", "a").Replace("ä", "a")
+             .Replace("é", "e").Replace("è", "e").Replace("ë", "e")
+             .Replace("í", "i").Replace("ì", "i").Replace("ï", "i")
+             .Replace("ó", "o").Replace("ò", "o").Replace("ö", "o")
+             .Replace("ú", "u").Replace("ù", "u").Replace("ü", "u");
+        s = s.Replace(" ", "");
+        return s;
+    };
+
+    // Nombre de perfil si lo mandas desde el layout
+    string nombrePerfilViewBag = ViewBag.NombrePerfil as string ?? "";
+    string perfilNorm = Norm(nombrePerfilViewBag);
+
+    // ¿Es huésped?
+    bool esHuespedFlag = false;
+    if (ViewBag.EsHuesped != null)
+    {
+        bool.TryParse(ViewBag.EsHuesped.ToString(), out esHuespedFlag);
+    }
+
+    bool esHuespedPorNombre = perfilNorm.Contains("huesped");
+    bool esHuespedPorMenu = menuModel.Any(m => Norm(m.Titulo).Contains("huesped"));
+
+    bool esHuesped = esHuespedFlag || esHuespedPorNombre || esHuespedPorMenu;
+
+    // Otros perfiles según los menús raíz
+    bool hayAdmin = menuModel.Any(m => Norm(m.Titulo) == "administracion");
+    bool hayPlataforma = menuModel.Any(m => Norm(m.Titulo) == "plataforma");
+    bool hayServicioRaiz = menuModel.Any(m =>
+        Norm(m.Titulo) == "servicio" || Norm(m.Titulo) == "servicios");
+
+    string tituloMenu;
+    if (esHuesped)
+    {
+        tituloMenu = "MENÚ HUÉSPED";
+    }
+    else if (hayAdmin)
+    {
+        tituloMenu = "MENÚ ADMINISTRADOR";
+    }
+    else if (hayPlataforma)
+    {
+        tituloMenu = "MENÚ PLATAFORMA";
+    }
+    else if (hayServicioRaiz)
+    {
+        tituloMenu = "MENÚ PERSONAL";
+    }
+    else
+    {
+        tituloMenu = "MENÚ USUARIO";
+    }
+
+    // Menú raíz para huésped (si existe)
+    var menuHuesped = menuModel.FirstOrDefault(m => Norm(m.Titulo).Contains("huesped"));
 }
-
 
 @if (esHuesped)
 {
@@ -106,29 +158,42 @@
 
     <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
         <div class="menu_section menu-user-custom">
-            <h3>MENÚ USUARIO</h3>
+            <h3>@tituloMenu</h3>
             <div class="menu-title-gap"></div>
-            <ul class="nav side-menu">
-                @{
-                    var submenus = menuHuesped?.SubMenu ?? Enumerable.Empty<Front_Hoteleria.Dto.MenuDTO>();
-                }
 
+            @{
+                // Orden: Reservas, Servicios, Reclamos
+                var submenus = (menuHuesped?.SubMenu ??
+                                Enumerable.Empty<Front_Hoteleria.Dto.MenuDTO>())
+                               .OrderBy(h =>
+                               {
+                                   var key = Norm(h.Titulo);
+                                   if (key.Contains("reserva")) return 0;
+                                   if (key.Contains("servicio")) return 1;
+                                   if (key.Contains("reclamo")) return 2;
+                                   return 999;
+                               })
+                               .ToList();
+            }
+
+            <ul class="nav side-menu">
                 @foreach (var sub in submenus)
                 {
+                    var key = Norm(sub.Titulo);
                     var liClass = "";
                     var iconClass = "fa fa-angle-right";
 
-                    if (sub.Titulo == "Reservas")
+                    if (key.Contains("reserva"))
                     {
                         liClass = "menu-reservas";
                         iconClass = "fa fa-calendar";
                     }
-                    else if (sub.Titulo == "Servicios")
+                    else if (key.Contains("servicio"))
                     {
                         liClass = "menu-servicios";
                         iconClass = "fa fa-cogs";
                     }
-                    else if (sub.Titulo == "Reclamos")
+                    else if (key.Contains("reclamo"))
                     {
                         liClass = "menu-reclamos";
                         iconClass = "fa fa-comments";
@@ -148,20 +213,88 @@
 else
 {
     /* ============================
-       MENÚ NORMAL (ADMIN / OTROS)
+       MENÚ NORMAL (ADMIN / PERSONAL / PLATAFORMA)
        ============================ */
     <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
         <div class="menu_section">
-            <h3>Menú Usuario</h3>
-            <ul class="nav side-menu">
-                @foreach (var item in (Model ?? new List<Front_Hoteleria.Dto.MenuDTO>()))
-                {
-                    var hijos = item.SubMenu ?? Enumerable.Empty<Front_Hoteleria.Dto.MenuDTO>();
-                    var tieneHijos = hijos.Any();
+            <h3>@tituloMenu</h3>
 
-                    <li class="@(tieneHijos ? "has-children" : null)">
-                        <a href="@(tieneHijos ? "javascript:;" : (item.Url ?? "#"))" title="@(item.Url ?? "")">
-                            <i class="@item.Icono"></i> @(item.Titulo ?? "")
+            @{
+                // Primer menú raíz que tenga hijos -> se mostrará desplegado
+                var primerRaizConHijos = menuModel
+                    .FirstOrDefault(m => (m.SubMenu ??
+                        Enumerable.Empty<Front_Hoteleria.Dto.MenuDTO>())
+                        .Any());
+            }
+
+            <ul class="nav side-menu">
+                @foreach (var item in menuModel)
+                {
+                    var hijos = (item.SubMenu ??
+                                Enumerable.Empty<Front_Hoteleria.Dto.MenuDTO>())
+                                .ToList();
+
+                    // ==== ORDEN PARA ADMINISTRADOR ====
+                    if (Norm(item.Titulo) == "administracion")
+                    {
+                        hijos = hijos
+                            .OrderBy(h =>
+                            {
+                                var key = Norm(h.Titulo);
+                                if (key.Contains("reserva")) return 0;
+                                if (key.Contains("servicio")) return 1;
+                                if (key.Contains("checkin")) return 2;
+                                if (key.Contains("reporte")) return 3;
+                                return 999;
+                            })
+                            .ToList();
+                    }
+
+                    // ==== ORDEN PARA PLATAFORMA ====
+                    if (Norm(item.Titulo) == "plataforma")
+                    {
+                        hijos = hijos
+                            .OrderBy(h =>
+                            {
+                                var key = Norm(h.Titulo);
+
+                                if (key.Contains("habitacion")) return 0; // Habitaciones
+                                if (key.Contains("serviciosdisponibles") ||
+                                    (key.Contains("servicio") && key.Contains("disponible"))) return 1; // Servicios Disponibles
+                                if (key.Contains("inventario")) return 2;
+                                if (key.Contains("campamento")) return 3;
+                                if (key.Contains("contrato")) return 4;
+                                if (key.Contains("dotacion")) return 5;
+                                if (key.Contains("rol")) return 6;
+                                if (key.Contains("calendario")) return 7;
+
+                                return 999;
+                            })
+                            .ToList();
+                    }
+
+                    var tituloItem = item.Titulo ?? "";
+                    var iconoItem = "fa fa-check"; // item.Icono ?? "";
+
+                    // Ajuste de "Servicio" -> "Servicios" para perfil Personal
+                    if (Norm(tituloItem) == "servicio")
+                    {
+                        tituloItem = "Servicios";
+
+                        //if (string.IsNullOrWhiteSpace(iconoItem) || iconoItem == "fa fa-folder")
+                        //{
+                        iconoItem = "fa fa-cogs";
+                        //}
+                    }
+
+                var tieneHijos = hijos.Any();
+                // ¿Es este el menú raíz que queremos dejar desplegado?
+                bool esRaizActiva = primerRaizConHijos != null && item == primerRaizConHijos;
+
+                    <li class="@(tieneHijos ? "has-children" : null) @(esRaizActiva ? "active" : "")">
+                        <a href="@(tieneHijos ? "javascript:;" : (item.Url ?? "#"))"
+                           title="@(item.Url ?? "")">
+                            <i class="@iconoItem"></i> @tituloItem
                             @if (tieneHijos)
                             {
                                 <span class="fa fa-chevron-down"></span>
@@ -170,7 +303,7 @@ else
 
                         @if (tieneHijos)
                         {
-                            <ul class="nav child_menu">
+                            <ul class="nav child_menu" style="@(esRaizActiva ? "display:block;" : "display:none;")">
                                 @foreach (var sub in hijos)
                                 {
                                     <li>
@@ -187,3 +320,4 @@ else
         </div>
     </div>
 }
+

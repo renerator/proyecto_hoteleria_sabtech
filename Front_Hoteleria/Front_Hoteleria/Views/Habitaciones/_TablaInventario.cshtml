@@ -1,34 +1,123 @@
-﻿@@Model IEnumerable<Front_Hoteleria.ViewDtos.InventarioFilaVm>
+﻿@model IEnumerable<Front_Hoteleria.Dto.Habitacion.InventarioHabitacionDTO>
 
-    <table id="tablaInventario" class="table table-striped table-bordered">
-        <thead>
+@{
+    var data = Model ?? Enumerable.Empty<Front_Hoteleria.Dto.Habitacion.InventarioHabitacionDTO>();
+
+    // Colores por tipo de material (ajusta según tus catálogos reales)
+    Func<string, string> CssTipoMaterial = tipo =>
+    {
+        var t = (tipo ?? "").Trim().ToLowerInvariant();
+
+        switch (t)
+        {
+            case "colchón":
+            case "colchon":
+                return "tag tag-cyan";     // colchones
+
+            case "televisor":
+            case "tv":
+                return "tag tag-blue";     // televisores
+
+            case "locker":
+                return "tag tag-orange";   // lockers
+
+            case "mueble":
+            case "mobiliario":
+                return "tag tag-green";    // otros muebles
+
+            default:
+                return "tag tag-grey";     // genérico
+        }
+    };
+
+    // Colores por estado (Completo / Faltante / En Reparación)
+    Func<string, string> CssEstado = estado =>
+    {
+        var e = (estado ?? "").Trim().ToLowerInvariant();
+
+        switch (e)
+        {
+            case "completo":
+                return "tag tag-green";
+
+            case "faltante":
+                return "tag tag-red";
+
+            case "en reparación":
+            case "en reparacion":
+                return "tag tag-orange";
+
+            default:
+                return "tag tag-grey";
+        }
+    };
+}
+
+<table id="tablaInventario" class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Habitación</th>
+            <th>Tipo de Material</th>
+            <th>Descripción</th>
+            <th>Marca/Modelo</th>
+            <th>Estado</th>
+            <th>Última Verificación</th>
+            <th>Responsable</th>
+            <th style="width:120px">Opciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!data.Any())
+        {
             <tr>
-                <th>ID</th>
-                <th>Habitación</th>
-                <th>Material</th>
-                <th>Stock mínimo</th>
-                <th>Bodega</th>
-                <th style="width:120px">Opciones</th>
+                <td colspan="9" class="text-muted text-center">
+                    Sin datos de inventario
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @if (Model != null)
+        }
+        else
+        {
+            foreach (var it in data)
             {
-                foreach (var it in Dto)
-                {
-                    <tr>
-                        <td>@it.IdHabitacionInsumo</td>
-                        <td>@it.IdHabitacion</td>
-                        <td><span class="label label-info">@it.NombreInsumo</span></td>
-                        <td>@it.StockMinimo</td>
-                        <td>@it.IdBodega</td>
-                        <td>
-                            <button class="btn btn-primary btn-xs" title="Ver" data-id="@it.IdHabitacionInsumo"><i class="fa fa-eye"></i></button>
-                            <button class="btn btn-success btn-xs" title="Editar" data-id="@it.IdHabitacionInsumo"><i class="fa fa-pencil"></i></button>
-                            <button class="btn btn-warning btn-xs btn-inv-eliminar" title="Eliminar" data-id="@it.IdHabitacionInsumo"><i class="fa fa-trash"></i></button>
-                        </td>
-                    </tr>
-                }
+                <tr data-estado="@it.Estado">
+                    <td>@it.IdHabitacionInventario</td>
+                    <td>@it.NombreHabitacion</td>
+
+                    <!-- Tipo de material con pill de color -->
+                    <td>
+                        <span class="@CssTipoMaterial(it.TipoMaterial)">
+                            @it.TipoMaterial
+                        </span>
+                    </td>
+
+                    <!-- Descripción texto normal -->
+                    <td>@it.Descripcion</td>
+
+                    <td>@it.MarcaModelo</td>
+
+                    <!-- Estado con pill de color -->
+                    <td>
+                        <span class="@CssEstado(it.Estado)">
+                            @it.Estado
+                        </span>
+                    </td>
+
+                    <td>@(it.FechaVerificacion?.ToString("dd-MM-yyyy") ?? "")</td>
+                    <td>@it.Responsable</td>
+                    <td>
+                        <button class="btn btn-info btn-xs" title="Ver" data-id="@it.IdInventario">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                        <button class="btn btn-success btn-xs" title="Editar" data-id="@it.IdInventario">
+                            <i class="fa fa-pencil"></i>
+                        </button>
+                        <button class="btn btn-warning btn-xs btn-inv-eliminar" title="Eliminar" data-id="@it.IdHabitacionInventario">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
             }
-        </tbody>
-    </table>
+        }
+    </tbody>
+</table>

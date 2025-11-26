@@ -32,7 +32,7 @@ namespace Front_Hoteleria.Controllers
                 case 1: return Url.Action("Index", "Reservas");          // Admin
                 case 2: return Url.Action("Index", "ReservasHuesped");   // Huésped
                 case 3: return Url.Action("Index", "ServiciosPersonal");         // Personal
-                case 4: return Url.Action("Index", "HabitacionesPlataforma");      // Plataforma
+                case 4: return Url.Action("Index", "Habitaciones");      // Plataforma
                 default: return Url.Action("Index", "Home");
             }
         }

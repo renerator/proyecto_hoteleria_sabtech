@@ -1,5 +1,5 @@
-using DemoBackend.Dto.HabitacionInsumo;
-using DemoBackend.Services.HabitacionInsumo;
+using DemoBackend.Dto.HabitacionInventario;
+using DemoBackend.Services.HabitacionInventario;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -11,14 +11,14 @@ namespace DemoBackend.Controllers
     [ApiController]
     [Route("api/[Controller]")]
     [Authorize]
-    public class HabitacionInsumoController : BaseController
+    public class HabitacionInventarioController : BaseController
     {
-        private readonly ILogger<HabitacionInsumoController> _logger;
-        private readonly IHabitacionInsumoService _service;
+        private readonly ILogger<HabitacionInventarioController> _logger;
+        private readonly IHabitacionInventarioService _service;
 
-        public HabitacionInsumoController(
-            ILogger<HabitacionInsumoController> logger,
-            IHabitacionInsumoService service)
+        public HabitacionInventarioController(
+            ILogger<HabitacionInventarioController> logger,
+            IHabitacionInventarioService service)
         {
             _logger = logger;
             _service = service;
@@ -163,24 +163,24 @@ namespace DemoBackend.Controllers
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
         [HttpDelete("EliminarHabitacionInsumo")]
-        public IActionResult Eliminar(int idHabitacionInsumo)
+        public IActionResult Eliminar(int idHabitacionInventario)
         {
             try
             {
-                if (idHabitacionInsumo <= 0)
+                if (idHabitacionInventario <= 0)
                 {
-                    _logger.LogWarning("EliminarHabitacionInsumo: id inválido ({Id}).", idHabitacionInsumo);
+                    _logger.LogWarning("EliminarHabitacionInsumo: id inválido ({Id}).", idHabitacionInventario);
                     return BadRequest("Parámetro inválido.");
                 }
 
-                var ok = _service.EliminarHabitacionInsumo(idHabitacionInsumo);
+                var ok = _service.EliminarHabitacionInsumo(idHabitacionInventario);
                 if (ok)
                 {
-                    _logger.LogInformation("EliminarHabitacionInsumo: eliminado correctamente ({Id}).", idHabitacionInsumo);
+                    _logger.LogInformation("EliminarHabitacionInsumo: eliminado correctamente ({Id}).", idHabitacionInventario);
                     return Ok("Eliminado");
                 }
 
-                _logger.LogError("EliminarHabitacionInsumo: fallo en capa de servicio ({Id}).", idHabitacionInsumo);
+                _logger.LogError("EliminarHabitacionInsumo: fallo en capa de servicio ({Id}).", idHabitacionInventario);
                 return StatusCode(500, "Error al eliminar.");
             }
             catch (Exception e)

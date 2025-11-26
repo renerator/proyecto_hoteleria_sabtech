@@ -14,7 +14,7 @@ namespace DemoBackend.Dto.Reserva
         public DateTime? FechaCheckIN { get; set; }
         public DateTime? FechaCheckOut { get; set; }
         public int IdEstadoReserva { get; set; }
-
+        public int CantidadPersonas { get; set; }
         public int Totales { get; set; }
 
         public string Nombres { get; set; }

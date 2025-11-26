@@ -1,19 +1,19 @@
 ﻿
-@Model dynamic
+@model Front_Hoteleria.Dto.Habitacion.HabitacionDashboardDto
 <div class="row tile_count">
     <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
         <span class="count_top"><i class="fa fa-bed"></i> Habitaciones Habilitadas</span>
         <div class="count">@(Model?.HabitacionesHabilitadas ?? 0)</div>
     </div>
     <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-        <span class="count_top"><i class="fa fa-wrench"></i> En Mantención</span>
+        <span class="count_top"><i class="fa fa-wrench"></i> Habitaciones en Mantención</span>
         <div class="count">@(Model?.HabitacionesMantencion ?? 0)</div>
     </div>
     <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-        <span class="count_top"><i class="fa fa-user"></i> Ocupadas</span>
+        <span class="count_top"><i class="fa fa-user"></i>Habitaciones Ocupadas</span>
         <div class="count">@(Model?.HabitacionesOcupadas ?? 0)</div>
     </div>
-    <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
         <span class="count_top"><i class="fa fa-bell"></i> Servicios solicitados</span>
         <div class="count">@(Model?.ServiciosSolicitados ?? 0)</div>
         @if (Model?.ServiciosVarPorcentaje != null)
@@ -23,9 +23,14 @@
             </span>
         }
     </div>
-    <div class="col-md-3 col-sm-4 col-xs-6 tile_stats_count">
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
         <span class="count_top"><i class="fa fa-broom"></i> Aseo en curso</span>
         <div class="count">@(Model?.AseoEnCurso ?? 0)</div>
+    </div>
+
+    <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+        <span class="count_top"><i class="fa fa-broom"></i>Huéspedes Registrados</span>
+        <div class="count">@(Model?.HuespedesRegistrados ?? 0)</div>
     </div>
 </div>
 

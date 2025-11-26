@@ -96,20 +96,3 @@
     </div>
 </div>
 
-<script>
-    $(function () {
-        $('#reservasTable').DataTable({
-            destroy: true,
-            pageLength: 10,
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
-            }
-        });
-
-        // check de cabecera
-        $('#selectAll').on('change', function () {
-            var checked = $(this).prop('checked');
-            $('.reserva-check').prop('checked', checked).trigger('change');
-        });
-    });
-</script>

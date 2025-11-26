@@ -1,51 +1,137 @@
-﻿@Model  Front_Hoteleria.Dto.Habitacion.HabitacionDto
+﻿@model Front_Hoteleria.Dto.Habitacion.HabitacionDto
 
-@using (Html.BeginForm("Upsert", "Habitaciones", FormMethod.Post, new { id = "frmUpsert", @class = "form-horizontal form-label-left" }))
+@using System.Web.Mvc
+
+@{
+    var esEdicion = Model != null && Model.IdHabitacion > 0;
+
+    // ===== ESTADOS (ID + Texto) =====
+    var estados = new List<SelectListItem>
+{
+        new SelectListItem { Value = "1", Text = "1 - Disponible",        Selected = Model?.IdEstado == 1 },
+        new SelectListItem { Value = "2", Text = "2 - Ocupada",           Selected = Model?.IdEstado == 2 },
+        new SelectListItem { Value = "3", Text = "3 - Mantenimiento",     Selected = Model?.IdEstado == 3 },
+        new SelectListItem { Value = "4", Text = "4 - Limpieza",          Selected = Model?.IdEstado == 4 },
+        new SelectListItem { Value = "5", Text = "5 - Fuera de Servicio", Selected = Model?.IdEstado == 5 }
+    };
+
+    // ===== TIPOS DE HABITACIÓN (ID + Texto) =====
+    var tiposHab = new List<SelectListItem>
+{
+        new SelectListItem { Value = "1", Text = "1 - Individual", Selected = Model?.IdTipoHabitacion == 1 },
+        new SelectListItem { Value = "2", Text = "2 - Doble",      Selected = Model?.IdTipoHabitacion == 2 },
+        new SelectListItem { Value = "3", Text = "3 - Triple",     Selected = Model?.IdTipoHabitacion == 3 },
+        new SelectListItem { Value = "4", Text = "4 - Suite",      Selected = Model?.IdTipoHabitacion == 4 },
+        new SelectListItem { Value = "5", Text = "5 - Familiar",   Selected = Model?.IdTipoHabitacion == 5 }
+    };
+}
+
+@using (Html.BeginForm("Upsert", "Habitaciones", FormMethod.Post,
+    new { id = "frmUpsert", @class = "form-horizontal form-label-left" }))
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(m => m.IdHabitacion)
 
+    <!-- Fila 1: Área / Ala -->
     <div class="form-group">
-        <label class="control-label col-md-3">Área</label>
-        <div class="col-md-6">
-            @Html.TextBoxFor(m => m.NombreHabitacion, new { @class = "form-control", required = "required" })
+        <label class="control-label col-md-2 col-sm-2">Área *</label>
+        <div class="col-md-4 col-sm-4">
+            @Html.TextBoxFor(m => m.NombreArea, new
+            {
+                @class = "form-control",
+                placeholder = "Ej: Zona A -1234",
+                required = "required"
+            })
+        </div>
+
+        <label class="control-label col-md-2 col-sm-2">Ala *</label>
+        <div class="col-md-4 col-sm-4">
+            @Html.TextBoxFor(m => m.Ala, new
+            {
+                @class = "form-control",
+                placeholder = "Ej: Ala derecha",
+                required = "required"
+            })
         </div>
     </div>
 
+    <!-- Fila 2: Pasillo / Número Habitación -->
     <div class="form-group">
-        <label class="control-label col-md-3">Ala</label>
-        <div class="col-md-6">
-            @Html.TextBoxFor(m => m.Ala, new { @class = "form-control", required = "required" })
+        <label class="control-label col-md-2 col-sm-2">Pasillo</label>
+        <div class="col-md-4 col-sm-4">
+            @Html.TextBoxFor(m => m.Pasillo, new
+            {
+                @class = "form-control",
+                placeholder = "Ej: Pasillo interior"
+            })
+        </div>
+
+        <label class="control-label col-md-2 col-sm-2">Número de Habitación *</label>
+        <div class="col-md-4 col-sm-4">
+            @Html.TextBoxFor(m => m.NombreHabitacion, new
+            {
+                @class = "form-control",
+                placeholder = "Ej: 0001",
+                required = "required"
+            })
         </div>
     </div>
 
+    <!-- Fila 3: Estado / Capacidad -->
     <div class="form-group">
-        <label class="control-label col-md-3">Pasillo</label>
-        <div class="col-md-6">
-            @Html.TextBoxFor(m => m.Pasillo, new { @class = "form-control" })
+        <label class="control-label col-md-2 col-sm-2">Estado *</label>
+        <div class="col-md-4 col-sm-4">
+            @Html.DropDownListFor(m => m.IdEstado,
+                new SelectList(estados, "Value", "Text", Model?.IdEstado),
+                "Seleccionar...",
+                new { @class = "form-control", required = "required" })
+        </div>
+
+        <label class="control-label col-md-2 col-sm-2">Capacidad de Huéspedes *</label>
+        <div class="col-md-4 col-sm-4">
+            @Html.TextBoxFor(m => m.Capacidad, new
+            {
+                @class = "form-control",
+                type = "number",
+                min = "1",
+                placeholder = "Ej: 3",
+                required = "required"
+            })
         </div>
     </div>
 
+    <!-- Fila 4: Tipo Habitación / Precio -->
     <div class="form-group">
-        <label class="control-label col-md-3">Nro Habitación</label>
-        <div class="col-md-6">
-            @Html.TextBoxFor(m => m.NombreHabitacion, new { @class = "form-control", required = "required" })
+        <label class="control-label col-md-2 col-sm-2">Tipo de Habitación</label>
+        <div class="col-md-4 col-sm-4">
+            @Html.DropDownListFor(m => m.IdTipoHabitacion,
+                new SelectList(tiposHab, "Value", "Text", Model?.IdTipoHabitacion),
+                "Seleccionar...",
+                new { @class = "form-control" })
+        </div>
+
+        <label class="control-label col-md-2 col-sm-2">Precio por Noche</label>
+        <div class="col-md-4 col-sm-4">
+            @Html.TextBoxFor(m => m.Precio, new
+            {
+                @class = "form-control",
+                type = "number",
+                min = "0",
+                step = "1",
+                placeholder = "Ej: 150.000"
+            })
         </div>
     </div>
 
-    @*<div class="form-group">
-        <label class="control-label col-md-3">Disponible</label>
-        <div class="col-md-6">
-            <div class="checkbox">
-                <label>@Html.CheckBoxFor(m => m.Motivo) Sí</label>
-            </div>
-        </div>
-    </div>*@
-
+    <!-- Fila 5: Observaciones -->
     <div class="form-group">
-        <label class="control-label col-md-3">Capacidad</label>
-        <div class="col-md-6">
-            @Html.TextBoxFor(m => m.Capacidad, new { @class = "form-control", type = "number", min = "1", required = "required" })
+        <label class="control-label col-md-2 col-sm-2">Observaciones</label>
+        <div class="col-md-10 col-sm-10">
+            @Html.TextAreaFor(m => m.Motivo, 4, 50, new
+            {
+                @class = "form-control",
+                placeholder = "Comentarios adicionales sobre la habitación..."
+            })
         </div>
     </div>
 
@@ -53,34 +139,33 @@
     <div class="form-group">
         <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
             <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
-            <button class="btn btn-warning" type="reset">Borrar datos</button>
-            <button type="submit" class="btn btn-success">Guardar</button>
+            <button class="btn btn-warning" type="reset">Limpiar</button>
+            <button type="submit" class="btn btn-success">
+                @(esEdicion ? "Guardar Cambios" : "Crear Habitación")
+            </button>
         </div>
     </div>
 }
 
 <script>
-  // submit AJAX del upsert
-  $('#frmUpsert').on('submit', function (e) {
-    e.preventDefault();
-    var $f = $(this);
-    $.ajax({
-      url: '@Url.Action("Upsert","Habitaciones")',
-      type: 'POST',
-      data: $f.serialize(),
-      headers: { 'RequestVerificationToken': $f.find('input[name="__RequestVerificationToken"]').val() },
-      success: function () {
-        new PNotify({ title: 'Guardar', text: 'Habitación guardada.', type: 'success', styling: 'bootstrap3' });
-        $('#modalUpsert').modal('hide');
-        // recargar tabla
-        $('#tablaContainer').html('<div class="text-muted">Actualizando…</div>');
-        // reutiliza la función en Index
-        if (window.cargarTabla) window.cargarTabla();
-      },
-      error: function (xhr) {
-        new PNotify({ title: 'Error', text: xhr.responseText || 'No se pudo guardar.', type: 'error', styling: 'bootstrap3' });
-      }
+    // submit AJAX del upsert
+    $('#frmUpsert').off('submit').on('submit', function (e) {
+        e.preventDefault();
+        var $f = $(this);
+        $.ajax({
+            url: '@Url.Action("Upsert","Habitaciones")',
+            type: 'POST',
+            data: $f.serialize(),
+            headers: { 'RequestVerificationToken': $f.find('input[name="__RequestVerificationToken"]').val() },
+            success: function () {
+                new PNotify({ title: 'Guardar', text: 'Habitación guardada.', type: 'success', styling: 'bootstrap3' });
+                $('#modalUpsert').modal('hide');
+                $('#tablaContainer').html('<div class="text-muted">Actualizando…</div>');
+                if (window.cargarTabla) window.cargarTabla();
+            },
+            error: function (xhr) {
+                new PNotify({ title: 'Error', text: xhr.responseText || 'No se pudo guardar.', type: 'error', styling: 'bootstrap3' });
+            }
+        });
     });
-  });
 </script>
-

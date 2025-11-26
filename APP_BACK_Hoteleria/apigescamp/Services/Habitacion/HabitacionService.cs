@@ -1,16 +1,18 @@
 ﻿using AutoMapper;
 using DemoBackend.Dto.BitacoraHabitacion;
 using DemoBackend.Dto.Habitacion;
-using DemoBackend.Dto.TipoHabitacion;
 using DemoBackend.Dto.Reserva;
-using DemoBackend.Models.TipoHabitacion;
+using DemoBackend.Dto.TipoHabitacion;
 using DemoBackend.Models.Habitacion;
 using DemoBackend.Models.Reserva;
+using DemoBackend.Models.TipoHabitacion;
 using DemoBackend.RepositoryGes;
 using DemoBackend.Services.Habitacion;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.Linq;
 
 namespace DemoBackend.Services
@@ -144,6 +146,7 @@ namespace DemoBackend.Services
                 dto.HabitacionesOcupadas = k.HabitacionesOcupadas;
                 dto.ServiciosSolicitados = k.ServiciosSolicitados;
                 dto.AseoEnCurso = k.AseoEnCurso;
+                dto.HuespedesRegistrados = k.HuespedesRegistrados;
                 if (k.GetType().GetProperty("ServiciosVarPorcentaje") != null);// dto.ServiciosVarPorcentaje = k.ServiciosVarPorcentaje;
                 if (k.GetType().GetProperty("HuespedesRegistrados") != null);// dto.HuespedesRegistrados = k.HuespedesRegistrados;
             }
@@ -151,20 +154,51 @@ namespace DemoBackend.Services
         }
 
 
-        public List<HabitacionDto> VerificaHabitacionPorNombre(HabitacionDto habitacion)
+  
+
+public List<HabitacionDto> VerificaHabitacionPorNombre(HabitacionDto habitacion)
+    {
+        if (habitacion == null)
+            throw new ArgumentNullException(nameof(habitacion));
+
+        if (string.IsNullOrWhiteSpace(habitacion.NombreHabitacion))
+            return new List<HabitacionDto>(); // o lanzar excepción si lo prefieres
+
+        try
         {
-            string sql = "MAN_VERIFICA_HABITACION @NombreHabitacion";
-            var parametros = new SqlParameter[1];
-            parametros[0] = new SqlParameter("@NombreHabitacion", habitacion.NombreHabitacion);
+            const string sql = "MAN_VERIFICA_HABITACION @NombreHabitacion";
 
-            var listagrupos = _listaHabitacion.GetStoreProcedure(sql, parametros);
+            var parametros = new[]
+            {
+            new SqlParameter("@NombreHabitacion", SqlDbType.VarChar, 100)
+            {
+                Value = habitacion.NombreHabitacion.Trim()
+            }
+        };
 
+            var listaBd = _listaHabitacion.GetStoreProcedure(sql, parametros);
 
-            return _mapper.Map<List<HabitacionDto>>(listagrupos);
+            return _mapper.Map<List<HabitacionDto>>(listaBd);
         }
+        catch (SqlException ex)
+        {
+            Trace.TraceError(
+                "[HabitacionService.VerificaHabitacionPorNombre] Error SQL: {0}",
+                ex.ToString());
+            throw; // si prefieres no propagar, cambia por `return new List<HabitacionDto>();`
+        }
+        catch (Exception ex)
+        {
+            Trace.TraceError(
+                "[HabitacionService.VerificaHabitacionPorNombre] Error inesperado: {0}",
+                ex.ToString());
+            throw;
+        }
+    }
 
 
-        public List<HabitacionDto> VerificaHabitacionPorId(HabitacionDto habitacion)
+
+    public List<HabitacionDto> VerificaHabitacionPorId(HabitacionDto habitacion)
         {
             string sql = "MAN_VERIFICA_ID_HABITACION @ID";
             var parametros = new SqlParameter[1];

@@ -35,16 +35,39 @@
 
 @section Scripts {
     <script>
-        const urlTablaCheckin      = '@Url.Action("Tabla", "CheckinCheckout")';
-        const urlDashboardCheckin  = '@Url.Action("Dashboard", "CheckinCheckout")';
+        const urlTablaCheckin     = '@Url.Action("Tabla", "CheckinCheckout")';
+        const urlDashboardCheckin = '@Url.Action("Dashboard", "CheckinCheckout")';
 
         function cargarDashboardCheckin() {
             $('#dashCheckinContainer').load(urlDashboardCheckin);
         }
 
+        // Inicializa / reinicializa DataTables en la tabla
+        function initTablaCheckin() {
+            // Si ya está inicializada, la destruimos
+            if ($.fn.DataTable.isDataTable('#reservasTable')) {
+                $('#reservasTable').DataTable().destroy();
+            }
+
+            $('#reservasTable').DataTable({
+                pageLength: 10,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'
+                }
+            });
+
+            // check de cabecera (por si la tabla se reconstruye)
+            $('#selectAll')
+                .off('change') // evitamos duplicar handlers
+                .on('change', function () {
+                    var checked = $(this).prop('checked');
+                    $('.reserva-check').prop('checked', checked).trigger('change');
+                });
+        }
+
         function recargarTabla() {
             var fecha    = $('#filtroFecha').val();               // puede ir vacío => null
-            var idEstado = parseInt($('#filtroEstado').val(),10); // 0..5
+            var idEstado = parseInt($('#filtroEstado').val(), 10); // 0..5
 
             if (isNaN(idEstado)) idEstado = 0;
 
@@ -57,7 +80,8 @@
                     idEstado: idEstado
                 },
                 success: function (html) {
-                    $('#divTablaCheckin').html(html);
+                    $('#divTablaCheckin').html(html); // reemplaza la tabla
+                    initTablaCheckin();               // <-- aquí volvemos a activar DataTables
                 },
                 error: function (xhr) {
                     console.error('Error al cargar tabla Checkin:', xhr.status, xhr.responseText);
@@ -75,7 +99,7 @@
 
             // carga inicial
             cargarDashboardCheckin();
-            recargarTabla();
+            recargarTabla(); // esta llamada termina inicializando DataTables vía initTablaCheckin()
         });
     </script>
 }

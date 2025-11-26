@@ -11,7 +11,7 @@ using DemoBackend.Services.Autenticacion;
 using DemoBackend.Services.Check;
 using DemoBackend.Services.Empresa;
 using DemoBackend.Services.Habitacion;
-using DemoBackend.Services.HabitacionInsumo;
+using DemoBackend.Services.HabitacionInventario;
 using DemoBackend.Services.Mantenedores;
 using DemoBackend.Services.Menu;
 using DemoBackend.Services.OrdenTrabajo;
@@ -84,7 +84,7 @@ namespace DemoBackend
                 services.AddTransient<IMenuService, MenuService>();
                 services.AddTransient<ISolicitudServicioService, SolicitudServicioService>();
                 services.AddTransient<IServicioService, ServicioService>();
-                services.AddTransient<IHabitacionInsumoService, HabitacionInsumoService>();
+                services.AddTransient<IHabitacionInventarioService, HabitacionInventarioService>();
                 services.AddTransient<ITrabajadorService, TrabajadorService>();
                 services.AddTransient<IOrdenTrabajoService, OrdenTrabajoService>();
          

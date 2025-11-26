@@ -326,6 +326,33 @@ namespace Front_Hoteleria.Services.Reservas
             }
         }
 
+        public async Task<bool> GuardarAsignacionAsync(ReservaAsignacionPostDto dto, string bearer = null)
+        {
+            try
+            {
+                SetBearer(bearer);
+                var json = JsonConvert.SerializeObject(dto);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                using (var resp = await _http.PostAsync("/api/Reservas/AsignarReserva", content))
+                {
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        var err = await resp.Content.ReadAsStringAsync();
+                        Trace.TraceWarning($"[ReservasService.GuardarAsignacionAsync] {(int)resp.StatusCode} {resp.ReasonPhrase} -> {err}");
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("[ReservasService.GuardarAsignacionAsync] " + ex);
+                return false;
+            }
+        }
+
+
         // =========================================================
         // 9) COMBO TIPOS HABITACIÓN
         // GET /api/Reservas/tipos
@@ -359,39 +386,7 @@ namespace Front_Hoteleria.Services.Reservas
         {
             return new List<ReservaDto>
             {
-                new ReservaDto{
-                    IdReserva = 1,
-                    FechaDesde = DateTime.Today.AddDays(1),
-                    FechaHasta = DateTime.Today.AddDays(3),
-                    HuespedNombre = "Juan Pérez",
-                    HuespedEmail = "juan.perez@email.com",
-                    HuespedTelefono = "+56912345678",
-                    TipoHabitacionNombre = "Suite",
-                    CantidadPersonas = 2,
-                    Estado = "pendiente",
-                    Observaciones = "Cliente preferencial"
-                },
-                new ReservaDto{
-                    IdReserva = 1,
-                    FechaDesde = DateTime.Today.AddDays(2),
-                    FechaHasta = DateTime.Today.AddDays(5),
-                    HuespedNombre = "María González",
-                    HuespedEmail = "maria.g@email.com",
-                    HuespedTelefono = "+56987654321",
-                    TipoHabitacionNombre = "Doble",
-                    CantidadPersonas = 2,
-                    Estado = "confirmada"
-                },
-                new ReservaDto{
-                    IdReserva = 3,
-                    FechaDesde = DateTime.Today.AddDays(4),
-                    FechaHasta = DateTime.Today.AddDays(6),
-                    HuespedNombre = "Carlos Rodríguez",
-                    HuespedEmail = "carlos.r@email.com",
-                    TipoHabitacionNombre = "Individual",
-                    CantidadPersonas = 1,
-                    Estado = "rechazada"
-                }
+               
             };
         }
 

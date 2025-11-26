@@ -45,10 +45,17 @@
 </style>
 
 <div class="modal-header" style="background:#2a3f54;color:#fff;">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff;"><span aria-hidden="true">&times;</span></button>
-    <h4 class="modal-title"><i class="fa fa-check-circle"></i> Asignación Detallada de Habitación</h4>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:#fff;">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title">
+        <i class="fa fa-check-circle"></i> Asignación Detallada de Habitación
+    </h4>
 </div>
+
 <div class="modal-body" style="max-height:600px;overflow-y:auto;">
+
+    @Html.AntiForgeryToken()
 
     <!-- Información de la reserva -->
     <div class="panel-block">
@@ -64,7 +71,7 @@
                 </div>
                 <div class="col-md-6">
                     <p><strong>Fecha Check-In:</strong><br /> @(Model.Reserva.FechaDesde?.ToString("dd/MM/yyyy") ?? "")</p>
-                    <p><strong>Fecha Check-Out:</strong><br />@(Model.Reserva.FechaHasta?.ToString("dd/MM/yyyy") ?? "")</p>
+                    <p><strong>Fecha Check-Out:</strong><br /> @(Model.Reserva.FechaHasta?.ToString("dd/MM/yyyy") ?? "")</p>
                     <p><strong>Número de Personas:</strong><br /> @Model.Reserva.CantidadPersonas persona(s)</p>
                 </div>
             </div>
@@ -77,35 +84,45 @@
             <i class="fa fa-building-o"></i> Datos de Asignación Detallada
         </div>
         <div class="panel-body" style="padding:15px 15px 5px 15px;">
+
             <div class="row">
                 <div class="col-md-6">
                     <label>Empresa <span class="text-danger">*</span></label>
                     @Html.DropDownList(
-                        "IdEmpresa",  // nombre del campo que vas a recibir en el POST
+                        "IdEmpresa",
                         ViewBag.Empresas as IEnumerable<SelectListItem>,
                         new { @class = "form-control", id = "asgEmpresa" }
                     )
-
                 </div>
                 <div class="col-md-6">
                     <label>Tipo de Empresa <span class="text-danger">*</span></label>
-                    @Html.DropDownList("TipoEmpresa", Model.TiposEmpresa, new { @class = "form-control", id = "asgTipoEmpresa" })
+                    @Html.DropDownList("IdTipoEmpresa",
+                        Model.TiposEmpresa,
+                        new { @class = "form-control", id = "asgTipoEmpresa" })
                 </div>
             </div>
+
             <div class="row" style="margin-top:10px;">
                 <div class="col-md-6">
                     <label>Tipo de Jornada <span class="text-danger">*</span></label>
-                    @Html.DropDownList("Jornada", Model.Jornadas, new { @class = "form-control", id = "asgJornada" })
+                    @Html.DropDownList("IdJornada",
+                        Model.Jornadas,
+                        new { @class = "form-control", id = "asgJornada" })
                 </div>
                 <div class="col-md-6">
                     <label>Horario de Trabajo <span class="text-danger">*</span></label>
-                    @Html.DropDownList("Horario", Model.Horarios, new { @class = "form-control", id = "asgHorario" })
+                    @Html.DropDownList("IdHorario",
+                        Model.Horarios,
+                        new { @class = "form-control", id = "asgHorario" })
                 </div>
             </div>
+
             <div class="row" style="margin-top:10px;">
                 <div class="col-md-4">
                     <label>Género <span class="text-danger">*</span></label>
-                    @Html.DropDownList("Genero", Model.Generos, new { @class = "form-control", id = "asgGenero" })
+                    @Html.DropDownList("IdGenero",
+                        Model.Generos,
+                        new { @class = "form-control", id = "asgGenero" })
                 </div>
                 <div class="col-md-4">
                     <label>Nº Supervisores</label>
@@ -116,12 +133,15 @@
                     <input type="number" class="form-control" id="asgTrabajadores" value="0" min="0" />
                 </div>
             </div>
+
             <div class="row" style="margin-top:10px;">
                 <div class="col-md-12">
                     <label>Observaciones de Asignación</label>
-                    <textarea class="form-control" id="asgObs" rows="2" placeholder="Requisitos especiales, preferencias, etc."></textarea>
+                    <textarea class="form-control" id="asgObs" rows="2"
+                              placeholder="Requisitos especiales, preferencias, etc."></textarea>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -129,67 +149,149 @@
     <div class="panel-block" style="border-color:#cdeacd;">
         <div class="panel-heading" style="background:#cdeacd;">
             <i class="fa fa-bed"></i> Habitaciones Disponibles
-            <p class="text-muted" style="margin:5px 0 0 0;">Seleccione una habitación según criterios de asignación</p>
+            <p class="text-muted" style="margin:5px 0 0 0;">
+                Seleccione una habitación según criterios de asignación
+            </p>
         </div>
         <div class="panel-body" style="padding:15px;">
-            @for (int i = 0; i < Model.Habitaciones.Count; i++)
+
+            @if (Model.Habitaciones != null && Model.Habitaciones.Any())
             {
-                var h = Model.Habitaciones[i];
-                var disabled = h.Estado == "asignada";
-                <div class="room-option @(disabled ? "disabled" : "")" data-numero="@h.Numero">
-                    <div class="row">
-                        <div class="col-md-3 text-center">
-                            <div style="font-size:1.5rem;font-weight:700;">@h.Numero</div>
-                            <div class="text-muted">@h.CapacidadNombre</div>
-                            @if (h.Estado == "disponible")
-                            {
-                                <span class="label label-success"><i class="fa fa-check"></i> Disponible</span>
-                            }
-                            else
-                            {
-                                <span class="label label-warning"><i class="fa fa-building"></i> Asignada</span>
-                            }
-                        </div>
-                        <div class="col-md-6">
-                            <strong>Capacidad:</strong> @h.Capacidad personas<br />
-                            <strong>Características:</strong> @h.Caracteristicas
-                            @if (!string.IsNullOrWhiteSpace(h.EmpresaAsignada))
-                            {
-                                <br /><span class="text-info"><strong>Empresa:</strong> @h.EmpresaAsignada</span>
-                            }
-                        </div>
-                        <div class="col-md-3 text-right">
-                            <div style="color:#27ae60;font-weight:700;">$@h.PrecioNoche</div>
-                            <small class="text-muted">por noche</small>
+                for (int i = 0; i < Model.Habitaciones.Count; i++)
+                {
+                    var h = Model.Habitaciones[i];
+                    var disabled = h.Estado == "asignada";
+
+                    <div class="room-option @(disabled ? "disabled" : "")"
+                         data-numero="@h.Numero"
+                         data-idhabitacion="@h.IdHabitacion">
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <div style="font-size:1.5rem;font-weight:700;">@h.Numero</div>
+                                <div class="text-muted">@h.CapacidadNombre</div>
+                                @if (h.Estado == "disponible")
+                                {
+                                    <span class="label label-success">
+                                        <i class="fa fa-check"></i> Disponible
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="label label-warning">
+                                        <i class="fa fa-building"></i> Asignada
+                                    </span>
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Capacidad:</strong> @h.Capacidad personas<br />
+                                <strong>Características:</strong> @h.Caracteristicas
+                                @if (!string.IsNullOrWhiteSpace(h.EmpresaAsignada))
+                                {
+                                    <br />
+                                    <span class="text-info">
+                                        <strong>Empresa:</strong> @h.EmpresaAsignada
+                                    </span>
+                                }
+                            </div>
+                            <div class="col-md-3 text-right">
+                                <div style="color:#27ae60;font-weight:700;">$@h.PrecioNoche</div>
+                                <small class="text-muted">por noche</small>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
             }
+            else
+            {
+                <p class="text-muted">No hay habitaciones disponibles para asignar.</p>
+            }
+
         </div>
     </div>
 
 </div>
+
 <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
-    <button type="button" class="btn btn-success" id="btnConfirmarAsignacion"><i class="fa fa-check"></i> Confirmar Asignación Detallada</button>
+    <button type="button" class="btn btn-default" data-dismiss="modal">
+        <i class="fa fa-times"></i> Cancelar
+    </button>
+    <button type="button" class="btn btn-success" id="btnConfirmarAsignacion">
+        <i class="fa fa-check"></i> Confirmar Asignación Detallada
+    </button>
 </div>
 
 <script>
-    // marcar habitación
+    // Seleccionar habitación
     $('#modalAsignarReserva').off('click', '.room-option').on('click', '.room-option', function () {
         if ($(this).hasClass('disabled')) return;
         $('#modalAsignarReserva .room-option').removeClass('selected');
         $(this).addClass('selected');
     });
 
-    // confirmar
+    // Confirmar asignación
     $('#btnConfirmarAsignacion').off('click').on('click', function () {
-        var hab = $('#modalAsignarReserva .room-option.selected').data('numero');
-        if (!hab) {
-            alert('Seleccione una habitación');
+
+        var $modal = $('#modalAsignarReserva');
+
+        var idHabitacion = $modal.find('.room-option.selected').data('idhabitacion');
+        if (!idHabitacion) {
+            alert('Seleccione una habitación.');
             return;
         }
-        // aquí harías el POST real...
-        $('#modalAsignarReserva').modal('hide');
+
+        var dto = {
+            IdReserva: @Model.Reserva.IdReserva,
+            IdHabitacion: idHabitacion,
+            IdEmpresa: $('#asgEmpresa').val() || null,
+            IdTipoEmpresa: $('#asgTipoEmpresa').val() || null,
+            IdJornada: $('#asgJornada').val() || null,
+            IdHorario: $('#asgHorario').val() || null,
+            IdGenero: $('#asgGenero').val() || null,
+            CantidadSupervisores: $('#asgSupervisores').val() || 0,
+            CantidadTrabajadores: $('#asgTrabajadores').val() || 0,
+            Observaciones: $('#asgObs').val()
+        };
+
+        var token = $('input[name="__RequestVerificationToken"]').val();
+
+        $.ajax({
+            url: '@Url.Action("GuardarAsignacion", "Reservas")',
+            type: 'POST',
+            data: $.extend(dto, {
+                __RequestVerificationToken: token
+            }),
+            success: function (resp) {
+                if (resp && resp.ok) {
+
+
+                    var idReserva = @Model.Reserva.IdReserva;
+
+        var $btn = $('#tablaReservas')
+            .find('.btn-asignar-reserva[data-id="' + idReserva + '"]');
+
+        $btn.prop('disabled', true)
+            .removeClass('btn-success')
+            .addClass('btn-default')
+            .attr('title', 'Reserva asignada')
+            .html('<i class="fa fa-bed"></i> Asignada');
+
+        // (opcional) quitar la clase para que no dispare más eventos
+        $btn.removeClass('btn-asignar-reserva');
+                    alert(resp.msg || 'Asignación guardada correctamente.');
+                    $modal.modal('hide');
+
+                    if (typeof recargarTabla === 'function') {
+                        recargarTabla();
+                    }
+                } else {
+                    alert(resp && resp.msg
+                        ? resp.msg
+                        : 'No se pudo guardar la asignación.');
+                }
+            },
+            error: function (xhr) {
+                alert('Error al guardar la asignación (' + xhr.status + ').');
+            }
+        });
     });
 </script>

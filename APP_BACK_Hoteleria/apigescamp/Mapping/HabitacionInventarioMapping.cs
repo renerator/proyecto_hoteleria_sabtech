@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using DemoBackend.Dto.HabitacionInsumo;
+using DemoBackend.Dto.HabitacionInventario;
 
-using DemoBackend.Models.HabitacionInsumo;
+using DemoBackend.Models.HabitacionInventario;
 
 namespace DemoBackend.Mapping
 {
