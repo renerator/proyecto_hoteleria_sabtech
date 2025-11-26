@@ -33,7 +33,7 @@ namespace DemoBackend.Controllers
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
         [HttpGet("ListarHabitacionInsumo")]
-        public ActionResult<List<HabitacionInsumoDto>> ListarHabitacionInsumo(int vigencia)
+        public ActionResult<List<HabitacionInventarioDto>> ListarHabitacionInsumo(int vigencia)
         {
             _logger.LogInformation("ListarHabitacionInsumo: inicio.");
             try
@@ -66,7 +66,7 @@ namespace DemoBackend.Controllers
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
         [HttpPost("CrearHabitacionInsumo")]
-        public IActionResult Crear([FromBody] HabitacionInsumoDto dto)
+        public IActionResult Crear([FromBody] HabitacionInventarioDto dto)
         {
             try
             {
@@ -82,7 +82,7 @@ namespace DemoBackend.Controllers
                     return BadRequest(ModelState);
                 }
 
-                if (dto.idHabitacion <= 0 || dto.idInsumo <= 0)
+                if (dto.IdHabitacion <= 0 || dto.IdInventario <= 0)
                 {
                     _logger.LogWarning("CrearHabitacionInsumo: parámetros inválidos (IdHabitacion/IdInsumo).");
                     return BadRequest("Parámetros inválidos.");
@@ -114,7 +114,7 @@ namespace DemoBackend.Controllers
         /// <response code="403">Acceso denegado</response>
         /// <response code="500">Error interno</response>
         [HttpPut("ModificarHabitacionInsumo")]
-        public IActionResult Modificar([FromBody] HabitacionInsumoDto dto)
+        public IActionResult Modificar([FromBody] HabitacionInventarioDto dto)
         {
             try
             {
@@ -130,7 +130,7 @@ namespace DemoBackend.Controllers
                     return BadRequest(ModelState);
                 }
 
-                if (dto.idHabitacionInsumo <= 0)
+                if (dto.IdHabitacionInventario <= 0)
                 {
                     _logger.LogWarning("ModificarHabitacionInsumo: falta IdHabitacionInsumo.");
                     return BadRequest("Falta idHabitacionInsumo.");
