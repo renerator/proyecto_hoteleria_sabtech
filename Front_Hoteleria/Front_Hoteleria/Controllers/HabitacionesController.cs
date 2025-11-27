@@ -348,7 +348,7 @@ namespace Front_Hoteleria.Controllers
 
         // ===================== UPSERT HABITACIÓN =====================
         [HttpGet]
-        public async Task<ActionResult> Upsert(int? id)
+        public async Task<ActionResult> Upsert(int? id, bool? soloLectura)
         {
             try
             {
@@ -365,17 +365,9 @@ namespace Front_Hoteleria.Controllers
                     if (existente != null) dto = existente;
                 }
 
-                return PartialView("_UpsertHabitacion", dto);
-            }
-            catch (HttpRequestException ex)
-            {
-                Trace.TraceError($"[Upsert-GET] Error HTTP al consultar API: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.BadGateway, "No se pudo comunicar con la API.");
-            }
-            catch (TaskCanceledException ex)
-            {
-                Trace.TraceError($"[Upsert-GET] Timeout al consultar API: {ex}");
-                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La consulta excedió el tiempo de espera.");
+                ViewBag.SoloLectura = soloLectura ?? false;
+
+                return PartialView("~/Views/Habitaciones/_UpsertHabitacion.cshtml", dto);
             }
             catch (Exception ex)
             {
@@ -383,6 +375,18 @@ namespace Front_Hoteleria.Controllers
                 return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al cargar el formulario.");
             }
         }
+
+        public ActionResult CrearHabitacion()
+        {
+            var modelo = new HabitacionDto
+            {
+                IdEstado = 1,
+                Capacidad = 1,
+                Precio = 0
+            };
+            return PartialView("~/Views/Habitaciones/_CrearHabitacion.cshtml", modelo);
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -418,6 +422,39 @@ namespace Front_Hoteleria.Controllers
             {
                 Trace.TraceError($"[Upsert-POST] Error inesperado: {ex}");
                 return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al guardar la habitación.");
+            }
+        }
+        [HttpGet]
+        public async Task<ActionResult> DetalleInventario(int idInventario)
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
+
+                // Llamas a tu API para obtener el detalle
+                var dto = await _habInsumoApi.ListarAsync(idInventario, token);
+                if (dto == null)
+                    return HttpNotFound("No se encontró el material solicitado.");
+
+                // Partial que dibuja el modal (solo el cuerpo)
+                return PartialView("_DetalleInventario", dto);
+            }
+            catch (HttpRequestException ex)
+            {
+                Trace.TraceError($"[DetalleInventario] Error HTTP al llamar API: {ex}");
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadGateway, "No se pudo comunicar con la API.");
+            }
+            catch (TaskCanceledException ex)
+            {
+                Trace.TraceError($"[DetalleInventario] Timeout al llamar API: {ex}");
+                return new HttpStatusCodeResult((int)HttpStatusCode.GatewayTimeout, "La operación excedió el tiempo de espera.");
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[DetalleInventario] Error inesperado: {ex}");
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al obtener el detalle del material.");
             }
         }
 

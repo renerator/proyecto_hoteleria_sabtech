@@ -243,7 +243,7 @@
                         <i class="fa fa-plus"></i> Crear Nueva Habitación
                     </button>
                     <button type="submit" class="btn btn-success">
-                        <i class="fa fa-search"></i> Buscar
+                        <i class="fa fa-upload"></i> Carga Masiva
                     </button>
                 </div>
             </form>
@@ -253,6 +253,23 @@
         </div>
 
         <!-- INVENTARIO DE MATERIALES POR HABITACIÓN -->
+        <div class="x_title">
+            <h2>
+                Inventario de Materiales por Habitación
+                <small>Control detallado de equipos y materiales</small>
+            </h2>
+
+            <ul class="nav navbar-right panel_toolbox">
+                <li>
+                    <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </li>
+                <li>
+                    <a class="close-link"><i class="fa fa-close"></i></a>
+                </li>
+            </ul>
+
+            <div class="clearfix"></div>
+        </div>
         <div class="x_content">
             <!-- Fila 1 -->
             <div class="row" style="margin-bottom:12px">
@@ -370,14 +387,32 @@
                     </div>
                 </div>
             </div>
+            <!-- ÓRDENES DE TRABAJO Y REPARACIONES -->
+            <div class="x_title">
+                <h2>
+                    Órdenes de Trabajo y Reparaciones
+                    <small>Control detallado de requerimientos de reparación</small>
+                </h2>
+
+                <ul class="nav navbar-right panel_toolbox">
+                    <li>
+                        <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                    <li>
+                        <a class="close-link"><i class="fa fa-close"></i></a>
+                    </li>
+                </ul>
+
+                <div class="clearfix"></div>
+            </div>
 
             <!-- Órdenes de Trabajo y Reparaciones -->
             <div id="repOrdenesPanel" style="margin-top:18px;">
                 <div class="rep-grid-head">
                     <h3 class="rep-grid-title">
-                        Órdenes de Trabajo y Reparaciones
+                        
                         <small style="font-weight:400; color:#9aa8b6">
-                            Control detallado de requerimientos de reparación
+                            
                         </small>
                     </h3>
                     <div class="rep-actions-right">
@@ -414,18 +449,32 @@
         </div><!-- /.x_content -->
 
     </div><!-- /.x_panel -->
-    <!-- Modal crear/editar -->
-    <div class="modal fade" id="modalUpsert" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Modal crear / ver / editar habitación -->
+    <div class="modal fade" id="modalUpsertHabitacion" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                    <h4 class="modal-title">Habitación</h4>
+
+                <!-- ÚNICO ENCABEZADO (huincha azul) -->
+                <div class="modal-header" style="background:#2a3f54;color:#fff;">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="tituloModalHabitacion">
+                        <i class="fa fa-bed"></i>
+                    </h4>
                 </div>
-                <div class="modal-body" id="upsertBody"><div class="text-muted">Cargando…</div></div>
+
+                <!-- AQUÍ SE INYECTA EL PARTIAL -->
+                <div class="modal-body" id="upsertHabitacionBody">
+                    <div class="text-muted">Cargando…</div>
+                </div>
+
             </div>
         </div>
     </div>
+
+
+
 </div>
 
 @section Scripts {
@@ -478,50 +527,102 @@
 
         // NUEVA HABITACIÓN
         $('#btnNuevo').on('click', function () {
-            $('#upsertBody').html('<div class="text-muted">Cargando…</div>');
-            $('#upsertBody').load(urlUpsertGet);
-        });
+            $('#upsertHabitacionBody').html('<div class="text-muted">Cargando…</div>');
 
-        $('#frmFiltros').on('submit', function (e) {
-            e.preventDefault();
-            cargarTabla();
+            $.get(urlUpsertGet, { id: 0, soloLectura: false })
+                .done(function (html) {
+                    $('#upsertHabitacionBody').html(html);
+                    $('#modalUpsertHabitacion').modal('show');
+                })
+                .fail(function (xhr) {
+                    $('#upsertHabitacionBody').html(
+                        '<div class="text-danger">Error al cargar el formulario (' + xhr.status + ')</div>'
+                    );
+                    $('#modalUpsertHabitacion').modal('show');
+                });
         });
 
         // EDITAR HABITACIÓN
         $('#tablaContainer').on('click', '.btn-editar', function () {
             const id = $(this).data('id');
-            $('#upsertBody').html('<div class="text-muted">Cargando…</div>');
-            $('#modalUpsert').modal('show');
-            $('#upsertBody').load(urlUpsertGet + '?id=' + id);
+            $('#upsertHabitacionBody').html('<div class="text-muted">Cargando…</div>');
+
+            $.get(urlUpsertGet, { id: id, soloLectura: false })
+                .done(function (html) {
+                    $('#upsertHabitacionBody').html(html);
+                    $('#modalUpsertHabitacion').modal('show');
+                })
+                .fail(function (xhr) {
+                    $('#upsertHabitacionBody').html(
+                        '<div class="text-danger">Error al cargar el formulario (' + xhr.status + ')</div>'
+                    );
+                    $('#modalUpsertHabitacion').modal('show');
+                });
         });
 
-        // VER HABITACIÓN (usa el mismo modal)
+        // VER HABITACIÓN (solo lectura)
         $('#tablaContainer').on('click', '.btn-ver', function () {
             const id = $(this).data('id');
-            $('#upsertBody').html('<div class="text-muted">Cargando…</div>');
-            $('#modalUpsert').modal('show');
-            // si quieres solo lectura puedes agregar &soloLectura=true y tratarlo en el parcial
-            $('#upsertBody').load(urlUpsertGet + '?id=' + id /* + '&soloLectura=true' */);
+            $('#upsertHabitacionBody').html('<div class="text-muted">Cargando…</div>');
+
+            $.get(urlUpsertGet, { id: id, soloLectura: true })
+                .done(function (html) {
+                    $('#upsertHabitacionBody').html(html);
+                    $('#modalUpsertHabitacion').modal('show');
+                })
+                .fail(function (xhr) {
+                    $('#upsertHabitacionBody').html(
+                        '<div class="text-danger">Error al cargar el formulario (' + xhr.status + ')</div>'
+                    );
+                    $('#modalUpsertHabitacion').modal('show');
+                });
         });
 
+
+        // ELIMINAR HABITACIÓN
         // ELIMINAR HABITACIÓN
         $('#tablaContainer').on('click', '.btn-eliminar', function () {
             const id = $(this).data('id');
             if (!confirm('¿Eliminar la habitación?')) return;
+
             $.ajax({
                 url: urlEliminar,
                 type: 'POST',
-                headers: { 'RequestVerificationToken': token() },
-                data: { idHabitacion: id },
+                // 👉 Mandamos el token dentro del cuerpo del POST
+                data: {
+                    idHabitacion: id,
+                    __RequestVerificationToken: token()
+                },
                 success: function () {
-                    new PNotify({ title: 'Eliminar', text: 'OK', type: 'success', styling: 'bootstrap3' });
-                    cargarTabla();
+                    if (window.PNotify) {
+                        new PNotify({
+                            title: 'Eliminar',
+                            text: 'Habitación eliminada correctamente.',
+                            type: 'success',
+                            styling: 'bootstrap3'
+                        });
+                    }
+
+                    // 👉 Recargar la página completa
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 600);
                 },
                 error: function (xhr) {
-                    new PNotify({ title: 'Error', text: xhr.responseText || 'Error', type: 'error', styling: 'bootstrap3' });
+                    if (window.PNotify) {
+                        new PNotify({
+                            title: 'Error',
+                            text: xhr.responseText || 'Error al eliminar.',
+                            type: 'error',
+                            styling: 'bootstrap3'
+                        });
+                    } else {
+                        alert(xhr.responseText || 'Error al eliminar.');
+                    }
                 }
             });
         });
+
 
         $(function () {
             cargarDashboard();

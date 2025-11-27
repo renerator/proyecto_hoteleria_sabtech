@@ -2,21 +2,9 @@
 @using System.Web.Mvc
 
 @{
-    Layout = null;
-
     var esEdicion = Model != null && Model.IdHabitacion > 0;
-    bool soloLectura = ViewBag.SoloLectura != null && (bool)ViewBag.SoloLectura;
 
-    var titulo = "Crear Nueva Habitación";
-    if (esEdicion && !soloLectura)
-    {
-        titulo = "Editar Habitación - " + (Model.NombreHabitacion ?? "");
-    }
-    else if (soloLectura)
-    {
-        titulo = "Ver Habitación - " + (Model.NombreHabitacion ?? "");
-    }
-
+    // ===== ESTADOS (ID + Texto) =====
     var estados = new List<SelectListItem>
 {
         new SelectListItem { Value = "1", Text = "1 - Disponible",        Selected = Model?.IdEstado == 1 },
@@ -26,6 +14,7 @@
         new SelectListItem { Value = "5", Text = "5 - Fuera de Servicio", Selected = Model?.IdEstado == 5 }
     };
 
+    // ===== TIPOS DE HABITACIÓN (ID + Texto) =====
     var tiposHab = new List<SelectListItem>
 {
         new SelectListItem { Value = "1", Text = "1 - Individual", Selected = Model?.IdTipoHabitacion == 1 },
@@ -34,14 +23,20 @@
         new SelectListItem { Value = "4", Text = "4 - Suite",      Selected = Model?.IdTipoHabitacion == 4 },
         new SelectListItem { Value = "9", Text = "9 - Familiar",   Selected = Model?.IdTipoHabitacion == 9 }
     };
-
-    var soloLecturaJs = soloLectura.ToString().ToLower();
-    var esEdicionJs = esEdicion.ToString().ToLower();
 }
 
-<div>
+<!-- HEADER DEL MODAL (sin la palabra "Habitación") -->
+<div class="modal-header" style="background:#2a3f54;color:#fff;">
+    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+    <h4 class="modal-title">
+        <i class="fa fa-bed"></i> Nueva
+    </h4>
+</div>
+
+<!-- CUERPO DEL MODAL -->
+<div class="modal-body">
     @using (Html.BeginForm("Upsert", "Habitaciones", FormMethod.Post,
-        new { id = "frmUpsertHabitacion", @class = "form-horizontal form-label-left" }))
+        new { id = "frmUpsert", @class = "form-horizontal form-label-left" }))
     {
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.IdHabitacion)
@@ -52,7 +47,7 @@
             <div class="col-md-4 col-sm-4">
                 @Html.TextBoxFor(m => m.NombreArea, new
                 {
-                    @class = "form-control campo-area",
+                    @class = "form-control",
                     placeholder = "Ej: Zona A -1234",
                     required = "required"
                 })
@@ -62,7 +57,7 @@
             <div class="col-md-4 col-sm-4">
                 @Html.TextBoxFor(m => m.Ala, new
                 {
-                    @class = "form-control campo-ala",
+                    @class = "form-control",
                     placeholder = "Ej: Ala derecha",
                     required = "required"
                 })
@@ -75,7 +70,7 @@
             <div class="col-md-4 col-sm-4">
                 @Html.TextBoxFor(m => m.Pasillo, new
                 {
-                    @class = "form-control campo-pasillo",
+                    @class = "form-control",
                     placeholder = "Ej: Pasillo interior"
                 })
             </div>
@@ -84,7 +79,7 @@
             <div class="col-md-4 col-sm-4">
                 @Html.TextBoxFor(m => m.NombreHabitacion, new
                 {
-                    @class = "form-control campo-numero",
+                    @class = "form-control",
                     placeholder = "Ej: 0001",
                     required = "required"
                 })
@@ -149,97 +144,72 @@
             </div>
         </div>
 
-        @* HIDDEN SIEMPRE (para que viajen sí o sí) *@
-        @Html.HiddenFor(m => m.NombreArea)
-        @Html.HiddenFor(m => m.Ala)
-        @Html.HiddenFor(m => m.Pasillo)
-        @Html.HiddenFor(m => m.NombreHabitacion)
-
         <div class="ln_solid"></div>
         <div class="form-group">
-            <div class="col-md-12 text-right">
-                <button id="btnCancelarHabitacion"
-                        class="btn @(soloLectura ? "btn-primary" : "btn-default")"
-                        type="button"
-                        data-dismiss="modal">
-                    Cancelar
+            <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+                <button class="btn btn-warning" type="reset">Limpiar</button>
+                <button type="submit" class="btn btn-success">
+                    Crear Habitación
                 </button>
-
-                @if (!soloLectura)
-                {
-                    <button class="btn btn-warning" type="reset">Limpiar</button>
-                    <button type="submit" class="btn btn-success">
-                        @(esEdicion ? "Guardar Cambios" : "Crear Habitación")
-                    </button>
-                }
             </div>
         </div>
     }
 </div>
 
+<!-- FOOTER DEL MODAL (texto explicativo) -->
+<div class="modal-footer">
+    <p class="text-danger small">
+        La información ingresada corresponde a la configuración de las habitaciones del hotel.
+        Los servicios y otros debe realizarlos en las opciones del menú principal.
+    </p>
+</div>
+
 <script>
-    (function () {
-        // Setear título en la huincha azul de arriba
-        var titulo = '@titulo';
-        $('#tituloModalHabitacion').html('<i class="fa fa-bed"></i> ' + titulo);
+    // submit AJAX del crear / upsert
+    $('#frmUpsert').off('submit').on('submit', function (e) {
+        e.preventDefault();
+        var $f = $(this);
 
-        var soloLectura = @soloLecturaJs; // true/false
-        var esEdicion   = @esEdicionJs;   // true/false
-
-        if (soloLectura) {
-            $('#frmUpsertHabitacion')
-                .find('input, select, textarea')
-                .prop('disabled', true);
-            $('#btnCancelarHabitacion').prop('disabled', false);
-        } else if (esEdicion) {
-            $('#frmUpsertHabitacion')
-                .find('.campo-area, .campo-pasillo, .campo-ala, .campo-numero')
-                .prop('readonly', true);
-        }
-
-        // submit AJAX
-        $('#frmUpsertHabitacion').off('submit').on('submit', function (e) {
-            e.preventDefault();
-            var $f = $(this);
-
-            $.ajax({
-                url: '@Url.Action("Upsert","Habitaciones")',
-                type: 'POST',
-                data: $f.serialize(),
-                headers: {
-                    'RequestVerificationToken': $f.find('input[name="__RequestVerificationToken"]').val()
-                },
-                success: function () {
-                    if (window.PNotify) {
-                        new PNotify({
-                            title: 'Guardar',
-                            text: 'Habitación guardada.',
-                            type: 'success',
-                            styling: 'bootstrap3'
-                        });
-                    }
-
-                    // Cierra el modal (opcional, porque la página se recarga enseguida)
-                    $('#modalUpsertHabitacion').modal('hide');
-
-                    // 👉 Recargar COMPLETA la página
-                    setTimeout(function () {
-                        window.location.reload();
-                    }, 600); // pequeño delay para que se alcance a ver el PNotify
-                },
-                error: function (xhr) {
-                    if (window.PNotify) {
-                        new PNotify({
-                            title: 'Error',
-                            text: xhr.responseText || 'No se pudo guardar.',
-                            type: 'error',
-                            styling: 'bootstrap3'
-                        });
-                    } else {
-                        alert(xhr.responseText || 'No se pudo guardar.');
-                    }
+        $.ajax({
+            url: '@Url.Action("Upsert","Habitaciones")',
+            type: 'POST',
+            data: $f.serialize(),
+            headers: {
+                'RequestVerificationToken': $f.find('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function () {
+                if (window.PNotify) {
+                    new PNotify({
+                        title: 'Guardar',
+                        text: 'Habitación guardada.',
+                        type: 'success',
+                        styling: 'bootstrap3'
+                    });
                 }
-            });
+                // Cierra el modal correcto de crear
+                $('#modalCreatHabitacion').modal('hide');
+
+                // Recarga tabla de habitaciones
+                if (typeof cargarTablaHab === 'function') {
+                    cargarTablaHab();
+                } else if (window.cargarTabla) {
+                    // por si usas otro nombre global
+                    window.cargarTabla();
+                }
+            },
+            error: function (xhr) {
+                if (window.PNotify) {
+                    new PNotify({
+                        title: 'Error',
+                        text: xhr.responseText || 'No se pudo guardar.',
+                        type: 'error',
+                        styling: 'bootstrap3'
+                    });
+                } else {
+                    alert(xhr.responseText || 'No se pudo guardar.');
+                }
+            }
         });
-    })();
+    });
 </script>

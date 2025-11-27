@@ -1,0 +1,90 @@
+﻿
+@model Front_Hoteleria.Dto.Habitacion.InventarioHabitacionDTO
+
+@{
+    Layout = null;
+    var idInv = Model.IdInventario; // código que usas en los botones
+    var titulo = $"Detalles del Material - INV-{idInv}";
+}
+
+<script>
+    // Ajustar el título del modal principal
+    $('#tituloInvDetalle').text('@titulo');
+</script>
+
+<div class="container-fluid">
+
+    <!-- Información General / Técnica -->
+    <div class="row">
+        <div class="col-md-6">
+            <h4><i class="fa fa-info-circle"></i> Información General</h4>
+            <hr />
+
+            <div class="row">
+                <div class="col-sm-4"><strong>ID:</strong></div>
+                <div class="col-sm-8">INV-@Model.IdInventario</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"><strong>Habitación:</strong></div>
+                <div class="col-sm-8">@Model.NombreHabitacion</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"><strong>Tipo:</strong></div>
+                <div class="col-sm-8">@Model.TipoMaterial</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"><strong>Descripción:</strong></div>
+                <div class="col-sm-8">@Model.Descripcion</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"><strong>Marca/Modelo:</strong></div>
+                <div class="col-sm-8">@Model.MarcaModelo</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"><strong>Estado:</strong></div>
+                <div class="col-sm-8">
+                    <span class="label label-success">@Model.Estado</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h4><i class="fa fa-cogs"></i> Información Técnica</h4>
+            <hr />
+
+            <div class="row">
+                <div class="col-sm-4"><strong>Última Verificación:</strong></div>
+                <div class="col-sm-8">
+                    @(Model.FechaVerificacion?.ToString("dd-MM-yyyy") ?? "")
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"><strong>Responsable:</strong></div>
+                <div class="col-sm-8">@Model.Responsable</div>
+            </div>
+
+            @* Si más adelante agregas número de serie, fecha compra, etc.,
+                puedes extender acá con Model.NumeroSerie, Model.FechaCompra, etc. *@
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- Observaciones -->
+    <h4><i class="fa fa-comment"></i> Observaciones</h4>
+    <div class="well" style="margin-top:5px;">
+        @Html.Raw(ViewBag.Observaciones as string ?? "Sin observaciones registradas.")
+        @* Si tu DTO tiene Observaciones, cambia la línea anterior por:
+            @Model.Observaciones *@
+    </div>
+
+    <div class="text-right" style="margin-top:15px;">
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+            Cerrar
+        </button>
+        <button type="button" class="btn btn-success btn-inv-editar-desde-detalle"
+                data-id="@Model.IdInventario">
+            <i class="fa fa-pencil"></i> Editar
+        </button>
+    </div>
+</div>

@@ -183,7 +183,7 @@ namespace DemoBackend.Controllers
             {
                 var grupoOK = false;
 
-                if (string.IsNullOrEmpty(HabitacionModels.NombreHabitacion) || HabitacionModels.IdArea == 0)
+                if (string.IsNullOrEmpty(HabitacionModels.NombreHabitacion))
                 {
                     _logger.LogInformation($"PutModificaHabitacion: Vacio, no se graban datos, retorna OK.");
                     return Ok("Status 200: Error de campos vacios");

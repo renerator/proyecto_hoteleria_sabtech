@@ -4769,6 +4769,8 @@
     <Content Include="Views\Huesped\Servicio\Index.cshtml" />
     <Content Include="Views\SolicitudServicio\_AsignarPersonal.cshtml" />
     <Content Include="Views\SolicitudServicio\_DetalleServicio.cshtml" />
+    <Content Include="Views\Habitaciones\_CrearHabitacion.cshtml" />
+    <Content Include="Views\Habitaciones\_DetalleInventario.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\vendors\devbridge-autocomplete\src\jquery.autocomplete.d.ts" />
