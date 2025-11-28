@@ -14,6 +14,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 
 namespace Front_Hoteleria.Controllers
@@ -179,6 +180,70 @@ namespace Front_Hoteleria.Controllers
                 // Si falla, dejamos los ViewBag en cero (ya inicializados en Index)
             }
         }
+        
+        [HttpGet]
+        public async Task<ActionResult> ControlCalidad()
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
+
+                // TODO: aquí deberías llamar a tu API real cuando la tengas:
+                // var pendientes = await _OrdenApi.GetPendientesControlCalidadAsync(token);
+
+                // Por ahora armamos un modelo de prueba similar al pantallazo:
+                var model = new ControlCalidadDto
+                {
+                    PorcentajeAprobadas = 85m,
+                    PorcentajeRechazadas = 10m,
+                    PorcentajeRetrabajo = 5m,
+                    TiempoPromedioMinutos = 138  // ~2h 18m (lo verás como 2h 18m)
+                };
+
+                model.ReparacionesPendientes.Add(new ReparacionCalidadItemDto
+                {
+                    IdReparacion = 1,
+                    CodigoReparacion = "REP-001",
+                    Descripcion = "Fuga en grifo del baño",
+                    Habitacion = "Habitación 101",
+                    ReportadoPor = "Carlos Rodríguez",
+                    TiempoMinutos = 150 // 2h 30m
+                });
+
+                model.ReparacionesPendientes.Add(new ReparacionCalidadItemDto
+                {
+                    IdReparacion = 2,
+                    CodigoReparacion = "REP-002",
+                    Descripcion = "Lámpara de techo no funciona",
+                    Habitacion = "Habitación 102",
+                    ReportadoPor = "Luis Fernández",
+                    TiempoMinutos = 75 // 1h 15m
+                });
+
+                model.ReparacionesPendientes.Add(new ReparacionCalidadItemDto
+                {
+                    IdReparacion = 5,
+                    CodigoReparacion = "REP-005",
+                    Descripcion = "Filtración de agua en techo",
+                    Habitacion = "Habitación 202",
+                    ReportadoPor = "María González",
+                    TiempoMinutos = 260 // 4h 20m
+                });
+
+                return PartialView("~/Views/Habitaciones/_ControlCalidad.cshtml", model);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[ControlCalidad-GET] Error inesperado: {ex}");
+                return new HttpStatusCodeResult(
+                    (int)HttpStatusCode.InternalServerError,
+                    "Error al cargar el panel de control de calidad."
+                );
+            }
+        }
+
 
         // ===================== LISTADO HABITACIONES =====================
         [HttpPost]
@@ -376,6 +441,46 @@ namespace Front_Hoteleria.Controllers
             }
         }
 
+
+        // GET: /OrdenTrabajo/Crear
+        // GET: /OrdenTrabajo/NuevaOrdenTrabajo
+        [HttpGet]
+        public ActionResult NuevaOrdenTrabajo(int? idHabitacion)
+        {
+            var model = new OrdenTrabajoDto
+            {
+                // Aquí llenas los combos si es necesario
+                // Habitaciones = _servicio.HabitacionesSelectList(),
+                // TiposTrabajo = _servicio.TiposTrabajoSelectList(),
+                // Prioridades  = _servicio.PrioridadesSelectList(),
+                // Tecnicos     = _servicio.TecnicosSelectList(),
+                // Contactos    = _servicio.ContactosSelectList()
+            };
+
+            // Asegúrate que el partial está en Views/OrdenTrabajo/_NuevaOrdenTrabajo.cshtml
+            return PartialView("_NuevaOrdenTrabajo", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CrearOrden(OrdenTrabajoDto dto)
+        {
+            if (!ModelState.IsValid)
+                return PartialView("_NuevaOrdenTrabajo", dto);
+
+            // TODO: aquí llamas a tu API backend para crear la orden
+            // var ok = _service.CrearOrden(dto);
+
+            var ok = true;
+
+            // Como se llama desde AJAX, devolvemos JSON
+            return Json(new
+            {
+                ok,
+                message = ok ? "Orden creada correctamente." : "No se pudo crear la orden."
+            });
+        }
+    
         public ActionResult CrearHabitacion()
         {
             var modelo = new HabitacionDto
@@ -434,7 +539,9 @@ namespace Front_Hoteleria.Controllers
                     return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
 
                 // Llamas a tu API para obtener el detalle
-                var dto = await _habInsumoApi.ListarAsync(idInventario, token);
+                //var dto = await _habInsumoApi.ListarAsync(idInventario, token);
+                var dto = new InventarioHabitacionDTO {IdInventario=idInventario };
+
                 if (dto == null)
                     return HttpNotFound("No se encontró el material solicitado.");
 
@@ -455,6 +562,295 @@ namespace Front_Hoteleria.Controllers
             {
                 Trace.TraceError($"[DetalleInventario] Error inesperado: {ex}");
                 return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al obtener el detalle del material.");
+            }
+        }
+
+        // ===================== AUDITORÍA MATERIAL (GET PARCIAL) =====================
+        [HttpGet]
+        public ActionResult AuditoriaMaterial(int idInventario)
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
+
+                // TODO: traer datos reales de inventario si lo necesitas
+                var modelo = new AuditoriaInventarioDto
+                {
+                    IdInventario = idInventario,
+                    FechaAuditoria = DateTime.Today,
+                    HoraAuditoria = DateTime.Now.TimeOfDay,
+                    TieneFotografias = false,
+                    RequiereAccionCorrectiva = false
+                };
+
+                // Combos (por ahora vacíos para que no reviente)
+                ViewBag.Estados = new List<SelectListItem>();
+                ViewBag.Auditores = new List<SelectListItem>();
+
+                return PartialView("~/Views/Habitaciones/_AuditoriaMaterial.cshtml", modelo);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[AuditoriaMaterial-GET] Error inesperado: {ex}");
+                return new HttpStatusCodeResult(
+                    (int)HttpStatusCode.InternalServerError,
+                    "Error al cargar el formulario de auditoría."
+                );
+            }
+        }
+        /// <summary>
+        /// Muestra el modal de carga masiva de habitaciones.
+        /// GET: /Habitaciones/CargaMasivaHabitaciones
+        /// </summary>
+        // ===================== CARGA MASIVA HABITACIONES (VIEW) =====================
+        [HttpGet]
+        public ActionResult CargaMasivaHabitacionesView()
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult(
+                        (int)HttpStatusCode.Unauthorized,
+                        "Sesión expirada o sin autenticación.");
+
+                // Nombre del template (en /Content/templates/)
+                var nombreTemplate = "Template_CargaHabitaciones.xlsx";
+
+                var modelo = new CargaMasivaHabitacionesDto
+                {
+                    NombreArchivoTemplate = nombreTemplate,
+                    ProcesadoOk = false,
+                    Mensaje = null
+                };
+
+                return PartialView(
+                    "~/Views/Habitaciones/_CargaMasivaHabitaciones.cshtml",
+                    modelo
+                );
+            }
+          
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[CargaMasivaHabitacionesView-GET] Error inesperado: {ex}");
+                return new HttpStatusCodeResult(
+                    (int)HttpStatusCode.InternalServerError,
+                    "Error al cargar el formulario de carga masiva de habitaciones.");
+            }
+        }
+
+
+        /// <summary>
+        /// Procesa el archivo de carga masiva.
+        /// POST: /Habitaciones/CargaMasivaHabitaciones
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> CargaMasivaHabitaciones(HttpPostedFileBase archivo)
+        {
+            if (archivo == null || archivo.ContentLength == 0)
+                return Json(new { ok = false, message = "Debe seleccionar un archivo." });
+
+            var resultado = new CargaMasivaHabitacionesResultadoDto();
+
+            try
+            {
+                // TODO: leer el Excel, por cada fila construir un CargaMasivaHabitacionFilaDto,
+                // validar y si es correcta, mapear a HabitacionDto y llamar a tu API.
+
+                // Ejemplo ficticio de una sola fila:
+                var filaEjemplo = new CargaMasivaHabitacionFilaDto
+                {
+                    NumeroFila = 2,
+                    CodigoHabitacion = "H101",
+                    NombreHabitacion = "Habitación 101 Norte",
+                    TipoHabitacion = "Single",
+                    Capacidad = 1,
+                    EsVip = false,
+                    Precio = 0,
+                    EstadoTexto = "Activa",
+                    Observaciones = "Sin observaciones",
+                    EsValida = true
+                };
+
+                resultado.Detalle.Add(filaEjemplo);
+                resultado.TotalFilas = 1;
+                resultado.FilasCorrectas = 1;
+                resultado.FilasConError = 0;
+
+                return Json(new
+                {
+                    ok = true,
+                    message = $"Carga masiva realizada. Filas OK: {resultado.FilasCorrectas}, con error: {resultado.FilasConError}"
+                });
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[CargaMasivaHabitaciones] Error: {ex}");
+                return Json(new { ok = false, message = "Error al procesar el archivo de carga masiva." });
+            }
+        }
+
+
+        // ===================== EDITAR INVENTARIO (GET PARCIAL) =====================
+        [HttpGet]
+        public async Task<ActionResult> EditarInventario(int idInventario)
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
+
+                // TODO: traer el registro real desde tu API.
+                // Ejemplo futuro:
+                // var dto = await _habInsumoApi.ObtenerPorIdAsync(idInventario, token)
+                //               ?? new InventarioHabitacionDTO();
+
+                var dto = new InventarioHabitacionDTO
+                {
+                    IdInventario = idInventario
+                };
+
+                // Combos de ejemplo (de momento vacíos)
+                ViewBag.Habitaciones = new List<SelectListItem>();
+                ViewBag.TiposMaterial = new List<SelectListItem>();
+                ViewBag.Estados = new List<SelectListItem>();
+
+                return PartialView("~/Views/Habitaciones/_EditarInventario.cshtml", dto);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[EditarInventario-GET] Error inesperado: {ex}");
+                return new HttpStatusCodeResult(
+                    (int)HttpStatusCode.InternalServerError,
+                    "Error al cargar el formulario de inventario."
+                );
+            }
+        }
+
+        // ===================== ELIMINAR INVENTARIO HABITACIÓN =====================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EliminarInventario(int idHabitacionInsumo)
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
+
+                // TODO: llamar a tu API de backend para eliminar realmente el registro.
+                // Ejemplo (ajusta cuando tengas el método):
+                // var ok = await _habInsumoApi.EliminarAsync(idHabitacionInsumo, token);
+                var ok = true;
+
+                if (!ok)
+                    return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest, "No se pudo eliminar el material.");
+
+                return new HttpStatusCodeResult((int)HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[EliminarInventario] Error inesperado: {ex}");
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al eliminar el material de la habitación.");
+            }
+        }
+
+        // ===================== DETALLE REPARACIÓN (MODAL) =====================
+        [HttpGet]
+        public ActionResult DetalleReparacion(int idReparacion)
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
+
+                // TODO: aquí deberías llamar a tu API para traer el detalle real
+                // Ejemplo futuro:
+                // var dto = await _OrdenApi.ObtenerDetalleAsync(idReparacion, token);
+                // if (dto == null) return HttpNotFound("No se encontró la reparación.");
+
+                var dto = new ReparacionDetalleDto
+                {
+                    IdReparacion = idReparacion
+                };
+
+                return PartialView("~/Views/Habitaciones/_DetalleReparacion.cshtml", dto);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[DetalleReparacion-GET] Error inesperado: {ex}");
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al cargar el detalle de la reparación.");
+            }
+        }
+        // ===================== EDITAR REPARACIÓN (MODAL) =====================
+        [HttpGet]
+        public ActionResult EditarReparacion(int idReparacion)
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
+
+                // TODO: obtener datos reales desde la API para edición.
+                // var dto = await _OrdenApi.ObtenerParaEdicionAsync(idReparacion, token) ?? new ReparacionEditDto();
+                var dto = new ReparacionEditDto
+                {
+                    IdReparacion = idReparacion
+                };
+
+                // Si tu partial usa combos, aquí puedes setear ViewBag.* con listas vacías por ahora
+                ViewBag.Habitaciones = new List<SelectListItem>();
+                ViewBag.Estados = new List<SelectListItem>();
+                ViewBag.Tipos = new List<SelectListItem>();
+                ViewBag.Tecnicos = new List<SelectListItem>();
+                ViewBag.Prioridades = new List<SelectListItem>();
+
+                return PartialView("~/Views/Habitaciones/_EditarReparacion.cshtml", dto);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[EditarReparacion-GET] Error inesperado: {ex}");
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al cargar el formulario de reparación.");
+            }
+        }
+        // ===================== ASIGNAR TÉCNICO (MODAL) =====================
+        [HttpGet]
+        public ActionResult AsignarTecnico(int idReparacion)
+        {
+            try
+            {
+                var token = GetBearer();
+                if (string.IsNullOrWhiteSpace(token))
+                    return new HttpStatusCodeResult((int)HttpStatusCode.Unauthorized, "Sesión expirada o sin autenticación.");
+
+                // TODO: cuando tengas API, trae los datos reales de la reparación/asignación.
+                // var dto = await _OrdenApi.ObtenerAsignacionTecnicoAsync(idReparacion, token) ?? new AsignacionTecnicoDto();
+                var dto = new AsignacionTecnicoDto
+                {
+                    IdReparacion = idReparacion,
+                    CodigoReparacion = idReparacion > 0 ? $"REP-{idReparacion:000000}" : string.Empty,
+                    FechaAsignacion = DateTime.Today,
+                    HoraInicio = DateTime.Now.ToString("HH:mm"),
+                    TiempoEstimadoHoras = 1
+                };
+
+                // Combo de técnicos (por ahora vacío para que no reviente)
+                ViewBag.Tecnicos = new List<SelectListItem>();
+                // Ejemplo futuro:
+                // ViewBag.Tecnicos = await _OrdenApi.ObtenerTecnicosSelectAsync(token);
+
+                return PartialView("~/Views/Habitaciones/_AsignarTecnicoReparacion.cshtml", dto);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"[AsignarTecnico-GET] Error inesperado: {ex}");
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError, "Error al cargar el formulario de asignación de técnico.");
             }
         }
 

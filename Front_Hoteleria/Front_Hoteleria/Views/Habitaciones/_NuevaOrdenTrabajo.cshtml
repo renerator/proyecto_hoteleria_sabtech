@@ -1,0 +1,201 @@
+﻿@model Front_Hoteleria.Dto.OrdenTrabajo.OrdenTrabajoDto
+
+
+<div class="modal-header" style="background:#27ae60;color:#fff;border-radius:4px 4px 0 0;">
+    <button type="button" class="close" data-dismiss="modal">
+        <span>&times;</span>
+    </button>
+    <h4 class="modal-title">
+        <i class="fa fa-plus"></i>
+        Crear Nueva Orden de Trabajo
+    </h4>
+</div>
+
+@using (Html.BeginForm("CrearOrden", "OrdenTrabajo", FormMethod.Post, new { id = "frmCrearOrdenTrabajo" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="modal-body">
+
+        <div class="alert alert-info">
+            <i class="fa fa-info-circle"></i>
+            <strong>Nueva Orden:</strong>
+            Complete todos los campos para crear una nueva orden de trabajo.
+        </div>
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">Habitación/Área *</label>
+                @Html.DropDownListFor(m => m.IdHabitacion,
+                    Model.Habitaciones ?? Enumerable.Empty<SelectListItem>(),
+                    "Seleccionar habitación...",
+                    new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">Fecha Programada *</label>
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.FechaProgramada,
+                        "{0:yyyy-MM-dd}",                 // formato que entiende <input type="date">
+                        new
+                             {
+                            @class = "form-control",
+                            type = "date",
+                            @placeholder = "dd-mm-aaaa"
+                        })
+                    <span class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">Tipo de Trabajo *</label>
+                @Html.DropDownListFor(m => m.IdTipoTrabajo,
+                    Model.TiposTrabajo ?? Enumerable.Empty<SelectListItem>(),
+                    "Seleccionar tipo...",
+                    new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label">Hora Programada *</label>
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.HoraProgramada,
+                        "{0:hh\\:mm}",                    // TimeSpan -> HH:mm
+                        new
+                             {
+                            @class = "form-control",
+                            type = "time",
+                            @placeholder = "--:--"
+                        })
+                    <span class="input-group-addon">
+                        <i class="fa fa-clock-o"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Prioridad *</label>
+                    @Html.DropDownListFor(m => m.IdPrioridad,
+                        Model.Prioridades ?? Enumerable.Empty<SelectListItem>(),
+                        "Seleccionar prioridad...",
+                        new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Técnico Preferido</label>
+                    @Html.DropDownListFor(m => m.IdTecnicoPreferido,
+                        Model.Tecnicos ?? Enumerable.Empty<SelectListItem>(),
+                        "Sin preferencia",
+                        new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">Título del Trabajo *</label>
+            @Html.TextBoxFor(m => m.TituloTrabajo,
+                new { @class = "form-control", @placeholder = "Ej: Reparación de grifo en baño principal" })
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">Descripción Detallada *</label>
+            @Html.TextAreaFor(m => m.DescripcionDetallada,
+                4, 0,
+                new
+                {
+                    @class = "form-control",
+                    @placeholder = "Describa detalladamente el trabajo a realizar..."
+                })
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Materiales Necesarios</label>
+                    @Html.TextAreaFor(m => m.MaterialesNecesarios,
+                        3, 0,
+                        new
+                        {
+                            @class = "form-control",
+                            @placeholder = "Liste los materiales necesarios..."
+                        })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Costo Estimado</label>
+                    @Html.TextBoxFor(m => m.CostoEstimado,
+                        new { @class = "form-control", @placeholder = "Ej: $150.000" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Tiempo Estimado (horas)</label>
+                    @Html.TextBoxFor(m => m.TiempoEstimadoHoras,
+                        new { @class = "form-control", @placeholder = "Ej: 2.5" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Contacto Responsable</label>
+                    @Html.DropDownListFor(m => m.IdContactoResponsable,
+                        Model.Contactos ?? Enumerable.Empty<SelectListItem>(),
+                        "Seleccionar contacto...",
+                        new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">Observaciones Adicionales</label>
+            @Html.TextAreaFor(m => m.ObservacionesAdicionales,
+                3, 0,
+                new
+                {
+                    @class = "form-control",
+                    @placeholder = "Notas adicionales sobre el trabajo..."
+                })
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="button" id="btnCrearOrdenLimpiar" class="btn btn-warning">
+            Limpiar
+        </button>
+        <button type="submit" class="btn btn-success">
+            <i class="fa fa-plus"></i> Crear Orden
+        </button>
+    </div>
+}
+
+<script>
+    // Limpia el formulario
+    $('#btnCrearOrdenLimpiar').on('click', function () {
+        var $form = $('#frmCrearOrdenTrabajo');
+        if ($form.length) {
+            $form[0].reset();
+        }
+    });
+</script>

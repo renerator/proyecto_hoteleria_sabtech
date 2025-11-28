@@ -1,0 +1,124 @@
+﻿@model Front_Hoteleria.Dto.Habitacion.InventarioHabitacionDTO
+
+@{
+    Layout = null;
+
+    // Código INV-001, INV-010, etc.
+    var codigo = Model != null && Model.IdInventario > 0
+        ? $"INV-{Model.IdInventario:000}"
+        : "Nuevo";
+}
+
+<div class="modal-header" style="background:#234b63;color:#fff;border-radius:4px 4px 0 0;">
+    <button type="button" class="close" data-dismiss="modal">
+        <span>&times;</span>
+    </button>
+    <h4 class="modal-title">
+        <i class="fa fa-pencil-square-o"></i>
+        Editar Material - @codigo
+    </h4>
+</div>
+
+@using (Html.BeginForm("GuardarInventario", "Habitaciones", FormMethod.Post, new { id = "frmEditarInventario" }))
+{
+    @Html.AntiForgeryToken()
+
+    @* IDs ocultos *@
+    @Html.HiddenFor(m => m.IdHabitacionInventario)
+    @Html.HiddenFor(m => m.IdInventario)
+    @Html.HiddenFor(m => m.IdHabitacion)
+
+    <div class="modal-body">
+        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+        <div class="row">
+            <!-- Habitación -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Habitación *</label>
+                    @Html.DropDownListFor(m => m.IdHabitacion,
+                        (IEnumerable<SelectListItem>)ViewBag.Habitaciones ?? Enumerable.Empty<SelectListItem>(),
+                        "Seleccionar habitación...",
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.IdHabitacion, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <!-- Marca / Modelo -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Marca/Modelo *</label>
+                    @Html.TextBoxFor(m => m.MarcaModelo,
+                        new { @class = "form-control", placeholder = "Ej: Marca X - Modelo Y" })
+                    @Html.ValidationMessageFor(m => m.MarcaModelo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Tipo de material -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Tipo de Material *</label>
+                    @Html.DropDownListFor(m => m.TipoMaterial,
+                        (IEnumerable<SelectListItem>)ViewBag.TiposMaterial ?? Enumerable.Empty<SelectListItem>(),
+                        "Seleccionar tipo...",
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.TipoMaterial, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <!-- Estado -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Estado *</label>
+                    @Html.DropDownListFor(m => m.Estado,
+                        (IEnumerable<SelectListItem>)ViewBag.Estados ?? Enumerable.Empty<SelectListItem>(),
+                        "Seleccionar estado...",
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Estado, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Descripción -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Descripción *</label>
+                    @Html.TextBoxFor(m => m.Descripcion,
+                        new { @class = "form-control", placeholder = "Ej: Colchón 1,5 plazas" })
+                    @Html.ValidationMessageFor(m => m.Descripcion, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <!-- Número de serie -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Número de Serie</label>
+                    @Html.TextBoxFor(m => m.NumeroSerie,
+                        new { @class = "form-control", placeholder = "Opcional" })
+                    @Html.ValidationMessageFor(m => m.NumeroSerie, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="form-group">
+            <label class="control-label">Observaciones</label>
+            @Html.TextAreaFor(m => m.Observaciones,
+                4, 80,
+                new { @class = "form-control", placeholder = "Notas u observaciones del material..." })
+            @Html.ValidationMessageFor(m => m.Observaciones, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+            Cancelar
+        </button>
+        <button type="submit" class="btn btn-success">
+            <i class="fa fa-save"></i> Guardar Cambios
+        </button>
+    </div>
+}

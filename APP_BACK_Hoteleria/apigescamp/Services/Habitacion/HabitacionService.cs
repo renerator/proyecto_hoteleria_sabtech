@@ -39,16 +39,35 @@ namespace DemoBackend.Services
         #region Habitacion
         public bool CrearHabitacion(HabitacionDto habitacion)
         {
-            string sql = "MAN_CRE_Habitacion @idArea,@NombreHabitacion,@Capacidad,@VIP,@idEstado,@idEmpresa,@Motivo,@idTipoHabitacion";
-            var parametros = new SqlParameter[8];
-            parametros[0] = new SqlParameter("@idArea", habitacion.IdArea);
-            parametros[1] = new SqlParameter("@NombreHabitacion", habitacion.NombreHabitacion);
-            parametros[2] = new SqlParameter("@Capacidad", habitacion.Capacidad);
-            parametros[3] = new SqlParameter("@VIP", habitacion.VIP);
-            parametros[4] = new SqlParameter("@idEstado", habitacion.IdEstado);
-            parametros[5] = new SqlParameter("@idEmpresa", habitacion.IdEmpresa); 
-            parametros[6] = new SqlParameter("@Motivo", (object?)habitacion.Motivo ?? DBNull.Value);
-            parametros[7] = new SqlParameter("@Motivo", (object?)habitacion.IdTipoHabitacion ?? DBNull.Value);
+            // Ahora el SP trabaja con NombreArea / Ala / Pasillo
+            string sql = "MAN_CRE_Habitacion " +
+                         "@NombreArea,@Ala,@Pasillo," +
+                         "@NombreHabitacion,@Capacidad,@VIP," +
+                         "@idEstado,@idEmpresa,@Motivo," +
+                         "@idTipoHabitacion,@Precio";
+
+            var parametros = new SqlParameter[11];
+
+            parametros[0] = new SqlParameter("@NombreArea",
+                                (object?)habitacion.NombreArea ?? DBNull.Value);
+            parametros[1] = new SqlParameter("@Ala",
+                                (object?)habitacion.Ala ?? DBNull.Value);
+            parametros[2] = new SqlParameter("@Pasillo",
+                                (object?)habitacion.Pasillo ?? DBNull.Value);
+
+            parametros[3] = new SqlParameter("@NombreHabitacion", habitacion.NombreHabitacion);
+            parametros[4] = new SqlParameter("@Capacidad", habitacion.Capacidad);
+            parametros[5] = new SqlParameter("@VIP", habitacion.VIP);
+            parametros[6] = new SqlParameter("@idEstado", habitacion.IdEstado);
+            parametros[7] = new SqlParameter("@idEmpresa", habitacion.IdEmpresa);
+
+            parametros[8] = new SqlParameter("@Motivo",
+                                (object?)habitacion.Motivo ?? DBNull.Value);
+
+            // IMPORTANTE: aquí va el nombre correcto del parámetro
+            parametros[9] = new SqlParameter("@idTipoHabitacion", habitacion.IdTipoHabitacion);
+            parametros[10] = new SqlParameter("@Precio", habitacion.Precio);
+
 
             try
             {
@@ -57,24 +76,44 @@ namespace DemoBackend.Services
             }
             catch (Exception ex)
             {
-                Console.Write(ex);
+                Console.WriteLine(ex);
                 return false;
             }
         }
 
+
         public bool ModificarHabitacion(HabitacionDto habitacion)
         {
-            string sql = "MAN_UPD_Habitacion @idHabitacion,@idArea,@NombreHabitacion,@Capacidad,@VIP,@idEstado,@idEmpresa,@Motivo,@idTipoHabitacion";
-            var parametros = new SqlParameter[9];
+            string sql = "MAN_UPD_Habitacion " +
+                         "@idHabitacion," +
+                         "@NombreArea,@Ala,@Pasillo," +
+                         "@NombreHabitacion,@Capacidad,@VIP," +
+                         "@idEstado,@idEmpresa,@Motivo," +
+                         "@idTipoHabitacion,@Precio";
+
+            var parametros = new SqlParameter[12];
+
             parametros[0] = new SqlParameter("@idHabitacion", habitacion.IdHabitacion);
-            parametros[1] = new SqlParameter("@idArea", habitacion.IdArea);
-            parametros[2] = new SqlParameter("@NombreHabitacion", habitacion.NombreHabitacion);
-            parametros[3] = new SqlParameter("@Capacidad", habitacion.Capacidad);
-            parametros[4] = new SqlParameter("@VIP", habitacion.VIP);
-            parametros[5] = new SqlParameter("@idEstado", habitacion.IdEstado);
-            parametros[6] = new SqlParameter("@idEmpresa", habitacion.IdEmpresa);
-            parametros[7] = new SqlParameter("@Motivo", (object?)habitacion.Motivo ?? DBNull.Value);
-            parametros[8] = new SqlParameter("@Motivo", (object?)habitacion.IdTipoHabitacion ?? DBNull.Value);
+
+            parametros[1] = new SqlParameter("@NombreArea",
+                                (object?)habitacion.NombreArea ?? DBNull.Value);
+            parametros[2] = new SqlParameter("@Ala",
+                                (object?)habitacion.Ala ?? DBNull.Value);
+            parametros[3] = new SqlParameter("@Pasillo",
+                                (object?)habitacion.Pasillo ?? DBNull.Value);
+
+            parametros[4] = new SqlParameter("@NombreHabitacion", habitacion.NombreHabitacion);
+            parametros[5] = new SqlParameter("@Capacidad", habitacion.Capacidad);
+            parametros[6] = new SqlParameter("@VIP", habitacion.VIP);
+            parametros[7] = new SqlParameter("@idEstado", habitacion.IdEstado);
+            parametros[8] = new SqlParameter("@idEmpresa", habitacion.IdEmpresa);
+
+            parametros[9] = new SqlParameter("@Motivo",
+                                (object?)habitacion.Motivo ?? DBNull.Value);
+
+            parametros[10] = new SqlParameter("@idTipoHabitacion", habitacion.IdTipoHabitacion);
+            parametros[11] = new SqlParameter("@Precio", habitacion.Precio);
+
             try
             {
                 _listaHabitacion.ExecuteProcedure(sql, parametros);
@@ -82,10 +121,11 @@ namespace DemoBackend.Services
             }
             catch (Exception ex)
             {
-                Console.Write(ex);
+                Console.WriteLine(ex);
                 return false;
             }
         }
+
 
         public bool EliminarHabitacion(HabitacionDto habitacion)
         {

@@ -1,0 +1,158 @@
+﻿@* Views/Habitaciones/_CargaMasivaHabitaciones.cshtml *@
+@model Front_Hoteleria.Dto.Habitacion.CargaMasivaHabitacionesDto
+
+@{
+    Layout = null;
+
+    // Evitamos el operador ?. por compatibilidad
+    var nombreTemplate = (Model != null && !string.IsNullOrEmpty(Model.NombreArchivoTemplate))
+        ? Model.NombreArchivoTemplate
+        : "Template_CargaHabitaciones.xlsx";
+
+    var templateUrl = Url.Content("~/Content/templates/" + nombreTemplate);
+
+    var hayMensaje = (Model != null && !string.IsNullOrWhiteSpace(Model.Mensaje));
+    var claseAlert = (Model != null && Model.ProcesadoOk) ? "alert-success" : "alert-danger";
+}
+
+<div class="modal-header" style="border-bottom:1px solid #e5e5e5; background:#2a3f54; color:#fff;">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar" style="color:#fff; opacity:.9;">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title">
+        <i class="fa fa-upload"></i> Carga Masiva Habitaciones
+    </h4>
+</div>
+
+<div class="modal-body">
+    @using (Html.BeginForm(
+                "CargaMasivaHabitaciones",
+                "Habitaciones",
+                FormMethod.Post,
+                new { id = "frmCargaMasivaHab", enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        if (hayMensaje)
+        {
+            <div class="alert @claseAlert">
+                @Model.Mensaje
+            </div>
+        }
+
+        <h4>Carga Masiva de Habitaciones</h4>
+        <p class="text-muted">
+            Utilice el template de ejemplo para preparar la información de habitaciones.<br />
+            Template:
+            <a href="@templateUrl" target="_blank">
+                <i class="fa fa-file-excel-o"></i> @nombreTemplate
+            </a>
+        </p>
+
+        <div class="panel panel-default" style="margin-top:15px;">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <i class="fa fa-file-o"></i> Cargar archivo
+                </h3>
+            </div>
+            <div class="panel-body">
+                <p class="text-muted">
+                    Seleccione un archivo <strong>.xlsx, .xls o .csv</strong> con el formato indicado en el template.
+                </p>
+
+                <div class="form-group">
+                    <label for="Archivo">Archivo</label>
+                    @* Importante: name/id = "Archivo" para que bindee con la propiedad del DTO *@
+                    <input type="file"
+                           name="Archivo"
+                           id="Archivo"
+                           class="form-control"
+                           accept=".xlsx,.xls,.csv" />
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="modal-footer">
+    <button type="button"
+            class="btn btn-primary"
+            data-dismiss="modal">
+        <i class="fa fa-times"></i> Cancelar
+    </button>
+
+    <button type="submit"
+            form="frmCargaMasivaHab"
+            class="btn btn-success">
+        <i class="fa fa-check"></i> Cargar
+    </button>
+</div>
+
+<script>
+    // Enviar la carga masiva por AJAX
+    (function () {
+        var $form = $('#frmCargaMasivaHab');
+        if (!$form.length) return;
+
+        $form.off('submit.cargaMasivaHab').on('submit.cargaMasivaHab', function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+            var token = $form.find('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: $form.attr('action'),
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: { 'RequestVerificationToken': token },
+                success: function (resp) {
+                    if (resp && resp.ok) {
+                        if (window.PNotify) {
+                            new PNotify({
+                                title: 'Carga masiva',
+                                text: resp.message || 'Carga realizada correctamente.',
+                                type: 'success',
+                                styling: 'bootstrap3'
+                            });
+                        }
+                        // Cierra el modal genérico
+                        $('#modalOrdenTrabajo').modal('hide');
+                    } else {
+                        var msg = (resp && resp.message) || 'No se pudo procesar el archivo.';
+                        if (window.PNotify) {
+                            new PNotify({
+                                title: 'Carga masiva',
+                                text: msg,
+                                type: 'error',
+                                styling: 'bootstrap3'
+                            });
+                        } else {
+                            alert(msg);
+                        }
+                    }
+                },
+                error: function (xhr) {
+                    var msg = 'Error al procesar la carga masiva.';
+                    if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    } else if (xhr && xhr.responseText) {
+                        msg = xhr.responseText;
+                    }
+
+                    if (window.PNotify) {
+                        new PNotify({
+                            title: 'Error',
+                            text: msg,
+                            type: 'error',
+                            styling: 'bootstrap3'
+                        });
+                    } else {
+                        alert(msg);
+                    }
+                }
+            });
+        });
+    })();
+</script>

@@ -246,49 +246,50 @@
             {
                 foreach (var ot in data)
                 {
-                    <tr data-estado="@ot.Estado">
-                        <td class="col-id">@ot.NumeroOT</td>
-                        <td class="col-fecha">@ot.FechaIngresoOT.ToString("yyyy-MM-dd")</td>
-                        <td class="col-hab">@ot.IdHabitacion</td>
+        <tr data-estado="@ot.Estado">
+            <td class="col-id">@ot.NumeroOT</td>
+            <td class="col-fecha">@ot.FechaIngresoOT.ToString("yyyy-MM-dd")</td>
+            <td class="col-hab">@ot.IdHabitacion</td>
 
-                        <td class="col-tipo">
-                            <span class="@CssTipo(ot.NombreTipo)">
-                                @ot.NombreTipo
-                            </span>
-                        </td>
+            <td class="col-tipo">
+                <span class="@CssTipo(ot.NombreTipo)">
+                    @ot.NombreTipo
+                </span>
+            </td>
 
-                        <td class="col-desc" title="@ot.Descripcion">
-                            @ot.Descripcion
-                        </td>
+            <td class="col-desc" title="@ot.Descripcion">
+                @ot.Descripcion
+            </td>
 
-                        <td class="col-prio">
-                            <span class="@CssPrioridad(ot.IdPrioridad)">
-                                @TextoPrioridad(ot.IdPrioridad)
-                            </span>
-                        </td>
+            <td class="col-prio">
+                <span class="@CssPrioridad(ot.IdPrioridad)">
+                    @TextoPrioridad(ot.IdPrioridad)
+                </span>
+            </td>
 
-                        <td class="col-estado">
-                            <span class="@CssEstado(ot.Estado)">
-                                @ot.Estado
-                            </span>
-                        </td>
+            <td class="col-estado">
+                <span class="@CssEstado(ot.Estado)">
+                    @ot.Estado
+                </span>
+            </td>
 
-                        <td class="col-tec">@ot.Tecnico</td>
+            <td class="col-tec">@ot.Tecnico</td>
 
-                        <td class="col-tiempo">@FormatearTiempo(ot.TiempoMinutos)</td>
+            <td class="col-tiempo">@FormatearTiempo(ot.TiempoMinutos)</td>
 
-                        <td class="col-opc table-actions">
-                            <button class="btn btn-info btn-xs" title="Ver" data-id="@ot.IdOrdenTrabajo">
-                                <i class="fa fa-eye"></i>
-                            </button>
-                            <button class="btn btn-success btn-xs" title="Editar" data-id="@ot.IdOrdenTrabajo">
-                                <i class="fa fa-pencil"></i>
-                            </button>
-                            <button class="btn btn-warning btn-xs" title="Asignar técnico" data-id="@ot.IdOrdenTrabajo">
-                                <i class="fa fa-user"></i>
-                            </button>
-                        </td>
-                    </tr>
+            <td class="col-opc table-actions">
+                <button class="btn btn-info btn-xs btn-rep-ver" title="Ver" data-id="@ot.IdOrdenTrabajo">
+                    <i class="fa fa-eye"></i>
+                </button>
+                <button class="btn btn-success btn-xs btn-rep-editar" title="Editar" data-id="@ot.IdOrdenTrabajo">
+                    <i class="fa fa-pencil"></i>
+                </button>
+                <button class="btn btn-warning btn-xs btn-rep-asignar" title="Asignar técnico" data-id="@ot.IdOrdenTrabajo">
+                    <i class="fa fa-user"></i>
+                </button>
+            </td>
+
+        </tr>
                 }
             }
         </tbody>

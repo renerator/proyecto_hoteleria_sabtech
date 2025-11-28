@@ -80,46 +80,45 @@
         {
             foreach (var it in data)
             {
-    <tr data-estado="@it.Estado">
-        <td>@it.IdHabitacionInventario</td>
-        <td>@it.NombreHabitacion</td>
+                <tr data-estado="@it.Estado">
+                    <td>@it.IdHabitacionInventario</td>
+                    <td>@it.NombreHabitacion</td>
 
-        <!-- Tipo de material con pill de color -->
-        <td>
-            <span class="@CssTipoMaterial(it.TipoMaterial)">
-                @it.TipoMaterial
-            </span>
-        </td>
+                    <!-- Tipo de material con pill de color -->
+                    <td>
+                        <span class="@CssTipoMaterial(it.TipoMaterial)">
+                            @it.TipoMaterial
+                        </span>
+                    </td>
 
-        <!-- Descripción texto normal -->
-        <td>@it.Descripcion</td>
+                    <!-- Descripción texto normal -->
+                    <td>@it.Descripcion</td>
 
-        <td>@it.MarcaModelo</td>
+                    <td>@it.MarcaModelo</td>
 
-        <!-- Estado con pill de color -->
-        <td>
-            <span class="@CssEstado(it.Estado)">
-                @it.Estado
-            </span>
-        </td>
+                    <!-- Estado con pill de color -->
+                    <td>
+                        <span class="@CssEstado(it.Estado)">
+                            @it.Estado
+                        </span>
+                    </td>
 
-        <td>@(it.FechaVerificacion?.ToString("dd-MM-yyyy") ?? "")</td>
-        <td>@it.Responsable</td>
-        <td>
-        <td>
-            <button class="btn btn-info btn-xs btn-inv-ver" title="Ver" data-id="@it.IdInventario">
-                <i class="fa fa-eye"></i>
-            </button>
-            <button class="btn btn-success btn-xs btn-inv-editar" title="Editar" data-id="@it.IdInventario">
-                <i class="fa fa-pencil"></i>
-            </button>
-            <button class="btn btn-warning btn-xs btn-inv-eliminar" title="Eliminar" data-id="@it.IdHabitacionInventario">
-                <i class="fa fa-trash"></i>
-            </button>
-        </td>
+                    <td>@(it.FechaVerificacion?.ToString("dd-MM-yyyy") ?? "")</td>
+                    <td>@it.Responsable</td>
 
-        </td>
-    </tr>
+                    <!-- ÚNICO TD de opciones -->
+                    <td>
+                        <button class="btn btn-info btn-xs btn-inv-ver" title="Ver" data-id="@it.IdInventario">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                        <button class="btn btn-success btn-xs btn-inv-editar" title="Editar" data-id="@it.IdInventario">
+                            <i class="fa fa-pencil"></i>
+                        </button>
+                        <button class="btn btn-warning btn-xs btn-inv-eliminar" title="Auditar" data-id="@it.IdInventario">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </td>
+                </tr>
             }
         }
     </tbody>

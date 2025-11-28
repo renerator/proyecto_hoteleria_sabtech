@@ -1,0 +1,203 @@
+﻿@model Front_Hoteleria.Dto.OrdenTrabajo.ReparacionDetalleDto
+
+@{
+    var codigo = Model?.CodigoReparacion ?? ("REP-" + Model?.IdReparacion);
+}
+
+
+<div class="modal-header" style="background:#d9534f;color:#fff;border-radius:4px 4px 0 0;">
+    <button type="button" class="close" data-dismiss="modal">
+        <span>&times;</span>
+    </button>
+    <h4 class="modal-title">
+        <i class="fa fa-wrench"></i>
+        Detalles de Reparación - @codigo
+    </h4>
+</div>
+
+<div class="modal-body">
+
+    <style>
+        .detail-box {
+            border: 1px solid #e5e5e5;
+            background: #fff;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+        }
+
+        .detail-header {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .detail-table {
+            width: 100%;
+        }
+
+            .detail-table td {
+                padding: 3px 0;
+            }
+
+                .detail-table td:first-child {
+                    width: 28%;
+                    font-weight: 600;
+                }
+
+        .label-prio-urgente {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+            background: #d9534f;
+            color: #fff;
+        }
+
+        .label-estado-progreso {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+            background: #f0ad4e;
+            color: #fff;
+        }
+
+        .section-title {
+            font-weight: 600;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        .section-icon {
+            margin-right: 5px;
+        }
+
+        .readonly-box {
+            border: 1px solid #e5e5e5;
+            background: #f9f9f9;
+            padding: 8px 10px;
+            min-height: 40px;
+        }
+    </style>
+
+    <div class="row">
+        <!-- Información general -->
+        <div class="col-md-6">
+            <div class="detail-box">
+                <div class="detail-header">
+                    <i class="fa fa-info-circle"></i> Información General
+                </div>
+                <table class="detail-table">
+                    <tr>
+                        <td>ID:</td>
+                        <td>@Model.CodigoReparacion</td>
+                    </tr>
+                    <tr>
+                        <td>Fecha:</td>
+                        <td>@(Model.Fecha?.ToString("yyyy-MM-dd") ?? "")</td>
+                    </tr>
+                    <tr>
+                        <td>Habitación:</td>
+                        <td>@Model.Habitacion</td>
+                    </tr>
+                    <tr>
+                        <td>Tipo:</td>
+                        <td>@Model.Tipo</td>
+                    </tr>
+                    <tr>
+                        <td>Prioridad:</td>
+                        <td>
+                            <span class="label-prio-urgente">
+                                @Model.Prioridad
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Estado:</td>
+                        <td>
+                            <span class="label-estado-progreso">
+                                @Model.Estado
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Asignación -->
+        <div class="col-md-6">
+            <div class="detail-box">
+                <div class="detail-header">
+                    <i class="fa fa-user"></i> Asignación
+                </div>
+                <table class="detail-table">
+                    <tr>
+                        <td>Técnico:</td>
+                        <td>@Model.Tecnico</td>
+                    </tr>
+                    <tr>
+                        <td>Tiempo:</td>
+                        <td>@Model.TiempoEstimado</td>
+                    </tr>
+                    <tr>
+                        <td>Reportado por:</td>
+                        <td>@Model.ReportadoPor</td>
+                    </tr>
+                    <tr>
+                        <td>Fecha reporte:</td>
+                        <td>@(Model.FechaReporte?.ToString("yyyy-MM-dd HH:mm") ?? "")</td>
+                    </tr>
+                    <tr>
+                        <td>Costo estimado:</td>
+                        <td>@Model.CostoEstimado</td>
+                    </tr>
+                    <tr>
+                        <td>Garantía:</td>
+                        <td>@Model.GarantiaDescripcion</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Descripción del problema -->
+    <div class="section-title">
+        <i class="fa fa-comment section-icon"></i> Descripción del Problema
+    </div>
+    <div class="readonly-box">
+        @Model.DescripcionProblema
+    </div>
+
+    <div class="row" style="margin-top:10px;">
+        <div class="col-md-6">
+            <div class="section-title">
+                <i class="fa fa-cubes section-icon"></i> Materiales Necesarios
+            </div>
+            <div class="readonly-box">
+                @Model.MaterialesNecesarios
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="section-title">
+                <i class="fa fa-camera section-icon"></i> Fotos Adjuntas
+            </div>
+            <div class="readonly-box">
+                @Model.FotosAdjuntas
+            </div>
+        </div>
+    </div>
+
+    <div class="section-title" style="margin-top:10px;">
+        <i class="fa fa-sticky-note section-icon"></i> Notas Adicionales
+    </div>
+    <div class="readonly-box">
+        @Model.NotasAdicionales
+    </div>
+
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+    <button type="button" id="btnEditarReparacion" class="btn btn-success">
+        <i class="fa fa-pencil"></i> Editar
+    </button>
+</div>

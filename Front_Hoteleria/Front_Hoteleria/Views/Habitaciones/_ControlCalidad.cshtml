@@ -1,0 +1,194 @@
+﻿@model Front_Hoteleria.Dto.OrdenTrabajo.ControlCalidadDto
+
+@{
+    Layout = null;
+}
+
+<div class="modal-header" style="background:#3498db;color:#fff;border-radius:4px 4px 0 0;">
+    <button type="button" class="close" data-dismiss="modal">
+        <span>&times;</span>
+    </button>
+    <h4 class="modal-title">
+        <i class="fa fa-check-circle"></i>
+        Control de Calidad - Reparaciones
+    </h4>
+</div>
+
+<div class="modal-body">
+
+    <style>
+        .cc-alert-info {
+            margin-bottom: 15px;
+        }
+
+        .cc-panel {
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            background: #fff;
+            margin-bottom: 10px;
+        }
+
+        .cc-panel-header {
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+        }
+
+        .cc-panel-body {
+            padding: 10px 12px;
+        }
+
+        .cc-item {
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            background: #fafafa;
+            padding: 8px 10px;
+            margin-bottom: 8px;
+        }
+
+        .cc-item-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .cc-item-sub {
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 5px;
+        }
+
+        .cc-stats-table {
+            width: 100%;
+        }
+
+            .cc-stats-table td {
+                padding: 6px 8px;
+                border-top: 1px solid #eee;
+            }
+
+                .cc-stats-table td:first-child {
+                    width: 60%;
+                    font-weight: 600;
+                }
+
+        .cc-stat-ok {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .cc-stat-bad {
+            color: #e67e22;
+            font-weight: 600;
+        }
+
+        .cc-stat-info {
+            color: #2980b9;
+            font-weight: 600;
+        }
+    </style>
+
+    <div class="alert alert-info cc-alert-info">
+        <i class="fa fa-info-circle"></i>
+        <strong>Control de Calidad:</strong>
+        Verificación y validación de reparaciones completadas.
+    </div>
+
+    <div class="row">
+        <!-- IZQUIERDA: Reparaciones pendientes -->
+        <div class="col-md-8 col-sm-7">
+            <div class="cc-panel">
+                <div class="cc-panel-header">
+                    <i class="fa fa-list"></i>
+                    Reparaciones Pendientes de Verificación
+                </div>
+                <div class="cc-panel-body">
+
+                    @if (Model.ReparacionesPendientes == null || !Model.ReparacionesPendientes.Any())
+                    {
+                        <p class="text-muted">No hay reparaciones pendientes de verificación.</p>
+                    }
+                    else
+                    {
+                        foreach (var r in Model.ReparacionesPendientes)
+                        {
+                            <div class="cc-item">
+                                <div class="cc-item-title">
+                                    @r.CodigoReparacion - @r.Descripcion
+                                </div>
+                                <div class="cc-item-sub">
+                                    @r.Habitacion - @r.ReportadoPor - @r.TiempoFormateado
+                                </div>
+                                <button type="button"
+                                        class="btn btn-primary btn-xs btn-cc-verificar"
+                                        data-id="@r.IdReparacion">
+                                    <i class="fa fa-check"></i> Verificar
+                                </button>
+                            </div>
+                        }
+                    }
+
+                </div>
+            </div>
+        </div>
+
+        <!-- DERECHA: Estadísticas -->
+        <div class="col-md-4 col-sm-5">
+            <div class="cc-panel">
+                <div class="cc-panel-header">
+                    <i class="fa fa-bar-chart"></i>
+                    Estadísticas de Calidad
+                </div>
+                <div class="cc-panel-body">
+                    <table class="cc-stats-table">
+                        <tr>
+                            <td>Reparaciones Aprobadas</td>
+                            <td class="cc-stat-ok">
+                                @Model.PorcentajeAprobadas.ToString("0")%
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Reparaciones Rechazadas</td>
+                            <td class="cc-stat-bad">
+                                @Model.PorcentajeRechazadas.ToString("0")%
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Retrabajos</td>
+                            <td class="cc-stat-bad">
+                                @Model.PorcentajeRetrabajo.ToString("0")%
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Tiempo Promedio Verificación</td>
+                            <td class="cc-stat-info">
+                                @Model.TiempoPromedioFormateado
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+    <button type="button" class="btn btn-info" id="btnReporteCalidad">
+        <i class="fa fa-file-pdf-o"></i> Reporte de Calidad
+    </button>
+</div>
+
+<script>
+    // Handler de ejemplo para "Verificar"
+    $('#modalOrdenTrabajo').off('click', '.btn-cc-verificar').on('click', '.btn-cc-verificar', function () {
+        var id = $(this).data('id');
+        // Aquí luego puedes abrir otro modal de verificación / detalle con ese id
+        console.log('Verificar reparación (control de calidad) ID:', id);
+    });
+
+    $('#modalOrdenTrabajo').off('click', '#btnReporteCalidad').on('click', '#btnReporteCalidad', function () {
+        // TODO: llamada a backend para generar/descargar reporte PDF
+        alert('Generar reporte de calidad (pendiente implementación).');
+    });
+</script>

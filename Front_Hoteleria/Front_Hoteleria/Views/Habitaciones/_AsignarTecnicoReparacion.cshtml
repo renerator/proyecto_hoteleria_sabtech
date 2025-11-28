@@ -1,0 +1,96 @@
+﻿@model Front_Hoteleria.Dto.OrdenTrabajo.AsignacionTecnicoDto
+
+@*
+    Espera:
+    - Model.IdReparacion
+    - Model.IdTecnico
+    - Model.FechaAsignacion (DateTime?)
+    - Model.HoraInicio      (TimeSpan? o string)
+    - Model.TiempoEstimadoHoras (decimal? / int?)
+    - Model.ComentariosAsignacion
+
+    ViewBag.Tecnicos : IEnumerable<SelectListItem>
+*@
+
+<div class="modal-header" style="background:#f39c12;color:#fff;border-radius:4px 4px 0 0;">
+    <button type="button" class="close" data-dismiss="modal">
+        <span>&times;</span>
+    </button>
+    <h4 class="modal-title">
+        <i class="fa fa-user"></i>
+        Asignar Técnico - @Model.CodigoReparacion
+    </h4>
+</div>
+
+@using (Html.BeginForm("AsignarTecnico", "Reparaciones", FormMethod.Post, new { id = "frmAsignarTecnico" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.IdReparacion)
+
+    <div class="modal-body">
+
+        <div class="alert alert-info" style="margin-bottom:20px;">
+            <i class="fa fa-info-circle"></i>
+            <strong>Asignación de Técnico:</strong>
+            Seleccione el técnico más adecuado según la especialidad y disponibilidad.
+        </div>
+
+        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+        <!-- Técnico -->
+        <div class="form-group">
+            <label class="control-label">Técnico *</label>
+            @Html.DropDownListFor(m => m.IdTecnico,
+                (IEnumerable<SelectListItem>)ViewBag.Tecnicos,
+                "Seleccionar técnico...",
+                new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.IdTecnico, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Fecha de asignación -->
+        <div class="form-group">
+            <label class="control-label">Fecha de Asignación *</label>
+            @Html.TextBoxFor(m => m.FechaAsignacion,
+                "{0:yyyy-MM-dd}",
+                new { @class = "form-control", type = "date" })
+            @Html.ValidationMessageFor(m => m.FechaAsignacion, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Hora estimada de inicio -->
+        <div class="form-group">
+            <label class="control-label">Hora Estimada de Inicio *</label>
+            @Html.TextBoxFor(m => m.HoraInicio,
+                new { @class = "form-control", type = "time" })
+            @Html.ValidationMessageFor(m => m.HoraInicio, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Tiempo estimado -->
+        <div class="form-group">
+            <label class="control-label">Tiempo Estimado (horas) *</label>
+            @Html.TextBoxFor(m => m.TiempoEstimadoHoras,
+                new { @class = "form-control", type = "number", step = "0.5", min = "0" })
+            @Html.ValidationMessageFor(m => m.TiempoEstimadoHoras, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Comentarios -->
+        <div class="form-group">
+            <label class="control-label">Comentarios de Asignación</label>
+            @Html.TextAreaFor(m => m.ComentariosAsignacion,
+                3, 10,
+                new
+                {
+                    @class = "form-control",
+                    placeholder = "Comentarios adicionales sobre la asignación..."
+                })
+            @Html.ValidationMessageFor(m => m.ComentariosAsignacion, "", new { @class = "text-danger" })
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-warning">
+            <i class="fa fa-user"></i> Asignar Técnico
+        </button>
+    </div>
+}

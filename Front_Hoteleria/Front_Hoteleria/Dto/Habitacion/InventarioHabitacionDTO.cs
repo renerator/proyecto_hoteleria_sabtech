@@ -30,6 +30,10 @@ namespace Front_Hoteleria.Dto.Habitacion
         public string Estado { get; set; }
 
         public string Responsable { get; set; }
+
+        public string NumeroSerie { get; set; }
+
+        public string Observaciones { get; set; }
         public string Descripcion { get; set; }
     }
 }

@@ -1,0 +1,147 @@
+﻿@model Front_Hoteleria.Dto.OrdenTrabajo.ReparacionEditDto
+
+@* Combos esperados:
+    ViewBag.Habitaciones : IEnumerable<SelectListItem>
+    ViewBag.Estados      : IEnumerable<SelectListItem>
+    ViewBag.Tipos        : IEnumerable<SelectListItem>
+    ViewBag.Tecnicos     : IEnumerable<SelectListItem>
+    ViewBag.Prioridades  : IEnumerable<SelectListItem>
+*@
+
+<div class="modal-header" style="background:#d9534f;color:#fff;border-radius:4px 4px 0 0;">
+    <button type="button" class="close" data-dismiss="modal">
+        <span>&times;</span>
+    </button>
+    <h4 class="modal-title">
+        <i class="fa fa-pencil"></i>
+        Editar Orden de Reparación - @Model.CodigoReparacion
+    </h4>
+</div>
+
+@using (Html.BeginForm("GuardarEdicion", "Reparaciones", FormMethod.Post, new { id = "frmEditarReparacion" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.IdReparacion)
+
+    <div class="modal-body">
+
+        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+        <div class="row">
+            <!-- Habitación -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Habitación *</label>
+                    @Html.DropDownListFor(m => m.IdHabitacion,
+                        (IEnumerable<SelectListItem>)ViewBag.Habitaciones,
+                        "Seleccionar habitación...",
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.IdHabitacion, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <!-- Estado -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Estado *</label>
+                    @Html.DropDownListFor(m => m.IdEstado,
+                        (IEnumerable<SelectListItem>)ViewBag.Estados,
+                        "Seleccionar estado...",
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.IdEstado, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Tipo de reparación -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Tipo de Reparación *</label>
+                    @Html.DropDownListFor(m => m.IdTipoReparacion,
+                        (IEnumerable<SelectListItem>)ViewBag.Tipos,
+                        "Seleccionar tipo...",
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.IdTipoReparacion, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <!-- Técnico asignado -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Técnico Asignado</label>
+                    @Html.DropDownListFor(m => m.IdTecnico,
+                        (IEnumerable<SelectListItem>)ViewBag.Tecnicos,
+                        "Sin asignar",
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.IdTecnico, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Prioridad -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Prioridad *</label>
+                    @Html.DropDownListFor(m => m.IdPrioridad,
+                        (IEnumerable<SelectListItem>)ViewBag.Prioridades,
+                        "Seleccionar prioridad...",
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.IdPrioridad, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <!-- Costo estimado -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Costo Estimado</label>
+                    @Html.TextBoxFor(m => m.CostoEstimado,
+                        new { @class = "form-control", placeholder = "Ej: $150.000" })
+                    @Html.ValidationMessageFor(m => m.CostoEstimado, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <!-- Descripción del problema -->
+        <div class="form-group">
+            <label class="control-label">Descripción del Problema *</label>
+            @Html.TextAreaFor(m => m.DescripcionProblema,
+                4, 10,
+                new { @class = "form-control", placeholder = "Describa el problema presentado..." })
+            @Html.ValidationMessageFor(m => m.DescripcionProblema, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="row">
+            <!-- Materiales necesarios -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Materiales Necesarios</label>
+                    @Html.TextAreaFor(m => m.MaterialesNecesarios,
+                        3, 10,
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.MaterialesNecesarios, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <!-- Notas adicionales -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Notas Adicionales</label>
+                    @Html.TextAreaFor(m => m.NotasAdicionales,
+                        3, 10,
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.NotasAdicionales, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-success">
+            <i class="fa fa-save"></i> Guardar Cambios
+        </button>
+    </div>
+}

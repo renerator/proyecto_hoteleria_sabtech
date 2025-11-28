@@ -1,0 +1,128 @@
+﻿@model Front_Hoteleria.Dto.Habitacion.AuditoriaInventarioDto
+
+@{
+    // Texto que se muestra en el título (INV-001, etc.)
+    var codigoInv = Model?.CodigoInventario ?? ("INV-" + Model?.IdInventario);
+}
+
+<div class="modal-header" style="background:#f39c12;color:#fff;border-radius:4px 4px 0 0;">
+    <button type="button" class="close" data-dismiss="modal">
+        <span>&times;</span>
+    </button>
+    <h4 class="modal-title">
+        <i class="fa fa-search"></i>
+        Auditoría de Material - @codigoInv
+    </h4>
+</div>
+
+<div class="modal-body">
+    @using (Html.BeginForm("GuardarAuditoria", "Habitaciones", FormMethod.Post, new { id = "frmAuditoria" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.IdInventario)
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="alert alert-info">
+            <i class="fa fa-info-circle"></i>
+            <strong>Auditoría de Inventario:</strong>
+            Complete la verificación física del material y registre su estado actual.
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="IdEstadoEncontrado">Estado Encontrado *</label>
+                    @Html.DropDownListFor(
+                        m => m.IdEstadoEncontrado,
+                        (IEnumerable<SelectListItem>)ViewBag.Estados ?? Enumerable.Empty<SelectListItem>(),
+                        "Seleccionar estado...",
+                        new { @class = "form-control", required = "required" }
+                    )
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="FechaAuditoria">Fecha de Auditoría *</label>
+                    <div class="input-group">
+                        @Html.TextBoxFor(
+                            m => m.FechaAuditoria,
+                            "{0:dd-MM-yyyy}",
+                            new { @class = "form-control", type = "date", required = "required" }
+                        )
+                        <span class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="IdAuditor">Auditor Responsable *</label>
+                    @Html.DropDownListFor(
+                        m => m.IdAuditor,
+                        (IEnumerable<SelectListItem>)ViewBag.Auditores ?? Enumerable.Empty<SelectListItem>(),
+                        "Seleccionar auditor...",
+                        new { @class = "form-control", required = "required" }
+                    )
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="HoraAuditoria">Hora de Auditoría *</label>
+                    <div class="input-group">
+                        @Html.TextBoxFor(
+                            m => m.HoraAuditoria,
+                            "{0:hh\\:mm}",
+                            new { @class = "form-control", type = "time", required = "required" }
+                        )
+                        <span class="input-group-addon">
+                            <i class="fa fa-clock-o"></i>
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="Observaciones">Observaciones de la Auditoría *</label>
+            @Html.TextAreaFor(
+                m => m.Observaciones,
+                4,
+                80,
+                new
+                {
+                    @class = "form-control",
+                    placeholder = "Describa el estado encontrado, ubicación, daños, etc...",
+                    required = "required"
+                })
+        </div>
+
+        <div class="checkbox">
+            <label>
+                @Html.CheckBoxFor(m => m.TieneFotografias)
+                Se adjuntaron fotografías del estado
+            </label>
+        </div>
+
+        <div class="checkbox">
+            <label>
+                @Html.CheckBoxFor(m => m.RequiereAccionCorrectiva)
+                Se requiere acción correctiva
+            </label>
+        </div>
+    }
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+    <button type="submit" form="frmAuditoria" class="btn btn-warning">
+        <i class="fa fa-search"></i> Guardar Auditoría
+    </button>
+</div>
