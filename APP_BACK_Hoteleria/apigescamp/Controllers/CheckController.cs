@@ -22,7 +22,7 @@ namespace DemoBackend.Controllers
     {
         private readonly ICheckinCheckoutService   _checkService;
         private readonly ILogger _logger;
-
+        //cambio 1-12
         public CheckController(ICheckinCheckoutService checkService, ILogger<CheckController> logger)
         {
             _logger = logger;

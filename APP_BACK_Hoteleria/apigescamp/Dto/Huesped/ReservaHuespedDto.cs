@@ -4,7 +4,7 @@ using System;
 namespace DemoBackend.Dto.Huesped
 {
     public class ReservaHuespedDto
-    {
+    {//cambio 1-12
         public int IdReserva { get; set; }
         public string CodigoReserva { get; set; }   // Ej: RES001
 

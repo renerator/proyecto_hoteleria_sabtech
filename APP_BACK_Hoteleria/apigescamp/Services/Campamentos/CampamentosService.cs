@@ -19,7 +19,7 @@ namespace DemoBackend.Services
         private readonly IGenericRepositoryEntity<CampamentoAreasModels> _listaAreas;
         private readonly IGenericRepositoryEntity<CampamentoKPIModels> _listaKPI;
         private readonly IMapper _mapper;
-
+        //cambio 1-12
         public CampamentosService(
             IGenericRepositoryEntity<CampamentosModels> listaCampamentos,
             IGenericRepositoryEntity<CampamentoAreasModels> listaAreas,

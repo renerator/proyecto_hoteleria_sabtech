@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace DemoBackend.Services.SolicitudServicio
 {
     public class SolicitudServicioService : ISolicitudServicioService
-    {
+    {//cambio 1-12
         private readonly IGenericRepositoryEntity<SolicitudServicioModels> _service;
         private readonly IGenericRepositoryEntity<SolicitudKPIModels> _serviceKPI;
         private readonly IMapper _mapper;

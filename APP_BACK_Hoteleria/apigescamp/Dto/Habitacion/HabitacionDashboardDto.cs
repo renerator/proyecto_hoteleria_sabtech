@@ -4,7 +4,7 @@ using System;
 namespace DemoBackend.Dto.Habitacion
 {
     public class HabitacionDashboardDto
-    {
+    {//cambio 1-12
         public int? HabitacionesHabilitadas { get; set; }
         public int? HabitacionesMantencion { get; set; }
         public int? HabitacionesOcupadas { get; set; }

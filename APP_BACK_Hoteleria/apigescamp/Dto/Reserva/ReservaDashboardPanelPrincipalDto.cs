@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace DemoBackend.Dto.Reserva
 {
     public class ReservaDashboardPanelPrincipaDto   // <- corregido "Principal"
-    {
+    {//cambio 1-12
         // Totales
         public int? NuevasReservas { get; set; }
         public int? Servicios { get; set; }

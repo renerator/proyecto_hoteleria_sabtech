@@ -9,6 +9,7 @@ namespace DemoBackend.Dto.Huesped
     /// </summary>
     public class ServicioHuespedDto
     {
+        //cambio 1-12
         // ---- Datos principales de la solicitud ----
         public int IdSolicitudServicio { get; set; }
 

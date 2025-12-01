@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace DemoBackend.Dto.Campamentos
 {
     public class CampamentoAreaDto
-    {
+    {//cambio 1-12
         public int? Id { get; set; }
         public string? Nombre { get; set; }
         public string? Tipo { get; set; }

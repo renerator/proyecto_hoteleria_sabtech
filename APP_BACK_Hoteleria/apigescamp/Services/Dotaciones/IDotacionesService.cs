@@ -4,7 +4,7 @@ using DemoBackend.Dto.Dotaciones;
 namespace DemoBackend.Services.Dotaciones
 {
     public interface IDotacionesService
-    {
+    {//cambio 1-12
         List<DotacionDto> GetDotaciones(string? filtro);
         DotacionDto? GetDotacion(int id);
         bool CrearDotacion(DotacionDto dto);

@@ -19,7 +19,7 @@ using System.Linq;
 namespace DemoBackend.Services
 {
     public class ServicioService : IServicioService
-    {
+    {//cambio 1-12
         private readonly IGenericRepositoryEntity<ServicioModels> _repoServicio;        
         private readonly IGenericRepositoryEntity<ServicioKpi> _repoServicioKpi;
         private readonly IGenericRepositoryEntity<ServicioCategoriaModels> _repoCategoriaServicio;

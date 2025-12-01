@@ -12,7 +12,7 @@ using System.Linq;
 namespace DemoBackend.Services
 {
     public class CalendarioService : ICalendarioService
-    {
+    {//cambio 1-12
         private readonly IGenericRepositoryEntity<CalendarioEventosModels> _listaEventos;
         private readonly IGenericRepositoryEntity<CalendarioBloqueosModels> _listaBloqueos;
         private readonly IGenericRepositoryEntity<CalendarioMantenimientosModels> _listaMantenciones;

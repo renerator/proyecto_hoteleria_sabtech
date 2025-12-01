@@ -13,7 +13,7 @@ namespace DemoBackend.Controllers
     {
         private readonly IBodegaService _service;
         private readonly ILogger<BodegasController> _logger;
-
+        //cambio 1-12
         public BodegasController(IBodegaService service, ILogger<BodegasController> logger)
         {
             _service = service;

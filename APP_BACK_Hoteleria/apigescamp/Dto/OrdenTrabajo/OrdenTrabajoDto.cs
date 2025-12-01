@@ -3,7 +3,7 @@ using System;
 namespace DemoBackend.Dto.OrdenTrabajo
 {
     public class OrdenTrabajoDto
-    {
+    {//cambio 1-12
         public int IdOrdenTrabajo { get; set; }
 
         public string NumeroOT { get; set; }

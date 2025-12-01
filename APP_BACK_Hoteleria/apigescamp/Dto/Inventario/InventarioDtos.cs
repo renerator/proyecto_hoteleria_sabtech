@@ -3,7 +3,7 @@ using System;
 namespace DemoBackend.Dto.Inventario
 {
     public class InventarioItemDto
-    {
+    {//cambio 1-12
         public int IdArticulo { get; set; }
         public string? Nombre { get; set; }
         public string? Categoria { get; set; }

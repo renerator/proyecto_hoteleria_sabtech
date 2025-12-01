@@ -13,7 +13,7 @@ namespace DemoBackend.Services.OrdenTrabajo
     {
         private readonly IGenericRepositoryEntity<OrdenTrabajoModels> _service;
         private readonly IMapper _mapper;
-
+        //cambio 1-12
         public OrdenTrabajoService(IGenericRepositoryEntity<OrdenTrabajoModels> repo, IMapper mapper)
         {
             _service = repo;

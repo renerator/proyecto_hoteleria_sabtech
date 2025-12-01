@@ -2,6 +2,7 @@
 {
     public class EncuestaSatisfaccionDto
     {
+        //cambio 1-12
         public int IdEncuesta { get; set; }
         public int? IdReserva { get; set; }
         /// <summary>1 = Check-in, 2 = Check-out</summary>

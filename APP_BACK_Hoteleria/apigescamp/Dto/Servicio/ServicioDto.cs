@@ -3,7 +3,7 @@
 namespace DemoBackend.Dto.Servicio
 {
     public class ServicioDto
-    {
+    {//cambio 1-12
         public int IdServicio { get; set; }
         public string NombreServicio { get; set; }
         public int IdTipoServicio { get; set; }

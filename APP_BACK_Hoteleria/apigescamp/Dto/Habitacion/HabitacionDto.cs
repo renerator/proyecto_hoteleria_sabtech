@@ -3,7 +3,7 @@
 namespace DemoBackend.Dto.Habitacion
 {
     public class HabitacionDto
-    {
+    {//cambio 1-12
         public int IdHabitacion { get; set; }
         public int IdArea { get; set; }
         public string NombreArea { get; set; }

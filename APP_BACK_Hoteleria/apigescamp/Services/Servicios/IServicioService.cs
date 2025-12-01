@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace DemoBackend.Services.Servicio
 {
     public interface IServicioService
-    {
+    {//cambio 1-12
         /// <summary>
         /// Obtiene la lista completa de servicios registrados.
         /// </summary>

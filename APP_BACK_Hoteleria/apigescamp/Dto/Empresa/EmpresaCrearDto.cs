@@ -4,7 +4,7 @@
 namespace DemoBackend.Dto.Empresa
 {
     public class EmpresaCrearDto
-    {
+    {//cambio 1-12
         public string? NombreEmpresaContratista { get; set; }
         public string? DNIEmpresaContratista { get; set; }
         public string? DireccionEmpresaContratista { get; set; }

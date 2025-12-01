@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace DemoBackend.Services.Trabajador
 {
     public interface ITrabajadorService
-    {
+    {//cambio 1-12
         List<TrabajadorDto> GetListaTrabajador();
         List<TrabajadorDto> GetListaTrabajadorEstado(int estado);
 

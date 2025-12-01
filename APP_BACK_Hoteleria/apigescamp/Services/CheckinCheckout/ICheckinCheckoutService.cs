@@ -12,7 +12,7 @@ namespace DemoBackend.Services.Check
 {
     public interface ICheckinCheckoutService
     {
-       
+        //cambio 1-12
         List<CheckDTO> GetListar(int idEstadoCheck, DateTime? fechaDesde);
         CheckKPIDTO ObtenerDashboard();
 

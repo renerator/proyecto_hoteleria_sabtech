@@ -16,7 +16,7 @@ namespace DemoBackend.Services
         private readonly IGenericRepositoryEntity<TrabajadorModels> _repoTrabajador;
         private readonly IMapper _mapper;
         private readonly ILogger<TrabajadorService> _logger;
-
+        //cambio 1-12
         public TrabajadorService(
             IGenericRepositoryEntity<TrabajadorModels> repoTrabajador,
             IMapper mapper,

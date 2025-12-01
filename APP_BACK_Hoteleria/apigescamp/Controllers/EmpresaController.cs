@@ -28,7 +28,7 @@ public class EmpresaController : ControllerBase
         if (data.Count == 0) return NoContent();
         return Ok(data);
     }
-
+    //cambio 1-12
     // Cambia solo la acción Crear; el resto igual a Opción A
     [HttpPost("crear")]
     [ProducesResponseType(StatusCodes.Status201Created)]

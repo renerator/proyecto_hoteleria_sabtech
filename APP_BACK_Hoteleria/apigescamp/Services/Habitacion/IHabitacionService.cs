@@ -9,7 +9,7 @@ namespace DemoBackend.Services.Habitacion
 {
     public interface IHabitacionService
     {
-
+        //cambio 1-12
 
         List<HabitacionDto> GetListaHabitacion();
         List<HabitacionDto> GetListaHabitacionEstado(int estado);

@@ -5,6 +5,7 @@ namespace DemoBackend.Dto.Huesped
 {
     public class ReclamoSolicitudDto
     {
+        //cambio 1-12
         public int idReclamoHuesped { get; set; }
 
         public int IdTipoSolicitudHuesped { get; set; } // sug_...

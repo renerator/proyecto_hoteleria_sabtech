@@ -15,7 +15,7 @@ namespace DemoBackend.Controllers
     {
         private readonly IInsumoService _service;
         private readonly ILogger<InsumosController> _logger;
-
+        //cambio 1-12
         public InsumosController(IInsumoService service, ILogger<InsumosController> logger)
         {
             _service = service;

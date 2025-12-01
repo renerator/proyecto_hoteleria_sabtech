@@ -5,7 +5,7 @@ namespace DemoBackend.Services.Mantenedores
 {
     public interface IMantenedoresService
     {
-
+        //cambio 1-12
         List<AreasDto> GetListaAreas();
         List<AreasDto> GetListaAreasEstado(int estado);
         public bool CrearAreas(AreasDto areasModels);

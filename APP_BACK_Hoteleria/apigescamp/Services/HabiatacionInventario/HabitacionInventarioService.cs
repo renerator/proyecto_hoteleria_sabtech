@@ -14,7 +14,7 @@ namespace DemoBackend.Services.HabitacionInventario
     {
         private readonly IGenericRepositoryEntity<HabitacionInventarioModels> _repo;
         private readonly IMapper _mapper;
-
+        //cambio 1-12
         public HabitacionInventarioService(
             IGenericRepositoryEntity<HabitacionInventarioModels> repo,
             IMapper mapper)

@@ -5,7 +5,7 @@ using DemoBackend.Dto.Calendario;
 namespace DemoBackend.Services.Calendario
 {
     public interface ICalendarioService
-    {
+    {//cambio 1-12
         List<CalendarioEventoDto> GetEventos(int? habitacionId, DateTime? desde, DateTime? hasta);
         bool CrearEvento(CalendarioEventoDto dto);
         bool ActualizarEvento(CalendarioEventoDto dto);

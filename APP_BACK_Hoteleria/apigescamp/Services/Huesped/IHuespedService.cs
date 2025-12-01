@@ -14,7 +14,7 @@ namespace DemoBackend.Services.Huesped
         Task<List<ReclamoSolicitudDto>> ListarReclamosHuespedAsync(string bearer);
 
         ReclamoSolicitudDto ObtenerReclamoHuespedPorId(int idReclamoHuesped);
-
+        //cambio 1-12
 
         List<ReservaHuespedDto> Buscar(ReservaHuespedDto filtro);
         ReservaHuespedDto ObtenerPorId(int idReserva);

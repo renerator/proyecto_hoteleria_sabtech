@@ -4,7 +4,7 @@ using DemoBackend.Dto.Inventario;
 namespace DemoBackend.Services.Inventario
 {
     public interface IInventarioService
-    {
+    {//cambio 1-12
         List<InventarioItemDto> GetInventario(string? criterio, string? categoria, string? estado, string? habitacion);
         InventarioItemDto? GetItem(int idArticulo);
         bool CrearItem(InventarioItemDto dto);

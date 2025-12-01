@@ -4,7 +4,7 @@ using DemoBackend.Dto.Campamentos;
 namespace DemoBackend.Services.Campamentos
 {
     public interface ICampamentosService
-    {
+    {//cambio 1-12
         List<CampamentoDto> GetCampamentos();
         CampamentoDto? GetCampamento(int idCampamento);
         bool CrearCampamento(CampamentoDto dto);

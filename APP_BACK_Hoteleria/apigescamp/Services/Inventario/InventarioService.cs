@@ -16,7 +16,7 @@ namespace DemoBackend.Services
         private readonly IGenericRepositoryEntity<InventarioModels> _listaInventario;
         private readonly IGenericRepositoryEntity<InventarioMovimientosModels> _listaMovimientos;
         private readonly IMapper _mapper;
-
+        //cambio 1-12
         public InventarioService(
             IGenericRepositoryEntity<InventarioModels> listaInventario,
             IGenericRepositoryEntity<InventarioMovimientosModels> listaMovimientos,

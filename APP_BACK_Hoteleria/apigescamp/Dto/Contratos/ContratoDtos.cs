@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace DemoBackend.Dto.Contratos
 {
     public class ContratoDto
-    {
+    {//cambio 1-12
         public int IdContrato { get; set; }
         public int? IdEmpresa { get; set; }
         public string? Empresa { get; set; }

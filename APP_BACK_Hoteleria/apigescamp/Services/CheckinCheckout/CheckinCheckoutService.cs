@@ -19,7 +19,7 @@ namespace DemoBackend.Services
     {
         private readonly IGenericRepositoryEntity<CheckModels> _listaCheck;
         private readonly IGenericRepositoryEntity<CheckKPIModels> _listaCheckDashboard;
-        
+        //cambio 1-12
         private readonly IMapper _mapper;
 
         public CheckinCheckoutService(

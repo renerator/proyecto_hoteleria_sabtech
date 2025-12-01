@@ -17,7 +17,7 @@ namespace DemoBackend.Controllers
     {
         private readonly ITrabajadorService _trabajadorService;
         private readonly ILogger _logger;
-
+        //cambio 1-12
         public TrabajadorController(ITrabajadorService trabajadorService, ILogger<TrabajadorController> logger)
         {
             _logger = logger;

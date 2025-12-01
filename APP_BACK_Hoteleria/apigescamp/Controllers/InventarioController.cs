@@ -13,7 +13,7 @@ namespace DemoBackend.Controllers
     public class InventarioController : ControllerBase
     {
         private readonly IInventarioService _service;
-
+        //cambio 1-12
         public InventarioController(IInventarioService service)
         {
             _service = service;

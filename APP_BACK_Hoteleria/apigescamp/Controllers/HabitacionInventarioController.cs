@@ -15,7 +15,7 @@ namespace DemoBackend.Controllers
     {
         private readonly ILogger<HabitacionInventarioController> _logger;
         private readonly IHabitacionInventarioService _service;
-
+        //cambio 1-12
         public HabitacionInventarioController(
             ILogger<HabitacionInventarioController> logger,
             IHabitacionInventarioService service)

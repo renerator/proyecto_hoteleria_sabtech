@@ -4,7 +4,7 @@ using DemoBackend.Dto.Contratos;
 namespace DemoBackend.Services.Contratos
 {
     public interface IContratosService
-    {
+    {//cambio 1-12
         List<ContratoDto> GetContratos(string? filtro);
         ContratoDto? GetContrato(int idContrato);
         bool CrearContrato(ContratoDto dto);

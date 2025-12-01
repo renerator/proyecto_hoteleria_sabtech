@@ -15,7 +15,7 @@ namespace DemoBackend.Controllers
     {
         private readonly IMantenedoresService _grupoService;
         private readonly ILogger _logger;
-
+        //cambio 1-12
         public MantenedoresController(IMantenedoresService manService, ILogger<MantenedoresController> logger)
         {
             _logger = logger;

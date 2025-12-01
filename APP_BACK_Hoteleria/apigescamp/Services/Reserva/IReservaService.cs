@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace DemoBackend.Services.Reserva
 {
     public interface IReservaService
-    {
+    {//cambio 1-12
         List<ReservaDto> GetListaReserva();
         List<ReservaDto> GetListaReservaEstado(int idEstadoReserva, DateTime? fechaDesde, DateTime? fechaHasta);
         bool CrearReserva(ReservaDto reserva);

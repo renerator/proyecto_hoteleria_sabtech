@@ -3,7 +3,7 @@ using System;
 namespace DemoBackend.Dto.Dotaciones
 {
     public class DotacionDto
-    {
+    {//cambio 1-12
         public int IdDotacion { get; set; }
         public int? IdEmpresa { get; set; }
         public string? Empresa { get; set; }

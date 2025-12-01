@@ -15,7 +15,7 @@ namespace DemoBackend.Services
         private readonly IGenericRepositoryEntity<ContratosModels> _listaContratos;
         private readonly IGenericRepositoryEntity<ContratoTrabajadoresModels> _listaContratosTrabajadores;
         private readonly IMapper _mapper;
-
+        //cambio 1-12
         public ContratosService(
             IGenericRepositoryEntity<ContratosModels> listaContratos,
             IGenericRepositoryEntity<ContratoTrabajadoresModels> listaContratosTrabajadores,

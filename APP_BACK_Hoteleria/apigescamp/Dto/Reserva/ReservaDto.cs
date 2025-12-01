@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace DemoBackend.Dto.Reserva
 {
     public class ReservaDto
-    {
+    {//cambio 1-12
         public int IdReserva { get; set; }
         public int IdHabitacion { get; set; }
         public int IdTrabajador { get; set; }

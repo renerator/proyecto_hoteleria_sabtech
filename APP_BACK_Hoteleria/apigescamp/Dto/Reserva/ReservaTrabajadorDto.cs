@@ -3,7 +3,7 @@
 namespace DemoBackend.Dto.Reserva
 {
     public class ReservaTrabajadorDto
-    {
+    {//cambio 1-12
         public int IdReserva { get; set; }
         public int IdHabitacion { get; set; }
 

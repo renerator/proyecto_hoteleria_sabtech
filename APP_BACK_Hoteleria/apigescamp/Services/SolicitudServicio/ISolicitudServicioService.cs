@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace DemoBackend.Services.SolicitudServicio
 {
     public interface ISolicitudServicioService
-    {
+    {//cambio 1-12
         List<SolicitudServicioDto> Buscar(int? idSolicitud = null, int? idHabitacion = null, int? idServicio = null, DateTime? desde = null, DateTime? hasta = null);
         SolicitudServicioDto? ObtenerPorId(int idSolicitud);
         bool Crear(SolicitudServicioDto dto);

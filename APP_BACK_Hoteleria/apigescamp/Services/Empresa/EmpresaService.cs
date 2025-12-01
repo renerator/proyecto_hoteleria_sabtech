@@ -11,7 +11,7 @@ using System.Data;
 using System.Linq;
 
 namespace DemoBackend.Services.Empresa
-{
+{//cambio 1-12
     public class EmpresaService : IEmpresaService
     {
         private readonly IGenericRepositoryEntity<EmpresaContratistaModels> _repoEmpresas;

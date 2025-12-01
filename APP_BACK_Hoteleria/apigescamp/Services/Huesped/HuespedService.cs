@@ -20,7 +20,7 @@ namespace DemoBackend.Services.Huesped
         private readonly IGenericRepositoryEntity<EncuestaSatisfaccionModels> _repoEncuesta;
         private readonly IGenericRepositoryEntity<ServicioHuespedModels> _repoServicioHuesped;
         private readonly IMapper _mapper;
-
+        //cambio 1-12
         public HuespedService(
             IGenericRepositoryEntity<HuespedReclamoModels> repoReclamos,
             IGenericRepositoryEntity<ReservaHuespedModels> repoReserva,
